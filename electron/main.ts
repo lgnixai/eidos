@@ -4,13 +4,16 @@ import { BrowserWindow, Menu, Tray, app, dialog, ipcMain, nativeImage, shell } f
 import { log } from 'electron-log';
 import path from 'path';
 import { getDataSpace, getOrSetDataSpace } from './data-space';
-import { initializePlayground } from './file-system/manager';
+import { initializePlayground } from './file-system/playground';
 import { ProtocolHandler } from './protocol-handler';
 import { startServer } from './server/server';
 import { AppUpdater } from './updater';
 import { createWindow } from './window-manager/createWindow';
 import { initApiAgent, getApiAgentStatus } from './server/api-agent';
 import { getConfigManager } from './config';
+import { Worker } from 'worker_threads';
+import { getSpaceDbPath } from './file-system/space';
+import { getResourcePath } from './helper';
 
 export let win: BrowserWindow | null
 let appUpdater: AppUpdater;
@@ -18,6 +21,14 @@ let tray: Tray | null
 let protocolHandler: ProtocolHandler;
 
 export const PORT = 13127;
+
+
+const libPath = getResourcePath(`dist-simple/libsimple`);
+const dictPath = getResourcePath('dist-simple/dict');
+const simplePathConfig = {
+    libPath,
+    dictPath
+}
 
 process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
 // The built directory structure
@@ -74,6 +85,31 @@ ipcMain.handle('sqlite-msg', async (event, payload) => {
     const res = await handleFunctionCall(payload.data, dataSpace)
     return res
 });
+
+
+ipcMain.handle('sqlite-msg-read', async (event, payload) => {
+    return new Promise((resolve, reject) => {
+        const { space, dbName } = payload.data
+        const spaceId = space || dbName
+        const spaceDbPath = getSpaceDbPath(spaceId)
+        const worker = new Worker(path.join(__dirname, 'worker.js'), {
+            workerData: {
+                spaceDbPath,
+                simplePathConfig
+            }
+        })
+        worker.on('message', (result: any) => {
+            resolve(result);
+            worker.terminate();
+        });
+        worker.on('error', (err) => {
+            reject(err);
+            worker.terminate();
+        });
+        worker.postMessage(payload);
+    });
+});
+
 
 ipcMain.handle(MsgType.SwitchDatabase, (event, args) => {
     const { databaseName, id } = args

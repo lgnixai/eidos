@@ -20,6 +20,10 @@ export const TableSearch = () => {
     currentSearchIndex,
     setCurrentSearchIndex,
     searchTime,
+    totalMatches,
+    currentPage,
+    totalPages,
+    isLoadingMore,
   } = useContext(TableContext)
   const searchInputRef = useRef<HTMLInputElement>(null)
 
@@ -107,8 +111,10 @@ export const TableSearch = () => {
               <div className="flex items-center text-xs text-muted-foreground">
                 <span>{currentSearchIndex + 1}</span>
                 <span>/</span>
-                <span>{searchResults.length}</span>
-                <span className="ml-2">({searchTime}ms)</span>
+                <span>{totalMatches}</span>
+                <span className="ml-2">
+                  ({searchTime}ms)
+                </span>
               </div>
               <div className="flex">
                 <Button
@@ -151,6 +157,12 @@ export const TableSearch = () => {
       >
         <SearchIcon className="h-4 w-4 opacity-60" />
       </Button>
+
+      {isLoadingMore && (
+        <div className="absolute bottom-0 left-0 right-0 flex justify-center">
+          <span className="text-xs text-muted-foreground">Loading more results...</span>
+        </div>
+      )}
     </div>
   )
 }

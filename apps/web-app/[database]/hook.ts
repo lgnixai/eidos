@@ -23,6 +23,7 @@ import { uuidv7 } from "@/lib/utils"
 
 import { isDesktopMode, isInkServiceMode } from "@/lib/env"
 import { useAIConfigStore } from "../settings/ai/store"
+import { useReadSqliteStore } from "@/hooks/use-readonly-sqlite"
 
 const mainServiceWorkerChannel = new BroadcastChannel(EidosSharedEnvChannelName)
 export const useCurrentDomain = () => {
@@ -66,6 +67,8 @@ export const useLastOpened = () => {
 export const useLayoutInit = () => {
   const { space: database, tableName } = useCurrentPathInfo()
   const { setSqliteProxy: setSqlWorker } = useSqliteStore()
+  const { setReadSqliteProxy } = useReadSqliteStore()
+
   const { sqlite } = useSqlite(database)
   const { isSidebarOpen, setSidebarOpen } = useAppStore()
 
@@ -132,7 +135,14 @@ export const useLayoutInit = () => {
       clearFunc = initWorker()
     }
     const sqlWorker = getSqliteProxy(database, userId || "")
+
     setSqlWorker(sqlWorker)
+    if (isDesktopMode) {
+      const readonlySqlite = getSqliteProxy(database, userId || "", {
+        isReadonly: true,
+      })
+      setReadSqliteProxy(readonlySqlite)
+    }
     return clearFunc
   }, [database, setSqlWorker, isInitialized, initWorker, userId])
 

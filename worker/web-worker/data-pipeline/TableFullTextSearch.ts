@@ -55,14 +55,17 @@ export class TableFullTextSearch {
      * @param tableName 表名
      * @param query 搜索关键词
      * @param viewId 视图ID
+     * @param page 页码，从1开始
+     * @param pageSize 每页记录数
      */
-    async search(tableName: string, query: string, viewId: string) {
+    async search(tableName: string, query: string, viewId: string, page: number = 1, pageSize: number = 20) {
         if (!isDesktopMode) {
             throw new Error('Full text search is not supported in web mode');
         }
 
         const startTime = performance.now();
         const ftsTableName = `fts_${tableName}`;
+        const offset = (page - 1) * pageSize;
 
         try {
             // 检查 FTS 表是否存在
@@ -81,6 +84,25 @@ export class TableFullTextSearch {
                 throw new Error(`View ${viewId} not found or has no query`);
             }
 
+            // 首先获取总匹配数
+            const countSql = `
+                SELECT COUNT(*) as total 
+                FROM ${ftsTableName} 
+                WHERE ${ftsTableName} MATCH ?
+            `;
+            const [{ total }] = await this.dataspace.db.selectObjects(countSql, [query]);
+
+            // 如果没有匹配结果，直接返回
+            if (total === 0) {
+                return {
+                    results: [],
+                    searchTime: -1,
+                    totalMatches: 0,
+                    currentPage: page,
+                    totalPages: 0
+                }
+            }
+
             // 获取表的列信息
             const tableInfo = await this.dataspace.db.selectObjects(`PRAGMA table_info(${tableName})`);
             const columns = tableInfo
@@ -92,62 +114,57 @@ export class TableFullTextSearch {
                 .map((col, idx) => `snippet(${ftsTableName}, ${idx}, '<<', '>>', '...', 64) as snippet_${col}`)
                 .join(', ');
 
-            // 获取匹配的 rowid 和每列的 snippet
+            // 分页获取匹配结果
             const matchSql = `
-                SELECT 
-                    rowid,
-                    ${snippetSelects}
-                FROM ${ftsTableName}
-                WHERE ${ftsTableName} MATCH ?
-            `;
-
-            const matchingInfo = await this.dataspace.db.selectObjects(matchSql, [query]);
-            if (matchingInfo.length === 0) {
-                return {
-                    results: [],
-                    searchTime: -1,
-                    totalMatches: 0
-                }
-            }
-
-            const rowidList = matchingInfo.map((r: any) => r.rowid).join(',');
-            
-            // 使用子查询保留原始视图的排序，确保选择 rowid
-            let modifiedViewQuery = `
                 WITH original_view AS (
-                    SELECT ${tableName}.rowid, v.*, ROW_NUMBER() OVER () as row_index
+                    SELECT 
+                        ${tableName}.rowid,
+                        v.*,
+                        ROW_NUMBER() OVER () as original_order,
+                        ROW_NUMBER() OVER () - 1 as row_index
                     FROM (${view.query}) v
                     JOIN ${tableName} ON ${tableName}._id = v._id
+                ),
+                matched_rows AS (
+                    SELECT 
+                        rowid,
+                        ${snippetSelects}
+                    FROM ${ftsTableName}
+                    WHERE ${ftsTableName} MATCH ?
                 )
-                SELECT * FROM original_view 
-                WHERE rowid IN (${rowidList})
+                SELECT v.*, m.*
+                FROM original_view v
+                JOIN matched_rows m ON m.rowid = v.rowid
+                ORDER BY v.original_order
+                LIMIT ? OFFSET ?
             `;
 
-            console.log('Search SQL:', modifiedViewQuery);
-            const results = await this.dataspace.db.selectObjects(modifiedViewQuery);
+            const results = await this.dataspace.db.selectObjects(
+                matchSql,
+                [query, pageSize, offset]
+            );
 
             // 处理结果，解析匹配信息
             const processedResults = results.map((row: any) => {
-                const matchInfo = matchingInfo.find((m: any) => m.rowid === row.rowid);
-                const rowIndex = row.row_index - 1;
-                delete row.row_index;
-
                 const matches = [];
-                if (matchInfo) {
-                    // 检查每一列的 snippet
-                    for (const col of columns) {
-                        const snippetKey = `snippet_${col}`;
-                        const snippet = matchInfo[snippetKey];
-                        
-                        // 如果 snippet 包含高亮标记，说明这一列有匹配
-                        if (snippet && snippet.includes('<<')) {
-                            matches.push({
-                                column: col,
-                                snippet: snippet
-                            });
-                        }
+                // 检查每一列的 snippet
+                for (const col of columns) {
+                    const snippetKey = `snippet_${col}`;
+                    const snippet = row[snippetKey];
+
+                    if (snippet && snippet.includes('<<')) {
+                        matches.push({
+                            column: col,
+                            snippet: snippet
+                        });
                     }
+                    // 删除 snippet 字段和排序字段，保持数据清洁
+                    delete row[snippetKey];
                 }
+
+                const rowIndex = row.row_index;
+                delete row.row_index;
+                delete row.original_order;
 
                 return {
                     row,
@@ -157,12 +174,14 @@ export class TableFullTextSearch {
             });
 
             const endTime = performance.now();
-            const searchTime = endTime - startTime;
+            const searchTime = Math.round(endTime - startTime);
 
             return {
                 results: processedResults,
-                searchTime: Math.round(searchTime), // 返回整数毫秒数
-                totalMatches: matchingInfo.length
+                searchTime,
+                totalMatches: total,
+                currentPage: page,
+                totalPages: Math.ceil(total / pageSize)
             };
         } catch (error) {
             console.error('Search error:', error);

@@ -75,7 +75,12 @@ export async function handleOpenAI(
     const chat = await getChatById(id, dataspace);
     const getTitle = () => {
       if (llmodelForTextTask) {
-        return generateTitleFromUserMessage({ message: userMessage as CoreUserMessage, model: llmodelForTextTask })
+        try {
+          return generateTitleFromUserMessage({ message: userMessage as CoreUserMessage, model: llmodelForTextTask })
+        } catch (error) {
+          console.error("Failed to generate title", error)
+          return 'error generating title'
+        }
       }
       return 'untitle'
     }

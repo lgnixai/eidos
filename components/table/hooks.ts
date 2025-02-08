@@ -41,12 +41,26 @@ interface TableContextType {
     setSearchQuery: (query: string) => void
     showSearch: boolean
     setShowSearch: (show: boolean) => void
-    searchResults: SearchResult[] | null
-    setSearchResults: (results: SearchResult[] | null) => void
+    searchResults: {
+        row: any;
+        matches: Array<{ column: string; snippet: string }>;
+        rowIndex: number;
+    }[] | null;
+    setSearchResults: (results: {
+        row: any;
+        matches: Array<{ column: string; snippet: string }>;
+        rowIndex: number;
+    }[] | null) => void
+    totalMatches: number
+    setTotalMatches: (total: number) => void
     currentSearchIndex: number
     setCurrentSearchIndex: (value: number | ((prev: number) => number)) => void
     searchTime: number
     setSearchTime: (time: number) => void
+    currentPage: number
+    totalPages: number
+    setCurrentPage: (page: number) => void
+    isLoadingMore: boolean
 }
 
 export const TableContext = createContext<TableContextType>({
@@ -60,10 +74,16 @@ export const TableContext = createContext<TableContextType>({
     setShowSearch: () => {},
     searchResults: null,
     setSearchResults: () => {},
+    totalMatches: 0,
+    setTotalMatches: () => {},
     currentSearchIndex: 0,
     setCurrentSearchIndex: (value: number | ((prev: number) => number)) => {},
     searchTime: 0,
     setSearchTime: () => {},
+    currentPage: 1,
+    totalPages: 0,
+    setCurrentPage: () => {},
+    isLoadingMore: false,
 })
 
 
@@ -234,7 +254,11 @@ export const useTableSearch = () => {
     const [showSearch, setShowSearch] = useState(false)
     const [searchResults, setSearchResults] = useState<SearchResult[] | null>(null)
     const [currentSearchIndex, setCurrentSearchIndex] = useState(0)
+    const [totalMatches, setTotalMatches] = useState(0)
     const [searchTime, setSearchTime] = useState(0)
+    const [currentPage, setCurrentPage] = useState(1)
+    const [totalPages, setTotalPages] = useState(0)
+    const [isLoadingMore, setIsLoadingMore] = useState(false)
     const clearSearch = useCallback(() => {
         setSearchQuery("")
         setShowSearch(false)
@@ -252,6 +276,12 @@ export const useTableSearch = () => {
         currentSearchIndex,
         setCurrentSearchIndex,
         searchTime,
-        setSearchTime
+        setSearchTime,
+        totalMatches,
+        setTotalMatches,
+        currentPage,
+        totalPages,
+        setCurrentPage,
+        isLoadingMore,
     }
 }

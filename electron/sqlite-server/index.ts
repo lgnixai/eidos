@@ -1,17 +1,8 @@
 import { BaseServerDatabase } from '@/lib/sqlite/interface';
 import Database from 'better-sqlite3';
-import path from 'path';
-import { app } from 'electron';
-import fs from 'fs';
 import console from 'electron-log';
+import fs from 'fs';
 
-function getResourcePath(relativePath: string): string {
-    if (app.isPackaged) {
-        return path.join(process.resourcesPath, relativePath);
-    } else {
-        return path.join(app.getAppPath(), relativePath);
-    }
-}
 
 export interface NodeDomainDbInfo {
     type: 'node';
@@ -23,13 +14,15 @@ export interface NodeDomainDbInfo {
 
 export class NodeServerDatabase extends BaseServerDatabase {
     db: Database.Database;
-    constructor(config: NodeDomainDbInfo['config']) {
+    constructor(config: NodeDomainDbInfo['config'], options: {
+        simple: {
+            libPath: string;
+            dictPath: string;
+        }
+    }) {
         super();
         this.db = new Database(config.path, config.options);
-
-        const libPath = getResourcePath(`dist-simple/libsimple`);
-        const dictPath = getResourcePath('dist-simple/dict');
-
+        const { libPath, dictPath } = options.simple;
         console.log('Lib path:', libPath);
         console.log('Dict path:', dictPath);
 

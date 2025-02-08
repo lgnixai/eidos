@@ -4,7 +4,7 @@ import { contextBridge, ipcRenderer } from 'electron';
 import { getOriginPrivateDirectory } from 'native-file-system-adapter';
 
 import { AppConfig, ConfigManager } from './config/index';
-import { PlaygroundFile } from './file-system/manager';
+import { PlaygroundFile } from './file-system/playground';
 import nodeAdapter from './lib/node-adapter';
 import { ApiAgentStatus } from './server/api-agent';
 
@@ -19,6 +19,17 @@ async function main() {
 
   const listenerMap = new Map<string, Map<string, IpcListener>>();
   let listenerIdCounter = 0;
+
+
+
+  // we expose a readonly version of eidos, which only contains a invoke method
+  //  eidosReadonly -> sqlite-msg-read -> main -> worker
+  contextBridge.exposeInMainWorld('eidosReadonly', {
+    invoke(...args: Parameters<typeof ipcRenderer.invoke>) {
+      const [channel, ...omit] = args
+      return ipcRenderer.invoke(channel, ...omit)
+    },
+  })
 
   // --------- Expose some API to the Renderer process ---------
   contextBridge.exposeInMainWorld('eidos', {
@@ -135,7 +146,7 @@ async function main() {
     onApiAgentStatusChanged: (callback: (status: ApiAgentStatus) => void) => {
       const listener = (_event: Electron.IpcRendererEvent, status: ApiAgentStatus) => callback(status);
       ipcRenderer.on('api-agent-status-changed', listener);
-      
+
       return () => {
         console.log('remove listener')
         ipcRenderer.removeListener('api-agent-status-changed', listener);

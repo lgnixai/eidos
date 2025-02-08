@@ -74,7 +74,7 @@ const config = defineConfig({
         srcDir: "apps/web-app",
         filename: "sw.ts",
         strategies: "injectManifest",
-        injectManifest: {          
+        injectManifest: {
           // 7MB
           maximumFileSizeToCacheInBytes: 7 * 1024 * 1024,
           globPatterns: ["**/*.{js,css,html,ico,png,svg,wasm}"],
@@ -115,7 +115,10 @@ const config = defineConfig({
       electron({
         main: {
           // Shortcut of `build.lib.entry`
-          entry: 'electron/main.ts',
+          entry: [
+            'electron/main.ts',
+            'electron/worker.ts',
+          ],
           vite: {
             resolve: {
               alias: {

@@ -49,7 +49,13 @@ export const Table = ({
     searchResults,
     setSearchResults,
     searchTime,
-    setSearchTime
+    setSearchTime,
+    totalMatches,
+    setTotalMatches,
+    currentPage,
+    totalPages,
+    setCurrentPage,
+    isLoadingMore,
   } = useTableSearch()
 
   useEffect(() => {
@@ -74,7 +80,13 @@ export const Table = ({
         currentSearchIndex,
         setCurrentSearchIndex,
         searchTime,
-        setSearchTime
+        setSearchTime,
+        totalMatches,
+        setTotalMatches,
+        currentPage,
+        totalPages,
+        setCurrentPage,
+        isLoadingMore,
       }}
     >
       <div className="h-full w-full overflow-hidden p-2 pt-0 flex flex-col">

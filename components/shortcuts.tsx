@@ -3,6 +3,9 @@
 import { useKeyPress } from "ahooks"
 import { useTheme } from "next-themes"
 import { useNavigate } from "react-router-dom"
+
+import { useCurrentPathInfo } from "@/hooks/use-current-pathinfo"
+import { useSqlite } from "@/hooks/use-sqlite"
 import { useToast } from "@/components/ui/use-toast"
 import { useSpaceAppStore } from "@/apps/web-app/[database]/store"
 
@@ -16,6 +19,18 @@ export function ShortCuts() {
     useSpaceAppStore()
   const navigate = useNavigate()
   const { toast } = useToast()
+  const { createDoc } = useSqlite()
+
+  const { space } = useCurrentPathInfo()
+
+  useKeyPress(["meta.n"], () => {
+    const createNewDoc = async () => {
+      if (!space) return
+      const docId = await createDoc("")
+      navigate(`/${space}/${docId}`)
+    }
+    createNewDoc()
+  })
 
   useKeyPress(["shift.ctrl.l", "shift.meta.l"], (e) => {
     e.preventDefault()

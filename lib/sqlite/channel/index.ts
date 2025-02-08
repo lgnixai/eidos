@@ -12,19 +12,29 @@ import { getWorker } from "../worker"
 import { RemoteSqlite } from "./webrtc"
 
 
-export const getSqliteChannel = (dbName: string, userId: string, config?: {
-  isShareMode: boolean
-  connection: DataConnection
-}) => {
+type IConfig = {
+  isShareMode?: boolean
+  connection?: DataConnection
+  isReadonly?: boolean
+}
+export const getSqliteChannel = (dbName: string, userId: string, config?: IConfig) => {
   let sqlite: ISqlite<any, ILocalSendData>
   if (isDesktopMode) {
-    sqlite = new LocalSqlite((window as any).eidos)
+    if (config?.isReadonly) {
+      sqlite = new LocalSqlite((window as any).eidosReadonly, { readonly: true })
+    } else {
+      sqlite = new LocalSqlite((window as any).eidos)
+    }
   } else if (isInkServiceMode) {
     const serverSqlite = new HttpSqlite("/server/api")
     sqlite = serverSqlite
   } else if (config) {
     const { isShareMode, connection } = config
-    sqlite = new RemoteSqlite(connection)
+    if (connection) {
+      sqlite = new RemoteSqlite(connection)
+    } else {
+      throw new Error("connection is required")
+    }
   } else {
     sqlite = new LocalSqlite(getWorker())
   }
@@ -34,10 +44,7 @@ export const getSqliteChannel = (dbName: string, userId: string, config?: {
 export const getSqliteProxy = (
   dbName: string,
   userId: string,
-  config?: {
-    isShareMode: boolean
-    connection: DataConnection
-  }
+  config?: IConfig
 ) => {
   const sqlite = getSqliteChannel(dbName, userId, config)
   return new Proxy<DataSpace>({} as any, {

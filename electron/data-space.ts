@@ -1,10 +1,11 @@
 import { EidosDataEventChannelName, EidosMessageChannelName } from "@/lib/const";
 import { DataSpace } from "@/worker/web-worker/DataSpace";
 import { WebContents, ipcMain } from "electron";
-import { getEidosFileSystemManager } from "./file-system/manager";
+import { getEidosFileSystemManager } from './file-system/getEidosFileSystemManager';
 import { getSpaceDbPath } from "./file-system/space";
 import { win } from "./main";
 import { NodeServerDatabase } from "./sqlite-server";
+import { getResourcePath } from "./helper";
 
 
 function requestFromRenderer(webContents: WebContents, arg: any) {
@@ -46,14 +47,26 @@ export class DataSpaceManager {
             return this.dataSpace;
         }
         console.log("init space", spaceName)
+        const libPath = getResourcePath(`dist-simple/libsimple`);
+        const dictPath = getResourcePath('dist-simple/dict');
 
         const serverDb = new NodeServerDatabase({
             path: getSpaceDbPath(spaceName),
+        }, {
+            simple: {
+                libPath,
+                dictPath,
+            },
         });
 
         const draftDataSpace = new DataSpace({
             db: new NodeServerDatabase({
                 path: ':memory:',
+            }, {
+                simple: {
+                    libPath,
+                    dictPath,
+                },
             }),
             activeUndoManager: false,
             dbName: 'draft',

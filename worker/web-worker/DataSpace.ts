@@ -1233,8 +1233,8 @@ export class DataSpace {
     return await this.tableFullTextSearch.createDynamicFTS(tableName, temporary)
   }
 
-  public async searchTableFTS(tableName: string, query: string, viewId: string) {
-    return await this.tableFullTextSearch.search(tableName, query, viewId)
+  public async searchTableFTS(tableName: string, query: string, viewId: string, page: number = 1, pageSize: number = 20) {
+    return await this.tableFullTextSearch.search(tableName, query, viewId, page, pageSize)
   }
 
 }

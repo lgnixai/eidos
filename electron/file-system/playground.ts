@@ -1,6 +1,3 @@
-import { EidosFileSystemManager } from '@/lib/storage/eidos-file-system'
-import { getOriginPrivateDirectory } from 'native-file-system-adapter'
-import nodeAdapter from 'native-file-system-adapter/src/adapters/node'
 import { getConfigManager } from '../config'
 import path from 'path';
 import fs from 'fs/promises';
@@ -11,13 +8,6 @@ export interface PlaygroundFile {
     name: string;
     content: string;
 }
-
-export async function getEidosFileSystemManager() {
-    const userDataPath = getConfigManager().get('dataFolder')
-    const dirHandle = await getOriginPrivateDirectory(nodeAdapter, userDataPath)
-    return new EidosFileSystemManager(dirHandle as any)
-}
-
 
 export interface FileChangeCallback {
     onChange: (filename: string, content: string) => void;

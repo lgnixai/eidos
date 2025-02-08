@@ -57,7 +57,7 @@ import { ViewFilter } from "./view-filter"
 import { ViewItem } from "./view-item"
 import { ViewSort } from "./view-sort"
 import { useSearch } from "./hooks/use-search"
-import { TableSearch } from "./search"
+import { TableSearch } from "./view-search"
 
 const Views = ({
   views,

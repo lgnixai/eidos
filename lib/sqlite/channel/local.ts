@@ -25,11 +25,17 @@ export class LocalSqlite implements ISqlite<Worker | IpcRenderer, ILocalSendData
   channel: MessageChannel
   channelMap: Map<string, MessageChannel>
   dataMap: Map<string, any>
-  constructor(connector: Worker | IpcRenderer) {
+  options?: {
+    readonly?: boolean
+  }
+  constructor(connector: Worker | IpcRenderer, options?: {
+    readonly?: boolean
+  }) {
     this.connector = connector
     this.channel = new MessageChannel()
     this.channelMap = new Map()
     this.dataMap = new Map()
+    this.options = options
   }
 
   getChannel(id: string) {
@@ -51,6 +57,9 @@ export class LocalSqlite implements ISqlite<Worker | IpcRenderer, ILocalSendData
     if (this.connector instanceof Worker) {
       this.connector.postMessage(data, [channel.port2])
     } else {
+      if (this.options?.readonly) {
+        return this.connector.invoke('sqlite-msg-read', data)
+      }
       return this.connector.invoke('sqlite-msg', data)
     }
   }
