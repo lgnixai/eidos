@@ -42,14 +42,14 @@ Get the app from: https://eidos.space/download
 
 ### web app
 
-1. Clone the repository `git clone git@github.com:mayneyao/eidos.git`
+1. Clone the repository `git clone https://github.com/mayneyao/eidos.git`
 2. Run `pnpm install` to install dependencies
 3. Run `pnpm dev`
 4. You can now access the app in your browser at http://localhost:5173
 
 ### desktop app
 
-1. Clone the repository `git clone git@github.com:mayneyao/eidos.git`
+1. Clone the repository `git clone https://github.com/mayneyao/eidos.git`
 2. Run `pnpm install` to install dependencies
 3. Run `pnpm download-libsimple` to download libsimple
 4. Run `pnpm dev:desktop`
