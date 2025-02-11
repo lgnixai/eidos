@@ -43,6 +43,7 @@ import { MsgType } from "@/lib/const"
 import { getWorker } from "@/lib/sqlite/worker"
 
 import { TwinkleSparkle } from "../../../loading"
+import { useTableSearchStore } from "../../hooks/use-table-search-store"
 import { getScrollbarWidth } from "./helper"
 import { useSearchResults } from "./hooks/use-search-results"
 import { darkTheme, lightTheme } from "./theme"
@@ -159,9 +160,11 @@ export default function GridView(props: IGridProps) {
   const [isAItoolsOpen, setIsAItoolsOpen] = React.useState(false)
 
   // Get search state from context
-  const { searchQuery, showSearch } = useContext(TableContext)
-  const { formattedSearchResults, currentSearchIndex, setCurrentSearchIndex } =
-    useSearchResults(getColumnIndexByColumnName)
+  const { searchQuery, showSearch } = useTableSearchStore()
+  const { formattedSearchResults } = useSearchResults(
+    getColumnIndexByColumnName
+  )
+  const { setCurrentSearchIndex, currentSearchIndex } = useTableSearchStore()
 
   // Add state for search highlight
   const [searchHighlightRegion, setSearchHighlightRegion] = React.useState<

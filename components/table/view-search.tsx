@@ -3,13 +3,39 @@ import { useKeyPress } from "ahooks"
 import { ChevronDownIcon, ChevronUpIcon, SearchIcon } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
+import { IView } from "@/lib/store/IView"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
 import { TableContext } from "./hooks"
+import { useTableSearch } from "./hooks/use-table-search"
+import { useTableSearchStore } from "./hooks/use-table-search-store"
 
-export const TableSearch = () => {
+const Spinner = () => (
+  <svg
+    className="animate-spin h-4 w-4 text-muted-foreground"
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+  >
+    <circle
+      className="opacity-25"
+      cx="12"
+      cy="12"
+      r="10"
+      stroke="currentColor"
+      strokeWidth="4"
+    ></circle>
+    <path
+      className="opacity-75"
+      fill="currentColor"
+      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+    ></path>
+  </svg>
+)
+
+export const ViewSearch = (props: { view: IView }) => {
   const { t } = useTranslation()
   const {
     searchQuery,
@@ -24,10 +50,11 @@ export const TableSearch = () => {
     currentPage,
     totalPages,
     isLoadingMore,
-  } = useContext(TableContext)
+  } = useTableSearchStore()
+
+  const { isSearching } = useTableSearch(props.view?.id)
   const searchInputRef = useRef<HTMLInputElement>(null)
 
-  // 当显示搜索框时自动聚焦
   useEffect(() => {
     if (showSearch) {
       searchInputRef.current?.focus()
@@ -112,9 +139,7 @@ export const TableSearch = () => {
                 <span>{currentSearchIndex + 1}</span>
                 <span>/</span>
                 <span>{totalMatches}</span>
-                <span className="ml-2">
-                  ({searchTime}ms)
-                </span>
+                <span className="ml-2">({searchTime}ms)</span>
               </div>
               <div className="flex">
                 <Button
@@ -144,6 +169,11 @@ export const TableSearch = () => {
               </div>
             </div>
           )}
+          {isSearching && (
+            <div className="absolute right-2 flex items-center">
+              <Spinner />
+            </div>
+          )}
         </div>
       </div>
       <Button
@@ -160,7 +190,9 @@ export const TableSearch = () => {
 
       {isLoadingMore && (
         <div className="absolute bottom-0 left-0 right-0 flex justify-center">
-          <span className="text-xs text-muted-foreground">Loading more results...</span>
+          <span className="text-xs text-muted-foreground">
+            Loading more results...
+          </span>
         </div>
       )}
     </div>

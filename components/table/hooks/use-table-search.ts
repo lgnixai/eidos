@@ -1,48 +1,65 @@
+import { useReadonlySqlite } from "@/hooks/use-readonly-sqlite"
 import { useThrottleFn } from "ahooks"
 import { useContext, useEffect, useRef, useState } from "react"
 import { TableContext } from "../hooks"
-import { useReadonlySqlite } from "@/hooks/use-readonly-sqlite"
+import { useTableSearchStore } from "./use-table-search-store"
 
 const MIN_SEARCH_LENGTH = 2
-const PAGE_SIZE = 20
+const PAGE_SIZE = 200
 
-export const useSearch = (viewId: string) => {
+export const useTableSearch = (viewId: string) => {
     const sqlite = useReadonlySqlite()
+    const { tableName } = useContext(TableContext)
     const {
         searchQuery,
         setSearchQuery,
         showSearch,
-        currentSearchIndex,
-        setCurrentSearchIndex,
         setShowSearch,
-        tableName,
         setSearchResults,
+        searchResults,
+        initializeSearchResults,
+        currentSearchIndex,
+        totalMatches,
         setTotalMatches,
         setSearchTime,
         currentPage,
         setCurrentPage,
-    } = useContext(TableContext)
+        clearSearch
+    } = useTableSearchStore()
+
+    const resetSearch = () => {
+        clearSearch()
+    }
+
+    useEffect(() => {
+        if (!showSearch) {
+            resetSearch()
+        }
+    }, [showSearch])
+
+    useEffect(() => {
+        resetSearch()
+    }, [tableName])
 
     const searchAbortController = useRef<AbortController | null>(null)
     const [isSearching, setIsSearching] = useState(false)
-    const searchCache = useRef<Map<string, any>>(new Map())
+
 
     const performSearch = async (query: string, page: number = 1) => {
         if (!sqlite || !tableName || !query || !viewId || query.length < MIN_SEARCH_LENGTH) {
-            setSearchResults(null)
+            setSearchResults([], 0)
             setSearchTime(0)
-            setCurrentSearchIndex(0)
-            setCurrentPage(1)
             return
         }
 
-        const cacheKey = `${tableName}-${query}-${viewId}-${page}`
-        if (searchCache.current.has(cacheKey)) {
-            const cachedResult = searchCache.current.get(cacheKey)
-            setSearchResults(cachedResult.results)
-            setSearchTime(cachedResult.searchTime)
-            setTotalMatches(cachedResult.totalMatches)
-            setCurrentSearchIndex(0)
+        const page2Index = (page - 1) * PAGE_SIZE
+        const page2Data = searchResults[page2Index]
+        if (page2Data) {
+            return
+        }
+
+        const maxPage = Math.ceil(totalMatches / PAGE_SIZE)
+        if (page > maxPage && totalMatches > 0) {
             return
         }
 
@@ -55,24 +72,24 @@ export const useSearch = (viewId: string) => {
             setIsSearching(true)
             const result = await sqlite.searchTableFTS(tableName, query, viewId, page, PAGE_SIZE)
 
-            searchCache.current.set(cacheKey, result)
+            console.log('search', query, page, result)
 
+            const newOffset = (page - 1) * PAGE_SIZE
             if (page === 1) {
-                setSearchResults(result.results)
-            } else {
-                setSearchResults(prev => ([...(prev ?? []), ...result.results]))
+                initializeSearchResults(result.totalMatches)
             }
+
+            setSearchResults(result.results, newOffset)
+
             setSearchTime(result.searchTime)
             setTotalMatches(result.totalMatches)
-            setCurrentSearchIndex(0)
         } catch (error) {
             if (error instanceof Error && error.name === 'AbortError') {
                 return
             }
             console.error('Search error:', error)
-            setSearchResults(null)
+            setSearchResults([], 0)
             setSearchTime(0)
-            setCurrentSearchIndex(0)
         } finally {
             setIsSearching(false)
         }
@@ -84,24 +101,23 @@ export const useSearch = (viewId: string) => {
     )
 
     useEffect(() => {
+        // only search 1st page when query is changed
         throttledSearch(searchQuery)
     }, [searchQuery])
 
-    // 监听页码变化
     useEffect(() => {
-        if (currentPage > 1 && searchQuery) {
-            performSearch(searchQuery, currentPage)
+        if (!searchQuery || totalMatches === 0) return
+
+        const maxPage = Math.ceil(totalMatches / PAGE_SIZE)
+        const targetPage = Math.floor(currentSearchIndex / PAGE_SIZE) + 1
+
+
+        if (targetPage !== currentPage && targetPage <= maxPage) {
+            performSearch(searchQuery, targetPage)
+            setCurrentPage(targetPage)
         }
-    }, [currentPage])
 
-    // 清理过期缓存
-    useEffect(() => {
-        const interval = setInterval(() => {
-            searchCache.current.clear()
-        }, 5 * 60 * 1000)
-
-        return () => clearInterval(interval)
-    }, [])
+    }, [currentSearchIndex, currentPage, totalMatches, searchQuery,])
 
     return {
         searchQuery,
@@ -109,6 +125,5 @@ export const useSearch = (viewId: string) => {
         showSearch,
         setShowSearch,
         isSearching,
-        loadNextPage: () => setCurrentPage((prev: number) => prev + 1)
     }
 }

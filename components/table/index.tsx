@@ -1,11 +1,11 @@
 import { useEffect } from "react"
 
-import { ViewTypeEnum } from "@/lib/store/IView"
 import { useSqliteTableSubscribe } from "@/hooks/use-sqlite-table-subscribe"
 import { useUiColumns } from "@/hooks/use-ui-columns"
+import { ViewTypeEnum } from "@/lib/store/IView"
 
 import { TABLE_CONTENT_ELEMENT_ID } from "./helper"
-import { TableContext, useCurrentView, useTableSearch } from "./hooks"
+import { TableContext, useCurrentView } from "./hooks"
 import { ViewToolbar } from "./view-toolbar"
 import { DocListView } from "./views/doc-list"
 import GalleryView from "./views/gallery"
@@ -38,26 +38,6 @@ export const Table = ({
   })
   const { updateUiColumns } = useUiColumns(tableName, space)
 
-  // Add search state management
-  const {
-    currentSearchIndex,
-    setCurrentSearchIndex,
-    searchQuery,
-    setSearchQuery,
-    showSearch,
-    setShowSearch,
-    searchResults,
-    setSearchResults,
-    searchTime,
-    setSearchTime,
-    totalMatches,
-    setTotalMatches,
-    currentPage,
-    totalPages,
-    setCurrentPage,
-    isLoadingMore,
-  } = useTableSearch()
-
   useEffect(() => {
     updateUiColumns(tableName)
   }, [updateUiColumns, tableName])
@@ -70,23 +50,6 @@ export const Table = ({
         space,
         viewId,
         isReadOnly,
-        // Add search state to context
-        searchQuery,
-        setSearchQuery,
-        showSearch,
-        setShowSearch,
-        searchResults,
-        setSearchResults,
-        currentSearchIndex,
-        setCurrentSearchIndex,
-        searchTime,
-        setSearchTime,
-        totalMatches,
-        setTotalMatches,
-        currentPage,
-        totalPages,
-        setCurrentPage,
-        isLoadingMore,
       }}
     >
       <div className="h-full w-full overflow-hidden p-2 pt-0 flex flex-col">

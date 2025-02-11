@@ -42,13 +42,13 @@ export function GridContextMenu({
 }) {
   const { selection, clearSelection } = useTableAppStore()
   const count = useMemo(() => {
+    let rowCount = 0;
     if (selection.current) {
-      return selection.current.range.height
+      rowCount = selection.current.range.height;
+    } else if (selection.rows.length) {
+      rowCount = selection.rows.length;
     }
-    if (selection.rows.length) {
-      return selection.rows.length
-    }
-    return 0
+    return rowCount.toLocaleString();
   }, [selection])
   const { space, tableId } = useCurrentPathInfo()
   const { getOrCreateTableSubDoc } = useSqlite(space)

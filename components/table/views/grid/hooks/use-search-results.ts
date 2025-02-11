@@ -1,6 +1,6 @@
-import { TableContext } from "@/components/table/hooks"
-import { Item } from "@glideapps/glide-data-grid"
-import { useContext, useEffect, useMemo, useState } from "react"
+import { useTableSearchStore } from "@/components/table/hooks/use-table-search-store";
+import { Item } from "@glideapps/glide-data-grid";
+import { useEffect, useMemo, useState } from "react";
 
 interface FormattedResult {
     columnIndex: number;
@@ -11,7 +11,7 @@ interface FormattedResult {
 export const useSearchResults = (
     getColumnIndexByColumnName: (fieldName: string) => number,
 ) => {
-    const { searchResults, currentSearchIndex, setCurrentSearchIndex } = useContext(TableContext)
+    const { searchResults, currentSearchIndex } = useTableSearchStore()
     const [formattedResults, setFormattedResults] = useState<FormattedResult[]>([])
 
     useEffect(() => {
@@ -35,13 +35,12 @@ export const useSearchResults = (
         return formattedResults.map(result => ([result.columnIndex, result.rowIndex] as Item))
     }, [formattedResults])
 
-    // console.log({ formattedResults, formattedSearchResults })
+    // console.log({ formattedResults, formattedSearchResults, currentSearchIndex, searchResults })
 
     return {
         searchResults,
         formattedSearchResults,
         isLoadingComplete: !searchResults || currentSearchIndex >= formattedResults.length,
         currentSearchIndex,
-        setCurrentSearchIndex,
     }
 }

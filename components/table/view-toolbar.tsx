@@ -1,12 +1,4 @@
 import {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react"
-import {
   DndContext,
   DragEndEvent,
   KeyboardSensor,
@@ -17,11 +9,17 @@ import {
 } from "@dnd-kit/core"
 import {
   SortableContext,
-  arrayMove,
-  horizontalListSortingStrategy,
+  horizontalListSortingStrategy
 } from "@dnd-kit/sortable"
 import { useKeyPress } from "ahooks"
-import { ChevronDownIcon, PlusIcon, SearchIcon } from "lucide-react"
+import { ChevronDownIcon, PlusIcon } from "lucide-react"
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState
+} from "react"
 import { useTranslation } from "react-i18next"
 import {
   createSearchParams,
@@ -30,11 +28,7 @@ import {
   useSearchParams,
 } from "react-router-dom"
 
-import { IView } from "@/lib/store/IView"
-import { cn, getTableIdByRawTableName, shortenId, uuidv7 } from "@/lib/utils"
-import { useCurrentSubPage } from "@/hooks/use-current-sub-page"
-import { useSqlite } from "@/hooks/use-sqlite"
-import { useTableOperation } from "@/hooks/use-table"
+import { NodeComponent } from "@/apps/web-app/[database]/[node]/page"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -47,17 +41,20 @@ import {
   DialogContent,
   DialogTrigger,
 } from "@/components/ui/sub-page-dialog"
-import { NodeComponent } from "@/apps/web-app/[database]/[node]/page"
+import { useCurrentSubPage } from "@/hooks/use-current-sub-page"
+import { useSqlite } from "@/hooks/use-sqlite"
+import { useTableOperation } from "@/hooks/use-table"
+import { IView } from "@/lib/store/IView"
+import { cn, getTableIdByRawTableName, shortenId, uuidv7 } from "@/lib/utils"
 
 import { Button } from "../ui/button"
-import { Input } from "../ui/input"
 import { TableContext, useCurrentView, useViewOperation } from "./hooks"
+import { useTableSearchStore } from "./hooks/use-table-search-store"
 import { ViewField } from "./view-field/view-field"
 import { ViewFilter } from "./view-filter"
 import { ViewItem } from "./view-item"
+import { ViewSearch } from "./view-search"
 import { ViewSort } from "./view-sort"
-import { useSearch } from "./hooks/use-search"
-import { TableSearch } from "./view-search"
 
 const Views = ({
   views,
@@ -162,7 +159,6 @@ export const ViewToolbar = (props: {
   //   ref2.current
   // )
 
-
   const { isEmbed } = props
   const { updateViews, views } = useTableOperation(tableName!, space)
   const navigate = useNavigate()
@@ -175,8 +171,6 @@ export const ViewToolbar = (props: {
     viewId,
   })
 
-  useSearch(currentView?.id)
-
   const [searchParams] = useSearchParams()
   const sharePeerId = searchParams.get("peerId")
   const { addRow } = useTableOperation(tableName, space)
@@ -187,7 +181,8 @@ export const ViewToolbar = (props: {
   const { t } = useTranslation()
 
   // Use context instead
-  const { searchQuery, setSearchQuery, showSearch, setShowSearch } = useContext(TableContext)
+  const { searchQuery, setSearchQuery, showSearch, setShowSearch } =
+    useTableSearchStore()
   const searchInputRef = useRef<HTMLInputElement>(null)
 
   // 当显示搜索框时自动聚焦
@@ -337,7 +332,7 @@ export const ViewToolbar = (props: {
           ref={ref2}
         >
           <div className="flex gap-1">
-            <TableSearch />
+            <ViewSearch view={currentView} />
             <ViewFilter view={currentView} />
             <ViewSort view={currentView} />
             <ViewField view={currentView} />
