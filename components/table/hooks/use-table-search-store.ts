@@ -29,6 +29,7 @@ interface TableSearchState {
     setTotalMatches: (total: number) => void
     setSearchTime: (time: number) => void
     setCurrentPage: (page: number) => void
+    clearSearchResults: () => void
     clearSearch: () => void
 }
 
@@ -58,6 +59,13 @@ export const useTableSearchStore = create<TableSearchState>((set) => ({
     setTotalMatches: (total) => set({ totalMatches: total }),
     setSearchTime: (time) => set({ searchTime: time }),
     setCurrentPage: (page) => set({ currentPage: page }),
+    clearSearchResults: () => set({
+        searchResults: [],
+        currentSearchIndex: 0,
+        totalMatches: 0,
+        searchTime: 0,
+        currentPage: 1
+    }),
     clearSearch: () => set({
         searchQuery: '',
         showSearch: false,

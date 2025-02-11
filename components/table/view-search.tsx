@@ -43,11 +43,8 @@ export const ViewSearch = (props: { view: IView }) => {
     setShowSearch,
     searchResults,
     currentSearchIndex,
-    setCurrentSearchIndex,
     searchTime,
     totalMatches,
-    currentPage,
-    totalPages,
     isLoadingMore,
   } = useTableSearchStore()
 
@@ -92,18 +89,26 @@ export const ViewSearch = (props: { view: IView }) => {
     setShowSearch(true)
   })
 
+  const navigateSearch = useCallback(
+    (direction: "next" | "prev") => {
+      if (searchResults?.length) {
+        const navigateEvent = new CustomEvent("navigateSearch", {
+          detail: {
+            direction,
+            currentIndex: currentSearchIndex,
+            total: searchResults.length,
+          },
+        })
+        window.dispatchEvent(navigateEvent)
+      }
+    },
+    [currentSearchIndex, searchResults?.length]
+  )
+
   useKeyPress(["enter"], (event) => {
     if (showSearch && searchResults?.length) {
       const direction: "next" | "prev" = event.shiftKey ? "prev" : "next"
-      const navigateEvent = new CustomEvent("navigateSearch", {
-        detail: {
-          direction,
-          currentIndex: currentSearchIndex,
-          total: searchResults.length,
-          event,
-        },
-      })
-      window.dispatchEvent(navigateEvent)
+      navigateSearch(direction)
     }
   })
 
@@ -129,13 +134,13 @@ export const ViewSearch = (props: { view: IView }) => {
             placeholder={t("common.search")}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="h-8 w-64 border-0 pl-8"
+            className="h-8 w-64 border-0 pl-8 pr-24"
           />
           <SearchIcon className="absolute left-2 h-4 w-4 text-muted-foreground" />
 
           {searchResults && searchResults.length > 0 && (
-            <div className="absolute right-2 flex items-center gap-1">
-              <div className="flex items-center text-xs text-muted-foreground">
+            <div className="absolute right-2 flex items-center gap-1 bg-background">
+              <div className="flex items-center text-xs text-muted-foreground whitespace-nowrap">
                 <span>{currentSearchIndex + 1}</span>
                 <span>/</span>
                 <span>{totalMatches}</span>
@@ -146,11 +151,7 @@ export const ViewSearch = (props: { view: IView }) => {
                   variant="ghost"
                   size="xs"
                   className="h-6 w-6 p-0 hover:bg-accent"
-                  onClick={() =>
-                    setCurrentSearchIndex((prev) =>
-                      prev > 0 ? prev - 1 : searchResults.length - 1
-                    )
-                  }
+                  onClick={() => navigateSearch("prev")}
                 >
                   <ChevronUpIcon className="h-3 w-3" />
                 </Button>
@@ -158,11 +159,7 @@ export const ViewSearch = (props: { view: IView }) => {
                   variant="ghost"
                   size="xs"
                   className="h-6 w-6 p-0 hover:bg-accent"
-                  onClick={() =>
-                    setCurrentSearchIndex((prev) =>
-                      prev < searchResults.length - 1 ? prev + 1 : 0
-                    )
-                  }
+                  onClick={() => navigateSearch("next")}
                 >
                   <ChevronDownIcon className="h-3 w-3" />
                 </Button>

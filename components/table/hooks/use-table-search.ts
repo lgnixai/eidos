@@ -1,15 +1,16 @@
 import { useReadonlySqlite } from "@/hooks/use-readonly-sqlite"
 import { useThrottleFn } from "ahooks"
 import { useContext, useEffect, useRef, useState } from "react"
-import { TableContext } from "../hooks"
+import { TableContext, useView } from "../hooks"
 import { useTableSearchStore } from "./use-table-search-store"
 
 const MIN_SEARCH_LENGTH = 2
-const PAGE_SIZE = 200
+const PAGE_SIZE = 100
 
 export const useTableSearch = (viewId: string) => {
     const sqlite = useReadonlySqlite()
-    const { tableName } = useContext(TableContext)
+    const { tableName, } = useContext(TableContext)
+    const currentView = useView(viewId)
     const {
         searchQuery,
         setSearchQuery,
@@ -24,12 +25,19 @@ export const useTableSearch = (viewId: string) => {
         setSearchTime,
         currentPage,
         setCurrentPage,
+        clearSearchResults,
         clearSearch
     } = useTableSearchStore()
 
     const resetSearch = () => {
         clearSearch()
     }
+
+    useEffect(() => {
+        if (currentView?.query) {
+            resetSearch()
+        }
+    }, [currentView?.query])
 
     useEffect(() => {
         if (!showSearch) {
@@ -101,6 +109,8 @@ export const useTableSearch = (viewId: string) => {
     )
 
     useEffect(() => {
+        // Reset only search results before performing new search
+        clearSearchResults()
         // only search 1st page when query is changed
         throttledSearch(searchQuery)
     }, [searchQuery])

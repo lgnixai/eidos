@@ -175,17 +175,15 @@ export default function GridView(props: IGridProps) {
       setSearchHighlightRegion([])
     }
   }, [showSearch])
-
   // Update the onSearchResultsChanged function
   const onSearchResultsChanged = useCallback((result: Item) => {
     if (result) {
       setTimeout(() => {
         if (glideDataGridRef.current) {
-          glideDataGridRef.current.scrollTo(result[0] - 1, result[1])
-
+          const col = result[0] - 1
+          const row = result[1]
+          glideDataGridRef.current.scrollTo(col, row)
           setTimeout(() => {
-            glideDataGridRef.current?.scrollTo(result[0] - 1, result[1])
-
             setSearchHighlightRegion([
               {
                 color: "rgba(255, 255, 0, 0.3)",
