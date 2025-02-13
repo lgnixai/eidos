@@ -161,6 +161,7 @@ export default function GridView(props: IGridProps) {
   // Get search state from context
   const { searchQuery, showSearch } = useTableSearchStore()
   const { formattedSearchResults, currentCell } = useGridSearch(
+    showColumns,
     getColumnIndexByColumnName
   )
 

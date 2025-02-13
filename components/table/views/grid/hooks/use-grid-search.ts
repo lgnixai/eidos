@@ -1,4 +1,5 @@
 import { useTableSearchStore } from "@/components/table/hooks/use-table-search-store";
+import { IField } from "@/lib/store/interface";
 import { Item } from "@glideapps/glide-data-grid";
 import { useEffect, useMemo, useState } from "react";
 
@@ -9,6 +10,7 @@ interface FormattedResult {
 }
 
 export const useGridSearch = (
+    showColumns: IField[],
     getColumnIndexByColumnName: (fieldName: string) => number,
 ) => {
     const { searchResults, currentSearchIndex, setCurrentSearchIndex } = useTableSearchStore();
@@ -18,18 +20,21 @@ export const useGridSearch = (
         if (!searchResults) return [];
         return searchResults.map((result: any) => {
             if (result && result.matches && result.row) {
-                return result.matches
+                return result.matches.filter((match: any) => {
+                    return showColumns.some(col => col.table_column_name === match.column);
+                })
                     .map((match: any) => ({
                         columnIndex: getColumnIndexByColumnName(match.column),
                         rowIndex: result.rowIndex,
                         rowId: result.row._id,
                     } as FormattedResult))
+
                     .sort((a: FormattedResult, b: FormattedResult) => a.columnIndex - b.columnIndex);
             } else {
                 return [];
             }
         });
-    }, [searchResults, getColumnIndexByColumnName]);
+    }, [searchResults, getColumnIndexByColumnName, showColumns]);
 
     const formattedSearchResults = useMemo(() => {
         return groupedResults.flat().map(result => ([result.columnIndex, result.rowIndex] as Item));
