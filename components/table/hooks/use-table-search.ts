@@ -1,14 +1,17 @@
+import { toast } from '@/components/ui/use-toast'
 import { useReadonlySqlite } from "@/hooks/use-readonly-sqlite"
 import { useThrottleFn } from "ahooks"
 import { useContext, useEffect, useRef, useState } from "react"
 import { TableContext, useView } from "../hooks"
 import { useTableSearchStore } from "./use-table-search-store"
+import { useSqlite } from '@/hooks/use-sqlite'
 
 const MIN_SEARCH_LENGTH = 2
 const PAGE_SIZE = 100
 
 export const useTableSearch = (viewId: string) => {
-    const sqlite = useReadonlySqlite()
+    const readonlySqlite = useReadonlySqlite()
+    const { sqlite } = useSqlite()
     const { tableName, } = useContext(TableContext)
     const currentView = useView(viewId)
     const {
@@ -49,15 +52,22 @@ export const useTableSearch = (viewId: string) => {
         resetSearch()
     }, [tableName])
 
+
     const searchAbortController = useRef<AbortController | null>(null)
     const [isSearching, setIsSearching] = useState(false)
 
 
     const performSearch = async (query: string, page: number = 1) => {
-        if (!sqlite || !tableName || !query || !viewId || query.length < MIN_SEARCH_LENGTH) {
+        if (!sqlite || !readonlySqlite || !tableName || !query || !viewId || query.length < MIN_SEARCH_LENGTH) {
             setSearchResults([], 0)
             setSearchTime(0)
             return
+        }
+        const hasFTS = await sqlite.hasTableFTS(tableName)
+        if (!hasFTS) {
+            sqlite.blockUIMsg('It seems that the FTS table is not created, please wait...')
+            await sqlite.createTableFTS(tableName)
+            sqlite.blockUIMsg(null)
         }
 
         const page2Index = (page - 1) * PAGE_SIZE
@@ -78,7 +88,7 @@ export const useTableSearch = (viewId: string) => {
 
         try {
             setIsSearching(true)
-            const result = await sqlite.searchTableFTS(tableName, query, viewId, page, PAGE_SIZE)
+            const result = await readonlySqlite.searchTableFTS(tableName, query, viewId, page, PAGE_SIZE)
 
             console.log('search', query, page, result)
 

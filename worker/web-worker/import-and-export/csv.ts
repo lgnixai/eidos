@@ -71,6 +71,7 @@ export class CsvImportAndExport extends BaseImportAndExport {
   }
 
   async import(file: { name: string; content: string }, dataSpace: DataSpace): Promise<string> {
+    dataSpace.blockUIMsg("Starting import...")
     const nodeName = file.name?.replace(/\.[^/.]+$/, "")
     const tableId = uuidv4().split("-").join("")
     let tm = new TableManager(tableId, dataSpace)
@@ -165,11 +166,13 @@ CREATE TABLE ${rawTableName} (
       const fieldMap = await tm.rows.getFieldMap()
 
       const cacheSize = 2 * 1024 * 1024
-      dataSpace.db.exec("PRAGMA journal_mode = OFF;")
-      dataSpace.db.exec("PRAGMA synchronous = 0;")
-      dataSpace.db.exec(`PRAGMA cache_size = ${cacheSize};`)
-      dataSpace.db.exec("PRAGMA locking_mode = EXCLUSIVE;")
-      dataSpace.db.exec("PRAGMA temp_store = MEMORY;")
+      // dataSpace.db.exec("PRAGMA journal_mode = OFF;")
+      await dataSpace.db.exec("PRAGMA synchronous = 0;")
+      await dataSpace.db.exec(`PRAGMA cache_size = ${cacheSize};`)
+      await dataSpace.db.exec("PRAGMA locking_mode = EXCLUSIVE;")
+      await dataSpace.db.exec("PRAGMA temp_store = MEMORY;")
+
+      console.log('locksInfo:', await dataSpace.sql`PRAGMA locking_mode`)
 
       const dataLines = lines.slice(1)
       const totalRows = dataLines.length
@@ -233,6 +236,11 @@ CREATE TABLE ${rawTableName} (
       console.error("CSV import error:", error)
       dataSpace.blockUIMsg(null)
       throw error
+    } finally {
+      // restore default config
+      await dataSpace.db.exec("PRAGMA journal_mode = WAL;")
+      await dataSpace.db.exec("PRAGMA synchronous = 1;")
+      await dataSpace.db.exec("PRAGMA locking_mode = NORMAL;")
     }
   }
 

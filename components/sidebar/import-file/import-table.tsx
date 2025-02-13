@@ -1,3 +1,4 @@
+import { isDesktopMode } from "@/lib/env"
 import { useCurrentPathInfo } from "@/hooks/use-current-pathinfo"
 import { useGoto } from "@/hooks/use-goto"
 import { useSqlite } from "@/hooks/use-sqlite"
@@ -14,6 +15,9 @@ export const ImportTable = ({
   const goto = useGoto()
 
   const handleCreateTable = async (file: File) => {
+    if (isDesktopMode) {
+      await window.eidos.invoke("prepare-for-import")
+    }
     const tableId = await sqlite?.importCsv({
       name: file.name,
       content: await file.text(),

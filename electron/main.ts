@@ -271,5 +271,13 @@ app.on('activate', () => {
 ipcMain.handle('quit-app', () => {
     forceQuit = true;
     destroyTray();
+    getDataSpace()?.closeDb();
     app.quit();
+});
+
+ipcMain.handle('prepare-for-import', async () => {
+    console.log('prepare for import')
+    // Importing CSV will enable exclusive locks, causing read-only sqlite worker queries to timeout. We directly shut down all workers before importing CSV
+    WorkerManager.getInstance().shutdown();
+    return { success: true };
 });

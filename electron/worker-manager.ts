@@ -1,5 +1,6 @@
-import { Worker } from 'worker_threads';
 import path from 'path';
+import * as worker_threads from 'worker_threads';
+import { Worker } from 'worker_threads';
 import { getSpaceDbPath } from './file-system/space';
 
 export interface WorkerConfig {
@@ -31,7 +32,10 @@ export class WorkerManager {
                 workerData: {
                     spaceDbPath,
                     ...config
-                }
+                },
+                // stdout: true,
+                // stderr: true,
+                // stdin: true
             });
             this.workers.set(spaceId, worker);
 
@@ -42,20 +46,20 @@ export class WorkerManager {
         }
 
         return new Promise((resolve, reject) => {
-            const messageHandler = (result: any) => {
-                worker!.removeListener('error', errorHandler);
-                resolve(result);
-            };
+            const { port1, port2 } = new worker_threads.MessageChannel();
 
-            const errorHandler = (error: Error) => {
-                worker!.removeListener('message', messageHandler);
+            port1.on('message', (result) => {
+                port1.close();
+                resolve(result);
+            });
+
+            port1.on('error', (error) => {
+                port1.close();
                 this.removeWorker(spaceId);
                 reject(error);
-            };
+            });
 
-            worker!.once('message', messageHandler);
-            worker!.once('error', errorHandler);
-            worker!.postMessage(payload);
+            worker!.postMessage({ ...payload, port: port2 }, [port2]);
         });
     }
 

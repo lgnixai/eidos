@@ -1,8 +1,9 @@
-import { useState } from "react"
-import { SettingsIcon } from "lucide-react"
-import { Link, useNavigate } from "react-router-dom"
+import { useEffect, useState } from "react"
+import { FolderOpen, SettingsIcon } from "lucide-react"
 import { useTranslation } from "react-i18next"
+import { Link, useNavigate } from "react-router-dom"
 
+import { isDesktopMode } from "@/lib/env"
 import { useCurrentPathInfo } from "@/hooks/use-current-pathinfo"
 import { useSpace } from "@/hooks/use-space"
 import {
@@ -36,6 +37,17 @@ export function Settings() {
   const navigate = useNavigate()
   const [confirmName, setConfirmName] = useState("")
   const [isRebuilding, setIsRebuilding] = useState(false)
+  const [dataFolder, setDataFolder] = useState<string>("")
+
+  useEffect(() => {
+    const loadDataFolder = async () => {
+      if (isDesktopMode) {
+        const folder = await window.eidos.config.get("dataFolder")
+        setDataFolder(folder)
+      }
+    }
+    loadDataFolder()
+  }, [])
 
   const handleExport = () => {
     exportSpace(space)
@@ -64,28 +76,46 @@ export function Settings() {
     }
   }
 
+  const handleOpenFolder = () => {
+    if (dataFolder) {
+      const spacePath = `${dataFolder}/spaces/${space}`
+      window.eidos.openFolder(spacePath)
+    }
+  }
+
   return (
     <Card className="border-0 p-0">
       <CardHeader>
-        <CardTitle>{t('space.settings.title')}</CardTitle>
+        <CardTitle>{t("space.settings.title")}</CardTitle>
         <CardDescription>
-          {t('space.settings.description')}{" "}
+          {t("space.settings.description")}{" "}
           <Link to="/settings" className="text-blue-500 underline">
-            {t('space.settings.globalSettings')}
+            {t("space.settings.globalSettings")}
           </Link>
         </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="grid gap-6">
           <div className="grid gap-3">
-            <Label htmlFor="name">{t('common.name')}</Label>
-            <Input id="name" type="text" disabled defaultValue={space} />
+            <Label htmlFor="name">{t("common.name")}</Label>
+            <div className="flex gap-1">
+              <Input id="name" type="text" disabled defaultValue={space} />
+              {isDesktopMode && (
+                <Button
+                  variant="outline"
+                  onClick={handleOpenFolder}
+                  title={t("common.openFolder")}
+                >
+                  <FolderOpen className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
           </div>
           <hr />
           <div className="grid gap-3">
-            <Label htmlFor="description">{t('common.export')}</Label>
+            <Label htmlFor="description">{t("common.export")}</Label>
             <p className="text-sm text-muted-foreground">
-              {t('space.settings.exportDescription')}
+              {t("space.settings.exportDescription")}
             </p>
             <Button
               size="sm"
@@ -93,13 +123,15 @@ export function Settings() {
               variant="outline"
               onClick={handleExport}
             >
-              {t('space.settings.exportSpace')}
+              {t("space.settings.exportSpace")}
             </Button>
           </div>
           <div className="grid gap-3">
-            <Label htmlFor="rebuild-index">{t('space.settings.rebuildIndex')}</Label>
+            <Label htmlFor="rebuild-index">
+              {t("space.settings.rebuildIndex")}
+            </Label>
             <p className="text-sm text-muted-foreground">
-              {t('space.settings.rebuildIndexDescription')}
+              {t("space.settings.rebuildIndexDescription")}
             </p>
             <Button
               size="sm"
@@ -108,41 +140,49 @@ export function Settings() {
               onClick={handleRebuildIndex}
               disabled={isRebuilding}
             >
-              {isRebuilding ? t('space.settings.rebuilding') : t('space.settings.rebuildIndex')}
+              {isRebuilding
+                ? t("space.settings.rebuilding")
+                : t("space.settings.rebuildIndex")}
             </Button>
           </div>
           <div className="grid gap-3">
-            <Label htmlFor="description">{t('space.settings.dangerZone')}</Label>
+            <Label htmlFor="description">
+              {t("space.settings.dangerZone")}
+            </Label>
             <p className="text-sm text-muted-foreground">
-              {t('space.settings.deleteSpaceDescription')}
+              {t("space.settings.deleteSpaceDescription")}
             </p>
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button size="sm" className=" max-w-max" variant="destructive">
-                  {t('space.settings.deleteSpace')}
+                  {t("space.settings.deleteSpace")}
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>{t('common.areYouAbsolutelySure')}</AlertDialogTitle>
+                  <AlertDialogTitle>
+                    {t("common.areYouAbsolutelySure")}
+                  </AlertDialogTitle>
                   <AlertDialogDescription>
-                    {t('space.settings.deleteSpaceWarning', { spaceName: space })}
+                    {t("space.settings.deleteSpaceWarning", {
+                      spaceName: space,
+                    })}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <Input
                   id="confirmName"
                   type="text"
-                  placeholder={t('space.settings.typeSpaceName')}
+                  placeholder={t("space.settings.typeSpaceName")}
                   value={confirmName}
                   onChange={(e) => setConfirmName(e.target.value)}
                 />
                 <AlertDialogFooter>
-                  <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
+                  <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
                   <AlertDialogAction
                     onClick={handleDelete}
                     disabled={confirmName !== space}
                   >
-                    {t('common.continue')}
+                    {t("common.continue")}
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
@@ -166,7 +206,8 @@ export const SpaceSettings = () => {
           asChild
         >
           <span>
-            <SettingsIcon className="pr-2" /> <span>{t('common.settings')}</span>
+            <SettingsIcon className="pr-2" />{" "}
+            <span>{t("common.settings")}</span>
           </span>
         </Button>
       </DialogTrigger>

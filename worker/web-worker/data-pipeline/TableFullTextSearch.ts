@@ -19,45 +19,58 @@ export class TableFullTextSearch {
 
         const createFtsSql = `
         CREATE VIRTUAL TABLE IF NOT EXISTS ${ftsTableName}
-        USING fts5(${columns}, content='${tableName}', tokenize = 'simple');
+        USING fts5(${columns}, content='${tableName}', content_rowid='rowid', tokenize = 'simple');
         `;
 
-        await this.dataspace.db.exec(createFtsSql);
+        try {
+            // 开始一个事务
+            await this.dataspace.db.exec('BEGIN IMMEDIATE TRANSACTION');
 
-        const syncDataSql = `INSERT INTO ${ftsTableName}(${columns}) SELECT ${columns} FROM ${tableName};`;
-        await this.dataspace.db.exec(syncDataSql);
+            await this.dataspace.db.exec(createFtsSql);
+            await this.dataspace.db.exec(`INSERT INTO ${ftsTableName}(${ftsTableName}) VALUES('rebuild');`);
 
-        if (!temporary) {
-            const triggerSqls = [
-                `CREATE TRIGGER IF NOT EXISTS fts_${tableName}_ai AFTER INSERT ON ${tableName} BEGIN
-                    INSERT INTO ${ftsTableName}(${columns}) VALUES (${columns.split(', ').map((c: any) => `new.${c}`).join(', ')});
-                END;`,
-                `CREATE TRIGGER IF NOT EXISTS fts_${tableName}_ad AFTER DELETE ON ${tableName} BEGIN
-                    INSERT INTO ${ftsTableName}(${ftsTableName}, ${columns}) VALUES('delete', ${columns.split(', ').map((c: any) => `old.${c}`).join(', ')});
-                END;`,
-                `CREATE TRIGGER IF NOT EXISTS fts_${tableName}_au AFTER UPDATE ON ${tableName} BEGIN
-                    INSERT INTO ${ftsTableName}(${ftsTableName}, ${columns}) VALUES('delete', ${columns.split(', ').map((c: any) => `old.${c}`).join(', ')});
-                    INSERT INTO ${ftsTableName}(${columns}) VALUES (${columns.split(', ').map((c: any) => `new.${c}`).join(', ')});
-                END;`
-            ];
+            if (!temporary) {
+                const triggerSqls = [
+                    `CREATE TRIGGER IF NOT EXISTS fts_${tableName}_ai AFTER INSERT ON ${tableName} BEGIN
+                        INSERT INTO ${ftsTableName}(rowid, ${columns}) 
+                        VALUES (new.rowid, ${columns.split(',').map(c => `new.${c.trim()}`).join(',')});
+                    END;`,
 
-            for (const sql of triggerSqls) {
-                await this.dataspace.db.exec(sql);
-                console.log(`Trigger created: ${sql}`);
+                    `CREATE TRIGGER IF NOT EXISTS fts_${tableName}_ad AFTER DELETE ON ${tableName} BEGIN
+                        INSERT INTO ${ftsTableName}(${ftsTableName}, rowid) VALUES('delete', old.rowid);
+                    END;`,
+
+                    `CREATE TRIGGER IF NOT EXISTS fts_${tableName}_au AFTER UPDATE ON ${tableName} BEGIN
+                        INSERT INTO ${ftsTableName}(${ftsTableName}, rowid) VALUES('delete', old.rowid);
+                        INSERT INTO ${ftsTableName}(rowid, ${columns})
+                        VALUES (new.rowid, ${columns.split(',').map(c => `new.${c.trim()}`).join(',')});
+                    END;`
+                ];
+                for (const sql of triggerSqls) {
+                    await this.dataspace.db.exec(sql);
+                }
             }
-        }
 
-        console.log(`FTS table ${ftsTableName} created for ${tableName}`);
+            // 提交事务
+            await this.dataspace.db.exec('COMMIT');
+
+            console.log(`FTS table ${ftsTableName} created for ${tableName}`);
+        } catch (error) {
+            
+            // 回滚事务
+            await this.dataspace.db.exec('ROLLBACK');
+
+            // if (error.code === 'SQLITE_BUSY') {
+            //     // 可以选择重试几次
+            //     console.warn(`Database is busy, retrying in 1 second...`);
+            //     await new Promise(resolve => setTimeout(resolve, 1000));
+            //     return this.createDynamicFTS(tableName, temporary);
+            // }
+
+            throw error;
+        }
     }
 
-    /**
-     * 基于视图条件进行全文搜索
-     * @param tableName 表名
-     * @param query 搜索关键词
-     * @param viewId 视图ID
-     * @param page 页码，从1开始
-     * @param pageSize 每页记录数
-     */
     async search(tableName: string, query: string, viewId: string, page: number = 1, pageSize: number = 20) {
         if (!isDesktopMode) {
             throw new Error('Full text search is not supported in web mode');
@@ -68,31 +81,25 @@ export class TableFullTextSearch {
         const offset = (page - 1) * pageSize;
 
         try {
-            // 检查 FTS 表是否存在
-            const tableExists = await this.dataspace.db.selectObjects(
-                `SELECT name FROM sqlite_master WHERE type='table' AND name=?`,
-                [ftsTableName]
-            );
-
-            if (tableExists.length === 0) {
-                await this.createDynamicFTS(tableName);
+            const hasFTS = await this.hasFTS(tableName);
+            if (!hasFTS) {
+                console.log('createDynamicFTS', tableName)
+                throw new Error(`FTS table ${ftsTableName} does not exist.`)
             }
 
-            // 获取视图
             const view = await this.dataspace.view.get(viewId);
             if (!view?.query) {
                 throw new Error(`View ${viewId} not found or has no query`);
             }
 
-            // 首先获取总匹配数
             const countSql = `
                 SELECT COUNT(*) as total 
-                FROM ${ftsTableName} 
+                FROM ${tableName} t
+                JOIN ${ftsTableName} fts ON t.rowid = fts.rowid 
                 WHERE ${ftsTableName} MATCH ?
             `;
             const [{ total }] = await this.dataspace.db.selectObjects(countSql, [query]);
 
-            // 如果没有匹配结果，直接返回
             if (total === 0) {
                 return {
                     results: [],
@@ -103,18 +110,15 @@ export class TableFullTextSearch {
                 }
             }
 
-            // 获取表的列信息
             const tableInfo = await this.dataspace.db.selectObjects(`PRAGMA table_info(${tableName})`);
             const columns = tableInfo
                 .map((col: any) => col.name)
                 .filter((name: any) => name.toLowerCase() !== 'rowid');
 
-            // 为每一列生成单独的 snippet
-            const snippetSelects = columns
-                .map((col, idx) => `snippet(${ftsTableName}, ${idx}, '<<', '>>', '...', 64) as snippet_${col}`)
+            const highlightSelects = columns
+                .map(col => `highlight(${ftsTableName}, ${columns.indexOf(col)}, '<mark>', '</mark>') as highlight_${col}`)
                 .join(', ');
 
-            // 分页获取匹配结果
             const matchSql = `
                 WITH original_view AS (
                     SELECT 
@@ -127,9 +131,9 @@ export class TableFullTextSearch {
                 ),
                 matched_rows AS (
                     SELECT 
-                        rowid,
-                        ${snippetSelects}
-                    FROM ${ftsTableName}
+                        fts.rowid,
+                        ${highlightSelects}
+                    FROM ${ftsTableName} fts
                     WHERE ${ftsTableName} MATCH ?
                 )
                 SELECT v.*, m.*
@@ -144,22 +148,19 @@ export class TableFullTextSearch {
                 [query, pageSize, offset]
             );
 
-            // 处理结果，解析匹配信息
             const processedResults = results.map((row: any) => {
                 const matches = [];
-                // 检查每一列的 snippet
                 for (const col of columns) {
-                    const snippetKey = `snippet_${col}`;
-                    const snippet = row[snippetKey];
+                    const highlightKey = `highlight_${col}`;
+                    const highlight = row[highlightKey];
 
-                    if (snippet && snippet.includes('<<')) {
+                    if (highlight && highlight.includes('<mark>')) {
                         matches.push({
                             column: col,
-                            snippet: snippet
+                            snippet: highlight
                         });
                     }
-                    // 删除 snippet 字段和排序字段，保持数据清洁
-                    delete row[snippetKey];
+                    delete row[highlightKey];
                 }
 
                 const rowIndex = row.row_index;
@@ -189,6 +190,89 @@ export class TableFullTextSearch {
         }
     }
 
-    // async searchFTS(tableName: string, query: string) { ... }
-    // async dropFTS(tableName: string) { ... }
+    async clearFTS(tableName: string) {
+        if (!isDesktopMode) {
+            throw new Error('Full text search is not supported in web mode');
+        }
+
+        const ftsTableName = `fts_${tableName}`;
+
+        try {
+            const tableExists = await this.dataspace.db.selectObjects(
+                `SELECT name FROM sqlite_master WHERE type='table' AND name=?`,
+                [ftsTableName]
+            );
+
+            if (tableExists.length === 0) {
+                console.warn(`FTS table ${ftsTableName} does not exist. no need to clear`);
+                return
+            }
+
+            await this.dataspace.db.exec(`INSERT INTO ${ftsTableName}(${ftsTableName}) VALUES('delete-all')`);
+
+            await this.dataspace.db.exec('VACUUM');
+
+            console.log(`FTS table ${ftsTableName} has been cleared`);
+        } catch (error) {
+            console.error(`Error clearing FTS table ${ftsTableName}:`, error);
+            throw error;
+        }
+    }
+
+    async dropFTS(tableName: string) {
+        if (!isDesktopMode) {
+            throw new Error('Full text search is not supported in web mode');
+        }
+
+        const ftsTableName = `fts_${tableName}`;
+
+        try {
+            const tableExists = await this.dataspace.db.selectObjects(
+                `SELECT name FROM sqlite_master WHERE type='table' AND name=?`,
+                [ftsTableName]
+            );
+
+            if (tableExists.length === 0) {
+                console.warn(`FTS table ${ftsTableName} does not exist. no need to drop`);
+                return;
+            }
+
+            const triggerNames = [
+                `fts_${tableName}_ai`,
+                `fts_${tableName}_ad`,
+                `fts_${tableName}_au`
+            ];
+
+            for (const triggerName of triggerNames) {
+                await this.dataspace.db.exec(`DROP TRIGGER IF EXISTS ${triggerName}`);
+            }
+
+            await this.dataspace.db.exec(`DROP TABLE IF EXISTS ${ftsTableName}`);
+
+            console.log(`FTS table ${ftsTableName} and related triggers have been dropped`);
+        } catch (error) {
+            console.error(`Error dropping FTS table ${ftsTableName}:`, error);
+            throw error;
+        }
+    }
+
+    async hasFTS(tableName: string): Promise<boolean> {
+        if (!isDesktopMode) {
+            throw new Error('Full text search is not supported in web mode');
+        }
+
+        const ftsTableName = `fts_${tableName}`;
+
+        try {
+            const tableExists = await this.dataspace.db.selectObjects(
+                `SELECT name FROM sqlite_master WHERE type='table' AND name=?`,
+                [ftsTableName]
+            );
+
+            return tableExists.length > 0;
+        } catch (error) {
+            console.error(`Error checking FTS table ${ftsTableName}:`, error);
+            throw error;
+        }
+    }
 }

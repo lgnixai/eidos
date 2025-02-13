@@ -11,6 +11,7 @@ import { ComputeService } from "./service/compute"
 import { FieldType } from "@/lib/fields/const"
 import { ColumnTableName } from "@/lib/sqlite/const"
 import { ColumnTable } from "../meta-table/column"
+import { isDesktopMode } from "@/lib/env"
 
 interface ITable {
   id: string
@@ -73,6 +74,12 @@ export class TableManager {
       await this.dataSpace.view.deleteByTableId(id, db)
       // delete tree node
       await this.dataSpace.tree.del(id, db)
+      if (isDesktopMode) {
+        // clear fts table
+        await this.dataSpace.tableFullTextSearch.clearFTS(rawTableName)
+        // delete fts table
+        await this.dataSpace.tableFullTextSearch.dropFTS(rawTableName)
+      }
     })
     return true
   }

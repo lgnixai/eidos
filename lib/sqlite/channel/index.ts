@@ -117,6 +117,7 @@ export const getSqliteProxy = (
           "file",
           "chat",
           "message",
+          "queue",
         ].includes(method as string)
       ) {
         return new Proxy<EidosTable>({} as any, {

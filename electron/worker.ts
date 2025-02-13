@@ -35,6 +35,9 @@ class DataSpaceManager {
 
         const serverDb = new NodeServerDatabase({
             path: spaceDbPath,
+            options: {
+                readonly: true,
+            }
         }, {
             simple: simplePathConfig
         });
@@ -69,12 +72,11 @@ let dataSpace = getDataSpace()
 
 
 if (parentPort) {
-    parentPort.on('message', async (payload) => {
+    parentPort.on('message', async ({ port, ...payload }) => {
         console.log('worker received message', payload);
         const { space, dbName } = payload.data
         const spaceId = space || dbName
         if (!dataSpace) {
-            const { space, dbName } = payload.data
             dataSpace = await getOrSetDataSpace(dbName || space)
             console.log('switch to data space', dataSpace.dbName)
         } else if (spaceId !== dataSpace.dbName) {
@@ -82,7 +84,20 @@ if (parentPort) {
             dataSpace = await getOrSetDataSpace(dbName || space)
         }
         const res = await handleFunctionCall(payload.data, dataSpace)
-        parentPort?.postMessage(res);
-        // return res
+        port.postMessage(res);
     });
 }
+
+process.on('exit', (code) => {
+    console.log(`Worker is exiting with code ${code}`);
+    if (dataSpace) {
+        dataSpace.closeDb();
+        dataSpace = null;
+    }
+});
+
+process.on('beforeExit', () => {
+    console.log('worker beforeExit')
+    dataSpace?.closeDb()
+    dataSpace = null;
+})

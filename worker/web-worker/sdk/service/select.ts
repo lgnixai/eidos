@@ -12,7 +12,7 @@ export class SelectFieldService {
     this.dataSpace = this.table.dataSpace
   }
 
-  static MAX_SELECT_OPTIONS = 300
+  static MAX_SELECT_OPTIONS = 512
 
   updateFieldPropertyIfNeed = async (
     field: IField<SelectProperty>,

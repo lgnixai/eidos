@@ -49,6 +49,7 @@ import { ChatTable } from "./meta-table/chat"
 import { MessageTable } from "./meta-table/message"
 import { Email } from "postal-mime"
 import { TableFullTextSearch } from "./data-pipeline/TableFullTextSearch"
+// import { QueueTable } from "./meta-table/queue"
 
 export type EidosTable =
   | DocTable
@@ -79,6 +80,7 @@ export class DataSpace {
   column: ColumnTable
   reference: ReferenceTable
   embedding: EmbeddingTable
+  // queue: QueueTable
   chat: ChatTable
   message: MessageTable
   file: FileTable
@@ -100,7 +102,7 @@ export class DataSpace {
 
   // for auto migration
   hasMigrated = false
-  private tableFullTextSearch: TableFullTextSearch
+  tableFullTextSearch: TableFullTextSearch
 
   constructor(config: {
     db: EidosDatabase
@@ -118,12 +120,17 @@ export class DataSpace {
     efsManager?: EidosFileSystemManager
     dataEventChannel?: {
       postMessage: (data: any) => void
-    }
+    },
+    cacheSize?: number
   }) {
-    const { db, activeUndoManager, dbName, sqlite3, draftDb, context, createUDF, postMessage, efsManager, dataEventChannel, hasLoadExtension, callRenderer } = config
+    const { db, activeUndoManager, dbName, sqlite3, draftDb, context, createUDF, postMessage, efsManager, dataEventChannel, hasLoadExtension, callRenderer, cacheSize } = config
     this.db = db
 
     this.hasLoadExtension = Boolean(hasLoadExtension)
+    if (cacheSize) {
+      this.setCacheSize(cacheSize)
+    }
+
     if (dataEventChannel) {
       this.dataEventChannel = dataEventChannel
     } else {
@@ -168,6 +175,7 @@ export class DataSpace {
     this.reference = new ReferenceTable(this)
     this.chat = new ChatTable(this)
     this.message = new MessageTable(this)
+    // this.queue = new QueueTable(this)
     //
     this.allTables = [
       this.doc,
@@ -181,6 +189,7 @@ export class DataSpace {
       this.reference,
       this.chat,
       this.message,
+      // this.queue
     ]
     this.initMetaTable()
 
@@ -210,6 +219,10 @@ export class DataSpace {
   // close db
   public closeDb() {
     this.db.close()
+  }
+
+  private setCacheSize(size: number) {
+    this.exec(`PRAGMA cache_size = ${size}`)
   }
 
   private initUDF() {
@@ -1237,4 +1250,7 @@ export class DataSpace {
     return await this.tableFullTextSearch.search(tableName, query, viewId, page, pageSize)
   }
 
+  public async hasTableFTS(tableName: string) {
+    return await this.tableFullTextSearch.hasFTS(tableName)
+  }
 }

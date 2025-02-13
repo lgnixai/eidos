@@ -2,6 +2,7 @@ import { BaseServerDatabase } from '@/lib/sqlite/interface';
 import Database from 'better-sqlite3';
 import console from 'electron-log';
 import fs from 'fs';
+import { generatePragmaList } from './config';
 
 
 export interface NodeDomainDbInfo {
@@ -25,7 +26,12 @@ export class NodeServerDatabase extends BaseServerDatabase {
         const { libPath, dictPath } = options.simple;
         console.log('Lib path:', libPath);
         console.log('Dict path:', dictPath);
-
+        const pragmaList = generatePragmaList();
+        pragmaList.forEach(pragma => {
+            this.db.pragma(pragma);
+        });
+        const locksInfo = this.getLocksInfo();
+        console.log('locksInfo:', locksInfo);
         try {
             this.db.loadExtension(libPath);
             const row = this.db.prepare('select simple_query(\'pinyin\') as query').get() as any;
@@ -46,6 +52,16 @@ export class NodeServerDatabase extends BaseServerDatabase {
     }
     close() {
         this.db.close();
+    }
+
+    getLocksInfo() {
+        return {
+            lockingMode: this.db.pragma('locking_mode'),
+            walSize: this.db.pragma('wal_size'),
+            pageSize: this.db.pragma('page_size'),
+            cacheSize: this.db.pragma('cache_size'),
+            busyTimeout: this.db.pragma('busy_timeout'),
+        };
     }
 
     async selectObjects(sql: string, bind?: any[]): Promise<{ [columnName: string]: any }[]> {

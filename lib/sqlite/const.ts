@@ -37,3 +37,6 @@ export const ChatTableName = `eidos__chats`
 
 // store message
 export const MessageTableName = `eidos__messages`
+
+// store queue
+export const QueueTableName = `eidos__queue`
