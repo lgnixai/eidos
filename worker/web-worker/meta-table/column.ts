@@ -132,6 +132,13 @@ export class ColumnTable extends BaseTableImpl implements BaseTable<IField> {
     return data
   }
 
+
+  async addField(data: IField) {
+    const res = await this.add(data)
+    await this.dataSpace.onTableChange(this.dataSpace.dbName, data.table_name)
+    return res
+  }
+
   async getColumn<T = any>(
     tableName: string,
     tableColumnName: string
@@ -159,6 +166,7 @@ export class ColumnTable extends BaseTableImpl implements BaseTable<IField> {
           tableName: string,
           tableColumnName: string
         ) => {
+          await this.dataSpace.tableFullTextSearch.updateTrigger(tableName, [tableColumnName])
           await this.dataSpace.onTableChange(this.dataSpace.dbName, tableName, [
             tableColumnName,
           ])

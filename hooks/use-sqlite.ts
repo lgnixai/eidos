@@ -15,6 +15,7 @@ import { createTemplateTableSql } from "@/components/table/views/grid/helper"
 
 import { IDataStore, IField } from "../lib/store/interface"
 import { useAllNodes } from "./use-nodes"
+import { isDesktopMode } from "@/lib/env"
 
 interface SqliteState {
   isInitialized: boolean
@@ -600,6 +601,14 @@ export const useSqlite = (dbName?: string) => {
     })
   }
 
+  const rebuildFTS = async (tableId: string) => {
+    if (!sqlWorker) return
+    await sqlWorker.rebuildFTS(tableId)
+    if (isDesktopMode) {
+      await window.eidos.invoke('close-query-worker')
+    }
+  }
+
   return {
     sqlite: isShareMode ? sqlWorker : isInitialized ? sqlWorker : null,
     createTable,
@@ -626,5 +635,6 @@ export const useSqlite = (dbName?: string) => {
     permanentlyDeleteNode,
     getOrCreateTableSubDoc,
     updateNodeName,
+    rebuildFTS
   }
 }

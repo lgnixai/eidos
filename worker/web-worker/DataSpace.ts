@@ -528,9 +528,8 @@ export class DataSpace {
     return await this.view.recompute(tableId, rowIds)
   }
 
-  // columns
-  public async addColumn(data: IField) {
-    return await this.column.add(data)
+  public async addField(data: IField) {
+    return await this.column.addField(data)
   }
   public async deleteField(tableName: string, tableColumnName: string) {
     this.blockUIMsg("Deleting column, please wait.")
@@ -621,6 +620,14 @@ export class DataSpace {
   // docs
   public async rebuildIndex(refillNullMarkdown: boolean = false) {
     await this.doc.rebuildIndex({ refillNullMarkdown })
+  }
+
+  // table full text search
+  public async rebuildFTS(tableId: string) {
+    this.blockUIMsg("Rebuilding FTS table, please wait.")
+    const tableName = getRawTableNameById(tableId)
+    await this.tableFullTextSearch.rebuildFTS(tableName)
+    this.blockUIMsg(null)
   }
 
   @timeit(100)

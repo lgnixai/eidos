@@ -143,8 +143,7 @@ export const useTableOperation = (tableName: string, databaseName: string) => {
         table_column_name: tableColumnName,
         property: property || FieldClass.getDefaultFieldProperty(),
       }
-      await sqlite.addColumn(field)
-      await sqlite.onTableChange(databaseName, tableName)
+      await sqlite.addField(field)
       await updateUiColumns()
     }
   }

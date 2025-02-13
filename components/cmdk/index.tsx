@@ -2,13 +2,21 @@
 
 import { useEffect } from "react"
 import { useDebounceFn, useKeyPress } from "ahooks"
-import { Bot, Clock3Icon, FilePlus2Icon, Palette, Settings } from "lucide-react"
+import {
+  Bot,
+  Clock3Icon,
+  FilePlus2Icon,
+  Palette,
+  RefreshCcwIcon,
+  Settings,
+} from "lucide-react"
 import { useTheme } from "next-themes"
 import { useTranslation } from "react-i18next"
 
-import { isInkServiceMode } from "@/lib/env"
+import { isDesktopMode, isInkServiceMode } from "@/lib/env"
 import { useAppRuntimeStore } from "@/lib/store/runtime-store"
 import { getToday } from "@/lib/utils"
+import { useCurrentNode } from "@/hooks/use-current-node"
 import { useCurrentPathInfo } from "@/hooks/use-current-pathinfo"
 import { useQueryNode } from "@/hooks/use-query-node"
 import { useSqlite } from "@/hooks/use-sqlite"
@@ -39,6 +47,9 @@ export function CommandDialogDemo() {
   const { theme, setTheme } = useTheme()
   const { space } = useCurrentPathInfo()
   const { setSearchNodes } = useCMDKStore()
+
+  const currentNode = useCurrentNode()
+
   useKeyPress(["ctrl.k", "meta.k"], (e) => {
     e.preventDefault()
     setCmdkOpen(!isCmdkOpen)
@@ -64,7 +75,7 @@ export function CommandDialogDemo() {
     useSpaceAppStore()
   const { lastOpenedDatabase } = useLastOpened()
 
-  const { createDoc } = useSqlite()
+  const { createDoc, rebuildFTS } = useSqlite()
   const goto = useCMDKGoto()
   const goEveryday = goto(`/${lastOpenedDatabase}/everyday`)
 
@@ -74,6 +85,13 @@ export function CommandDialogDemo() {
 
   const switchTheme = () => {
     setTheme(theme === "light" ? "dark" : "light")
+  }
+
+  const rebuildTableFTS = async (id: string) => {
+    if (currentNode?.type === "table") {
+      await rebuildFTS(id)
+      setCmdkOpen(false)
+    }
   }
 
   const toggleAI = () => {
@@ -123,6 +141,19 @@ export function CommandDialogDemo() {
           </CommandGroup>
         )}
 
+        {isDesktopMode && currentNode?.type === "table" && (
+          <CommandGroup heading={t("cmdk.table")}>
+            <CommandItem
+              onSelect={() => {
+                rebuildTableFTS(currentNode.id)
+              }}
+              value="rebuild fts"
+            >
+              <RefreshCcwIcon className="mr-2 h-4 w-4" />
+              <span>{t("cmdk.rebuildFTS")}</span>
+            </CommandItem>
+          </CommandGroup>
+        )}
         <CommandSeparator />
         {!isInkServiceMode && (
           <>

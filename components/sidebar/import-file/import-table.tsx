@@ -16,7 +16,7 @@ export const ImportTable = ({
 
   const handleCreateTable = async (file: File) => {
     if (isDesktopMode) {
-      await window.eidos.invoke("prepare-for-import")
+      await window.eidos.invoke("close-query-worker")
     }
     const tableId = await sqlite?.importCsv({
       name: file.name,

@@ -4,8 +4,9 @@ import { DataSpace } from "../DataSpace";
 export class TableFullTextSearch {
     constructor(private dataspace: DataSpace) { }
 
-    async createDynamicFTS(tableName: string, temporary: boolean = false) {
+    async createDynamicFTS(tableName: string, temporary: boolean = false, inTransaction: boolean = false) {
         const tableInfo = await this.dataspace.db.selectObjects(`PRAGMA table_info(${tableName})`);
+
         if (!isDesktopMode) {
             throw new Error('Full text search is not supported in web mode');
         }
@@ -16,58 +17,53 @@ export class TableFullTextSearch {
             .join(', ');
 
         const ftsTableName = `fts_${tableName}`;
-
         const createFtsSql = `
         CREATE VIRTUAL TABLE IF NOT EXISTS ${ftsTableName}
         USING fts5(${columns}, content='${tableName}', content_rowid='rowid', tokenize = 'simple');
         `;
 
         try {
-            // 开始一个事务
-            await this.dataspace.db.exec('BEGIN IMMEDIATE TRANSACTION');
+            if (!inTransaction) {
+                await this.dataspace.db.exec('BEGIN IMMEDIATE TRANSACTION');
+            }
 
             await this.dataspace.db.exec(createFtsSql);
             await this.dataspace.db.exec(`INSERT INTO ${ftsTableName}(${ftsTableName}) VALUES('rebuild');`);
 
             if (!temporary) {
-                const triggerSqls = [
-                    `CREATE TRIGGER IF NOT EXISTS fts_${tableName}_ai AFTER INSERT ON ${tableName} BEGIN
-                        INSERT INTO ${ftsTableName}(rowid, ${columns}) 
-                        VALUES (new.rowid, ${columns.split(',').map(c => `new.${c.trim()}`).join(',')});
-                    END;`,
-
-                    `CREATE TRIGGER IF NOT EXISTS fts_${tableName}_ad AFTER DELETE ON ${tableName} BEGIN
-                        INSERT INTO ${ftsTableName}(${ftsTableName}, rowid) VALUES('delete', old.rowid);
-                    END;`,
-
-                    `CREATE TRIGGER IF NOT EXISTS fts_${tableName}_au AFTER UPDATE ON ${tableName} BEGIN
-                        INSERT INTO ${ftsTableName}(${ftsTableName}, rowid) VALUES('delete', old.rowid);
-                        INSERT INTO ${ftsTableName}(rowid, ${columns})
-                        VALUES (new.rowid, ${columns.split(',').map(c => `new.${c.trim()}`).join(',')});
-                    END;`
-                ];
-                for (const sql of triggerSqls) {
-                    await this.dataspace.db.exec(sql);
-                }
+                await this.createTriggers(tableName, columns);
             }
 
-            // 提交事务
-            await this.dataspace.db.exec('COMMIT');
-
-            console.log(`FTS table ${ftsTableName} created for ${tableName}`);
+            if (!inTransaction) {
+                await this.dataspace.db.exec('COMMIT');
+            }
         } catch (error) {
-            
-            // 回滚事务
-            await this.dataspace.db.exec('ROLLBACK');
-
-            // if (error.code === 'SQLITE_BUSY') {
-            //     // 可以选择重试几次
-            //     console.warn(`Database is busy, retrying in 1 second...`);
-            //     await new Promise(resolve => setTimeout(resolve, 1000));
-            //     return this.createDynamicFTS(tableName, temporary);
-            // }
-
+            if (!inTransaction) {
+                await this.dataspace.db.exec('ROLLBACK');
+            }
             throw error;
+        }
+    }
+
+    private async createTriggers(tableName: string, columns: string) {
+        const ftsTableName = `fts_${tableName}`;
+        const triggerSqls = [
+            `CREATE TRIGGER IF NOT EXISTS fts_${tableName}_ai AFTER INSERT ON ${tableName} BEGIN
+                INSERT INTO ${ftsTableName}(rowid, ${columns}) 
+                VALUES (new.rowid, ${columns.split(',').map(c => `new.${c.trim()}`).join(',')});
+            END;`,
+            `CREATE TRIGGER IF NOT EXISTS fts_${tableName}_ad AFTER DELETE ON ${tableName} BEGIN
+                INSERT INTO ${ftsTableName}(${ftsTableName}, rowid) VALUES('delete', old.rowid);
+            END;`,
+            `CREATE TRIGGER IF NOT EXISTS fts_${tableName}_au AFTER UPDATE ON ${tableName} BEGIN
+                INSERT INTO ${ftsTableName}(${ftsTableName}, rowid) VALUES('delete', old.rowid);
+                INSERT INTO ${ftsTableName}(rowid, ${columns})
+                VALUES (new.rowid, ${columns.split(',').map(c => `new.${c.trim()}`).join(',')});
+            END;`
+        ];
+
+        for (const sql of triggerSqls) {
+            await this.dataspace.db.exec(sql);
         }
     }
 
@@ -83,7 +79,6 @@ export class TableFullTextSearch {
         try {
             const hasFTS = await this.hasFTS(tableName);
             if (!hasFTS) {
-                console.log('createDynamicFTS', tableName)
                 throw new Error(`FTS table ${ftsTableName} does not exist.`)
             }
 
@@ -185,9 +180,26 @@ export class TableFullTextSearch {
                 totalPages: Math.ceil(total / pageSize)
             };
         } catch (error) {
-            console.error('Search error:', error);
             throw error;
         }
+    }
+
+    async updateTrigger(tableName: string, toDeleteColumns: string[]) {
+        const triggerNames = [
+            `fts_${tableName}_ai`,
+            `fts_${tableName}_ad`,
+            `fts_${tableName}_au`
+        ];
+        for (const triggerName of triggerNames) {
+            await this.dataspace.db.exec(`DROP TRIGGER IF EXISTS ${triggerName}`);
+        }
+        const tableInfo = await this.dataspace.db.selectObjects(`PRAGMA table_info(${tableName})`);
+        const columns = tableInfo
+            .map((col: any) => col.name)
+            .filter((name: any) => name.toLowerCase() !== 'rowid' && !toDeleteColumns.includes(name))
+            .join(', ');
+
+        await this.createTriggers(tableName, columns);
     }
 
     async clearFTS(tableName: string) {
@@ -197,26 +209,18 @@ export class TableFullTextSearch {
 
         const ftsTableName = `fts_${tableName}`;
 
-        try {
-            const tableExists = await this.dataspace.db.selectObjects(
-                `SELECT name FROM sqlite_master WHERE type='table' AND name=?`,
-                [ftsTableName]
-            );
+        const tableExists = await this.dataspace.db.selectObjects(
+            `SELECT name FROM sqlite_master WHERE type='table' AND name=?`,
+            [ftsTableName]
+        );
 
-            if (tableExists.length === 0) {
-                console.warn(`FTS table ${ftsTableName} does not exist. no need to clear`);
-                return
-            }
-
-            await this.dataspace.db.exec(`INSERT INTO ${ftsTableName}(${ftsTableName}) VALUES('delete-all')`);
-
-            await this.dataspace.db.exec('VACUUM');
-
-            console.log(`FTS table ${ftsTableName} has been cleared`);
-        } catch (error) {
-            console.error(`Error clearing FTS table ${ftsTableName}:`, error);
-            throw error;
+        if (tableExists.length === 0) {
+            console.warn(`FTS table ${ftsTableName} does not exist. no need to clear`);
+            return
         }
+
+        await this.dataspace.db.exec(`INSERT INTO ${ftsTableName}(${ftsTableName}) VALUES('delete-all')`);
+        console.log(`FTS table ${ftsTableName} has been cleared`);
     }
 
     async dropFTS(tableName: string) {
@@ -226,34 +230,28 @@ export class TableFullTextSearch {
 
         const ftsTableName = `fts_${tableName}`;
 
-        try {
-            const tableExists = await this.dataspace.db.selectObjects(
-                `SELECT name FROM sqlite_master WHERE type='table' AND name=?`,
-                [ftsTableName]
-            );
+        const tableExists = await this.dataspace.db.selectObjects(
+            `SELECT name FROM sqlite_master WHERE type='table' AND name=?`,
+            [ftsTableName]
+        );
 
-            if (tableExists.length === 0) {
-                console.warn(`FTS table ${ftsTableName} does not exist. no need to drop`);
-                return;
-            }
-
-            const triggerNames = [
-                `fts_${tableName}_ai`,
-                `fts_${tableName}_ad`,
-                `fts_${tableName}_au`
-            ];
-
-            for (const triggerName of triggerNames) {
-                await this.dataspace.db.exec(`DROP TRIGGER IF EXISTS ${triggerName}`);
-            }
-
-            await this.dataspace.db.exec(`DROP TABLE IF EXISTS ${ftsTableName}`);
-
-            console.log(`FTS table ${ftsTableName} and related triggers have been dropped`);
-        } catch (error) {
-            console.error(`Error dropping FTS table ${ftsTableName}:`, error);
-            throw error;
+        if (tableExists.length === 0) {
+            console.warn(`FTS table ${ftsTableName} does not exist. no need to drop`);
+            return;
         }
+
+        const triggerNames = [
+            `fts_${tableName}_ai`,
+            `fts_${tableName}_ad`,
+            `fts_${tableName}_au`
+        ];
+
+        for (const triggerName of triggerNames) {
+            await this.dataspace.db.exec(`DROP TRIGGER IF EXISTS ${triggerName}`);
+        }
+
+        await this.dataspace.db.exec(`DROP TABLE IF EXISTS ${ftsTableName}`);
+        console.log(`FTS table ${ftsTableName} and related triggers have been dropped`);
     }
 
     async hasFTS(tableName: string): Promise<boolean> {
@@ -272,6 +270,48 @@ export class TableFullTextSearch {
             return tableExists.length > 0;
         } catch (error) {
             console.error(`Error checking FTS table ${ftsTableName}:`, error);
+            throw error;
+        }
+    }
+
+    async rebuildFTS(tableName: string) {
+        if (!isDesktopMode) {
+            throw new Error('Full text search is not supported in web mode');
+        }
+
+        try {
+            await this.dataspace.db.exec('BEGIN IMMEDIATE TRANSACTION');
+
+            const ftsTableName = `fts_${tableName}`;
+            const tableExists = await this.dataspace.db.selectObjects(
+                `SELECT name FROM sqlite_master WHERE type='table' AND name=?`,
+                [ftsTableName]
+            );
+
+            if (tableExists.length > 0) {
+                await this.dataspace.db.exec(`INSERT INTO ${ftsTableName}(${ftsTableName}) VALUES('delete-all')`);
+
+                const triggerNames = [
+                    `fts_${tableName}_ai`,
+                    `fts_${tableName}_ad`,
+                    `fts_${tableName}_au`
+                ];
+
+                for (const triggerName of triggerNames) {
+                    await this.dataspace.db.exec(`DROP TRIGGER IF EXISTS ${triggerName}`);
+                }
+
+                await this.dataspace.db.exec(`DROP TABLE IF EXISTS ${ftsTableName}`);
+            }
+
+            await this.createDynamicFTS(tableName, false, true);
+            await this.dataspace.db.exec('COMMIT');
+        } catch (error) {
+            await this.dataspace.db.exec('ROLLBACK');
+            this.dataspace.notify({
+                title: 'Error',
+                description: 'Failed to rebuild FTS table'
+            });
             throw error;
         }
     }
