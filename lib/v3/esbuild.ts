@@ -1,5 +1,5 @@
 import { initialize } from "esbuild-wasm";
-
+import wasmURL from 'esbuild-wasm/esbuild.wasm?url'
 
 export let compilerInitialized = false
 export const initializeCompiler = async () => {
@@ -7,7 +7,7 @@ export const initializeCompiler = async () => {
     try {
         await initialize({
             worker: true,
-            wasmURL: "https://esm.sh/esbuild-wasm@0.24.0/esbuild.wasm",
+            wasmURL
         });
     } catch (error) {
         console.error(error)
