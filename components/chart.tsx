@@ -69,7 +69,7 @@ interface AxisConfig {
 
 // Series configuration
 interface SeriesConfig {
-  type: "line" | "bar" | "area" | "scatter" | "radar" | string
+  type: "line" | "bar" | "area" | "scatter" | "radar" | "pie" | string
   dataKey: string
   name?: string
   style?: StyleConfig
@@ -124,6 +124,7 @@ const SeriesComponents: Record<
   area: Area as unknown as React.ComponentType<any>,
   scatter: Scatter,
   radar: Radar as unknown as React.ComponentType<any>,
+  pie: Pie as unknown as React.ComponentType<any>,
 }
 
 export function Chart(config: ChartConfig) {
@@ -175,19 +176,27 @@ export function Chart(config: ChartConfig) {
 
     // Special chart type handling
     if (type === "pie") {
+      const nameKey = xAxis?.dataKey
+      const valueKey = series[0].dataKey
+
+      if (!nameKey) {
+        console.warn(
+          "Warning: Pie chart requires xAxis.dataKey for proper labeling. Current behavior uses array indices as names."
+        )
+      }
       return (
         <PieChart width={numericWidth} height={numericHeight}>
           <Pie
             data={data.map((item, index) => ({
               ...item,
-              fill:
-                series[0].style?.fill ||
-                (themeConfig && item[xAxis?.dataKey || ""]
-                  ? themeConfig[item[xAxis?.dataKey || ""]].color
-                  : undefined),
+              ...(nameKey && themeConfig
+                ? {
+                    fill: themeConfig?.[item[nameKey]]?.color,
+                  }
+                : {}),
             }))}
-            dataKey={series[0].dataKey}
-            nameKey={xAxis?.dataKey}
+            dataKey={valueKey}
+            nameKey={nameKey}
             {...style}
           />
           {showTooltip && <Tooltip />}
