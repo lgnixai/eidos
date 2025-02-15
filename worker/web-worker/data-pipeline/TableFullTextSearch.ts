@@ -1,5 +1,6 @@
 import { isDesktopMode } from "@/lib/env";
 import { DataSpace } from "../DataSpace";
+import { rewriteQueryWithRowId } from "@/lib/sqlite/sql-view-query";
 
 export class TableFullTextSearch {
     constructor(private dataspace: DataSpace) { }
@@ -87,15 +88,10 @@ export class TableFullTextSearch {
                 throw new Error(`View ${viewId} not found or has no query`);
             }
 
+            const viewQuery = rewriteQueryWithRowId(view.query)
             const countSql = `
-                WITH original_view AS (
-                    SELECT 
-                        ${tableName}.rowid
-                    FROM (${view.query}) v
-                    JOIN ${tableName} ON ${tableName}._id = v._id
-                )
                 SELECT COUNT(*) AS total
-                FROM original_view ov
+                FROM (${viewQuery}) ov
                 JOIN ${ftsTableName} fts ON ov.rowid = fts.rowid
                 WHERE ${ftsTableName} MATCH ?
             `;
