@@ -123,6 +123,11 @@ export async function generateImportMap(
       let compiledCode: CompileResult;
       if (hasCache(cacheKey)) {
         compiledCode = getCache(cacheKey);
+        if (compiledCode.error) {
+          setCache(cacheKey, null);
+          compiledCode = await compileCode(code);
+          setCache(cacheKey, compiledCode);
+        }
       } else {
         compiledCode = await compileCode(code);
         setCache(cacheKey, compiledCode);
