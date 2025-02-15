@@ -7,6 +7,7 @@ import customBlock from './custom';
 import bookmarkBlock from './bookmark';
 import imageBlock from './image';
 import youtubeBlock from './youtube';
+import chartBlock from './chart';
 
 
 // inline block
@@ -32,6 +33,7 @@ export const BuiltInBlocks: DocBlock[] = [
     tocBlock,
     youtubeBlock,
     syncBlock,
+    chartBlock,
     // databaseBlock will cause import error
     // databaseBlock, 
 ];
