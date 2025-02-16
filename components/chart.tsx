@@ -254,12 +254,20 @@ export function Chart(config: ChartConfig) {
 
     // Standard Cartesian coordinate system chart
     return (
-      <ChartComponent data={data}>
+      <ChartComponent
+        data={data}
+        margin={{ top: 20, right: 20, bottom: 40, left: 40 }}
+      >
         {showGrid && <CartesianGrid strokeDasharray="3 3" />}
         {xAxis && (
           <XAxis
             dataKey={xAxis.dataKey}
-            label={xAxis.label}
+            label={{
+              value: xAxis.label,
+              position: "insideBottom",
+              dy: 15,
+              style: { textAnchor: "middle" },
+            }}
             type={xAxis.type}
             domain={xAxis.domain}
             tickFormatter={xAxis.tickFormatter}
@@ -268,7 +276,12 @@ export function Chart(config: ChartConfig) {
         )}
         {yAxis && (
           <YAxis
-            label={yAxis.label}
+            label={{
+              value: yAxis.label,
+              angle: -90,
+              position: "insideLeft",
+              style: { textAnchor: "middle" },
+            }}
             type={yAxis.type}
             domain={yAxis.domain}
             tickFormatter={yAxis.tickFormatter}
