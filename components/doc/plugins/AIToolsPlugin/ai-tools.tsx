@@ -201,18 +201,22 @@ export function AITools({
                   currentNode.insertAfter(node)
                   currentNode = node
                 }
+                currentNode.selectEnd()
               }
             } catch (error) {
               const root = $getRoot()
               root.append(...generatedNodes)
+              generatedNodes[generatedNodes.length - 1].selectEnd()
             }
           } else {
             const root = $getRoot()
             root.append(...generatedNodes)
+            generatedNodes[generatedNodes.length - 1].selectEnd()
           }
         } else {
           const root = $getRoot()
           root.append(...generatedNodes)
+          generatedNodes[generatedNodes.length - 1].selectEnd()
         }
       }
 
@@ -238,19 +242,27 @@ export function AITools({
               const isGeneratedNodesOnlyATextNode =
                 generatedNodes.length === 1 && $isTextNode(generatedNodes[0])
               if (isOneLine && isGeneratedNodesOnlyATextNode) {
-                // replace part or all of the text
                 selection.insertText(text)
+                const textNode = generatedNodes[0]
+                if ($isTextNode(textNode)) {
+                  selection.setTextNodeRange(textNode, 0, textNode, text.length)
+                }
               } else {
                 if (isGenerateChartRef.current || isMakeItRealRef.current) {
                   appendNodesAfterSelection(generatedNodes)
                   selection.removeText()
                 } else {
                   selection.insertText(text)
+                  const lastNode = selection.getNodes()[selection.getNodes().length - 1]
+                  if ($isTextNode(lastNode)) {
+                    selection.setTextNodeRange(lastNode, 0, lastNode, text.length)
+                  }
                 }
               }
             } else {
               const root = $getRoot()
               root.append(...generatedNodes)
+              generatedNodes[generatedNodes.length - 1].selectEnd()
             }
           })
           resetState()
@@ -354,14 +366,13 @@ be between <content-begin> and <content-end>. you just output the transformed co
   }
 
   const { editorWidth } = useUpdateLocation(editor, selectionRef, boxRef)
-  console.log("isChartLoading", isChartLoading)
 
   return (
     <div className=" fixed z-50" ref={boxRef}>
       {!isFinished && (
         <>
           <div
-            className=" rounded-md border bg-white p-2 shadow-md dark:border-gray-700 dark:bg-slate-800"
+            className="rounded-md border bg-white p-2 shadow-md dark:border-gray-700 dark:bg-slate-800"
             style={{
               width: editorWidth,
             }}
