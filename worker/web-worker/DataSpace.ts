@@ -103,7 +103,7 @@ export class DataSpace {
   // for auto migration
   hasMigrated = false
   tableFullTextSearch: TableFullTextSearch
-
+  isServer = false
   constructor(config: {
     db: EidosDatabase
     activeUndoManager: boolean
@@ -122,10 +122,12 @@ export class DataSpace {
       postMessage: (data: any) => void
     },
     cacheSize?: number
+    isServer?: boolean
   }) {
-    const { db, activeUndoManager, dbName, sqlite3, draftDb, context, createUDF, postMessage, efsManager, dataEventChannel, hasLoadExtension, callRenderer, cacheSize } = config
+    const { db, activeUndoManager, dbName, sqlite3, draftDb, context, createUDF, postMessage, efsManager, dataEventChannel, hasLoadExtension, callRenderer, cacheSize, isServer } = config
     this.db = db
 
+    this.isServer = isServer || db instanceof BaseServerDatabase
     this.hasLoadExtension = Boolean(hasLoadExtension)
     if (cacheSize) {
       this.setCacheSize(cacheSize)
@@ -228,7 +230,7 @@ export class DataSpace {
   private initUDF() {
     const allUfs = withSqlite3AllUDF(this.dataEventChannel)
     // system functions
-    if (this.db instanceof BaseServerDatabase) {
+    if (this.isServer) {
       allUfs.ALL_UDF_NO_CTX.forEach((udf) => {
         this.db.createFunction(udf as any)
       })
@@ -863,7 +865,7 @@ export class DataSpace {
     //   sql,
     //   bind
     // )
-    if (db instanceof BaseServerDatabase) {
+    if (this.isServer) {
       try {
         return db.exec({
           sql,
@@ -1100,7 +1102,7 @@ export class DataSpace {
   ) {
     // console.debug(sql, bind)
     const res: any[] = []
-    if (this.db instanceof BaseServerDatabase) {
+    if (this.isServer) {
       return this.db.exec({
         sql,
         bind,

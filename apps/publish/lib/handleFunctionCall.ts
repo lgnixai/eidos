@@ -1,5 +1,4 @@
 import { MsgType } from "@/lib/const"
-import { DataSpace } from "@/worker/web-worker/DataSpace"
 
 export interface IHttpSendData {
     type: MsgType.CallFunction

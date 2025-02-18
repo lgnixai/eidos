@@ -1,0 +1,6 @@
+{
+    "name": "@eidos/core",
+    "version": "0.1.1",
+    "license": "MIT",
+    "exports": "./index.js"
+}

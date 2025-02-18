@@ -187,6 +187,10 @@ export const getSqliteProxy = (
             },
             id: thisCallId,
           })
+          // FIXME:should not be depends on specific sqlite implementation
+          if (sqlite instanceof HttpSqlite) {
+            return sqlite.onCallBack(thisCallId)
+          }
           if (res) {
             return res
           }

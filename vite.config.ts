@@ -195,7 +195,8 @@ const config = defineConfig({
   server: {
     ...devServerConfig,
     proxy: {
-      "/server/api": "http://localhost:8788",
+      // server api for ink mode
+      "/server/api": "http://localhost:8000",
       "/api/chat": "http://localhost:13127",
       '^/[^/]+/files/': {
         target: 'http://localhost:13127',
