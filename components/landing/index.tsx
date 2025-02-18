@@ -3,7 +3,7 @@ import { Link } from "react-router-dom"
 
 import { DOMAINS } from "@/lib/const"
 import { cn } from "@/lib/utils"
-import { TextAnimate } from "@/components/ui/text-animate"
+import { TextAnimate } from "@/components/eui/text-animate"
 import { EidosIcon } from "@/components/icons/eidos"
 
 import { Activation } from "./activation"

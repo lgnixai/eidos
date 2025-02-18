@@ -5,7 +5,7 @@ import { Link, useRouteError } from "react-router-dom"
 import { DOMAINS } from "@/lib/const"
 import { EIDOS_VERSION, isDesktopMode } from "@/lib/env"
 import { Button } from "@/components/ui/button"
-import { Toaster } from "@/components/ui/toaster"
+import { Toaster } from "@/components/toaster"
 import { useToast } from "@/components/ui/use-toast"
 
 export function ErrorBoundary() {

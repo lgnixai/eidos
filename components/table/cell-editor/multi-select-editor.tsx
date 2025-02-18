@@ -8,7 +8,7 @@ import {
   Command,
   CommandEmpty,
   CommandGroup,
-  CommandInput2,
+  CommandInput,
   CommandItem,
 } from "@/components/ui/command"
 import {
@@ -156,7 +156,7 @@ export const MultiSelectEditor = ({
                   />
                 </div>
               ))}
-              <CommandInput2
+              <CommandInput
                 onKeyDown={handleBackspace}
                 value={inputValue}
                 onValueChange={setInputValue}

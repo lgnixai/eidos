@@ -16,7 +16,7 @@ import {
   Command,
   CommandEmpty,
   CommandGroup,
-  CommandInput2,
+  CommandInput,
   CommandItem,
 } from "@/components/ui/command"
 import {
@@ -191,7 +191,7 @@ export const Editor: ReturnType<ProvideEditorCallback<MultiSelectCell>> = (
                   />
                 </div>
               ))}
-              <CommandInput2
+              <CommandInput
                 ref={inputRef}
                 onKeyDown={handleBackspace}
                 value={inputValue}

@@ -2,7 +2,7 @@ import "@/styles/globals.css"
 import { Outlet } from "react-router-dom"
 
 import { SidebarProvider } from "@/components/ui/sidebar"
-import { Toaster } from "@/components/ui/toaster"
+import { Toaster } from "@/components/toaster"
 import { BlockUIDialog } from "@/components/block-ui-dialog"
 import { ScriptList } from "@/components/cmdk/script"
 import { ShortCuts } from "@/components/shortcuts"

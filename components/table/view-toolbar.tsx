@@ -1,3 +1,4 @@
+import { useCallback, useContext, useEffect, useRef, useState } from "react"
 import {
   DndContext,
   DragEndEvent,
@@ -9,17 +10,10 @@ import {
 } from "@dnd-kit/core"
 import {
   SortableContext,
-  horizontalListSortingStrategy
+  horizontalListSortingStrategy,
 } from "@dnd-kit/sortable"
 import { useKeyPress } from "ahooks"
 import { ChevronDownIcon, PlusIcon } from "lucide-react"
-import {
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState
-} from "react"
 import { useTranslation } from "react-i18next"
 import {
   createSearchParams,
@@ -28,7 +22,11 @@ import {
   useSearchParams,
 } from "react-router-dom"
 
-import { NodeComponent } from "@/apps/web-app/[database]/[node]/page"
+import { IView } from "@/lib/store/IView"
+import { cn, getTableIdByRawTableName, shortenId, uuidv7 } from "@/lib/utils"
+import { useCurrentSubPage } from "@/hooks/use-current-sub-page"
+import { useSqlite } from "@/hooks/use-sqlite"
+import { useTableOperation } from "@/hooks/use-table"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -40,12 +38,8 @@ import {
   Dialog,
   DialogContent,
   DialogTrigger,
-} from "@/components/ui/sub-page-dialog"
-import { useCurrentSubPage } from "@/hooks/use-current-sub-page"
-import { useSqlite } from "@/hooks/use-sqlite"
-import { useTableOperation } from "@/hooks/use-table"
-import { IView } from "@/lib/store/IView"
-import { cn, getTableIdByRawTableName, shortenId, uuidv7 } from "@/lib/utils"
+} from "@/components/eui/sub-page-dialog"
+import { NodeComponent } from "@/apps/web-app/[database]/[node]/page"
 
 import { Button } from "../ui/button"
 import { TableContext, useCurrentView, useViewOperation } from "./hooks"

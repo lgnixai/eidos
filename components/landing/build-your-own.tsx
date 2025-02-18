@@ -2,8 +2,8 @@ import { useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { Link } from "react-router-dom"
 
+import { Typewriter } from "../eui/typewriter"
 import { AspectRatio } from "../ui/aspect-ratio"
-import { Typewriter } from "../ui/typewriter"
 
 const texts = [
   "📚 bookmark",

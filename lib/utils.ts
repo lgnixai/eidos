@@ -1,11 +1,17 @@
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
+
 import type {
   Message
 } from 'ai';
-import { clsx, type ClassValue } from "clsx";
-import { twMerge } from "tailwind-merge";
 import { uuidv7 } from "uuidv7";
 export { uuidv7 } from "uuidv7";
 // export { v4 as uuidv7 } from "uuid"
+
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
 
 export function sanitizeUIMessages(messages: Array<Message>): Array<Message> {
   const messagesBySanitizedToolInvocations = messages.map((message) => {
@@ -59,9 +65,7 @@ export function nonNullable<T>(value: T): value is NonNullable<T> {
   return value != null
 }
 
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
-}
+
 
 export const hashText = (text: string) => {
   let hash = 0
@@ -173,11 +177,11 @@ export const getDaysByYearWeek = (weekNodeId: string) => {
 
   // Get Jan 4 for the year (always in week 1 by ISO)
   const jan4th = new Date(year, 0, 4)
-  
+
   // Get Monday of week 1
   const firstWeekMonday = new Date(jan4th)
   firstWeekMonday.setDate(jan4th.getDate() - (jan4th.getDay() || 7) + 1)
-  
+
   // Calculate the start date of the requested week
   const startDate = new Date(firstWeekMonday)
   startDate.setDate(firstWeekMonday.getDate() + (week - 1) * 7)
