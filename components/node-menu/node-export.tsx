@@ -106,7 +106,7 @@ export const NodeExport = ({ node }: { node: ITreeNode }) => {
     return (
       <DropdownMenuSub>
         <DropdownMenuSubTrigger>
-          <DownloadIcon className="pr-2" />
+          <DownloadIcon className="mr-2 h-4 w-4" />
           {t("common.export")}
         </DropdownMenuSubTrigger>
         <DropdownMenuSubContent className="w-48">
@@ -126,7 +126,7 @@ export const NodeExport = ({ node }: { node: ITreeNode }) => {
   return (
     <DropdownMenuSub>
       <DropdownMenuSubTrigger>
-        <DownloadIcon className="pr-2" />
+        <DownloadIcon className="mr-2 h-4 w-4" />
         {t("common.export")}
       </DropdownMenuSubTrigger>
       <DropdownMenuSubContent className="w-48">

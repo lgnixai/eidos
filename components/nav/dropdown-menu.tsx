@@ -214,7 +214,7 @@ export function NavDropdownMenu() {
                     <DropdownMenuSeparator />
                     <DialogTrigger className="w-full">
                       <DropdownMenuItem>
-                        <MailIcon className="pr-2" />
+                        <MailIcon className="mr-2 h-4 w-4" />
                         {t("nav.dropdown.menu.mail")}
                       </DropdownMenuItem>
                     </DialogTrigger>
@@ -226,7 +226,7 @@ export function NavDropdownMenu() {
                   <>
                     <DropdownMenuSub>
                       <DropdownMenuSubTrigger>
-                        <PackageIcon className="pr-2" />
+                        <PackageIcon className="mr-2 h-4 w-4" />
                         {t("node.menu.moveInto")}
                       </DropdownMenuSubTrigger>
                       <DropdownMenuSubContent className="w-48">
