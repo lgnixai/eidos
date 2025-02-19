@@ -27,8 +27,8 @@ export function ImportFileDialog() {
           className="w-full cursor-pointer justify-start font-normal"
           asChild
         >
-          <span>
-            <Plus className="pr-2" />
+          <span className="[&>svg]:!size-5">
+            <Plus className="pr-1" />
             {t("common.import")}
           </span>
         </Button>

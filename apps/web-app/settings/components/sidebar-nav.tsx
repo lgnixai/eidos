@@ -47,7 +47,7 @@ export function SidebarNav({ className, items, ...props }: SidebarNavProps) {
             }
           )}
         >
-          {item.icon && <item.icon className="mr-2 h-4 w-4" />}
+          {item.icon && <item.icon className="mr-1 h-4 w-4" />}
           {item.title}
           {item.isAlpha && (
             <span className="ml-2 px-2 py-0.5 text-xs rounded-full bg-purple-100 text-purple-700">

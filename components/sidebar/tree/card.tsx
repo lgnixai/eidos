@@ -234,7 +234,7 @@ export const Card: FC<CardProps> = ({
                   icon={node.icon!}
                   nodeId={node.id}
                   size="1em"
-                  className="flex h-6 w-6 items-center justify-start"
+                  className="flex h-5 w-5 items-center justify-start"
                   customTrigger={
                     <ItemIcon
                       type={
@@ -244,7 +244,7 @@ export const Card: FC<CardProps> = ({
                             : "folder"
                           : node.type
                       }
-                      className="pr-2"
+                      className="pr-1"
                     />
                   }
                 />

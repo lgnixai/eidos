@@ -205,13 +205,13 @@ export const SpaceSettings = () => {
           className="w-full cursor-pointer justify-start font-normal"
           asChild
         >
-          <span>
-            <SettingsIcon className="pr-2" />{" "}
+          <span className="[&>svg]:!size-5">
+            <SettingsIcon className="pr-1" />{" "}
             <span>{t("common.settings")}</span>
           </span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="h-[90%] p-0 lg:min-w-[800px]" hideCloseButton>
+      <DialogContent className="h-[90%] p-0 lg:min-w-[800px]">
         <Settings />
       </DialogContent>
     </Dialog>

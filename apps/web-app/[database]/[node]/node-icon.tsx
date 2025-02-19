@@ -2,6 +2,7 @@ import { DOMAttributes, useEffect, useState } from "react"
 import data from "@emoji-mart/data"
 import Picker from "@emoji-mart/react"
 import { init } from "emoji-mart"
+import { useTranslation } from "react-i18next"
 
 import { isInkServiceMode } from "@/lib/env"
 import { useNode } from "@/hooks/use-nodes"
@@ -11,7 +12,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { useTranslation } from "react-i18next"
 
 init({ data })
 
@@ -79,7 +79,7 @@ export const NodeIconEditor = (props: {
   }
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger>
+      <PopoverTrigger className="[&>svg]:!size-5">
         {icon ? (
           <div className={props.className}>
             <em-emoji native={icon} size={props.size || "2em"}></em-emoji>

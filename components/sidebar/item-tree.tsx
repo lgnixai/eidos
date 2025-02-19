@@ -48,7 +48,7 @@ export const CurrentItemTree = ({
           className="flex justify-start w-full font-normal"
           asChild
         >
-          <span className="cursor-pointer select-none">
+          <span className="cursor-pointer select-none [&>svg]:!size-5">
             {Icon}
             {title}
           </span>

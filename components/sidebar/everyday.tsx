@@ -82,8 +82,11 @@ export const EverydaySidebarItem = ({ space }: { space: string }) => {
             className="w-full justify-start font-normal"
             asChild
           >
-            <Link to={`/${space}/everyday/${today}`}>
-              <CalendarDays className="pr-2" />
+            <Link
+              to={`/${space}/everyday/${today}`}
+              className="[&>svg]:!size-5"
+            >
+              <CalendarDays className="pr-1" />
               {t("common.today")}
             </Link>
           </Button>

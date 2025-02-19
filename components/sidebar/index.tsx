@@ -110,7 +110,7 @@ export const SideBar = ({ className }: any) => {
                           onClick={toggleFileManager}
                           className="w-full justify-start font-normal"
                         >
-                          <FileBoxIcon className="pr-2" />
+                          <FileBoxIcon className="pr-1" />
                           {t("common.files")}
                         </Button>
                       )}
@@ -120,15 +120,15 @@ export const SideBar = ({ className }: any) => {
                         className="w-full justify-start font-normal"
                         asChild
                       >
-                        <Link to={`/${space}/extensions`}>
-                          <BlocksIcon className="pr-2" />
+                        <Link to={`/${space}/extensions`} className="[&>svg]:!size-5">
+                          <BlocksIcon className="pr-1" />
                           {t("common.extensions")}
                         </Link>
                       </Button>
                       <CurrentItemTree
                         title={t("common.pinned")}
                         allNodes={allNodes.filter((node) => node.is_pinned)}
-                        Icon={<PinIcon className="pr-2" />}
+                        Icon={<PinIcon className="pr-1" />}
                         disableAdd
                       />
                     </>
@@ -140,7 +140,7 @@ export const SideBar = ({ className }: any) => {
                         allNodes={allNodes.filter(
                           (node) => !node.parent_id && !node.is_deleted
                         )}
-                        Icon={<ListTreeIcon className="pr-2" />}
+                        Icon={<ListTreeIcon className="pr-1" />}
                       />
                     </ContextMenuTrigger>
                     <ContextMenuContent>

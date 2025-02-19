@@ -89,8 +89,8 @@ export const Trash = () => {
             className="w-full cursor-pointer justify-start font-normal"
             asChild
           >
-            <span>
-              <Trash2Icon className="pr-2" />
+            <span className="[&>svg]:!size-5">
+              <Trash2Icon className="pr-1" />
               {t("common.trash")}
             </span>
           </Button>
