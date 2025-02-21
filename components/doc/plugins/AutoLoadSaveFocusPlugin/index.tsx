@@ -2,10 +2,48 @@ import { useCallback, useEffect, useRef } from "react"
 import { $convertToMarkdownString } from "@lexical/markdown"
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
 import { useDebounceFn, useKeyPress } from "ahooks"
+import { $getNodeByKey, $getSelection, $isRangeSelection } from "lexical"
 
 import { useSqlite } from "@/hooks/use-sqlite"
 
 import { allTransformers } from "../const"
+
+/**
+ * Check if the cursor is at the start of the document
+ * Handles the node structure: root => paragraph => text
+ */
+export function $isAtDocumentStart() {
+  const selection = $getSelection()
+  if (!selection || !$isRangeSelection(selection)) return false
+
+  const anchor = selection.anchor
+  const anchorNode = $getNodeByKey(anchor.key)
+  if (!anchorNode) return false
+
+  // First check if cursor is at start
+  if (anchor.offset !== 0) return false
+
+  // Get parent node (usually paragraph)
+  const parentNode = anchorNode.getParent()
+  if (!parentNode) return false
+
+  // Quick check - if parent is paragraph and has previous sibling, we're not at start
+  if (parentNode.getType() === "paragraph") {
+    if (parentNode.getPreviousSibling()) return false
+    return parentNode.getParent()?.getType() === "root"
+  }
+
+  // For other cases, find top-level node
+  let topLevelNode = anchorNode
+  while (topLevelNode.getParent()?.getParent()) {
+    topLevelNode = topLevelNode.getParent()!
+  }
+
+  return (
+    !topLevelNode.getPreviousSibling() && // No previous sibling for the top-level block
+    topLevelNode.getParent()?.getType() === "root" // Direct child of root
+  )
+}
 
 interface AutoSavePluginProps {
   docId: string
@@ -129,6 +167,50 @@ export function EidosAutoLoadSaveFocusPlugin(props: AutoSavePluginProps) {
     )
     return () => unRegister()
   }, [editor, debounceSave, docId])
+
+  // Add new function to handle focus
+  const handleFocusRootStart = useCallback(() => {
+    if (!editor.isEditable()) return
+
+    editor.focus(undefined, { defaultSelection: "rootStart" })
+  }, [editor])
+
+  // Add event listener for custom focus event
+  useEffect(() => {
+    const handleCustomFocus = () => {
+      handleFocusRootStart()
+    }
+
+    window.addEventListener("eidos-editor-focus", handleCustomFocus)
+
+    return () => {
+      window.addEventListener("eidos-editor-focus", handleCustomFocus)
+    }
+  }, [handleFocusRootStart])
+
+  // Update the keydown effect to use the new function
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (
+        event.key === "Backspace" ||
+        event.key === "ArrowUp" ||
+        event.key === "ArrowLeft"
+      ) {
+        editor.getEditorState().read(() => {
+          if ($isAtDocumentStart()) {
+            window.dispatchEvent(new CustomEvent("eidos-editor-activate-title"))
+            event.preventDefault()
+          }
+        })
+      }
+    }
+
+    editor.getRootElement()?.addEventListener("keydown", handleKeyDown)
+
+    return () => {
+      editor.getRootElement()?.removeEventListener("keydown", handleKeyDown)
+    }
+  }, [editor])
 
   return null
 }

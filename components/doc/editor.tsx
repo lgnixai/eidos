@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react"
+import React, { useEffect, useMemo, useRef, useState } from "react"
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin"
 import {
   InitialConfigType,
@@ -159,6 +159,7 @@ export function Editor(props: EditorProps) {
   const [title, setTitle] = useState(props.title ?? "")
   const isLoading = useLoadingExtBlocks()
 
+  const titleInputRef = useRef<HTMLInputElement>(null)
   const { run: handleSave } = useDebounceFn(
     (title: string) => {
       !props.disableUpdateTitle && props.onTitleChange?.(title)
@@ -175,6 +176,13 @@ export function Editor(props: EditorProps) {
   useEffect(() => {
     setTitle(props.title ?? "")
   }, [props.title])
+
+  useEffect(() => {
+    const handleActivateHeader = () => {
+      titleInputRef.current?.focus()
+    }
+    window.addEventListener("eidos-editor-activate-title", handleActivateHeader)
+  }, [])
 
   return (
     <div className="doc-editor-area flex w-full flex-col">
@@ -202,10 +210,21 @@ export function Editor(props: EditorProps) {
               value={title}
               title={title}
               style={props.titleStyle}
+              ref={titleInputRef}
               autoComplete="off"
               disabled={!canChangeTitle}
               onKeyDown={(e) => {
                 // press Enter to active editor
+                if (
+                  e.key === "Enter" ||
+                  e.key === "Tab" ||
+                  e.key === "ArrowDown" ||
+                  e.key === "ArrowRight"
+                ) {
+                  e.stopPropagation()
+                  e.preventDefault()
+                  window.dispatchEvent(new Event("eidos-editor-focus"))
+                }
               }}
               onChange={(e) => {
                 setTitle(e.target.value)
