@@ -144,12 +144,16 @@ self.onmessage = async (event: MessageEvent<PyodideMessage>) => {
 
                 let code = payload.code
                 let result: PyProxy
-
                 await pyodide.runPythonAsync(code)
                 try {
-                    const func = pyodide.globals.get(payload.command || 'main')
+                    const callName = payload.command || 'main'
+                    const func = pyodide.globals.get(callName)
                     if (typeof func === 'function') {
-                        result = await func(payload.input, payload.context)
+                        if (callName === 'main') {
+                            result = await func(payload.input, payload.context)
+                        } else {
+                            result = await func()
+                        }
                     } else {
                         result = func
                     }

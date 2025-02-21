@@ -101,10 +101,8 @@ export const ScriptDetailPage = () => {
     }
   }, [currentDraftCode, setLayoutMode])
 
-  const showChat =
-    script.type !== "prompt" &&
-    script.type !== "udf" &&
-    script.type !== "py_script"
+  const showChat = script.type !== "prompt" && script.type !== "udf"
+  // script.type !== "py_script"
 
   useEffect(() => {
     setCurrentCompiledDraftCode(script.code)

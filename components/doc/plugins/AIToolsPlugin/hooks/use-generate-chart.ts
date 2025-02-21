@@ -73,7 +73,7 @@ export const generateChartConfig = async (prompt: string, config: any) => {
         schema: chartConfigSchema,
         mode: "json",
         prompt: `You are a data visualization expert. Based on the user's input, generate a chart configuration. The user's input is enclosed in <user_input> tags. There are some rules:
-        1. Always try to provide themeConfig with a consistent and readable color scheme. Use light, visually pleasing colors.
+        1. Always try to provide themeConfig with a consistent and readable color scheme.
         2. if generate pie chart, please ensure to provide xAxis.dataKey
         3. Ensure color contrast is sufficient for readability
         4. Use a maximum of 6-8 different colors to avoid visual clutter

@@ -8,6 +8,7 @@ import { useSWRConfig } from "swr"
 import { useWindowSize } from "usehooks-ts"
 
 import docPluginPrompt from "@/lib/v3/prompts/built-in-remix-prompt-for-doc-plugin.md?raw"
+import pythonScriptPrompt from "@/lib/v3/prompts/built-in-remix-prompt-for-python-script.md?raw"
 import scriptPrompt from "@/lib/v3/prompts/built-in-remix-prompt-for-script.md?raw"
 import builtInRemixPrompt from "@/lib/v3/prompts/built-in-remix-prompt.md?raw"
 import { useAiConfig } from "@/hooks/use-ai-config"
@@ -58,6 +59,8 @@ export function Chat({
         ? scriptPrompt
         : script?.type === "doc_plugin"
         ? docPluginPrompt
+        : script?.type === "py_script"
+        ? pythonScriptPrompt
         : builtInRemixPrompt
     ).then(setRemixPrompt)
   }, [script?.bindings, script?.ts_code, script?.code])

@@ -154,6 +154,17 @@ export const getSuggestedActions = (type: IScript["type"]) => {
           action: "Show top 10 hacker news in notification",
         },
       ]
+    case "py_script":
+      return [
+        {
+          title: "get the most popular repositories", //  
+          label: "in the past 7 days on GitHub",
+          action: `get the most popular GitHub repositories in the past 7 days.\n
+- use data as function name, return a list of repositories.\n
+- include the repository name, full name with owner, language, description, and the number of stars.\n
+- use requests library to get the data from GitHub API.`,
+        },
+      ]
     case "doc_plugin":
       return [
         {

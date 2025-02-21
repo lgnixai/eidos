@@ -44,7 +44,7 @@ export function MessageActions({
 
   const handleApply = () => {
     const indexJsxCode = codeBlocks.find(
-      (code) => code.lang === "jsx" || code.lang === "typescript"
+      (code) => code.lang === "jsx" || code.lang === "typescript" || code.lang === "python"
     )?.code
     console.log("indexJsxCode", indexJsxCode)
     if (indexJsxCode) {
@@ -55,7 +55,7 @@ export function MessageActions({
 
   const handleTogglePreview = () => {
     const indexJsxCode = codeBlocks.find(
-      (code) => code.lang === "jsx" || code.lang === "typescript"
+      (code) => code.lang === "jsx" || code.lang === "typescript" || code.lang === "python"
     )?.code
     if (isPreviewEnabled) {
       setScriptCodeMap("current", "")
