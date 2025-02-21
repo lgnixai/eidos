@@ -63,6 +63,7 @@ export const BlockRenderer = React.forwardRef<
       const { thirdPartyLibs, uiLibs } = getAllLibs(code)
       // preload some libs
       thirdPartyLibs.push(
+        "@radix-ui/react-icons",
         "@radix-ui/react-toast",
         "class-variance-authority",
         "lucide-react"
