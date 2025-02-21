@@ -13,34 +13,72 @@ import {
   Spread,
 } from "lexical"
 
+import {
+  DataSourceConfig,
+  DataTransform,
+} from "@/components/chart/config-form/types"
+
 import { ChartBlock } from "./component"
 
 export type SerializedChartNode = Spread<
   {
     config: string
+    dataSource: DataSourceConfig
+    transforms: DataTransform[]
+    id: string
   },
   SerializedDecoratorBlockNode
 >
 
 export class ChartNode extends DecoratorBlockNode {
   __config: string
+  __dataSource: DataSourceConfig
+  __transforms: DataTransform[]
+  __id: string
 
   static getType(): string {
     return "chart"
   }
 
   static clone(node: ChartNode): ChartNode {
-    return new ChartNode(node.__config, node.__format, node.__key)
+    return new ChartNode(
+      node.__config,
+      node.__format,
+      node.__key,
+      node.__dataSource,
+      node.__transforms,
+      node.__id
+    )
   }
 
-  constructor(config: string, format?: ElementFormatType, key?: NodeKey) {
+  constructor(
+    config: string,
+    format?: ElementFormatType,
+    key?: NodeKey,
+    dataSource: DataSourceConfig = { type: "raw" },
+    transforms: DataTransform[] = [],
+    id: string = crypto.randomUUID()
+  ) {
     super(format, key)
     this.__config = config
+    this.__dataSource = dataSource
+    this.__transforms = transforms
+    this.__id = id
   }
 
   setConfig(config: string) {
     const writable = this.getWritable()
     writable.__config = config
+  }
+
+  setDataSource(dataSource: DataSourceConfig) {
+    const writable = this.getWritable()
+    writable.__dataSource = dataSource
+  }
+
+  setTransforms(transforms: DataTransform[]) {
+    const writable = this.getWritable()
+    writable.__transforms = transforms
   }
 
   createDOM(): HTMLElement {
@@ -51,17 +89,36 @@ export class ChartNode extends DecoratorBlockNode {
     return false
   }
 
+  getId(): string {
+    return this.__id
+  }
+
+  setId(id: string): void {
+    const writable = this.getWritable()
+    writable.__id = id
+  }
+
   exportJSON(): SerializedChartNode {
     return {
       ...super.exportJSON(),
       config: this.__config,
+      dataSource: this.__dataSource,
+      transforms: this.__transforms,
+      id: this.__id,
       type: "chart",
       version: 1,
     }
   }
 
   static importJSON(serializedNode: SerializedChartNode): ChartNode {
-    const node = $createChartNode(serializedNode.config)
+    const node = $createChartNode(
+      serializedNode.config,
+      undefined,
+      undefined,
+      serializedNode.dataSource,
+      serializedNode.transforms,
+      serializedNode.id
+    )
     node.setFormat(serializedNode.format)
     return node
   }
@@ -81,7 +138,12 @@ export class ChartNode extends DecoratorBlockNode {
         className={className}
         nodeKey={this.__key}
       >
-        <ChartBlock config={this.__config} nodeKey={this.__key} />
+        <ChartBlock
+          config={this.__config}
+          nodeKey={this.__key}
+          dataSource={this.__dataSource}
+          transforms={this.__transforms}
+        />
       </BlockWithAlignableContents>
     )
   }
@@ -91,8 +153,15 @@ export class ChartNode extends DecoratorBlockNode {
   }
 }
 
-export function $createChartNode(config: string): ChartNode {
-  return new ChartNode(config)
+export function $createChartNode(
+  config: string,
+  format?: ElementFormatType,
+  key?: NodeKey,
+  dataSource?: DataSourceConfig,
+  transforms?: DataTransform[],
+  id?: string
+): ChartNode {
+  return new ChartNode(config, format, key, dataSource, transforms, id)
 }
 
 export function $isChartNode(

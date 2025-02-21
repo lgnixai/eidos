@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next"
 
-import { useAllNodes } from "@/hooks/use-nodes"
+import { useAllViews } from "@/hooks/use-all-views"
 import {
   Select,
   SelectContent,
@@ -9,14 +9,16 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-export const TableSelector = ({
+export const ViewSelector = ({
   onSelect,
   value,
+  tableId,
 }: {
-  onSelect?: (tableId: string) => void
-  value?: string
+  onSelect?: (viewId: string) => void
+  value?: string | null
+  tableId: string
 }) => {
-  const tables = useAllNodes({ type: "table" })
+  const views = useAllViews({ tableId })
   const { t } = useTranslation()
 
   const selectedValue = value || undefined
@@ -24,12 +26,14 @@ export const TableSelector = ({
   return (
     <Select onValueChange={onSelect} value={selectedValue}>
       <SelectTrigger className="w-[200px]">
-        <SelectValue placeholder={t("common.table.selectPlaceholder")} />
+        <SelectValue
+          placeholder={t("common.viewSelector.placeholder", "Select a view...")}
+        />
       </SelectTrigger>
       <SelectContent>
-        {tables.map((table) => (
-          <SelectItem key={table.id} value={table.id}>
-            {table.name || t("common.table.untitled")}
+        {views.map((view) => (
+          <SelectItem key={view.id} value={view.id}>
+            {view.name || t("common.viewSelector.untitled", "Untitled")}
           </SelectItem>
         ))}
       </SelectContent>

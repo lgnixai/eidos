@@ -9,7 +9,7 @@ export default {
     node: VideoNode,
     plugin: VideoPlugin,
     icon: "FileVideo",
-    keywords: ["Video", "chart"],
+    keywords: ["Video"],
     onSelect: (editor: LexicalEditor) => editor.dispatchCommand(INSERT_VIDEO_FILE_COMMAND, ''),
     command: {
         create: INSERT_VIDEO_FILE_COMMAND,

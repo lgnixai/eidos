@@ -13,16 +13,27 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useToast } from "@/components/ui/use-toast"
 import { Chart, ChartConfig } from "@/components/chart"
-import { ChartConfigForm } from "@/components/chart/chart-config-form"
+import { ChartConfigForm } from "@/components/chart/config-form/chart-config-form"
+import {
+  DataSourceConfig,
+  DataTransform,
+} from "@/components/chart/config-form/types"
 
 import { $isChartNode } from "./node"
 
 export interface ChartBlockProps {
   config: string
   nodeKey: NodeKey
+  dataSource: DataSourceConfig
+  transforms: DataTransform[]
 }
 
-export const ChartBlock: React.FC<ChartBlockProps> = ({ config, nodeKey }) => {
+export const ChartBlock: React.FC<ChartBlockProps> = ({
+  config,
+  nodeKey,
+  dataSource,
+  transforms,
+}) => {
   const [parsedConfig, setParsedConfig] = useState<ChartConfig | null>(null)
   const [parseError, setParseError] = useState<string>("")
   const [editor] = useLexicalComposerContext()
@@ -48,6 +59,32 @@ export const ChartBlock: React.FC<ChartBlockProps> = ({ config, nodeKey }) => {
         const node = $getNodeByKey(nodeKey)
         if ($isChartNode(node)) {
           node.setConfig(JSON.stringify(newConfig, null, 2))
+        }
+      })
+    },
+    [editor, nodeKey]
+  )
+
+  const handleDataSourceChange = useCallback(
+    (newDataSource: DataSourceConfig) => {
+      editor.update(() => {
+        const node = $getNodeByKey(nodeKey)
+        if ($isChartNode(node)) {
+          console.log("newDataSource", newDataSource)
+          node.setDataSource(newDataSource)
+        }
+      })
+    },
+    [editor, nodeKey]
+  )
+
+  const handleTransformsChange = useCallback(
+    (newTransforms: DataTransform[]) => {
+      editor.update(() => {
+        const node = $getNodeByKey(nodeKey)
+        if ($isChartNode(node)) {
+          console.log("newTransforms", newTransforms)
+          node.setTransforms(newTransforms)
         }
       })
     },
@@ -102,6 +139,10 @@ export const ChartBlock: React.FC<ChartBlockProps> = ({ config, nodeKey }) => {
             onConfigChange={handleConfigChange}
             open={open}
             onOpenChange={setOpen}
+            dataSource={dataSource}
+            transforms={transforms}
+            onDataSourceChange={handleDataSourceChange}
+            onTransformsChange={handleTransformsChange}
           />
         )}
         <DropdownMenu>

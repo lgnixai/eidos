@@ -1,5 +1,4 @@
-import { ReactNode, useEffect, useState } from "react"
-import { useWhyDidYouUpdate } from "ahooks"
+import { ReactNode } from "react"
 import {
   Area,
   AreaChart,
@@ -288,7 +287,7 @@ export function Chart(props: ChartConfig) {
     return (
       <ChartComponent
         data={data}
-        margin={{ top: 20, right: 20, bottom: 40, left: 40 }}
+        margin={{ top: 40, right: 20, bottom: 40, left: 40 }}
       >
         {showGrid && <CartesianGrid strokeDasharray="3 3" />}
         {xAxis && (
@@ -296,8 +295,7 @@ export function Chart(props: ChartConfig) {
             dataKey={xAxis.dataKey}
             label={{
               value: xAxis.label,
-              position: "insideBottom",
-              dy: 15,
+              position: "bottom",
               style: { textAnchor: "middle" },
             }}
             type={xAxis.type}
@@ -326,7 +324,7 @@ export function Chart(props: ChartConfig) {
           ) : (
             <Tooltip />
           ))}
-        {showLegend && <Legend />}
+        {showLegend && <Legend verticalAlign="top" height={36} />}
         {renderSeries()}
       </ChartComponent>
     )

@@ -495,7 +495,7 @@ export class DataSpace {
   }
 
   // views
-  public async listViews(tableId: string) {
+  public async listViews(tableId: string): Promise<IView[]> {
     return await this.view.list({ table_id: tableId }, {
       order: 'ASC',
       orderBy: 'position'

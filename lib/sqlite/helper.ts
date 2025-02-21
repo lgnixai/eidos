@@ -1,4 +1,5 @@
 import { SelectFromStatement, parseFirst, toSql } from "pgsql-ast-parser"
+import { IField } from "../store/interface"
 
 export const getTransformedQuery = (query: string) => {
   const ast = parseFirst(query)

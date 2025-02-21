@@ -25,6 +25,7 @@ export const BuiltInBlocks: DocBlock[] = [
     audioBlock,
     videoBlock,
     fileBlock,
+    chartBlock,
     mermaidBlock,
     customBlock,
     bookmarkBlock,
@@ -33,7 +34,6 @@ export const BuiltInBlocks: DocBlock[] = [
     tocBlock,
     youtubeBlock,
     syncBlock,
-    chartBlock,
     // databaseBlock will cause import error
     // databaseBlock, 
 ];

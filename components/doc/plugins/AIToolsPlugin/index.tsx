@@ -53,14 +53,14 @@ export const AIToolsPlugin = (props: any) => {
     setIsAIToolsOpen(showCommentInput)
   }, [setIsAIToolsOpen, showCommentInput])
 
-  useEffect(() => {
-    if (showCommentInput) {
-      const placeholder = document.getElementById("ai-content-placeholder")
-      if (placeholder) {
-        placeholder.scrollIntoView({ behavior: "smooth", block: "center" })
-      }
-    }
-  }, [showCommentInput])
+  // useEffect(() => {
+  //   if (showCommentInput) {
+  //     const placeholder = document.getElementById("ai-content-placeholder")
+  //     if (placeholder) {
+  //       placeholder.scrollIntoView({ behavior: "smooth", block: "center" })
+  //     }
+  //   }
+  // }, [showCommentInput])
 
   const cancelAIAction = useCallback(
     (showConfirm?: boolean) => {

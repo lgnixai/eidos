@@ -17,3 +17,12 @@ export const useExtensionNavigate = () => {
         navigate(`/${_space || space}/extensions/${id}`)
     }
 }
+
+
+export const useExtensionNavigateById = () => {
+    const navigate = useNavigate()
+    const { space } = useCurrentPathInfo()
+    return (id: string) => {
+        navigate(`/${space}/extensions/${id}`)
+    }
+}

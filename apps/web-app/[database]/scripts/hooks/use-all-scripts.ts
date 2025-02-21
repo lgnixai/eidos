@@ -16,7 +16,11 @@ export const useAllScripts = () => {
         type: "script",
         enabled: true,
       })
-      setScripts(scripts)
+      const pyScripts = await sqlite?.script.list({
+        type: "py_script",
+        enabled: true,
+      })
+      setScripts([...scripts, ...pyScripts])
     }
     fetchScripts()
   }, [sqlite])
