@@ -8,6 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { toast } from "@/components/ui/use-toast"
 import { Callout } from "@/components/eui/callout"
 
 import { DataTransforms } from "../../data-pipeline/data-transforms"
@@ -109,6 +110,10 @@ export function DataSourceConfigComponent({
   const handleDataUpdate = (newData: any[]) => {
     const transformedData = applyTransforms(newData)
     onDataChange(transformedData)
+    toast({
+      title: "Draft Data Applied",
+      description: "The draft data has been applied to the chart.",
+    })
   }
 
   return (
@@ -179,13 +184,12 @@ export function DataSourceConfigComponent({
           )}
         </div>
       </div>
-
-      <DataTransforms
+      {/* <DataTransforms
         data={data}
         transforms={transforms}
         onTransformsChange={onTransformsChange}
         onApplyTransforms={() => handleDataUpdate(data)}
-      />
+      /> */}
     </div>
   )
 }

@@ -1,3 +1,5 @@
+import { CodeIcon } from "lucide-react"
+
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import {
@@ -8,8 +10,8 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
+
 import { Callout } from "../eui/callout"
-import { CodeIcon } from "lucide-react"
 
 interface DataTransform {
   type: "filter" | "sort" | "aggregate"
@@ -45,10 +47,11 @@ export function DataTransforms({
   return (
     <div className="p-3 space-y-3 border rounded-md">
       <Callout icon={<CodeIcon className="h-4 w-4" />}>
-        You can apply transforms to the data to customize the data for your
-        chart. It won't run automatically, you need to click the{" "}
-        <span className="font-medium">Apply</span> button to apply the
-        transforms.
+        Data transforms let you modify your data through operations like sorting
+        and aggregation. Changes take effect as a one-time operation when you
+        click the <span className="font-medium">Apply</span> button. Note:
+        Aggregation will modify your data shape, but you can always adjust or
+        reset the transforms.
       </Callout>
       <div className="space-y-3">
         <div className="flex justify-between items-center">
