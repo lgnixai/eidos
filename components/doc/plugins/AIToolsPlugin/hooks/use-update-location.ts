@@ -58,9 +58,8 @@ export const useUpdateLocation = (
           boxElem.style.left = "0px"
           boxElem.style.top = "0px"
           boxElem.style.transform = `translate(${translateX}px, ${translateY}px)`
-          document
-            .querySelector("#ai-content-placeholder")
-            ?.setAttribute("style", `height: ${boxElem.clientHeight}px;`)
+          boxElem.style.height = `${boxElem.clientHeight}px`
+          // ?.setAttribute("style", `height: ${boxElem.clientHeight}px;`)
           const selectionRectsLength = selectionRects.length
           const { container } = selectionState
           const elements: Array<HTMLSpanElement> = selectionState.elements
@@ -78,7 +77,7 @@ export const useUpdateLocation = (
               selectionRect.top + (window.pageYOffset || document.documentElement.scrollTop)
             const offsetLeft = selectionRect.left
             const color = "255, 212, 0"
-            
+
             elem.style.position = "absolute"
             elem.style.top = "0px"
             elem.style.left = "0px"

@@ -8,6 +8,7 @@ import {
   LexicalCommand,
   createCommand,
 } from "lexical"
+import { createPortal } from "react-dom"
 
 import {
   AlertDialog,
@@ -26,6 +27,27 @@ import { AITools } from "./ai-tools"
 
 export const INSERT_AI_COMMAND: LexicalCommand<string> =
   createCommand("INSERT_AI_COMMAND")
+
+function scrollToVisualPosition(
+  element: HTMLElement,
+  { behavior = "smooth" } = {}
+) {
+  const rect = element.getBoundingClientRect()
+
+  const scrollContainer = document.getElementById("main-content")
+  const offsetX =
+    (element.offsetWidth - (scrollContainer as HTMLElement).clientWidth) / 2
+  const offsetY =
+    (element.offsetHeight - (scrollContainer as HTMLElement).clientHeight) / 2
+  const containerRect = (scrollContainer as HTMLElement).getBoundingClientRect()
+  const scrollLeft = rect.left - containerRect.left + offsetX
+  const scrollTop = rect.top - containerRect.top + offsetY + 38
+  ;(scrollContainer as HTMLElement).scrollTo({
+    left: (scrollContainer as HTMLElement).scrollLeft + scrollLeft,
+    top: (scrollContainer as HTMLElement).scrollTop + scrollTop,
+    behavior: behavior as ScrollBehavior,
+  })
+}
 
 export const AIToolsPlugin = (props: any) => {
   const [showCommentInput, setShowCommentInput] = useState(false)
@@ -53,14 +75,16 @@ export const AIToolsPlugin = (props: any) => {
     setIsAIToolsOpen(showCommentInput)
   }, [setIsAIToolsOpen, showCommentInput])
 
-  // useEffect(() => {
-  //   if (showCommentInput) {
-  //     const placeholder = document.getElementById("ai-content-placeholder")
-  //     if (placeholder) {
-  //       placeholder.scrollIntoView({ behavior: "smooth", block: "center" })
-  //     }
-  //   }
-  // }, [showCommentInput])
+  useEffect(() => {
+    if (showCommentInput) {
+      setTimeout(() => {
+        const box = document.getElementById("ai-tools-box")
+        if (box) {
+          scrollToVisualPosition(box as HTMLElement)
+        }
+      }, 200)
+    }
+  }, [showCommentInput])
 
   const cancelAIAction = useCallback(
     (showConfirm?: boolean) => {
@@ -103,15 +127,14 @@ export const AIToolsPlugin = (props: any) => {
       COMMAND_PRIORITY_EDITOR
     )
   }, [editor])
-  
 
   return (
     <div>
-      {showCommentInput && (
-        <FloatingPortal root={document.getElementById("ai-content-placeholder")}>
-          <AITools cancelAIAction={cancelAIAction} content={content} />
-        </FloatingPortal>
-      )}
+      {showCommentInput &&
+        createPortal(
+          <AITools cancelAIAction={cancelAIAction} content={content} />,
+          document.body
+        )}
       <AlertDialog
         open={cancelActionConfirmOpen}
         onOpenChange={setCancelActionConfirmOpen}

@@ -253,9 +253,15 @@ export function AITools({
                   selection.removeText()
                 } else {
                   selection.insertText(text)
-                  const lastNode = selection.getNodes()[selection.getNodes().length - 1]
+                  const lastNode =
+                    selection.getNodes()[selection.getNodes().length - 1]
                   if ($isTextNode(lastNode)) {
-                    selection.setTextNodeRange(lastNode, 0, lastNode, text.length)
+                    selection.setTextNodeRange(
+                      lastNode,
+                      0,
+                      lastNode,
+                      text.length
+                    )
                   }
                 }
               }
@@ -368,7 +374,7 @@ be between <content-begin> and <content-end>. you just output the transformed co
   const { editorWidth } = useUpdateLocation(editor, selectionRef, boxRef)
 
   return (
-    <div className=" fixed z-50" ref={boxRef}>
+    <div className="fixed z-50" ref={boxRef} id="ai-tools-box">
       {!isFinished && (
         <>
           <div
