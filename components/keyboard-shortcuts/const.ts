@@ -69,8 +69,7 @@ export const useTableKeyboardShortcuts = () => {
     {
       key: "Ctrl/Cmd + F",
       description: t('kbd.shortcuts.table.ctrlFDescription'),
-      flag: "search",
-      disabled: true,
+      flag: "search"
     },
     {
       key: "Ctrl/Cmd + Home/End",
@@ -106,35 +105,39 @@ export const useDocumentKeyboardShortcuts = () => {
       description: t('kbd.shortcuts.document.ctrlSDescription'),
     },
     {
-      key: "#",
+      key: "Alt/Option + I",
+      description: t('kbd.shortcuts.document.altIDescription'),
+    },
+    {
+      key: "# + Space",
       description: t('kbd.shortcuts.document.heading1Description'),
     },
     {
-      key: "##",
+      key: "## + Space",
       description: t('kbd.shortcuts.document.heading2Description'),
     },
     {
-      key: "###",
+      key: "### + Space",
       description: t('kbd.shortcuts.document.heading3Description'),
     },
     {
-      key: "[]",
+      key: "[] + Space",
       description: t('kbd.shortcuts.document.checkboxDescription'),
     },
     {
-      key: "-",
+      key: "- + Space",
       description: t('kbd.shortcuts.document.unorderedListDescription'),
     },
     {
-      key: "number + .",
+      key: "number + . + Space",
       description: t('kbd.shortcuts.document.orderedListDescription'),
     },
     {
-      key: "```",
+      key: "``` + Space",
       description: t('kbd.shortcuts.document.codeBlockDescription'),
     },
     {
-      key: "---",
+      key: "--- + Space",
       description: t('kbd.shortcuts.document.horizontalRuleDescription'),
     },
   ];
@@ -151,6 +154,10 @@ export const useCommonKeyboardShortcuts = () => {
     {
       key: "Ctrl/Cmd + \\",
       description: t('kbd.shortcuts.common.toggleSidebarDescription'),
+    },
+    {
+      key: "Ctrl/Cmd + N",
+      description: t('kbd.shortcuts.common.newDocumentDescription'),
     },
     {
       key: "Ctrl/Cmd + Shift + L",

@@ -6,6 +6,7 @@ import { NotFound } from "@/apps/web-app/404"
 import NodePage from "@/apps/web-app/[database]/[node]/page"
 import SpaceHomePage from "@/apps/web-app/[database]/page"
 import { ErrorBoundary } from "@/apps/web-app/error"
+import "@/locales/i18n"
 
 import RootLayout from "./layout"
 import SpaceLayout from "./space-layout"

@@ -167,7 +167,7 @@
     "extension.udfWarning": "Warning: Tables using UDFs may cause issues when viewing the table with other SQLite clients. Publish service does not support UDFs yet.",
     "extension.version": "v{{version}}",
     "kbd.shortcuts.common.description": "Description",
-    "kbd.shortcuts.common.openSettingsDescription": "Opens the settings menu",
+    "kbd.shortcuts.common.openSettingsDescription": "Opens the settings page",
     "kbd.shortcuts.common.shortcut": "Shortcut",
     "kbd.shortcuts.common.title": "Common Keyboard Shortcuts",
     "kbd.shortcuts.common.toggleChatbotDescription": "Opens or closes the chatbot interface",
@@ -456,5 +456,7 @@
     "common.table.selectPlaceholder": "Select a table...",
     "common.table.untitled": "Untitled",
     "common.viewSelector.placeholder": "Select a view...",
-    "common.viewSelector.untitled": "Untitled"
+    "common.viewSelector.untitled": "Untitled",
+    "kbd.shortcuts.common.newDocumentDescription": "Creates a new document",
+    "kbd.shortcuts.document.altIDescription": "Opens AI tools for selected text"
 }

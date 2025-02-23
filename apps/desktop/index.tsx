@@ -2,7 +2,6 @@ import React from "react"
 import ReactDOM from "react-dom/client"
 import { RouterProvider, createBrowserRouter, redirect } from "react-router-dom"
 
-import { DownloadPage } from "@/components/landing/download"
 import SettingsStoragePage from "@/apps/desktop/settings/storage/page"
 import NodePage from "@/apps/web-app/[database]/[node]/page"
 import EverydayPage from "@/apps/web-app/[database]/everyday/[day]/page"
@@ -10,11 +9,11 @@ import EverydayHomePage from "@/apps/web-app/[database]/everyday/page"
 import { FileManager } from "@/apps/web-app/[database]/files/page"
 
 import "@/locales/i18n"
+import SettingsApiPage from "@/apps/desktop/settings/api/page"
 // space
 import SpaceHomePage from "@/apps/web-app/[database]/page"
 import { LandingPage } from "@/apps/web-app/page"
 import SettingsAIPage from "@/apps/web-app/settings/ai/page"
-import SettingsApiPage from "@/apps/desktop/settings/api/page"
 import SettingsAppearancePage from "@/apps/web-app/settings/appearance/page"
 import { BackupSettings } from "@/apps/web-app/settings/backup/page"
 import SettingsExperimentPage from "@/apps/web-app/settings/experiment/page"
@@ -62,10 +61,6 @@ const router = createBrowserRouter([
       {
         path: "404",
         element: <NotFound />,
-      },
-      {
-        path: "download",
-        element: <DownloadPage />,
       },
       {
         path: "my-licenses",

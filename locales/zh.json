@@ -166,7 +166,7 @@
     "extension.udfWarning": "警告：使用 UDF 的表格在使用其他 SQLite 客户端查看时可能会出现问题。发布服务尚不支持 UDF。",
     "extension.version": "v{{version}}",
     "kbd.shortcuts.common.description": "描述",
-    "kbd.shortcuts.common.openSettingsDescription": "打开设置菜单",
+    "kbd.shortcuts.common.openSettingsDescription": "打开设置页面",
     "kbd.shortcuts.common.shortcut": "快捷键",
     "kbd.shortcuts.common.title": "常用键盘快捷",
     "kbd.shortcuts.common.toggleChatbotDescription": "打开或关闭聊天机器人界面",
@@ -455,5 +455,7 @@
     "common.table.selectPlaceholder": "选择表格...",
     "common.table.untitled": "未命名",
     "common.viewSelector.placeholder": "选择视图...",
-    "common.viewSelector.untitled": "未命名"
+    "common.viewSelector.untitled": "未命名",
+    "kbd.shortcuts.common.newDocumentDescription": "创建新文档",
+    "kbd.shortcuts.document.altIDescription": "对选中文本打开 AI 工具"
 }
