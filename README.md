@@ -31,6 +31,9 @@
 
 ## How to use
 
+> [!WARNING]
+> Web app is deprecated, use desktop app instead.
+
 There are two versions of Eidos:
 
 - Web app[tech preview]: Accessible via browser, it's a pure PWA with no web server. But it has some limitations, see [web-vs-desktop](./docs/web-vs-desktop.md)

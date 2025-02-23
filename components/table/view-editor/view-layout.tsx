@@ -1,3 +1,4 @@
+import React, { useEffect } from "react"
 import { ChevronsUpDown } from "lucide-react"
 
 import { ViewTypeEnum } from "@/lib/store/IView"
@@ -21,26 +22,55 @@ export const ViewLayout = (props: {
   disabled?: boolean
   onClick?: () => void
 }) => {
+  const [open, setOpen] = React.useState(false)
+  const [isFirstClick, setIsFirstClick] = React.useState(true)
   const { icon: Icon, viewType, viewId } = props
+
+  useEffect(() => {
+    if (!props.isActive) {
+      setOpen(false)
+    }
+  }, [props.isActive])
+
   if (props.isActive) {
     return (
-      <Collapsible>
-        <Button
-          disabled={Boolean(props.disabled)}
-          onClick={props.onClick}
-          className="flex w-full justify-start gap-2"
-          variant={props.isActive ? "secondary" : "outline"}
-        >
-          <div className="flex w-full items-center justify-between">
-            <span className="flex items-center gap-2">
-              <Icon />
-              {props.title}
-            </span>
-            <CollapsibleTrigger asChild>
-              <ChevronsUpDown className="h-4 w-4" />
-            </CollapsibleTrigger>
+      <Collapsible open={open} onOpenChange={setOpen}>
+        <div className="flex flex-col w-full">
+          <div className="flex w-full items-center">
+            <Button
+              disabled={Boolean(props.disabled)}
+              className="flex w-full justify-start gap-2"
+              variant={props.isActive ? "secondary" : "outline"}
+            >
+              <div
+                className="flex w-full items-center justify-between"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  if (isFirstClick) {
+                    setIsFirstClick(false)
+                  }
+                  props.onClick?.()
+                }}
+              >
+                <span className="flex items-center gap-2">
+                  <Icon />
+                  {props.title}
+                </span>
+                <CollapsibleTrigger asChild>
+                  <div
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setOpen(!open)
+                    }}
+                    className="p-1 px-2 rounded-sm cursor-pointer transition-colors ml-2"
+                  >
+                    <ChevronsUpDown className="h-4 w-4" />
+                  </div>
+                </CollapsibleTrigger>
+              </div>
+            </Button>
           </div>
-        </Button>
+        </div>
         <CollapsibleContent className="p-2">
           {viewType === ViewTypeEnum.Gallery && (
             <GalleryViewProperties viewId={viewId} />
