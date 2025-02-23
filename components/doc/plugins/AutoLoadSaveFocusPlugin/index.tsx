@@ -10,7 +10,9 @@ import { allTransformers } from "../const"
 
 /**
  * Check if the cursor is at the start of the document
- * Handles the node structure: root => paragraph => text
+ * Handles different node structures:
+ * 1. root => paragraph => text
+ * 2. root => list => listitem => text
  */
 export function $isAtDocumentStart() {
   const selection = $getSelection()
@@ -23,14 +25,19 @@ export function $isAtDocumentStart() {
   // First check if cursor is at start
   if (anchor.offset !== 0) return false
 
-  // Get parent node (usually paragraph)
+  // Get parent node (usually paragraph or listitem)
   const parentNode = anchorNode.getParent()
   if (!parentNode) return false
 
-  // Quick check - if parent is paragraph and has previous sibling, we're not at start
+  // Handle paragraph case
   if (parentNode.getType() === "paragraph") {
     if (parentNode.getPreviousSibling()) return false
     return parentNode.getParent()?.getType() === "root"
+  }
+
+  // Handle list case
+  if (parentNode.getType() === "listitem" || parentNode.getType() === "list") {
+    return false
   }
 
   // For other cases, find top-level node
@@ -191,18 +198,13 @@ export function EidosAutoLoadSaveFocusPlugin(props: AutoSavePluginProps) {
   // Update the keydown effect to use the new function
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (
-        event.key === "Backspace" ||
-        event.key === "ArrowUp" ||
-        event.key === "ArrowLeft"
-      ) {
-        editor.getEditorState().read(() => {
-          if ($isAtDocumentStart()) {
-            window.dispatchEvent(new CustomEvent("eidos-editor-activate-title"))
-            event.preventDefault()
-          }
-        })
-      }
+      if (event.key !== "Backspace") return
+      editor.getEditorState().read(() => {
+        if ($isAtDocumentStart()) {
+          window.dispatchEvent(new CustomEvent("eidos-editor-activate-title"))
+          event.preventDefault()
+        }
+      })
     }
 
     editor.getRootElement()?.addEventListener("keydown", handleKeyDown)

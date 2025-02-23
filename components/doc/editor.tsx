@@ -215,12 +215,7 @@ export function Editor(props: EditorProps) {
               disabled={!canChangeTitle}
               onKeyDown={(e) => {
                 // press Enter to active editor
-                if (
-                  e.key === "Enter" ||
-                  e.key === "Tab" ||
-                  e.key === "ArrowDown" ||
-                  e.key === "ArrowRight"
-                ) {
+                if (e.key === "Enter" || e.key === "Tab") {
                   e.stopPropagation()
                   e.preventDefault()
                   window.dispatchEvent(new Event("eidos-editor-focus"))
