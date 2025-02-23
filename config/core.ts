@@ -1,11 +1,15 @@
-import { defineConfig } from "vite"
+import { UserConfig } from "vite"
 import path from "path"
 
-export default defineConfig({
-  plugins: [],
+const coreConfig: UserConfig = {
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "../"),
+    }
+  },
   build: {
     lib: {
-      entry: path.resolve(__dirname, 'worker/web-worker/DataSpace.ts'),
+      entry: path.resolve(__dirname, '../worker/web-worker/DataSpace.ts'),
       name: 'DataSpace',
       fileName: 'index',
       formats: ['es']
@@ -29,10 +33,7 @@ export default defineConfig({
     emptyOutDir: false,
     minify: false,
     sourcemap: true
-  },
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, "./"),
-    }
   }
-}) 
+}
+
+export default coreConfig 

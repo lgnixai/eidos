@@ -34,7 +34,7 @@
     "pkg:desktop:dev": "cross-env BUILD_MODE=1 electron-builder --publish never --config electron/electron-builder.dev.json",
     "postinstall": "electron-builder install-app-deps",
     "download-libsimple": "node scripts/download-libsimple.cjs",
-    "build:core": "vite build --config vite.core.config.ts"
+    "build:core": "cross-env EIDOS_SERVICE_MODE=core vite build"
   },
   "start": "electron .",
   "main": "dist-electron/main.js",

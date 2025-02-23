@@ -65,7 +65,7 @@ const desktopConfig: UserConfig = mergeConfig(sharedConfig, {
           build: {
             rollupOptions: {
               plugins: [
-                esmShim() as Plugin,
+                esmShim() as unknown as Plugin,
               ],
               external: [
                 'better-sqlite3',
