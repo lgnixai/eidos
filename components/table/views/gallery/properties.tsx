@@ -41,6 +41,60 @@ const formSchema = z.object({
   coverPreview: z.any().optional(),
 })
 
+const PreviewButton = ({
+  item,
+  handleItemClick,
+}: {
+  item: {
+    value: string | null
+    label: string
+    type?: string
+  }
+  handleItemClick: (value: string | null) => void
+}) => {
+  const getIcon = () => {
+    if (item.value === "content") return <FileText className="mr-2 h-4 w-4" />
+    if (item.type === "field") return <ImageIcon className="mr-2 h-4 w-4" />
+    if (item.type === "mblock") return <ToyBrickIcon className="mr-2 h-4 w-4" />
+    return <BanIcon className="mr-2 h-4 w-4" />
+  }
+
+  return (
+    <Button
+      onClick={(e) => {
+        handleItemClick(item.value)
+      }}
+      variant="ghost"
+      className="justify-start"
+      size="sm"
+    >
+      {getIcon()}
+      {item.label}
+    </Button>
+  )
+}
+
+const PreviewSection = ({
+  items,
+  showDivider,
+  handleItemClick,
+}: {
+  items: Array<{ value: string | null; label: string }>
+  showDivider?: boolean
+  handleItemClick: (value: string | null) => void
+}) => (
+  <>
+    {showDivider && <hr className="my-1" />}
+    {items.map((item) => (
+      <PreviewButton
+        key={item.value}
+        item={item}
+        handleItemClick={handleItemClick}
+      />
+    ))}
+  </>
+)
+
 export const GalleryViewProperties = (props: { viewId: string }) => {
   const { updateView } = useViewOperation()
   const view = useView<IGalleryViewProperties>(props.viewId)
@@ -100,51 +154,6 @@ export const GalleryViewProperties = (props: { viewId: string }) => {
     })
   }
 
-  const PreviewButton = ({
-    item,
-  }: {
-    item: {
-      value: string | null
-      label: string
-      type?: string
-    }
-  }) => {
-    const getIcon = () => {
-      if (item.value === "content") return <FileText className="mr-2 h-4 w-4" />
-      if (item.type === "field") return <ImageIcon className="mr-2 h-4 w-4" />
-      if (item.type === "mblock")
-        return <ToyBrickIcon className="mr-2 h-4 w-4" />
-      return <BanIcon className="mr-2 h-4 w-4" />
-    }
-
-    return (
-      <Button
-        onClick={() => handleItemClick(item.value)}
-        variant="ghost"
-        className="justify-start"
-        size="sm"
-      >
-        {getIcon()}
-        {item.label}
-      </Button>
-    )
-  }
-
-  const PreviewSection = ({
-    items,
-    showDivider,
-  }: {
-    items: Array<{ value: string | null; label: string }>
-    showDivider?: boolean
-  }) => (
-    <>
-      {showDivider && <hr className="my-1" />}
-      {items.map((item) => (
-        <PreviewButton key={item.value} item={item} />
-      ))}
-    </>
-  )
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -190,17 +199,22 @@ export const GalleryViewProperties = (props: { viewId: string }) => {
                     }
                   >
                     <div className="flex flex-col">
-                      <PreviewSection items={coverPreviewItems.content} />
+                      <PreviewSection
+                        items={coverPreviewItems.content}
+                        handleItemClick={handleItemClick}
+                      />
                       {coverPreviewItems.fields.length > 0 && (
                         <PreviewSection
                           items={coverPreviewItems.fields}
                           showDivider
+                          handleItemClick={handleItemClick}
                         />
                       )}
                       {coverPreviewItems.mblocks.length > 0 && (
                         <PreviewSection
                           items={coverPreviewItems.mblocks}
                           showDivider
+                          handleItemClick={handleItemClick}
                         />
                       )}
                     </div>
