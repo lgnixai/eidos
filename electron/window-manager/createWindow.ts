@@ -1,9 +1,10 @@
 import { BrowserWindow, WebContentsViewConstructorOptions, ipcMain } from 'electron';
 import os from "node:os";
 import path from 'path';
-import { PORT } from '../main';
-import { WindowManager } from './wm';
 import { getConfigManager } from '../config';
+import { PORT } from '../main';
+import { setupGeolocationHandler } from '../services/geolocation';
+import { WindowManager } from './wm';
 
 const defaultViewOptions: WebContentsViewConstructorOptions = {
     webPreferences: {
@@ -54,6 +55,9 @@ export function createWindow(url?: string) {
     const win = new BrowserWindow(baseWindowConfig);
     const windowManager = new WindowManager(win)
 
+    // Set up geolocation permission handler
+    setupGeolocationHandler(win);
+
     ipcMain.handle('get-open-tabs', () => {
         return windowManager.tabs
     })
@@ -91,3 +95,4 @@ export function createWindow(url?: string) {
 
     return win;
 }
+

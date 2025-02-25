@@ -73,6 +73,8 @@ export const DOMAINS = {
   API_AGENT_SERVER: "https://api.eidos.space",
   DISCORD_INVITE: "https://discord.gg/bsGMPDR23b",
   GITHUB_ISSUES: "https://github.com/mayneyao/eidos/issues/",
+  // API for Browser running in Electron
+  GEOLOCATION_API: "https://geolocation.api.eidos.space/",
 }
 
 // custom Event, dispatch via window
