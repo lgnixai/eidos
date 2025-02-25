@@ -113,6 +113,28 @@ const desktopConfig: UserConfig = mergeConfig(sharedConfig, {
       'csv-stringify/sync': 'csv-stringify/sync',
     }
   },
+  server: {
+    headers: {
+      'Cross-Origin-Opener-Policy': 'same-origin',
+      'Cross-Origin-Embedder-Policy': 'require-corp',
+    },
+    proxy: {
+      "/api/chat": "http://localhost:13127",
+      '^/[^/]+/files/': {
+        target: 'http://localhost:13127',
+        changeOrigin: true,
+        rewrite: (path) => path,
+      },
+      '/static/': {
+        target: 'http://localhost:13127',
+        changeOrigin: true,
+      },
+      '/extensions/': {
+        target: 'http://localhost:13127',
+        changeOrigin: true,
+      },
+    },
+  },
 })
 
 export default desktopConfig 
