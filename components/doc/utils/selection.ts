@@ -1,11 +1,46 @@
 import { createHeadlessEditor } from "@lexical/headless"
 import { $convertToMarkdownString } from "@lexical/markdown"
-import { $getRoot, BaseSelection, RootNode } from "lexical"
+import { $createParagraphNode, $createRangeSelection, $createTextNode, $getRoot, $getSelection, $isParagraphNode, $isRangeSelection, $setSelection, BaseSelection, RootNode } from "lexical"
 
 import { _getDocMarkdown } from "@/hooks/use-doc-editor"
 
 import { getAllNodes } from "../nodes"
 import { allTransformers } from "../plugins/const"
+
+
+
+export function $duplicateParagraph(isUp: boolean) {
+  const selection = $getSelection()
+  const nodes = selection?.getNodes()
+
+  if (nodes?.length === 1) {
+    const node = nodes[0]
+    const paragraph = $isParagraphNode(node) ?
+      node :
+      node.getParent()
+
+    if ($isParagraphNode(paragraph)) {
+      const clone = $createParagraphNode()
+      const text = $createTextNode(paragraph.getTextContent())
+      clone.append(text)
+
+      if (isUp) {
+        paragraph.insertBefore(clone)
+      } else {
+        paragraph.insertAfter(clone)
+      }
+
+      if ($isRangeSelection(selection)) {
+        const offset = selection.anchor.offset || 0
+        const newSelection = $createRangeSelection()
+        newSelection.anchor.set(text.getKey(), offset, "text")
+        newSelection.focus.set(text.getKey(), offset, "text")
+        $setSelection(newSelection)
+      }
+    }
+  }
+}
+
 
 /**
  * 

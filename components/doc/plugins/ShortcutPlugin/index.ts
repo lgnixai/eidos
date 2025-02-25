@@ -1,7 +1,9 @@
 import { $isListItemNode, ListItemNode, ListNode } from "@lexical/list"
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
 import { useKeyPress } from "ahooks"
-import { $getSelection } from "lexical"
+import { $getSelection, $createParagraphNode, $isParagraphNode, ParagraphNode, $isTextNode, $createTextNode, $createRangeSelection, $setSelection, $isRangeSelection } from "lexical"
+import { $duplicateParagraph } from "../../utils/selection"
+import { useCallback } from "react"
 
 export function ShortcutPlugin() {
   const [editor] = useLexicalComposerContext()
@@ -38,5 +40,41 @@ export function ShortcutPlugin() {
       useCapture: true,
     }
   )
+
+  const duplicateParagraph = useCallback((isUp: boolean) => {
+    editor.update(() => {
+      if (!editor.isEditable()) {
+        return
+      }
+      $duplicateParagraph(isUp)
+    })
+  }, [editor])
+
+  // Duplicate paragraph up
+  useKeyPress(
+    ["shift.alt.uparrow"],
+    (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+      duplicateParagraph(true)
+    },
+    {
+      useCapture: true,
+    }
+  )
+
+  // Duplicate paragraph down
+  useKeyPress(
+    ["shift.alt.downarrow"],
+    (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+      duplicateParagraph(false)
+    },
+    {
+      useCapture: true,
+    }
+  )
+
   return null
 }
