@@ -34,6 +34,7 @@ import {
   BaselineIcon,
   CaseSensitiveIcon,
   CodeIcon,
+  FileIcon,
   FileQuestionIcon,
   Heading1Icon,
   Heading2Icon,
@@ -46,13 +47,14 @@ import {
   SheetIcon,
   SparklesIcon,
   TableIcon,
+  ToyBrickIcon,
   VariableIcon,
   icons,
 } from "lucide-react"
 import * as ReactDOM from "react-dom"
 import { useTranslation } from "react-i18next"
 
-import { cn } from "@/lib/utils"
+import { cn, getBlockUrl } from "@/lib/utils"
 
 import { BuiltInBlocks } from "../../blocks"
 import { useExtBlocks } from "../../hooks/use-ext-blocks"
@@ -61,6 +63,11 @@ import { bgColors, fgColors } from "../const"
 import { useBasicTypeaheadTriggerMatch } from "./hook"
 import "./index.css"
 import { useKeyPress } from "ahooks"
+
+import { useAllMblocks } from "@/apps/web-app/[database]/scripts/hooks/use-all-mblocks"
+
+import { INSERT_CUSTOM_BLOCK_COMMAND } from "../../blocks/custom/plugin"
+import { useEditorInstance } from "../../hooks/editor-instance-context"
 
 const IconMap: Record<string, JSX.Element> = {
   h1: <Heading1Icon className="h-5 w-5" />,
@@ -155,6 +162,7 @@ export function ComponentPickerMenuPlugin(): JSX.Element {
   const [modal, showModal] = useModal()
   const [queryString, setQueryString] = useState<string | null>(null)
   const extBlocks = useExtBlocks()
+  const { mblocks } = useEditorInstance()
 
   const checkForTriggerMatch = useBasicTypeaheadTriggerMatch("/、", {
     minLength: 0,
@@ -216,8 +224,22 @@ export function ComponentPickerMenuPlugin(): JSX.Element {
       )
     }
 
+    mblocks.forEach((mblock) => {
+      options.push(
+        new ComponentPickerOption(mblock.name, {
+          icon: <ToyBrickIcon className="h-5 w-5" />,
+          keywords: [mblock.name],
+          onSelect: () => {
+            editor.dispatchCommand(
+              INSERT_CUSTOM_BLOCK_COMMAND,
+              getBlockUrl(mblock.id)
+            )
+          },
+        })
+      )
+    })
     return options
-  }, [editor, queryString, t])
+  }, [editor, queryString, t, mblocks])
 
   const options = useMemo(() => {
     const baseOptions = [
