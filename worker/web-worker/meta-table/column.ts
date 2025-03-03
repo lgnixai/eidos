@@ -8,12 +8,14 @@ import { FieldType } from "@/lib/fields/const"
 import { ILinkProperty } from "@/lib/fields/link"
 import { ColumnTableName } from "@/lib/sqlite/const"
 import { alterColumnType } from "@/lib/sqlite/sql-alter-column-type"
-import { transformFormula2VirtualGeneratedField } from "@/lib/sqlite/sql-formula-parser"
+import { findDependentFormulaFields, getFormulaFieldDeletionOrder, transformFormula2VirtualGeneratedField } from "@/lib/sqlite/sql-formula-parser"
 import { IField } from "@/lib/store/interface"
 import { getColumnIndexName, getTableIdByRawTableName } from "@/lib/utils"
 
 import { TableManager } from "../sdk/table"
 import { BaseTable, BaseTableImpl } from "./base"
+import { BaseServerDatabase } from "@/lib/sqlite/interface"
+import { Database } from "@sqlite.org/sqlite-wasm"
 
 const bc = new BroadcastChannel(EidosDataEventChannelName)
 
@@ -225,6 +227,88 @@ export class ColumnTable extends BaseTableImpl implements BaseTable<IField> {
     )
   }
 
+  /**
+   * Update formula column and handle dependencies
+   * @param tableName Table name
+   * @param tableColumnName Column name
+   * @param property New property
+   * @param fields All fields
+   * @param db Database connection
+   */
+  private async updateFormulaColumn(
+    tableName: string,
+    tableColumnName: string,
+    property: any,
+    fields: IField[],
+    db: Database | BaseServerDatabase
+  ) {
+    // Find other generated columns that depend on the current column
+    const dependentFields = findDependentFormulaFields(tableColumnName, fields);
+
+    if (dependentFields.length > 0) {
+      // If there are dependencies, we need to temporarily delete all dependent columns
+      const allColumnsToUpdate = [tableColumnName, ...dependentFields.map(f => f.columnName)];
+
+      // Get the correct deletion order (delete columns that depend on others first)
+      const deletionOrder = getFormulaFieldDeletionOrder(allColumnsToUpdate, fields);
+
+      // Save all column expressions for later recreation
+      const columnExpressions: Record<string, string> = {};
+
+      // First delete all related columns (in dependency order)
+      for (const colName of deletionOrder) {
+        // Save expression for rebuilding
+        const expr = transformFormula2VirtualGeneratedField(colName, fields);
+        if (expr) {
+          columnExpressions[colName] = expr;
+        }
+
+        // Delete column
+        db.prepare(`ALTER TABLE ${tableName} DROP COLUMN ${colName};`).run();
+      }
+
+      // Update the current column's expression
+      const updatedFields = fields.map(f =>
+        f.table_column_name === tableColumnName
+          ? { ...f, property }
+          : f
+      );
+
+      // Recalculate the current column's expression
+      columnExpressions[tableColumnName] = transformFormula2VirtualGeneratedField(
+        tableColumnName,
+        updatedFields
+      ) || '';
+
+      // Recreate all columns in reverse order (create dependent columns first)
+      for (const colName of deletionOrder.reverse()) {
+        if (columnExpressions[colName]) {
+          db.prepare(
+            `ALTER TABLE ${tableName} ADD COLUMN ${colName} GENERATED ALWAYS AS ${columnExpressions[colName]};`
+          ).run();
+        }
+      }
+    } else {
+      // No dependencies, update directly
+      const formulaExpr = transformFormula2VirtualGeneratedField(
+        tableColumnName,
+        fields.map(f =>
+          f.table_column_name === tableColumnName
+            ? { ...f, property }
+            : f
+        )
+      );
+
+      db.prepare(
+        `ALTER TABLE ${tableName} DROP COLUMN ${tableColumnName};`
+      ).run();
+
+      db.prepare(
+        `ALTER TABLE ${tableName} ADD COLUMN ${tableColumnName} GENERATED ALWAYS AS ${formulaExpr};`
+      ).run();
+    }
+  }
+
   async updateProperty(data: {
     tableName: string
     tableColumnName: string
@@ -264,16 +348,9 @@ export class ColumnTable extends BaseTableImpl implements BaseTable<IField> {
           break
         case FieldType.Formula:
           const fields = await this.list({ table_name: tableName })
-          const formulaExpr = transformFormula2VirtualGeneratedField(
-            tableColumnName,
-            fields
-          )
-          D.exec(
-            `
-            ALTER TABLE ${tableName} DROP COLUMN ${tableColumnName};
-            ALTER TABLE ${tableName} ADD COLUMN ${tableColumnName} GENERATED ALWAYS AS ${formulaExpr};
-            `
-          )
+
+          await this.updateFormulaColumn(tableName, tableColumnName, property, fields, D);
+
           bc.postMessage({
             type: EidosDataEventChannelMsgType.DataUpdateSignalType,
             payload: {
@@ -281,10 +358,10 @@ export class ColumnTable extends BaseTableImpl implements BaseTable<IField> {
               table: tableName,
               column: data,
             },
-          })
-          break
+          });
+          break;
         default:
-          break
+          break;
       }
     })
   }
