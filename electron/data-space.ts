@@ -52,6 +52,20 @@ export class DataSpaceManager {
         return this.dataSpace;
     }
 
+    public async reload(): Promise<DataSpace | null> {
+        if (!this.dataSpace) {
+            return null;
+        }
+
+        const spaceName = this.dataSpace.dbName;
+        // Close current dataspace
+        this.dataSpace.closeDb();
+        this.dataSpace = null;
+
+        // Reinitialize with the same space name
+        return this.getOrSetDataSpace(spaceName);
+    }
+
     public async getOrSetDataSpace(spaceName: string): Promise<DataSpace> {
         if (this.dataSpace && this.dataSpace.dbName !== spaceName) {
             // Close both main and draft databases when switching to a different space
@@ -132,4 +146,11 @@ export function getDataSpace(): DataSpace | null {
 
 export function getOrSetDataSpace(spaceName: string): Promise<DataSpace> {
     return DataSpaceManager.getInstance().getOrSetDataSpace(spaceName);
+}
+
+export function reloadDataSpace(): Promise<{ success: boolean }> {
+    DataSpaceManager.getInstance().reload();
+    return Promise.resolve({
+        success: true
+    });
 }

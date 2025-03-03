@@ -4,7 +4,7 @@ import { BrowserWindow, Menu, Tray, app, dialog, ipcMain, nativeImage, shell } f
 import { log } from 'electron-log';
 import path from 'path';
 import { getConfigManager } from './config';
-import { getDataSpace, getOrSetDataSpace } from './data-space';
+import { getDataSpace, getOrSetDataSpace, reloadDataSpace } from './data-space';
 import { initializePlayground } from './file-system/playground';
 import { getResourcePath } from './helper';
 import { ProtocolHandler } from './protocol-handler';
@@ -275,9 +275,13 @@ ipcMain.handle('quit-app', () => {
     app.quit();
 });
 
-ipcMain.handle('close-query-worker', async () => {
+ipcMain.handle('reload-query-worker', async () => {
     console.log('prepare for import')
     // Importing CSV will enable exclusive locks, causing read-only sqlite worker queries to timeout. We directly shut down all workers before importing CSV
     WorkerManager.getInstance().shutdown();
     return { success: true };
+});
+
+ipcMain.handle('reload-data-space', async () => {
+    return reloadDataSpace();
 });

@@ -1,8 +1,10 @@
 import { useReadonlySqlite } from "./use-readonly-sqlite"
+// import { useSqlite } from "./use-sqlite"
 
 
 export const usePreviewTableFormula = () => {
     const sqlite = useReadonlySqlite()
+    // const { sqlite } = useSqlite()
 
     const preview = async (
         {

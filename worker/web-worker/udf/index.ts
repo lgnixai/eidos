@@ -264,6 +264,36 @@ export const withSqlite3AllUDF = (bc: {
     },
   }
 
+  const eidos_meta_table_event_update = {
+    name: "eidos_meta_table_event_update",
+    xFunc: function (pCx, table, _new, _old) {
+      bc.postMessage({
+        type: EidosDataEventChannelMsgType.MetaTableUpdateSignalType,
+        payload: {
+          type: DataUpdateSignalType.Update,
+          table,
+          _new: JSON.parse(_new),
+          _old: JSON.parse(_old),
+        },
+      })
+    },
+  }
+
+  const eidos_meta_table_event_updateNoCtx = {
+    name: "eidos_meta_table_event_update",
+    xFunc: function (table, _new, _old) {
+      bc.postMessage({
+        type: EidosDataEventChannelMsgType.MetaTableUpdateSignalType,
+        payload: {
+          type: DataUpdateSignalType.Update,
+          table,
+          _new: JSON.parse(_new),
+          _old: JSON.parse(_old),
+        },
+      })
+    },
+  }
+
   const ALL_UDF = [
     twice,
     props,
@@ -276,6 +306,7 @@ export const withSqlite3AllUDF = (bc: {
     eidos_column_event_insert,
     eidos_column_event_update,
     eidos_meta_table_event_insert,
+    eidos_meta_table_event_update,
   ]
 
   const ALL_UDF_NO_CTX = [
@@ -290,6 +321,7 @@ export const withSqlite3AllUDF = (bc: {
     eidos_column_event_insertNoCtx,
     eidos_column_event_updateNoCtx,
     eidos_meta_table_event_insertNoCtx,
+    eidos_meta_table_event_updateNoCtx,
   ]
 
   return { ALL_UDF, ALL_UDF_NO_CTX }

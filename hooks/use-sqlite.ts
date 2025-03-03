@@ -605,7 +605,7 @@ export const useSqlite = (dbName?: string) => {
     if (!sqlWorker) return
     await sqlWorker.rebuildFTS(tableId)
     if (isDesktopMode) {
-      await window.eidos.invoke('close-query-worker')
+      await window.eidos.invoke('reload-query-worker')
     }
   }
 

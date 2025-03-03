@@ -42,7 +42,7 @@ export function useFormulaValidation() {
         } catch (err) {
             console.error(err);
             const errorMessage = err instanceof Error
-                ? err.message.slice(0, 100)
+                ? err.message
                 : "Unknown error during formula validation";
 
             return { isValid: false, error: errorMessage, result: null };
