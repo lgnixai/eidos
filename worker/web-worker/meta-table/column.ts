@@ -69,69 +69,63 @@ export class ColumnTable extends BaseTableImpl implements BaseTable<IField> {
     const { name, type, table_name, table_column_name, property } = data
     const columnType = ColumnTable.getColumnTypeByFieldType(type)
     const tableId = getTableIdByRawTableName(table_name)
-    await this.dataSpace.db.transaction(async (db) => {
+
+    try {
+      await this.dataSpace.db.prepare('BEGIN TRANSACTION;').run()
+
       let _property = property
       if (type === FieldType.Formula) {
         _property = { formula: "upper(title)" }
       }
       // add ui column
-      this.dataSpace.syncExec2(
+      this.dataSpace.db.prepare(
         `INSERT INTO ${ColumnTableName} (name,type,table_name,table_column_name,property) VALUES (?,?,?,?,?)`,
-        [name, type, table_name, table_column_name, JSON.stringify(_property)],
-        db
-      )
+      ).run([name, type, table_name, table_column_name, JSON.stringify(_property)])
       // add real column in table
       switch (type) {
         case FieldType.CreatedBy:
-          this.dataSpace.syncExec2(
+          this.dataSpace.db.prepare(
             `ALTER TABLE ${table_name} ADD COLUMN ${table_column_name} GENERATED ALWAYS AS (_created_by);`,
-            [],
-            db
-          )
+          ).run()
           break
         case FieldType.LastEditedBy:
-          this.dataSpace.syncExec2(
+          this.dataSpace.db.prepare(
             `ALTER TABLE ${table_name} ADD COLUMN ${table_column_name} GENERATED ALWAYS AS (_last_edited_by);`,
-            [],
-            db
-          )
+          ).run()
           break
         case FieldType.LastEditedTime:
-          this.dataSpace.syncExec2(
+          this.dataSpace.db.prepare(
             `ALTER TABLE ${table_name} ADD COLUMN ${table_column_name} GENERATED ALWAYS AS (_last_edited_time);`,
-            [],
-            db
-          )
+          ).run()
           break
         case FieldType.CreatedTime:
-          this.dataSpace.syncExec2(
+          this.dataSpace.db.prepare(
             `ALTER TABLE ${table_name} ADD COLUMN ${table_column_name} GENERATED ALWAYS AS (_created_time);`,
-            [],
-            db
-          )
+          ).run()
           break
         case FieldType.Formula:
-          this.dataSpace.syncExec2(
+          this.dataSpace.db.prepare(
             `ALTER TABLE ${table_name} ADD COLUMN ${table_column_name} GENERATED ALWAYS AS (upper(title));`,
-            [],
-            db
-          )
+          ).run()
           break
         case FieldType.Link:
           const tm = new TableManager(tableId, this.dataSpace)
-          await tm.fields.link.addField(data, db)
+          await tm.fields.link.addField(data, this.dataSpace.db)
           break
         default:
-          this.dataSpace.syncExec2(
+          this.dataSpace.db.prepare(
             `ALTER TABLE ${table_name} ADD COLUMN ${table_column_name} ${columnType};`,
-            [],
-            db
-          )
+          ).run()
           break
       }
-    })
 
-    return data
+      await this.dataSpace.db.prepare('COMMIT;').run()
+      return data
+    } catch (error) {
+      await this.dataSpace.db.prepare('ROLLBACK;').run()
+      console.error('Error in add transaction:', error)
+      throw error
+    }
   }
 
 
@@ -163,50 +157,46 @@ export class ColumnTable extends BaseTableImpl implements BaseTable<IField> {
   async deleteField(tableName: string, tableColumnName: string) {
     const effectTables: string[] = [tableName]
     try {
-      await this.dataSpace.db.transaction(async (db) => {
-        const _deleteField = async (
-          tableName: string,
-          tableColumnName: string
-        ) => {
-          await this.dataSpace.tableFullTextSearch.updateTrigger(tableName, [tableColumnName])
-          await this.dataSpace.onTableChange(this.dataSpace.dbName, tableName, [
-            tableColumnName,
-          ])
-          this.dataSpace.syncExec2(
-            `DELETE FROM ${ColumnTableName} WHERE table_column_name = ? AND table_name = ?;`,
-            [tableColumnName, tableName],
-            db
-          )
-          this.dataSpace.syncExec2(
-            `ALTER TABLE ${tableName} DROP COLUMN ${tableColumnName};`,
-            [],
-            db
-          )
-        }
-        const column = await this.getColumn(tableName, tableColumnName)
-        if (column?.type === FieldType.Link) {
-          const tm = new TableManager(
-            getTableIdByRawTableName(tableName),
-            this.dataSpace
-          )
-          const pairedField = await tm.fields.link.getPairedLinkField(column)
-          effectTables.push(pairedField.table_name)
-          // delete relation
-          await tm.fields.link.beforeDeleteColumn(
-            tableName,
-            tableColumnName,
-            db
-          )
-          // delete paired field
-          await _deleteField(
-            pairedField.table_name,
-            pairedField.table_column_name
-          )
-        }
-        await _deleteField(tableName, tableColumnName)
-      })
+      await this.dataSpace.db.prepare('BEGIN TRANSACTION;').run()
+
+      const _deleteField = async (
+        tableName: string,
+        tableColumnName: string
+      ) => {
+        await this.dataSpace.tableFullTextSearch.updateTrigger(tableName, [tableColumnName])
+        await this.dataSpace.onTableChange(this.dataSpace.dbName, tableName, [
+          tableColumnName,
+        ])
+        this.dataSpace.db.prepare(`DELETE FROM ${ColumnTableName} WHERE table_column_name = ? AND table_name = ?;`).run([tableColumnName, tableName])
+        this.dataSpace.db.prepare(`ALTER TABLE ${tableName} DROP COLUMN ${tableColumnName};`).run()
+      }
+
+      const column = await this.getColumn(tableName, tableColumnName)
+      if (column?.type === FieldType.Link) {
+        const tm = new TableManager(
+          getTableIdByRawTableName(tableName),
+          this.dataSpace
+        )
+        const pairedField = await tm.fields.link.getPairedLinkField(column)
+        effectTables.push(pairedField.table_name)
+        // delete relation
+        await tm.fields.link.beforeDeleteColumn(
+          tableName,
+          tableColumnName,
+          this.dataSpace.db
+        )
+        // delete paired field
+        await _deleteField(
+          pairedField.table_name,
+          pairedField.table_column_name
+        )
+      }
+      await _deleteField(tableName, tableColumnName)
+
+      await this.dataSpace.db.prepare('COMMIT;').run()
     } catch (error) {
-      console.error(error)
+      await this.dataSpace.db.prepare('ROLLBACK;').run()
+      console.error('Error in deleteField transaction:', error)
       this.dataSpace.notify({
         title: "Error",
         description:
@@ -284,7 +274,7 @@ export class ColumnTable extends BaseTableImpl implements BaseTable<IField> {
       for (const colName of deletionOrder.reverse()) {
         if (columnExpressions[colName]) {
           db.prepare(
-            `ALTER TABLE ${tableName} ADD COLUMN ${colName} GENERATED ALWAYS AS ${columnExpressions[colName]};`
+            `ALTER TABLE ${tableName} ADD COLUMN ${colName} GENERATED ALWAYS AS (${columnExpressions[colName]});`
           ).run();
         }
       }
@@ -298,13 +288,12 @@ export class ColumnTable extends BaseTableImpl implements BaseTable<IField> {
             : f
         )
       );
-
       db.prepare(
         `ALTER TABLE ${tableName} DROP COLUMN ${tableColumnName};`
       ).run();
 
       db.prepare(
-        `ALTER TABLE ${tableName} ADD COLUMN ${tableColumnName} GENERATED ALWAYS AS ${formulaExpr};`
+        `ALTER TABLE ${tableName} ADD COLUMN ${tableColumnName} GENERATED ALWAYS AS (${formulaExpr});`
       ).run();
     }
   }
@@ -316,9 +305,16 @@ export class ColumnTable extends BaseTableImpl implements BaseTable<IField> {
     type: FieldType
   }) {
     const { tableName, tableColumnName, property, type } = data
-    await this.dataSpace.db.transaction(async (D) => {
+
+    try {
+      await this.dataSpace.db.prepare('BEGIN TRANSACTION;').run()
+
       const oldField = await this.getColumn(tableName, tableColumnName)
-      if (!oldField) return
+      if (!oldField) {
+        await this.dataSpace.db.prepare('ROLLBACK;').run()
+        return;
+      }
+
       await this.dataSpace.sql`UPDATE ${Symbol(
         ColumnTableName
       )} SET property = ${JSON.stringify(
@@ -349,7 +345,7 @@ export class ColumnTable extends BaseTableImpl implements BaseTable<IField> {
         case FieldType.Formula:
           const fields = await this.list({ table_name: tableName })
 
-          await this.updateFormulaColumn(tableName, tableColumnName, property, fields, D);
+          await this.updateFormulaColumn(tableName, tableColumnName, property, fields, this.dataSpace.db);
 
           bc.postMessage({
             type: EidosDataEventChannelMsgType.DataUpdateSignalType,
@@ -363,7 +359,12 @@ export class ColumnTable extends BaseTableImpl implements BaseTable<IField> {
         default:
           break;
       }
-    })
+      await this.dataSpace.db.prepare('COMMIT;').run()
+    } catch (error) {
+      await this.dataSpace.db.prepare('ROLLBACK;').run()
+      console.error('Error in updateProperty transaction:', error);
+      throw error;
+    }
   }
 
   async list(q: { table_name: string }): Promise<IField[]> {
