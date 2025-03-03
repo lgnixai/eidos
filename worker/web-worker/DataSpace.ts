@@ -247,6 +247,19 @@ export class DataSpace {
     })
   }
 
+  public async getUDFs() {
+    const scripts = await this.script.list({
+      type: 'udf',
+      enabled: true
+    })
+    return scripts.map((script) => {
+      return {
+        name: script.name,
+        code: script.code
+      }
+    })
+  }
+
   // table change callback
   public async onTableChange(
     space: string,
@@ -596,9 +609,9 @@ export class DataSpace {
       order: "DESC",
     })
   }
-  public async callScript(id: string, input: Record<string, any>) {
-    return await this.script.call(id, input)
-  }
+  // public async callScript(id: string, input: Record<string, any>) {
+  //   return await this.script.call(id, input)
+  // }
 
   public async getScript(id: string) {
     return this.script.get(id)
@@ -880,7 +893,7 @@ export class DataSpace {
             description: error.toString(),
           })
         }
-        console.log(error)
+        throw error
       }
     }
     db.exec({

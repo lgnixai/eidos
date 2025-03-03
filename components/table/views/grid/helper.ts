@@ -1,9 +1,33 @@
-import { GridCellKind } from "@glideapps/glide-data-grid"
+import { DataEditorProps, GridCellKind } from "@glideapps/glide-data-grid"
 
 import { ColumnTableName } from "@/lib/sqlite/const"
 import { IField } from "@/lib/store/interface"
 
 import { defaultAllColumnsHandle } from "./fields/colums"
+import { headerIcons } from "./fields/header-icons"
+
+
+export const defaultConfig: Partial<DataEditorProps> = {
+  smoothScrollX: true,
+  smoothScrollY: true,
+  getCellsForSelection: true,
+  width: "100%",
+  rowHeight: 36,
+  headerHeight: 36,
+  freezeColumns: 1,
+  rowMarkers: "both",
+  trailingRowOptions: {
+    tint: false,
+    hint: "New",
+    sticky: true,
+  },
+  // auto handle copy and paste
+  onPaste: true,
+  headerIcons: headerIcons,
+  experimental: {
+    kineticScrollPerfHack: true,
+  },
+}
 
 export function getColumnsHandleMap(): {
   [kind: string]: Omit<(typeof defaultAllColumnsHandle)[0], "getContent"> & {

@@ -1,5 +1,5 @@
 import { EidosDataEventChannelName, EidosMessageChannelName } from "@/lib/const";
-import { DataSpace } from "@/worker/web-worker/DataSpace";
+import { DataSpace, EidosDatabase } from "@/worker/web-worker/DataSpace";
 import { WebContents, ipcMain } from "electron";
 import { getEidosFileSystemManager } from './file-system/getEidosFileSystemManager';
 import { getSpaceDbPath } from "./file-system/space";
@@ -18,6 +18,20 @@ function requestFromRenderer(webContents: WebContents, arg: any) {
 
         webContents.send('request-from-main', requestId, arg);
     });
+}
+
+async function initUDF(db: EidosDatabase) {
+    const scripts = await db.selectObjects(
+        `SELECT DISTINCT name, code FROM eidos__scripts WHERE type = 'udf' AND enabled = 1`
+    )
+    for (const script of scripts) {
+        const { code, name } = script
+        const dynamicFunc = new Function("return (" + code + ")")();
+        db.createFunction({
+            name,
+            xFunc: dynamicFunc
+        })
+    }
 }
 
 
@@ -85,6 +99,7 @@ export class DataSpaceManager {
             context: {
                 setInterval,
             },
+            createUDF: initUDF,
             hasLoadExtension: true,
             postMessage: (data: any, transfer?: any[]) => {
                 win?.webContents.send(EidosMessageChannelName, data, transfer);

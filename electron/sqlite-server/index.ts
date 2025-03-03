@@ -80,7 +80,8 @@ export class NodeServerDatabase extends BaseServerDatabase {
 
     async exec(opts: { sql: string; bind?: any[]; rowMode?: "array" | "object" }) {
         if (typeof opts === 'string') {
-            return this.db.exec(opts);
+            const res = this.db.exec(opts);
+            return res
         } else if (typeof opts === 'object') {
             const { sql, bind } = opts;
             const _bind = bind?.map((item: any) => {
@@ -109,6 +110,8 @@ export class NodeServerDatabase extends BaseServerDatabase {
     }
 
     createFunction(opt: { name: string; xFunc: (...args: any[]) => any }) {
-        this.db.function(opt.name, opt.xFunc)
+        this.db.function(opt.name, {
+            deterministic: true,
+        }, opt.xFunc)
     }
 }

@@ -8,9 +8,6 @@ import DataEditor, {
 import { useSpaceAppStore } from "@/apps/web-app/[database]/store"
 
 import "@glideapps/glide-data-grid/dist/index.css"
-import { useKeyPress, useSize } from "ahooks"
-import { Plus } from "lucide-react"
-import { useTheme } from "next-themes"
 import React, {
   useCallback,
   useContext,
@@ -18,56 +15,37 @@ import React, {
   useMemo,
   useRef,
 } from "react"
+import { useKeyPress, useSize } from "ahooks"
+import { Plus } from "lucide-react"
+import { useTheme } from "next-themes"
 
+import { IGridViewProperties, IView } from "@/lib/store/IView"
+import { cn } from "@/lib/utils"
 import { useSqlite } from "@/hooks/use-sqlite"
 import { useTableOperation } from "@/hooks/use-table"
 import { useUiColumns } from "@/hooks/use-ui-columns"
-import { IGridViewProperties, IView } from "@/lib/store/IView"
-import { cn } from "@/lib/utils"
 
 import { TwinkleSparkle } from "../../../loading"
 import { Button } from "../../../ui/button"
 import { TableContext, useCurrentView } from "../../hooks"
 import { useTableSearchStore } from "../../hooks/use-table-search-store"
 import { useViewCount } from "../../hooks/use-view-count"
-import { AITools } from "./ai-tools"
 import { customCells } from "./cells"
-import { headerIcons } from "./fields/header-icons"
 import { GridContextMenu } from "./grid-context-menu"
-import { getScrollbarWidth } from "./helper"
+import { defaultConfig, getScrollbarWidth } from "./helper"
 import { useAsyncData } from "./hooks/use-async-data"
-import { useCellActivated } from "./hooks/use-cell-activated"
 import { useColumns } from "./hooks/use-col"
 import { useDataSource } from "./hooks/use-data-source"
 import { useDrop } from "./hooks/use-drop"
 import { useGridSearch } from "./hooks/use-grid-search"
 import { useHighlightRow } from "./hooks/use-highlight-row"
 import { useHover } from "./hooks/use-hover"
+import { AITools } from "./plugins/ai-tools"
+import { useFormulaEditor } from "./plugins/use-formula-editor"
 import { useTableAppStore } from "./store"
 import "./styles.css"
+import { FormulaEditor } from "./plugins/formula-editor"
 import { darkTheme, lightTheme } from "./theme"
-
-const defaultConfig: Partial<DataEditorProps> = {
-  smoothScrollX: true,
-  smoothScrollY: true,
-  getCellsForSelection: true,
-  width: "100%",
-  rowHeight: 36,
-  headerHeight: 36,
-  freezeColumns: 1,
-  rowMarkers: "both",
-  trailingRowOptions: {
-    tint: false,
-    hint: "New",
-    sticky: true,
-  },
-  // auto handle copy and paste
-  onPaste: true,
-  headerIcons: headerIcons,
-  experimental: {
-    kineticScrollPerfHack: true,
-  },
-}
 
 interface IGridProps {
   tableName: string
@@ -92,6 +70,7 @@ export default function GridView(props: IGridProps) {
     DataEditorProps["highlightRegions"]
   >([])
 
+  const formulaEditorRef = useRef<HTMLDivElement>(null)
   const r = containerRef.current?.querySelector(".dvn-scroll-inner")
   const hasScroll = r && r?.scrollWidth > r?.clientWidth
 
@@ -167,7 +146,31 @@ export default function GridView(props: IGridProps) {
     getColumnIndexByColumnName
   )
 
-  const { cell, setCell } = useCellActivated()
+  const {
+    onCellActivated,
+    showEditor,
+    editorRef,
+    closeEditor,
+    formulaField,
+    rowIndex,
+    refreshEditorPosition,
+  } = useFormulaEditor(
+    showColumns,
+    glideDataGridRef,
+    formulaEditorRef,
+    selection
+  )
+
+  useEffect(() => {
+    if (showEditor) {
+      refreshEditorPosition()
+    }
+  }, [size])
+
+  const rowId = useMemo(() => {
+    const row = rowIndex ? getRowByIndex(rowIndex) : null
+    return row?._id
+  }, [rowIndex, getRowByIndex])
 
   // Add state for search highlight
   const [searchHighlightRegion, setSearchHighlightRegion] = React.useState<
@@ -404,6 +407,7 @@ export default function GridView(props: IGridProps) {
               }}
               onCellEdited={onCellEdited}
               onCellsEdited={onCellsEdited}
+              onCellActivated={onCellActivated}
               onRowAppended={isReadOnly ? undefined : handleAddRow}
               // onSearchResultsChanged={onSearchResultsChanged}
             />
@@ -426,6 +430,17 @@ export default function GridView(props: IGridProps) {
             <TwinkleSparkle />
           </div>
         )}
+        <div ref={formulaEditorRef} className="fixed">
+          {showEditor && (
+            <FormulaEditor
+              editorRef={editorRef}
+              closeEditor={closeEditor}
+              formulaField={formulaField}
+              uiColumns={uiColumns}
+              rowId={rowId}
+            />
+          )}
+        </div>
       </div>
     </div>
   )

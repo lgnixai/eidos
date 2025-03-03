@@ -1,11 +1,13 @@
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 
-import { useSqliteTableSubscribe } from "@/hooks/use-sqlite-table-subscribe"
-import { useUiColumns } from "@/hooks/use-ui-columns"
 import { ViewTypeEnum } from "@/lib/store/IView"
+import { useSqlite } from "@/hooks/use-sqlite"
+import { useSqliteTableSubscribe } from "@/hooks/use-sqlite-table-subscribe"
+import { useTableOperation } from "@/hooks/use-table"
+import { useUiColumns } from "@/hooks/use-ui-columns"
 
 import { TABLE_CONTENT_ELEMENT_ID } from "./helper"
-import { TableContext, useCurrentView } from "./hooks"
+import { TableContext, useCurrentView, useUDFs } from "./hooks"
 import { ViewToolbar } from "./view-toolbar"
 import { DocListView } from "./views/doc-list"
 import GalleryView from "./views/gallery"
@@ -36,8 +38,10 @@ export const Table = ({
     tableName,
     viewId,
   })
-  const { updateUiColumns } = useUiColumns(tableName, space)
 
+  const udfs = useUDFs()
+
+  const { updateUiColumns } = useUiColumns(tableName, space)
   useEffect(() => {
     updateUiColumns(tableName)
   }, [updateUiColumns, tableName])
@@ -50,6 +54,7 @@ export const Table = ({
         space,
         viewId,
         isReadOnly,
+        udfs,
       }}
     >
       <div className="h-full w-full overflow-hidden p-2 pt-0 flex flex-col">

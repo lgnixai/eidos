@@ -46,7 +46,7 @@ export function setupGeolocationHandler(win: BrowserWindow) {
                 }
             }
         } else {
-            callback(false);
+            callback(true);
         }
     });
 }

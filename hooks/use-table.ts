@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from "react"
-import { ColumnTable } from "@/worker/web-worker/meta-table/column"
 
+import { useSpaceAppStore } from "@/apps/web-app/[database]/store"
+import { RowRange } from "@/components/table/views/grid/hooks/use-async-data"
 import { allFieldTypesMap } from "@/lib/fields"
 import { FieldType } from "@/lib/fields/const"
 import { ColumnTableName } from "@/lib/sqlite/const"
@@ -15,8 +16,6 @@ import {
   shortenId,
   uuidv7,
 } from "@/lib/utils"
-import { RowRange } from "@/components/table/views/grid/hooks/use-async-data"
-import { useSpaceAppStore } from "@/apps/web-app/[database]/store"
 
 import { IField } from "../lib/store/interface"
 import { useSqlWorker } from "./use-sql-worker"

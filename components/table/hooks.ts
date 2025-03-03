@@ -26,6 +26,10 @@ interface TableContextType {
   space: string
   viewId?: string
   isReadOnly?: boolean
+  udfs?: {
+    name: string
+    code: string
+  }[] // name list of user defined function
 }
 
 export const TableContext = createContext<TableContextType>({
@@ -33,7 +37,25 @@ export const TableContext = createContext<TableContextType>({
   space: "",
   viewId: undefined,
   isReadOnly: true,
+  udfs: [],
 })
+
+
+export const useUDFs = () => {
+  const [udfs, setUdfs] = useState<{
+    name: string
+    code: string
+  }[]>([])
+  const { sqlite } = useSqlite()
+  useEffect(() => {
+    if (sqlite) {
+      sqlite.getUDFs().then((udfs) => {
+        setUdfs(udfs)
+      })
+    }
+  }, [sqlite])
+  return udfs
+}
 
 export const useViewOperation = () => {
   const { tableName, space } = useContext(TableContext)

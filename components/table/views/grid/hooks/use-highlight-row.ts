@@ -3,6 +3,7 @@ import { DataEditorProps } from "@glideapps/glide-data-grid"
 import { getWorker } from "@/lib/sqlite/worker"
 import { MsgType } from "@/lib/const"
 import { getRawTableNameById } from "@/lib/utils"
+import { IField } from "@/lib/store/interface"
 
 /**
  * Custom hook to subscribe to highlight row events from the worker.
@@ -17,7 +18,7 @@ import { getRawTableNameById } from "@/lib/utils"
 export function useHighlightRow(
     tableName: string,
     getIndexByRowId: (rowId: any) => number,
-    showColumns: any[]
+    showColumns: IField<any>[]
 ): { customHighlightRegions: DataEditorProps["highlightRegions"], setCustomHighlightRegions: React.Dispatch<React.SetStateAction<DataEditorProps["highlightRegions"]>> } {
     const [customHighlightRegions, setCustomHighlightRegions] = useState<DataEditorProps["highlightRegions"]>([])
 
