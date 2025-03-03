@@ -191,13 +191,16 @@ export const Editor: ReturnType<ProvideEditorCallback<MultiSelectCell>> = (
                   />
                 </div>
               ))}
-              <CommandInput
-                ref={inputRef}
-                onKeyDown={handleBackspace}
-                value={inputValue}
-                onValueChange={setInputValue}
-                autoFocus
-              />
+              <div className="[&_[cmdk-input-wrapper]_svg]:hidden [&_[cmdk-input-wrapper]]:border-none">
+                <CommandInput
+                  ref={inputRef}
+                  onKeyDown={handleBackspace}
+                  value={inputValue}
+                  onValueChange={setInputValue}
+                  className="border-none p-0 focus:ring-0 focus-visible:ring-0 h-6"
+                  autoFocus
+                />
+              </div>
             </div>
           </div>
           <div
