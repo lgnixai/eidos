@@ -1,4 +1,4 @@
-import { isStandaloneBlocksPath } from "@/lib/utils";
+import { isFilesPath, isStandaloneBlocksPath } from "@/lib/utils";
 import { BrowserWindow, WebContents, WebContentsView, WebContentsViewConstructorOptions, shell } from "electron";
 import path from "path";
 
@@ -80,17 +80,26 @@ export class WindowManager {
             const newDomain = new URL(url).origin;
             const pathname = new URL(url).pathname;
             if (currentDomain === newDomain) {
+                console.log("pathname", pathname)
                 if (isStandaloneBlocksPath(pathname)) {
                     new BrowserWindow({
                         width: 512,
                         height: 800,
                         webPreferences: defaultViewOptions.webPreferences
                     }).loadURL(url);
+                } else if (isFilesPath(pathname)) {
+
+                    new BrowserWindow({
+                        width: 800,
+                        height: 600,
+                        webPreferences: defaultViewOptions.webPreferences
+                    }).loadURL(url);
                 } else {
-                    this.createView({
-                        webPreferences: defaultViewOptions.webPreferences,
-                        url,
-                    });
+                    throw new Error(`Unsupported path: ${pathname}`);
+                    // this.createView({
+                    //     webPreferences: defaultViewOptions.webPreferences,
+                    //     url,
+                    // });
                 }
                 return { action: 'deny' };
             } else {

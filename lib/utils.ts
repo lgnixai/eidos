@@ -280,6 +280,12 @@ export const isStandaloneBlocksPath = (pathname: string) => {
   return /^\/[\w-]+\/standalone-blocks\/\w+$/.test(pathname)
 }
 
+export const isFilesPath = (pathname: string) => {
+  // /:space/files/:id - now supports file names with special characters
+  return /^\/[\w-]+\/files\/[^/]+$/.test(pathname)
+}
+
+
 interface ApplicationError extends Error {
   info: string;
   status: number;
