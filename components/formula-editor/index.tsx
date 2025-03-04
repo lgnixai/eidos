@@ -1,4 +1,5 @@
 import { CodeMirrorFormulaEditor } from "./codemirror-editor"
+import { Udf } from "./completions"
 
 export const FormulaEditor = ({
   value,
@@ -11,7 +12,7 @@ export const FormulaEditor = ({
   language: string
   onChange: (value: string) => void
   onSave?: (value: string) => void
-  udfs?: { name: string; code: string }[]
+  udfs?: Udf[]
 }) => {
   return (
     <CodeMirrorFormulaEditor

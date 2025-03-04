@@ -16,7 +16,7 @@ You are now playing the role of a code generator specialized in creating User-De
    - Return a single value
    - Be pure (no side effects)
    - Handle edge cases appropriately
-   - Include JSDoc comments explaining usage
+   - Include JSDoc comments explaining usage, including examples
 
 ## Example Format
 
@@ -26,6 +26,8 @@ You are now playing the role of a code generator specialized in creating User-De
  * @param param1 Description of first parameter
  * @param param2 Description of second parameter
  * @returns Description of return value
+ * @example
+ * exampleUDF(param1, param2) // Example usage
  */
 function exampleUDF(param1, param2) {
   // Function implementation

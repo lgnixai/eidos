@@ -1,16 +1,17 @@
-import { useContext, useEffect, useState } from "react"
+import { useContext, useEffect, useMemo, useState } from "react"
 import { useDebounceFn } from "ahooks"
 import {
   Calculator,
   ChevronDown,
   ChevronUp,
+  Code2Icon as Code,
   FunctionSquareIcon,
   Hash,
   Info,
   Variable,
 } from "lucide-react"
-import { useTheme } from "next-themes"
 import { useTranslation } from "react-i18next"
+import { Link } from "react-router-dom"
 
 import { FormulaProperty } from "@/lib/fields/formula"
 import { IField } from "@/lib/store/interface"
@@ -116,12 +117,16 @@ export const FormulaEditor = ({
       }
     }
   }
+
+  const completionItems = useMemo(() => {
+    return getCompletions(uiColumns, udfs || [])
+  }, [uiColumns, udfs])
+
   const handleCurrentTokenChange = (
     token: { text: string; type: string } | null
   ) => {
     try {
       if (token?.type === "Identifier") {
-        const completionItems = getCompletionItems()
         const completionItem = completionItems.find(
           (item) => item.label.toLowerCase() === token.text.toLowerCase()
         )
@@ -184,30 +189,31 @@ export const FormulaEditor = ({
 
   const handleArrowNavigation = (direction: "up" | "down") => {
     try {
-      const items = getCompletionItems()
-      if (items.length === 0) return
+      if (completionItems.length === 0) return
 
       if (!selectedItem) {
-        setSelectedItem(items[0])
+        setSelectedItem(completionItems[0])
         return
       }
 
-      const currentIndex = items.findIndex(
+      const currentIndex = completionItems.findIndex(
         (item) => item.label === selectedItem.label
       )
 
       let newIndex
       if (direction === "up") {
-        newIndex = currentIndex > 0 ? currentIndex - 1 : items.length - 1
+        newIndex =
+          currentIndex > 0 ? currentIndex - 1 : completionItems.length - 1
       } else {
-        newIndex = currentIndex < items.length - 1 ? currentIndex + 1 : 0
+        newIndex =
+          currentIndex < completionItems.length - 1 ? currentIndex + 1 : 0
       }
 
-      setSelectedItem(items[newIndex])
+      setSelectedItem(completionItems[newIndex])
 
       // Scroll to the selected item with improved performance
       const completionItemElement = document.querySelector(
-        `.group[data-label="${items[newIndex].label}"]`
+        `.group[data-label="${completionItems[newIndex].label}"]`
       )
       if (completionItemElement) {
         // Use 'auto' instead of 'smooth' for better performance during rapid scrolling
@@ -248,10 +254,6 @@ export const FormulaEditor = ({
     }
   }
 
-  const getCompletionItems = () => {
-    return getCompletions(uiColumns, udfs || [])
-  }
-
   return (
     <div className="bg-background w-full min-w-[500px] max-w-[600px] border rounded-lg flex shadow-lg">
       <div className="flex-1 flex flex-col min-w-0 relative">
@@ -273,10 +275,10 @@ export const FormulaEditor = ({
           isGeneratingFormula={isGeneratingFormula}
         />
         <div className="flex justify-end gap-2 absolute top-[60px] right-2 z-10">
-          <Button variant="outline" size="sm" onClick={closeEditor}>
+          <Button variant="outline" size="xs" onClick={closeEditor}>
             {t("common.cancel")}
           </Button>
-          <Button variant="default" size="sm" onClick={handleSave}>
+          <Button variant="default" size="xs" onClick={handleSave}>
             {t("common.save")}
           </Button>
         </div>
@@ -334,10 +336,11 @@ export const FormulaEditor = ({
           <div className="col-span-2 border-r">
             <div className="max-h-[200px] overflow-y-auto">
               <div className="py-1">
-                {getCompletionItems().map((item) => (
+                {completionItems.map((item) => (
                   <div
                     key={item.label}
                     className="group"
+                    data-label={item.label}
                     onMouseEnter={() => setSelectedItem(item)}
                   >
                     {renderCompletionItem(item)}
@@ -349,11 +352,21 @@ export const FormulaEditor = ({
           <div className="col-span-3 p-4">
             {selectedItem?.example && (
               <div className="text-sm text-muted-foreground">
-                <div className="font-medium mb-2">
-                  {t("formula.editor.example")}
+                <div className="font-medium mb-2 flex items-center gap-1">
+                  {t("formula.editor.example")}{" "}
+                  {selectedItem?.detail === "UDF" && (
+                    <Link
+                      to={`/${space}/extensions/${selectedItem.id}`}
+                      className="text-xs text-muted-foreground underline hover:text-destructive/80"
+                    >
+                      <Code size={14} />
+                    </Link>
+                  )}
                 </div>
                 <div className="bg-muted p-2 rounded">
-                  {selectedItem.example}
+                  <pre className="text-xs text-muted-foreground max-h-[400px] overflow-y-auto">
+                    {selectedItem.example}
+                  </pre>
                 </div>
               </div>
             )}

@@ -254,6 +254,7 @@ export class DataSpace {
     })
     return scripts.map((script) => {
       return {
+        id: script.id,
         name: script.name,
         code: script.code
       }

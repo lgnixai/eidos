@@ -1,5 +1,6 @@
 import { CompletionContext, CompletionResult } from "@codemirror/autocomplete"
 import { EditorView } from "codemirror"
+import { parse } from "comment-parser"
 
 import { JSON_FUNCTIONS } from "./functions/json"
 import { createUdfTooltip } from "./tooltip"
@@ -10,6 +11,7 @@ export interface UiColumn {
 }
 
 export interface Udf {
+  id: string
   name: string
   code: string
 }
@@ -32,10 +34,12 @@ export const getCompletions = (uiColumns: UiColumn[], udfs: Udf[]) => {
   if (udfs && udfs.length > 0) {
     udfs.forEach((udf) => {
       completions.push({
+        id: udf.id,
         label: udf.name,
         type: "function",
         detail: "UDF",
         info: (view: EditorView) => createUdfTooltip(udf.code),
+        example: extractExampleFromCode(udf.code),
       })
     })
   }
@@ -450,4 +454,49 @@ export function sqlCompletions(
     console.error("Error in SQL completions:", error)
     return null
   }
+}
+
+/**
+ * Extracts example from UDF code using JSDoc @example tag
+ * If no @example tag is found, returns the entire JSDoc content
+ * @param code The UDF code to extract example from
+ * @returns The example string or undefined if no JSDoc found
+ */
+function extractExampleFromCode(code: string): string | undefined {
+  try {
+    // Parse with preserving whitespace option
+    const comments = parse(code, {
+      // This preserves whitespace in descriptions
+      spacing: "preserve",
+    })
+
+    if (comments.length > 0) {
+      // Get the first JSDoc comment block
+      const comment = comments[0]
+
+      // Look for @example tag
+      const exampleTag = comment.tags.find((tag) => tag.tag === "example")
+
+      if (exampleTag) {
+        // Return the example description with line breaks preserved
+        // The source property contains the raw text with original formatting
+        return exampleTag.description
+          .split("\n")
+          .map((line) => line.trim())
+          .join("\n")
+          .trim()
+      }
+
+      // If no @example tag found, return the main description
+      return comment.description
+        .split("\n")
+        .map((line) => line.trim())
+        .join("\n")
+        .trim()
+    }
+  } catch (error) {
+    console.error("Error parsing JSDoc:", error)
+  }
+
+  return undefined
 }

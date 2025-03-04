@@ -57,8 +57,8 @@ export const FormulaPropertyEditor = (props: IFieldPropertyEditorProps) => {
       <div className="flex flex-col gap-2">
         <Popover open={isOpen} onOpenChange={setIsOpen}>
           <PopoverTrigger asChild>
-            <p className="text-sm text-gray-500 flex items-center gap-2">
-              <FunctionSquareIcon className="w-4 h-4" />
+            <p className="text-sm text-gray-500 flex items-start gap-2">
+              <FunctionSquareIcon className="w-4 h-4 flex-shrink-0 mt-0.5" />
               {formula}
             </p>
           </PopoverTrigger>

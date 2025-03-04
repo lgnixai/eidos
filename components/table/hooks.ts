@@ -27,6 +27,7 @@ interface TableContextType {
   viewId?: string
   isReadOnly?: boolean
   udfs?: {
+    id: string
     name: string
     code: string
   }[] // name list of user defined function
@@ -43,6 +44,7 @@ export const TableContext = createContext<TableContextType>({
 
 export const useUDFs = () => {
   const [udfs, setUdfs] = useState<{
+    id: string
     name: string
     code: string
   }[]>([])

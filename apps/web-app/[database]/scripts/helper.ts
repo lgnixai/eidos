@@ -5,6 +5,14 @@ import { IScript } from "@/worker/web-worker/meta-table/script"
 import { generateId, proxyURL } from "@/lib/utils"
 import eidosTypes from "@eidos.space/types/index.d.ts?raw"
 
+import { parse } from "comment-parser"
+
+
+export const getDescriptionFromCode = (code: string) => {
+  const comments = parse(code)
+  const comment = comments[0]
+  return comment?.description
+}
 
 export const PromptEnableCheck = z.object({
   model: z.string().refine((value) => value.trim() !== "", {

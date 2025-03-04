@@ -29,7 +29,7 @@ import { useChatHeader } from "./components/chat/use-chat-header"
 import { ExtensionToolbar } from "./components/extension-toolbar"
 import { ExtensionConfig } from "./config/config"
 import { ScriptSandbox } from "./editor/script-sandbox"
-import { getEditorLanguage } from "./helper"
+import { getDescriptionFromCode, getEditorLanguage } from "./helper"
 import { useExtensionChatHistory } from "./hooks/use-extension-chat-history"
 import { useScript } from "./hooks/use-script"
 import { useEditorStore } from "./stores/editor-store"
@@ -152,9 +152,11 @@ export const ScriptDetailPage = () => {
           const func = Object.values(res)[0] as Function
           if (typeof func === "function") {
             const name = func.name
+            const description = getDescriptionFromCode(code)
             await updateScript({
               id: script.id,
               name,
+              description,
             })
           }
         } catch (error) {
