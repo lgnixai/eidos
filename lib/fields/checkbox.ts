@@ -28,6 +28,9 @@ export class CheckboxField extends BaseField<
     }
   }
 
+  text2RawData(value: string | number) {
+    return Boolean(value) || null
+  }
   cellData2RawData(cell: CheckboxCell) {
     return {
       rawData: cell.data ? 1 : null,
