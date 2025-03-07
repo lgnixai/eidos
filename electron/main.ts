@@ -18,6 +18,7 @@ export let win: BrowserWindow | null
 let appUpdater: AppUpdater;
 let tray: Tray | null
 let protocolHandler: ProtocolHandler;
+let forceQuit = false;
 
 export const PORT = 13127;
 
@@ -155,6 +156,7 @@ ipcMain.handle('check-for-updates', () => {
 });
 
 ipcMain.handle('quit-and-install', () => {
+    forceQuit = true;
     appUpdater.quitAndInstall();
 });
 
@@ -163,7 +165,7 @@ ipcMain.handle('initialize-playground', (event, space, blockId, files) => {
 });
 
 
-let forceQuit = false;
+
 
 app.on('before-quit', () => {
     forceQuit = true;

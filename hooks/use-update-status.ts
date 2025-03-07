@@ -1,6 +1,5 @@
 import { isDesktopMode } from "@/lib/env";
-import { useEffect, useState } from "react"
-
+import { create } from 'zustand';
 
 type UpdateStatus = 'checking' | 'available' | 'not-available' | 'error' | 'progress' | 'downloaded' | 'idle';
 
@@ -17,60 +16,65 @@ interface UpdateProgress {
     total: number;
 }
 
-export const useUpdateStatus = () => {
-    const [updateStatus, setUpdateStatus] = useState<UpdateStatus>('idle');
-    const [updateInfo, setUpdateInfo] = useState<UpdateInfo | null>(null);
-    const [updateProgress, setUpdateProgress] = useState<UpdateProgress | null>(null);
-    const [updateError, setUpdateError] = useState<string | null>(null);
+interface UpdateStore {
+    updateStatus: UpdateStatus;
+    updateInfo: UpdateInfo | null;
+    updateProgress: UpdateProgress | null;
+    updateError: string | null;
+    checkForUpdates: () => void;
+    quitAndInstall: () => void;
+}
 
-    useEffect(() => {
-        if (!isDesktopMode) {
-            return
+// 创建 Zustand store
+const useUpdateStore = create<UpdateStore>((set) => ({
+    updateStatus: 'idle',
+    updateInfo: null,
+    updateProgress: null,
+    updateError: null,
+
+    checkForUpdates: () => {
+        if (isDesktopMode) {
+            window.eidos.invoke('check-for-updates');
         }
-        const handleUpdateStatus = (status: UpdateStatus, data?: any) => {
-            setUpdateStatus(status);
-            switch (status) {
-                case 'available':
-                case 'downloaded':
-                    setUpdateInfo(data);
-                    break;
-                case 'progress':
-                    setUpdateProgress(data);
-                    break;
-                case 'error':
-                    setUpdateError(data.message || 'Unknown error');
-                    break;
-                default:
-                    break;
-            }
-        };
+    },
 
-        let listenerId = window.eidos.on('update-status', (event, status: UpdateStatus, data?: any) => {
-            handleUpdateStatus(status, data);
-        });
+    quitAndInstall: () => {
+        if (isDesktopMode) {
+            window.eidos.invoke('quit-and-install');
+        }
+    }
+}));
 
-        return () => {
-            if (listenerId) {
-                window.eidos.off('update-status', listenerId);
-            }
-        };
-    }, []);
+// 初始化 store 和事件监听
+if (typeof window !== 'undefined' && isDesktopMode && !(window as any).__updateStoreInitialized) {
+    (window as any).__updateStoreInitialized = true;
 
-    const checkForUpdates = () => {
-        window.eidos.invoke('check-for-updates');
+    const handleUpdateStatus = (status: UpdateStatus, data?: any) => {
+        switch (status) {
+            case 'available':
+            case 'downloaded':
+                useUpdateStore.setState({ updateStatus: status, updateInfo: data });
+                break;
+            case 'progress':
+                useUpdateStore.setState({ updateStatus: status, updateProgress: data });
+                break;
+            case 'error':
+                useUpdateStore.setState({
+                    updateStatus: status,
+                    updateError: data.message || 'Unknown error'
+                });
+                break;
+            default:
+                useUpdateStore.setState({ updateStatus: status });
+                break;
+        }
     };
 
-    const quitAndInstall = () => {
-        window.eidos.invoke('quit-and-install');
-    };
+    window.eidos.on('update-status', (event, status: UpdateStatus, data?: any) => {
+        handleUpdateStatus(status, data);
+    });
+}
 
-    return {
-        updateStatus,
-        updateInfo,
-        updateProgress,
-        updateError,
-        checkForUpdates,
-        quitAndInstall
-    };
-};
+// 导出 hook
+export const useUpdateStatus = () => useUpdateStore();
 
