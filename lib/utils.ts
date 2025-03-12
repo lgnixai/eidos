@@ -281,8 +281,8 @@ export const isStandaloneBlocksPath = (pathname: string) => {
 }
 
 export const isFilesPath = (pathname: string) => {
-  // /:space/files/:id - now supports file names with special characters
-  return /^\/[\w-]+\/files\/[^/]+$/.test(pathname)
+  // /:space/files/:id - now supports file names with special characters and subdirectories
+  return /^\/[\w-]+\/files\/.*$/.test(pathname)
 }
 
 
