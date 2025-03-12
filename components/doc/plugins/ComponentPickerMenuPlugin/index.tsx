@@ -100,6 +100,7 @@ class ComponentPickerOption extends MenuOption {
   disabled?: boolean
   // What happens when you select this option?
   onSelect: (queryString: string) => void
+  isMblock?: boolean
 
   constructor(
     title: string,
@@ -109,6 +110,7 @@ class ComponentPickerOption extends MenuOption {
       disabled?: boolean
       keyboardShortcut?: string
       onSelect: (queryString: string) => void
+      isMblock?: boolean
     }
   ) {
     super(title)
@@ -118,6 +120,7 @@ class ComponentPickerOption extends MenuOption {
     this.keyboardShortcut = options.keyboardShortcut
     this.disabled = options.disabled
     this.onSelect = options.onSelect.bind(this)
+    this.isMblock = options.isMblock
   }
 }
 
@@ -151,7 +154,9 @@ function ComponentPickerMenuItem({
       onClick={onClick}
     >
       {option.icon}
-      <span className="text">{option.title}</span>
+      <span className="text truncate w-[150px]" title={option.title}>
+        {option.title}
+      </span>
     </li>
   )
 }
@@ -225,18 +230,21 @@ export function ComponentPickerMenuPlugin(): JSX.Element {
     }
 
     mblocks.forEach((mblock) => {
-      options.push(
-        new ComponentPickerOption(mblock.name, {
-          icon: <ToyBrickIcon className="h-5 w-5" />,
-          keywords: [mblock.name],
-          onSelect: () => {
-            editor.dispatchCommand(
-              INSERT_CUSTOM_BLOCK_COMMAND,
-              getBlockUrl(mblock.id)
-            )
-          },
-        })
-      )
+      if (mblock.name.includes(queryString)) {
+        options.push(
+          new ComponentPickerOption(mblock.name, {
+            icon: <ToyBrickIcon className="h-5 w-5 flex-shrink-0" />,
+            keywords: [mblock.name],
+            isMblock: true,
+            onSelect: () => {
+              editor.dispatchCommand(
+                INSERT_CUSTOM_BLOCK_COMMAND,
+                getBlockUrl(mblock.id)
+              )
+            },
+          })
+        )
+      }
     })
     return options
   }, [editor, queryString, t, mblocks])
@@ -402,9 +410,16 @@ export function ComponentPickerMenuPlugin(): JSX.Element {
 
     const dynamicOptions = getDynamicOptions()
 
+    // Filter out mblock options from dynamicOptions
+    const mblockOptions = dynamicOptions.filter((option) => option.isMblock)
+
+    const nonMblockDynamicOptions = dynamicOptions.filter(
+      (option) => !option.isMblock
+    )
+
     return queryString
       ? [
-          ...dynamicOptions,
+          ...nonMblockDynamicOptions,
           ...baseOptions.filter((option) => {
             return new RegExp(queryString, "gi").exec(option.title) ||
               option.keywords != null
@@ -413,6 +428,7 @@ export function ComponentPickerMenuPlugin(): JSX.Element {
                 )
               : false
           }),
+          ...mblockOptions,
         ]
       : baseOptions
   }, [editor, extBlocks, getDynamicOptions, queryString, showModal, t])
