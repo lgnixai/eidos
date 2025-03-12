@@ -1,19 +1,17 @@
 import {
   DataUpdateSignalType,
   EidosDataEventChannelMsg,
-  EidosDataEventChannelMsgType,
-  EidosDataEventChannelName,
+  EidosDataEventChannelMsgType
 } from "@/lib/const"
 import { getTableIdByRawTableName } from "@/lib/utils"
 
 import { DataSpace } from "../DataSpace"
 import { TableManager } from "../sdk/table"
 
-const bc = new BroadcastChannel(EidosDataEventChannelName)
 
 export class DataChangeEventHandler {
   constructor(private dataSpace: DataSpace) {
-    bc.onmessage = async (e: MessageEvent<EidosDataEventChannelMsg>) => {
+    dataSpace.dataEventChannel.addEventListener("message", async (e: MessageEvent<EidosDataEventChannelMsg>) => {
       const { type, payload } = e.data
       if (type === EidosDataEventChannelMsgType.DataUpdateSignalType) {
         const { _new, _old, table } = payload
@@ -57,7 +55,7 @@ export class DataChangeEventHandler {
             break
         }
       }
-    }
+    })
   }
 
   handleLinkRelationChange = async (data: {

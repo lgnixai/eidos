@@ -1,7 +1,6 @@
 import {
   DataUpdateSignalType,
-  EidosDataEventChannelMsgType,
-  EidosDataEventChannelName,
+  EidosDataEventChannelMsgType
 } from "@/lib/const"
 import { allFieldTypesMap } from "@/lib/fields"
 import { FieldType } from "@/lib/fields/const"
@@ -12,12 +11,11 @@ import { findDependentFormulaFields, getFormulaFieldDeletionOrder, transformForm
 import { IField } from "@/lib/store/interface"
 import { getColumnIndexName, getTableIdByRawTableName } from "@/lib/utils"
 
-import { TableManager } from "../sdk/table"
-import { BaseTable, BaseTableImpl } from "./base"
 import { BaseServerDatabase } from "@/lib/sqlite/interface"
 import { Database } from "@sqlite.org/sqlite-wasm"
+import { TableManager } from "../sdk/table"
+import { BaseTable, BaseTableImpl } from "./base"
 
-const bc = new BroadcastChannel(EidosDataEventChannelName)
 
 /**
  * define
@@ -347,7 +345,7 @@ export class ColumnTable extends BaseTableImpl implements BaseTable<IField> {
 
           await this.updateFormulaColumn(tableName, tableColumnName, property, fields, this.dataSpace.db);
 
-          bc.postMessage({
+          this.dataSpace.dataEventChannel.postMessage({
             type: EidosDataEventChannelMsgType.DataUpdateSignalType,
             payload: {
               type: DataUpdateSignalType.UpdateColumn,

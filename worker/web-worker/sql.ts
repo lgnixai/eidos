@@ -5,6 +5,7 @@ import { logger } from "@/lib/env"
 import { getConfig } from "@/lib/storage/indexeddb"
 
 import { DataSpace, EidosDatabase } from "./DataSpace"
+import { EidosDataEventChannelName } from "@/lib/const"
 
 const log = logger.info
 const error = logger.error
@@ -51,6 +52,7 @@ export class Sqlite {
       context: {
         setInterval: setInterval,
       },
+      dataEventChannel: new BroadcastChannel(EidosDataEventChannelName)
     })
   }
 
@@ -109,6 +111,7 @@ export class Sqlite {
       context: {
         setInterval: setInterval,
       },
+      dataEventChannel: new BroadcastChannel(EidosDataEventChannelName)
     })
   }
 }

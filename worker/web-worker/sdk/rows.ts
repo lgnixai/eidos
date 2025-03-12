@@ -6,11 +6,10 @@ import { FieldType } from "@/lib/fields/const"
 import { IView } from "@/lib/store/IView"
 import type { IField } from "@/lib/store/interface"
 
+import { BaseServerDatabase } from "@/lib/sqlite/interface"
 import { DataSpace } from "../DataSpace"
 import { workerStore } from "../store"
 import { TableManager } from "./table"
-import { BaseServerDatabase } from "@/lib/sqlite/interface"
-import { NodeServerDatabase } from "@/electron/sqlite-server"
 
 export class RowsManager {
   dataSpace: DataSpace

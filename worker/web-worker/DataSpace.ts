@@ -1,8 +1,8 @@
 import { Database, Sqlite3Static } from "@sqlite.org/sqlite-wasm"
 
-import { EidosDataEventChannelName, MsgType } from "@/lib/const"
-import { FieldType } from "@/lib/fields/const"
+import { MsgType } from "@/lib/const"
 import { logger } from "@/lib/env"
+import { FieldType } from "@/lib/fields/const"
 import { ColumnTableName } from "@/lib/sqlite/const"
 import { buildSql, isReadOnlySql } from "@/lib/sqlite/helper"
 import {
@@ -23,9 +23,12 @@ import {
   isDayPageId,
 } from "@/lib/utils"
 
+import { BaseServerDatabase } from "@/lib/sqlite/interface"
+import { Email } from "postal-mime"
 import { DataChangeEventHandler } from "./data-pipeline/DataChangeEventHandler"
 import { DataChangeTrigger } from "./data-pipeline/DataChangeTrigger"
 import { LinkRelationUpdater } from "./data-pipeline/LinkRelationUpdater"
+import { TableFullTextSearch } from "./data-pipeline/TableFullTextSearch"
 import { SQLiteUndoRedo } from "./data-pipeline/UndoRedo"
 import { DbMigrator } from "./db-migrator/DbMigrator"
 import { timeit } from "./helper"
@@ -33,10 +36,12 @@ import { CsvImportAndExport } from "./import-and-export/csv"
 import { MarkdownImportAndExport } from "./import-and-export/markdown"
 import { ActionTable } from "./meta-table/action"
 import { BaseTable } from "./meta-table/base"
+import { ChatTable } from "./meta-table/chat"
 import { ColumnTable } from "./meta-table/column"
 import { DocTable } from "./meta-table/doc"
 import { EmbeddingTable, IEmbedding } from "./meta-table/embedding"
 import { FileTable, IFile } from "./meta-table/file"
+import { MessageTable } from "./meta-table/message"
 import { ReferenceTable } from "./meta-table/reference"
 import { IScript, ScriptStatus, ScriptTable } from "./meta-table/script"
 import { TreeTable } from "./meta-table/tree"
@@ -44,11 +49,6 @@ import { ViewTable } from "./meta-table/view"
 import { RowsManager } from "./sdk/rows"
 import { TableManager } from "./sdk/table"
 import { withSqlite3AllUDF } from "./udf"
-import { BaseServerDatabase } from "@/lib/sqlite/interface"
-import { ChatTable } from "./meta-table/chat"
-import { MessageTable } from "./meta-table/message"
-import { Email } from "postal-mime"
-import { TableFullTextSearch } from "./data-pipeline/TableFullTextSearch"
 // import { QueueTable } from "./meta-table/queue"
 
 export type EidosTable =
@@ -92,9 +92,7 @@ export class DataSpace {
   postMessage?: (data: any, transfer?: any[]) => void
   callRenderer?: (type: any, data: any) => Promise<any>
   // channel broadcast
-  dataEventChannel: {
-    postMessage: (data: any) => void
-  }
+  dataEventChannel: BroadcastChannel
 
   // for trigger
   eventHandler: DataChangeEventHandler
@@ -118,9 +116,7 @@ export class DataSpace {
     postMessage?: (data: any, transfer?: any[]) => void
     callRenderer?: (type: any, data: any) => Promise<any>
     efsManager?: EidosFileSystemManager
-    dataEventChannel?: {
-      postMessage: (data: any) => void
-    },
+    dataEventChannel: BroadcastChannel,
     cacheSize?: number
     isServer?: boolean
   }) {
@@ -132,12 +128,7 @@ export class DataSpace {
     if (cacheSize) {
       this.setCacheSize(cacheSize)
     }
-
-    if (dataEventChannel) {
-      this.dataEventChannel = dataEventChannel
-    } else {
-      this.dataEventChannel = new BroadcastChannel(EidosDataEventChannelName)
-    }
+    this.dataEventChannel = dataEventChannel
 
     if (callRenderer) {
       this.callRenderer = callRenderer

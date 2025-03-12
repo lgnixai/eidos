@@ -113,9 +113,17 @@ export class DataSpaceManager {
                 setInterval,
             },
             hasLoadExtension: true,
+            dataEventChannel: new BroadcastChannel(EidosDataEventChannelName)
         });
 
         const efsManager = await getEidosFileSystemManager();
+        const bc = new BroadcastChannel(EidosDataEventChannelName)
+        const originalPostMessage = bc.postMessage.bind(bc)
+        bc.postMessage = (data: any) => {
+            win?.webContents.send(EidosDataEventChannelName, data);
+            // notify main process
+            originalPostMessage(data)
+        }
 
         this.dataSpace = new DataSpace({
             db: serverDb,
@@ -132,15 +140,7 @@ export class DataSpaceManager {
             callRenderer: (type: any, data: any) => {
                 return requestFromRenderer(win!.webContents, { type, data });
             },
-            dataEventChannel: {
-                postMessage: (data: any) => {
-                    const bc = new BroadcastChannel(EidosDataEventChannelName)
-                    // notify renderer
-                    win?.webContents.send(EidosDataEventChannelName, data);
-                    // notify main process
-                    bc.postMessage(data)
-                }
-            },
+            dataEventChannel: bc,
             efsManager: efsManager,
             draftDb: draftDataSpace,
         });

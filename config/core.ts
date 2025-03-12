@@ -26,6 +26,7 @@ const coreConfig: UserConfig = {
         manualChunks: undefined,
         generatedCode: 'es2015',
         minifyInternalExports: false,
+        banner: `import { Buffer } from "node:buffer";`
       }
     },
     outDir: 'packages/core',
