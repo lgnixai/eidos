@@ -97,7 +97,6 @@ export const useProtocolUrl = () => {
     useEffect(() => {
         if (!isDesktopMode) return;
 
-        // 保存监听器引用
         listenerRef.current = handleProtocolUrl;
 
         console.log('register protocol url listener');

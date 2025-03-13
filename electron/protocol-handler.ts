@@ -25,6 +25,14 @@ export class ProtocolHandler {
             const urlObj = new URL(url);
             const action = urlObj.hostname;
             const searchParams = Object.fromEntries(urlObj.searchParams);
+
+            // Handle block action specifically
+            if (action === 'block') {
+                this.handleBlockAction(urlObj, url);
+                return;
+            }
+
+            // Handle regular eidos protocol actions
             // convert vault to space
             if (searchParams.vault) {
                 searchParams.space = searchParams.vault;
@@ -46,6 +54,53 @@ export class ProtocolHandler {
 
         } catch (error) {
             log('Error handling protocol URL:', error);
+            throw error;
+        }
+    }
+
+    private handleBlockAction(urlObj: URL, originalUrl: string) {
+        try {
+            // Format: eidos://block/blockid@databaseName?params
+            const pathParts = urlObj.pathname.split('/').filter(part => part);
+
+            if (pathParts.length === 0) {
+                throw new Error(`Invalid block URL format, missing block ID: ${originalUrl}`);
+            }
+
+            const blockInfoPart = pathParts[0];
+            const blockInfo = blockInfoPart.split('@');
+
+            if (blockInfo.length !== 2) {
+                throw new Error(`Invalid block ID format, expected blockid@database: ${blockInfoPart}`);
+            }
+
+            const blockId = blockInfo[0];
+            const database = blockInfo[1];
+
+            // Create URL to the standalone blocks page
+            const currentUrl = this.mainWindow.webContents.getURL();
+            const currentUrlObj = new URL(currentUrl);
+            // Only keep the origin part (protocol + hostname + port)
+            const baseUrl = currentUrlObj.origin + '/';
+            // Format should be /:space/standalone-blocks/:id
+            const standaloneBlockUrl = new URL(`${baseUrl}${database}/standalone-blocks/${blockId}`);
+
+            // Copy any additional search parameters
+            urlObj.searchParams.forEach((value, key) => {
+                standaloneBlockUrl.searchParams.append(key, value);
+            });
+
+            // Open the URL in a new window using shell.openExternal or window.open
+            console.log('Opening standalone block URL in new window:', standaloneBlockUrl.toString());
+            this.mainWindow.webContents.executeJavaScript(`window.open('${standaloneBlockUrl.toString()}', '_blank')`);
+
+            // Focus the main window
+            if (this.mainWindow.isMinimized()) {
+                this.mainWindow.restore();
+            }
+            this.mainWindow.focus();
+        } catch (error) {
+            log('Error handling block action:', error);
             throw error;
         }
     }

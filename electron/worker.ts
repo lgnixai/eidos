@@ -2,7 +2,6 @@ import { handleFunctionCall } from '@/lib/rpc';
 import { DataSpace } from "@/worker/web-worker/DataSpace";
 import { parentPort, workerData } from 'worker_threads';
 import { NodeServerDatabase } from "./sqlite-server";
-import { EidosDataEventChannelName } from '@/lib/const';
 
 
 
@@ -52,7 +51,7 @@ class DataSpaceManager {
             hasLoadExtension: true,
             // upgrade cache to improve performance
             // cacheSize: 8 * 1024 * 1024,
-            dataEventChannel: new BroadcastChannel(EidosDataEventChannelName)
+            dataEventChannel: new BroadcastChannel('draft-data-event-channel')
         });
 
         return this.dataSpace;
