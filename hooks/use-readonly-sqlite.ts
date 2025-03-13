@@ -1,6 +1,8 @@
 
+import { isInkServiceMode } from '@/lib/env';
 import { DataSpace } from '@/worker/web-worker/DataSpace';
 import { create } from 'zustand';
+import { useSqlite } from './use-sqlite';
 
 interface SqliteStore {
     readonlySqlite: DataSpace | undefined;
@@ -14,5 +16,10 @@ export const useReadSqliteStore = create<SqliteStore>((set) => ({
 
 export const useReadonlySqlite = () => {
     const { readonlySqlite } = useReadSqliteStore();
+    const { sqlite } = useSqlite();
+    // sqlite is the readonly sqlite in ink service mode
+    if (isInkServiceMode) {
+        return sqlite;
+    }
     return readonlySqlite;
 }

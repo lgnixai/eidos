@@ -115,8 +115,12 @@ export class DataSpace {
     dataEventChannel: BroadcastChannel,
     cacheSize?: number
     isUDFWithCtx?: boolean
+    enableFTS?: boolean
   }) {
-    const { db, activeUndoManager, dbName, draftDb, context, createUDF, postMessage, efsManager, dataEventChannel, hasLoadExtension, callRenderer, cacheSize, isUDFWithCtx } = config
+    const { db, activeUndoManager, dbName, draftDb,
+      context, createUDF, postMessage, efsManager,
+      dataEventChannel, hasLoadExtension, callRenderer,
+      cacheSize, isUDFWithCtx, enableFTS = false } = config
     this.db = db
 
     this.isUDFWithCtx = Boolean(isUDFWithCtx)
@@ -201,7 +205,7 @@ export class DataSpace {
     this.undoRedoManager = new SQLiteUndoRedo(this)
     this.activeUndoManager = activeUndoManager
 
-    this.tableFullTextSearch = new TableFullTextSearch(this)
+    this.tableFullTextSearch = new TableFullTextSearch(this, enableFTS)
   }
 
   // close db

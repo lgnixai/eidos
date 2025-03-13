@@ -1,16 +1,14 @@
-import { isDesktopMode, isInkServiceMode } from "@/lib/env";
 import { DataSpace } from "../DataSpace";
 import { rewriteQueryWithRowId } from "@/lib/sqlite/sql-view-query";
 
-const enableFTS = isDesktopMode || isInkServiceMode
 
 export class TableFullTextSearch {
-    constructor(private dataspace: DataSpace) { }
+    constructor(private dataspace: DataSpace, private enableFTS: boolean = false) { }
 
     async createDynamicFTS(tableName: string, temporary: boolean = false, inTransaction: boolean = false) {
         const tableInfo = await this.dataspace.db.selectObjects(`PRAGMA table_info(${tableName})`);
 
-        if (!enableFTS) {
+        if (!this.enableFTS) {
             throw new Error('Full text search is not supported in web mode');
         }
 
@@ -71,7 +69,7 @@ export class TableFullTextSearch {
     }
 
     async search(tableName: string, query: string, viewId: string, page: number = 1, pageSize: number = 20) {
-        if (!enableFTS) {
+        if (!this.enableFTS) {
             throw new Error('Full text search is not supported in web mode');
         }
 
@@ -211,7 +209,7 @@ export class TableFullTextSearch {
     }
 
     async clearFTS(tableName: string) {
-        if (!enableFTS) {
+        if (!this.enableFTS) {
             throw new Error('Full text search is not supported in web mode');
         }
 
@@ -232,7 +230,7 @@ export class TableFullTextSearch {
     }
 
     async dropFTS(tableName: string) {
-        if (!enableFTS) {
+        if (!this.enableFTS) {
             throw new Error('Full text search is not supported in web mode');
         }
 
@@ -263,7 +261,7 @@ export class TableFullTextSearch {
     }
 
     async hasFTS(tableName: string): Promise<boolean> {
-        if (!enableFTS) {
+        if (!this.enableFTS) {
             throw new Error('Full text search is not supported in web mode');
         }
 
@@ -283,7 +281,7 @@ export class TableFullTextSearch {
     }
 
     async rebuildFTS(tableName: string) {
-        if (!enableFTS) {
+        if (!this.enableFTS) {
             throw new Error('Full text search is not supported in web mode');
         }
 

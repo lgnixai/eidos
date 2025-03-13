@@ -51,7 +51,8 @@ class DataSpaceManager {
             hasLoadExtension: true,
             // upgrade cache to improve performance
             // cacheSize: 8 * 1024 * 1024,
-            dataEventChannel: new BroadcastChannel('draft-data-event-channel')
+            dataEventChannel: new BroadcastChannel('draft-data-event-channel'),
+            enableFTS: true
         });
 
         return this.dataSpace;
