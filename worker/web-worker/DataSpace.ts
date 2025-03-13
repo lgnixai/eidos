@@ -1,7 +1,5 @@
-import { Database, Sqlite3Static } from "@sqlite.org/sqlite-wasm"
 
 import { MsgType } from "@/lib/const"
-import { logger } from "@/lib/env"
 import { FieldType } from "@/lib/fields/const"
 import { ColumnTableName } from "@/lib/sqlite/const"
 import { buildSql, isReadOnlySql } from "@/lib/sqlite/helper"
@@ -62,12 +60,11 @@ export type EidosTable =
   | FileTable
 
 
-export type EidosDatabase = Database | BaseServerDatabase
+export type EidosDatabase = BaseServerDatabase
 
 export class DataSpace {
   db: EidosDatabase
   draftDb: DataSpace | undefined
-  sqlite3: Sqlite3Static | undefined
   undoRedoManager: SQLiteUndoRedo
   activeUndoManager: boolean
   dbName: string
@@ -111,7 +108,6 @@ export class DataSpace {
     }
     hasLoadExtension?: boolean
     createUDF?: (db: EidosDatabase) => void,
-    sqlite3?: Sqlite3Static
     draftDb?: DataSpace
     postMessage?: (data: any, transfer?: any[]) => void
     callRenderer?: (type: any, data: any) => Promise<any>
@@ -120,7 +116,7 @@ export class DataSpace {
     cacheSize?: number
     isServer?: boolean
   }) {
-    const { db, activeUndoManager, dbName, sqlite3, draftDb, context, createUDF, postMessage, efsManager, dataEventChannel, hasLoadExtension, callRenderer, cacheSize, isServer } = config
+    const { db, activeUndoManager, dbName, draftDb, context, createUDF, postMessage, efsManager, dataEventChannel, hasLoadExtension, callRenderer, cacheSize, isServer } = config
     this.db = db
 
     this.isServer = isServer || db instanceof BaseServerDatabase
@@ -143,7 +139,6 @@ export class DataSpace {
         })
       }
     }
-    this.sqlite3 = sqlite3
     this.draftDb = draftDb
     this.dbName = dbName
     this.postMessage = postMessage
@@ -862,42 +857,22 @@ export class DataSpace {
 
   @timeit(100)
   public syncExec2(sql: string, bind: any[] = [], db = this.db): any {
-    const res: any[] = []
-    // console.debug(
-    //   "[%cSQLQuery:%cCallViaMethod]",
-    //   "color:indigo",
-    //   "color:green",
-    //   sql,
-    //   bind
-    // )
-    if (this.isServer) {
-      try {
-        return db.exec({
-          sql,
-          bind,
-          returnValue: "resultRows",
-          rowMode: "object",
+    try {
+      return db.exec({
+        sql,
+        bind,
+        returnValue: "resultRows",
+        rowMode: "object",
+      })
+    } catch (error: any) {
+      if (error.toString().includes("SqliteError")) {
+        this.notify({
+          title: "SqliteError",
+          description: error.toString(),
         })
-      } catch (error: any) {
-        if (error.toString().includes("SqliteError")) {
-          this.notify({
-            title: "SqliteError",
-            description: error.toString(),
-          })
-        }
-        throw error
       }
+      throw error
     }
-    db.exec({
-      sql,
-      bind,
-      returnValue: "resultRows",
-      rowMode: "object",
-      callback: (row) => {
-        res.push(row)
-      },
-    })
-    return res
   }
   // FIXME: there are some problem with headless lexical run in worker
   // return markdown string, compute in worker
@@ -1070,16 +1045,12 @@ export class DataSpace {
   }
 
   @timeit(100)
-  public execute(sql: string, bind: any[] = []) {
-    const res: any[] = []
-    this.db.exec({
+  public async execute(sql: string, bind: any[] = []) {
+    const res: any[] = await this.db.exec({
       sql,
       bind,
-      callback: (row) => {
-        res.push(row)
-      },
+      rowMode: "array",
     })
-
     return {
       fetchone: () => res[0],
       fetchall: () => res,
@@ -1093,53 +1064,21 @@ export class DataSpace {
     this.db.exec({
       sql,
       bind,
-      callback: (row) => {
-        // logger.info(row)
-      },
     })
   }
 
   @timeit(100)
-  private execSqlWithBind(
+  private async execSqlWithBind(
     sql: string,
     bind: any[] = [],
     rowMode: "object" | "array" = "array"
   ) {
-    // console.debug(sql, bind)
-    const res: any[] = []
-    if (this.isServer) {
-      return this.db.exec({
-        sql,
-        bind,
-        returnValue: "resultRows",
-        rowMode,
-      })
-    }
-    try {
-      this.db.exec({
-        sql,
-        bind,
-        returnValue: "resultRows",
-        rowMode,
-        callback: (row) => {
-          res.push(row)
-        },
-      })
-    } catch (error: any) {
-      logger.error(error)
-      logger.error({ sql, bind })
-      this.postMessage?.({
-        type: MsgType.Error,
-        data: {
-          message: error.message,
-          context: {
-            sql,
-            bind,
-          },
-        },
-      })
-      throw error
-    }
+    const res: any[] = await this.db.exec({
+      sql,
+      bind,
+      returnValue: "resultRows",
+      rowMode,
+    })
     return res
   }
 

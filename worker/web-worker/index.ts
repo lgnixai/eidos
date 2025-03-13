@@ -5,12 +5,12 @@ import { getConfig } from "@/lib/storage/indexeddb"
 
 import { DataSpace } from "./DataSpace"
 import { initWs } from "./api-agent/ws"
-import { Sqlite } from "./sql"
+import { SqliteServer } from "./sqlite-wasm-server"
 import { workerStore } from "./store"
 
 // current DB
 let _dataspace: DataSpace | null = null
-const sqlite = new Sqlite()
+const sqlite = new SqliteServer()
 let ws: WebSocket
 
 const handleFunctionCall = async (

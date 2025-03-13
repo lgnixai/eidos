@@ -1,5 +1,3 @@
-import { Database } from "@sqlite.org/sqlite-wasm"
-
 import { getFieldInstance } from "@/lib/fields"
 import { FieldType } from "@/lib/fields/const"
 import { ILinkProperty } from "@/lib/fields/link"
@@ -13,6 +11,7 @@ import { getTableIdByRawTableName } from "@/lib/utils"
 
 import { DataSpace } from "../../DataSpace"
 import { TableManager } from "../table"
+import { BaseServerDatabase } from "@/lib/sqlite/interface"
 
 export class LookupFieldService {
   dataSpace: DataSpace
@@ -177,7 +176,7 @@ export class LookupFieldService {
   updateColumn = async (data: {
     tableName: string
     tableColumnName: string
-    db?: Database
+    db?: BaseServerDatabase
     rowIds?: string[]
   }) => {
     const { tableName, tableColumnName, db = this.dataSpace.db, rowIds } = data

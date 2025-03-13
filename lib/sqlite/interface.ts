@@ -34,11 +34,18 @@ export interface ISqlite<T, D> {
 
 export abstract class BaseServerDatabase {
   filename?: string
-  abstract prepare(sql: string): any;
+  abstract prepare(sql: string): {
+    run: (bind?: any[]) => void;
+  };
   abstract close(): void;
   abstract selectObjects(sql: string, bind?: any[]): Promise<{ [columnName: string]: any }[]>;
   abstract transaction(func: (db: BaseServerDatabase) => void): any;
-  abstract exec(opts: any): Promise<any>;
+  abstract exec(opts: string | {
+    sql: string;
+    bind?: any[];
+    rowMode?: "array" | "object";
+    returnValue?: "resultRows" | "saveSql";
+  }): Promise<any>;
   abstract createFunction(opt: {
     name: string;
     xFunc: (...args: any[]) => any;

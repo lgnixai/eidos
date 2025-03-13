@@ -47,8 +47,8 @@ export class NodeServerDatabase extends BaseServerDatabase {
         }
     }
 
-    prepare(sql: string): any {
-        return this.db.prepare(sql);
+    prepare(sql: string) {
+        return this.db.prepare(sql)
     }
     close() {
         this.db.close();

@@ -277,18 +277,8 @@ export class RowsManager {
     const stmt = this.dataSpace.db.prepare(`
       INSERT INTO ${this.table.rawTableName} (${keys}) VALUES (${_values})`)
     // for high performance, use transaction
-    if (this.dataSpace.db instanceof BaseServerDatabase) {
-      for (const value of values) {
-        stmt.run(value)
-      }
-    } else {
-      this.dataSpace.db.transaction(async () => {
-        for (const value of values) {
-          stmt.bind(value).step()
-          stmt.reset()
-        }
-        stmt.finalize()
-      })
+    for (const value of values) {
+      stmt.run(value)
     }
     return createDatas
   }

@@ -12,7 +12,6 @@ import { IField } from "@/lib/store/interface"
 import { getColumnIndexName, getTableIdByRawTableName } from "@/lib/utils"
 
 import { BaseServerDatabase } from "@/lib/sqlite/interface"
-import { Database } from "@sqlite.org/sqlite-wasm"
 import { TableManager } from "../sdk/table"
 import { BaseTable, BaseTableImpl } from "./base"
 
@@ -228,7 +227,7 @@ export class ColumnTable extends BaseTableImpl implements BaseTable<IField> {
     tableColumnName: string,
     property: any,
     fields: IField[],
-    db: Database | BaseServerDatabase
+    db: BaseServerDatabase
   ) {
     // Find other generated columns that depend on the current column
     const dependentFields = findDependentFormulaFields(tableColumnName, fields);

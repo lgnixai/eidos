@@ -1,5 +1,3 @@
-import { SQLite3Error } from "@sqlite.org/sqlite-wasm"
-
 import { generateMergeTableWithNewColumnsSql } from "@/lib/sqlite/sql-merge-table-with-new-columns"
 
 import { DataSpace } from "../DataSpace"
@@ -117,7 +115,8 @@ export class DbMigrator {
         console.log(`migrateTable ${tableName} add column ${name}`)
       } catch (error) {
         if (
-          (error as SQLite3Error).message.includes(
+          error instanceof Error &&
+          error.message.includes(
             "Cannot add a column with non-constant default"
           )
         ) {

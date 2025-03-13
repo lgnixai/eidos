@@ -1,5 +1,4 @@
 // @ts-nocheck
-import { ScalarFunctionOptions } from "@sqlite.org/sqlite-wasm"
 import { v4 } from "uuid"
 import { uuidv7 as v7 } from "uuidv7"
 
@@ -12,7 +11,7 @@ import {
 export const withSqlite3AllUDF = (bc: {
   postMessage: (data: any) => void
 }) => {
-  const twice: ScalarFunctionOptions = {
+  const twice = {
     name: "twice",
     xFunc: function (pCx, arg) {
       return arg + arg
