@@ -2,6 +2,8 @@ import { useCallback, useMemo } from "react"
 
 import { useAIConfigStore } from "@/apps/web-app/settings/ai/store"
 import { TaskType } from "@/apps/web-app/settings/ai/hooks"
+import { getProvider } from "@/lib/ai/helper"
+import { LanguageModelV1 } from "ai"
 
 
 export const useAiConfig = () => {
@@ -16,7 +18,7 @@ export const useAiConfig = () => {
     if (!enabledProviders.length) {
       return ''
     }
-    
+
     const provider = enabledProviders[0]
     const models = provider?.models?.split(',')
     const model = models?.[0]?.trim()
@@ -29,16 +31,12 @@ export const useAiConfig = () => {
   const getConfigByModel = useCallback(
     (model: string) => {
       if (!model?.includes('@')) {
-        return {
-          baseUrl: '/',
-          apiKey: '',
-          modelId: model || '',
-        }
+        throw new Error(`Model ${model} is not valid`)
       }
       const [modelId, provider] = model.split('@')
       const llmProvider = aiConfig.llmProviders.find(
-        (item) => 
-          item?.name?.toLowerCase() === provider?.toLowerCase() && 
+        (item) =>
+          item?.name?.toLowerCase() === provider?.toLowerCase() &&
           item.enabled
       )
       if (llmProvider) {
@@ -49,14 +47,20 @@ export const useAiConfig = () => {
           type: llmProvider.type,
         }
       }
-      return {
-        baseUrl: '/',
-        apiKey: '',
-        modelId: modelId || '',
-      }
+      throw new Error(`Provider ${provider} not found`)
     },
     [aiConfig]
   )
+
+  const getLLModel = useCallback((model: string) => {
+    const config = getConfigByModel(model)
+    const provider = getProvider({
+      apiKey: config.apiKey,
+      baseUrl: config.baseUrl,
+      type: config.type,
+    })
+    return provider(config.modelId) as LanguageModelV1
+  }, [getConfigByModel])
 
   const hasAvailableModels = useMemo(() => {
     // Check if there are any enabled providers
@@ -84,6 +88,7 @@ export const useAiConfig = () => {
 
   return {
     getConfigByModel,
+    getLLModel,
     hasAvailableModels,
     findFirstAvailableModel,
     findAvailableModel,

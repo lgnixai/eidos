@@ -170,6 +170,9 @@
           if (type === `scriptCallMainResp`) {
             resolve(data)
           }
+          if (type === `scriptCallMainError`) {
+            reject(data)
+          }
           msgChannel.port1.close()
         }
       })

@@ -26,6 +26,7 @@ export enum ExtMsgType {
   // script container => main thread
   scriptCallMain = "scriptCallMain",
   scriptCallMainResp = "scriptCallMainResp",
+  scriptCallMainError = "scriptCallMainError",
 }
 
 const sqlite = getSqliteChannel("publish-default-space", "publish-default-user")
@@ -54,7 +55,7 @@ export const useExtMsg = (source: ExtensionSourceType) => {
   const { getExtensionIndex } = useExtensions()
 
   const { space: database } = useCurrentPathInfo()
-  const { getConfigByModel } = useAiConfig()
+  const { getLLModel } = useAiConfig()
 
   const { efsManager } = useEidosFileSystemManager()
   const handleMsg = useCallback(
@@ -127,18 +128,24 @@ export const useExtMsg = (source: ExtensionSourceType) => {
               })
               break
             case "generateText":
-              const payload = _args[0]
-              const config = getConfigByModel(payload.model)
-              const openai = createOpenAI(config)
-              generateText({
-                model: openai(config.modelId),
-                prompt: payload.prompt,
-              }).then((res) => {
-                event.ports[0].postMessage({
-                  type: ExtMsgType.scriptCallMainResp,
-                  data: res,
+              try {
+                const payload = _args[0]
+                const llmodel = getLLModel(payload.model)
+                generateText({
+                  model: llmodel,
+                  prompt: payload.prompt,
+                }).then((res) => {
+                  event.ports[0].postMessage({
+                    type: ExtMsgType.scriptCallMainResp,
+                    data: res,
+                  })
                 })
-              })
+              } catch (error) {
+                event.ports[0].postMessage({
+                  type: ExtMsgType.scriptCallMainError,
+                  data: error,
+                })
+              }
               break
             case "tableHighlightRow":
               const [tableId, rowId, fieldId] = _args
