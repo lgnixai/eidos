@@ -132,6 +132,13 @@ export function AITools({
   }
 
   const { addScript } = useScript()
+  const config = useMemo(() => {
+    try {
+      return getConfigByModel(currentModel)
+    } catch (error) {
+      return {}
+    }
+  }, [currentModel, getConfigByModel])
   const { messages, setMessages, reload, isLoading, stop } = useChat({
     onError(error) {
       console.log("error:", error)
@@ -161,7 +168,7 @@ export function AITools({
       setActionOpen(true)
     },
     body: {
-      ...getConfigByModel(currentModel),
+      ...config,
       model: currentModel,
       useTools: false,
       // use word chunking for

@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import type { Attachment, ChatRequestOptions, Message } from "ai"
 import { useChat } from "ai/react"
 import { AnimatePresence } from "framer-motion"
@@ -78,8 +78,27 @@ export function Chat({
     codingModel ?? findFirstAvailableModel()
   )
 
+  const textModelConfig = useMemo(() => {
+    const textModel = findAvailableModel(TaskType.Translation)
+    if (textModel) {
+      try {
+        return getConfigByModel(textModel)
+      } catch (error) {
+        return undefined
+      }
+    }
+    return undefined
+  }, [findAvailableModel, getConfigByModel])
+
+  const config = useMemo(() => {
+    try {
+      return getConfigByModel(aiModel)
+    } catch (error) {
+      return {}
+    }
+  }, [aiModel, getConfigByModel])
+
   const { space } = useCurrentPathInfo()
-  const textModel = findAvailableModel(TaskType.Translation)
   const {
     messages,
     setMessages,
@@ -93,16 +112,14 @@ export function Chat({
     reload,
   } = useChat({
     body: {
-      ...getConfigByModel(aiModel),
+      ...config,
       systemPrompt: remixPrompt,
       id,
       model: aiModel,
       space,
       projectId: scriptId,
       useTools: false,
-      textModel: textModel
-        ? getConfigByModel(findAvailableModel(TaskType.Translation))
-        : undefined,
+      textModel: textModelConfig,
     },
     initialMessages,
     onFinish: () => {

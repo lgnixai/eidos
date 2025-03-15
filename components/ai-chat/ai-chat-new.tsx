@@ -104,7 +104,15 @@ export default function Chat() {
     }
   }, [reloadModel, aiModel])
 
-  const { getConfigByModel, hasAvailableModels } = useAiConfig()
+  const { getConfigByModel } = useAiConfig()
+  const config = useMemo(() => {
+    try {
+      return getConfigByModel(aiModel)
+    } catch (error) {
+      return {}
+    }
+  }, [aiModel, getConfigByModel])
+  
   const { messages, setMessages, reload, append, isLoading, stop } = useChat({
     onToolCall: async ({ toolCall }) => {
       const res = await handleToolsCall(toolCall.toolName, toolCall.args)
@@ -123,7 +131,7 @@ export default function Chat() {
       })
     },
     body: {
-      ...getConfigByModel(aiModel),
+      ...config,
       systemPrompt,
       model: aiModel,
       useTools: enableTools, // 使用 enableTools 状态控制
