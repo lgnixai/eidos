@@ -134,10 +134,10 @@ export const useExtMsg = (source: ExtensionSourceType) => {
                 generateText({
                   model: llmodel,
                   prompt: payload.prompt,
-                }).then((res) => {
+                }).then(({ text }) => {
                   event.ports[0].postMessage({
                     type: ExtMsgType.scriptCallMainResp,
-                    data: res,
+                    data: text,
                   })
                 })
               } catch (error) {
