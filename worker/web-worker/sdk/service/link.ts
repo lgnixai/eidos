@@ -1,4 +1,3 @@
-
 import { FieldType } from "@/lib/fields/const"
 import { ILinkProperty } from "@/lib/fields/link"
 import { ColumnTableName } from "@/lib/sqlite/const"
@@ -98,7 +97,8 @@ export class LinkFieldService {
       (item: any) => item.name
     )
     const effectRows: Record<string, string[]> = {}
-    allLinkRelationTableNames.forEach(async (relationTableName) => {
+
+    await Promise.all(allLinkRelationTableNames.map(async (relationTableName) => {
       const sql = `SELECT self FROM ${relationTableName} WHERE ref IN (${rowIds
         .map(() => "?")
         .join(",")})`
@@ -112,7 +112,8 @@ export class LinkFieldService {
         effectRows[effectTableName] = []
       }
       effectRows[effectTableName] = [...effectRows[effectTableName], ...rows]
-    })
+    }))
+
     return effectRows
   }
 
@@ -291,7 +292,7 @@ export class LinkFieldService {
     console.log("pairedField", pairedField, data)
     // generate paired link field
 
-    this.dataSpace.syncExec2(
+    await this.dataSpace.syncExec2(
       `INSERT INTO ${ColumnTableName} (name,type,table_name,table_column_name,property) VALUES (?,?,?,?,?)`,
       [
         pairedField.name,
@@ -304,7 +305,7 @@ export class LinkFieldService {
     )
 
     // add column for two link fields
-    db.exec(
+    await db.exec(
       `ALTER TABLE ${table_name} ADD COLUMN ${table_column_name} TEXT;
         ALTER TABLE ${table_name} ADD COLUMN ${table_column_name}__title TEXT;
         ALTER TABLE ${pairedField.table_name} ADD COLUMN ${pairedField.table_column_name} TEXT;
@@ -316,7 +317,7 @@ export class LinkFieldService {
      * because <link>__title column do not exist in eidos__column table, so we need to turn off foreign key check
      * TODO: REMEMBER we need to clear this reference when user delete the link field
      */
-    db.exec("PRAGMA foreign_keys = OFF;")
+    // await db.exec("PRAGMA foreign_keys = OFF;")
     // add reference for link__title field
     await this.dataSpace.reference.add(
       {
@@ -341,12 +342,12 @@ export class LinkFieldService {
       db
     )
     // open foreign key check
-    db.exec("PRAGMA foreign_keys = ON;")
+    // db.exec("PRAGMA foreign_keys = ON;")
 
     // add relation table and delete trigger
     const relationTableName = `lk_${table_name}__${pairedField.table_name}`
     const reverseRelationTableName = `lk_${pairedField.table_name}__${table_name}`
-    db.exec(
+    await db.exec(
       `CREATE TABLE IF NOT EXISTS ${relationTableName} (
           self TEXT,
           ref TEXT,

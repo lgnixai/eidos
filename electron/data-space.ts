@@ -6,6 +6,7 @@ import { getSpaceDbPath } from "./file-system/space";
 import { win } from "./main";
 import { NodeServerDatabase } from "./sqlite-server";
 import { getResourcePath } from "./helper";
+import { EventEmitter } from 'events';
 
 
 function requestFromRenderer(webContents: WebContents, arg: any) {
@@ -91,6 +92,9 @@ export class DataSpaceManager {
 
         const serverDb = new NodeServerDatabase({
             path: getSpaceDbPath(spaceName),
+            options: {
+                timeout: 3000,
+            }
         }, {
             simple: {
                 libPath,
@@ -117,13 +121,39 @@ export class DataSpaceManager {
         });
 
         const efsManager = await getEidosFileSystemManager();
-        const bc = new BroadcastChannel(EidosDataEventChannelName)
-        const originalPostMessage = bc.postMessage.bind(bc)
-        bc.postMessage = (data: any) => {
-            win?.webContents.send(EidosDataEventChannelName, data);
-            // notify main process
-            originalPostMessage(data)
-        }
+
+        const dataEventEmitter = new EventEmitter();
+
+        const dataEventChannel = {
+            name: EidosDataEventChannelName,
+            postMessage: (data: any) => {
+                win?.webContents.send(EidosDataEventChannelName, data);
+
+                // delay to emit event to avoid query busy
+                setTimeout(() => {
+                    dataEventEmitter.emit('message', { data });
+                }, 100)
+            },
+            set onmessage(handler: (event: { data: any }) => void) {
+                dataEventEmitter.removeAllListeners('message');
+                if (handler) {
+                    dataEventEmitter.on('message', handler);
+                }
+            },
+            onmessageerror: null,
+            addEventListener: (type: string, listener: EventListener) => {
+                dataEventEmitter.on(type, listener);
+            },
+            removeEventListener: (type: string, listener: EventListener) => {
+                dataEventEmitter.off(type, listener);
+            },
+            dispatchEvent: (event: Event): boolean => {
+                return dataEventEmitter.emit(event.type, event);
+            },
+            close: () => {
+                dataEventEmitter.removeAllListeners('message');
+            }
+        };
 
         this.dataSpace = new DataSpace({
             db: serverDb,
@@ -140,7 +170,7 @@ export class DataSpaceManager {
             callRenderer: (type: any, data: any) => {
                 return requestFromRenderer(win!.webContents, { type, data });
             },
-            dataEventChannel: bc,
+            dataEventChannel: dataEventChannel,
             efsManager: efsManager,
             draftDb: draftDataSpace,
             enableFTS: true

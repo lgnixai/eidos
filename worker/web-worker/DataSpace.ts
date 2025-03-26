@@ -426,7 +426,7 @@ export class DataSpace {
       // reverse range, delete from end to start to avoid index change
       for (const item of range.reverse()) {
         const bind = [item.endIndex - item.startIndex, item.startIndex]
-        this.syncExec2(sql, bind, db)
+        await this.syncExec2(sql, bind, db)
       }
     })
     this.undoRedoManager.event()
@@ -861,9 +861,9 @@ export class DataSpace {
   }
 
   @timeit(100)
-  public syncExec2(sql: string, bind: any[] = [], db = this.db): any {
+  public async syncExec2(sql: string, bind: any[] = [], db = this.db): Promise<any> {
     try {
-      return db.exec({
+      return await db.exec({
         sql,
         bind,
         returnValue: "resultRows",

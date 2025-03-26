@@ -61,6 +61,7 @@ export class NodeServerDatabase extends BaseServerDatabase {
             pageSize: this.db.pragma('page_size'),
             cacheSize: this.db.pragma('cache_size'),
             busyTimeout: this.db.pragma('busy_timeout'),
+            foreignKeys: this.db.pragma('foreign_keys'),
         };
     }
 

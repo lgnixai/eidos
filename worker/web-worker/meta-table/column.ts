@@ -119,7 +119,6 @@ export class ColumnTable extends BaseTableImpl implements BaseTable<IField> {
       }
 
       await this.dataSpace.db.prepare('COMMIT;').run()
-      return data
     } catch (error) {
       await this.dataSpace.db.prepare('ROLLBACK;').run()
       console.error('Error in add transaction:', error)
@@ -127,6 +126,7 @@ export class ColumnTable extends BaseTableImpl implements BaseTable<IField> {
     } finally {
       await this.dataSpace.db.exec("PRAGMA foreign_keys = ON;");
     }
+    return data
   }
 
 
