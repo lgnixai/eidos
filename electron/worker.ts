@@ -26,7 +26,7 @@ class DataSpaceManager {
     public async getOrSetDataSpace(spaceName: string): Promise<DataSpace> {
         if (this.dataSpace && this.dataSpace.dbName !== spaceName) {
             // Close both main and draft databases when switching to a different space
-            this.dataSpace.closeDb();
+            this.dataSpace.close();
         } else if (this.dataSpace) {
             // If same space, return existing instance
             return this.dataSpace;
@@ -93,13 +93,13 @@ if (parentPort) {
 process.on('exit', (code) => {
     console.log(`Worker is exiting with code ${code}`);
     if (dataSpace) {
-        dataSpace.closeDb();
+        dataSpace.close();
         dataSpace = null;
     }
 });
 
 process.on('beforeExit', () => {
     console.log('worker beforeExit')
-    dataSpace?.closeDb()
+    dataSpace?.close()
     dataSpace = null;
 })

@@ -59,7 +59,7 @@ export class DataSpaceManager {
 
         const spaceName = this.dataSpace.dbName;
         // Close current dataspace
-        this.dataSpace.closeDb();
+        this.dataSpace.close();
         this.dataSpace = null;
 
         // Reinitialize with the same space name
@@ -72,7 +72,7 @@ export class DataSpaceManager {
         }
 
         // Close current dataspace
-        this.dataSpace.closeDb();
+        this.dataSpace.close();
         this.dataSpace = null;
         return true;
     }
@@ -80,7 +80,7 @@ export class DataSpaceManager {
     public async getOrSetDataSpace(spaceName: string): Promise<DataSpace> {
         if (this.dataSpace && this.dataSpace.dbName !== spaceName) {
             // Close both main and draft databases when switching to a different space
-            this.dataSpace.closeDb();
+            this.dataSpace.close();
         } else if (this.dataSpace) {
             // If same space, return existing instance
             return this.dataSpace;

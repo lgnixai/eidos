@@ -146,7 +146,7 @@ ipcMain.handle('reload-app', () => {
 
 app.on('window-all-closed', () => {
     WorkerManager.getInstance().shutdown();
-    getDataSpace()?.closeDb()
+    getDataSpace()?.close()
     win = null
 })
 
@@ -273,7 +273,7 @@ app.on('activate', () => {
 ipcMain.handle('quit-app', () => {
     forceQuit = true;
     destroyTray();
-    getDataSpace()?.closeDb();
+    getDataSpace()?.close();
     app.quit();
 });
 

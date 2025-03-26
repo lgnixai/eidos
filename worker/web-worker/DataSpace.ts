@@ -209,8 +209,9 @@ export class DataSpace {
   }
 
   // close db
-  public closeDb() {
+  public close() {
     this.db.close()
+    this.dataEventChannel.close()
   }
 
   private setCacheSize(size: number) {
