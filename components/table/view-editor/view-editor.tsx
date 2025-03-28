@@ -2,8 +2,8 @@ import { startTransition, useRef } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useClickAway } from "ahooks"
 import { useForm } from "react-hook-form"
-import * as z from "zod"
 import { useTranslation } from "react-i18next"
+import * as z from "zod"
 
 import { IView, ViewTypeEnum } from "@/lib/store/IView"
 import { Input } from "@/components/ui/input"
@@ -85,7 +85,7 @@ export const ViewEditor = ({ setEditDialogOpen, view }: IViewEditorProps) => {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t('common.name')}</FormLabel>
+                <FormLabel>{t("common.name")}</FormLabel>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -99,9 +99,9 @@ export const ViewEditor = ({ setEditDialogOpen, view }: IViewEditorProps) => {
             name="type"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t('table.fieldType')}</FormLabel>
+                <FormLabel>{t("table.fieldType")}</FormLabel>
                 <FormDescription>
-                  {t('table.view.typeDescription')}
+                  {t("table.view.typeDescription")}
                 </FormDescription>
                 <FormControl>
                   <div className="flex flex-col gap-2">
@@ -112,7 +112,7 @@ export const ViewEditor = ({ setEditDialogOpen, view }: IViewEditorProps) => {
                       }}
                       viewId={view.id}
                       isActive={field.value === "grid"}
-                      title={t('table.view.grid')}
+                      title={t("table.view.grid")}
                       viewType={ViewTypeEnum.Grid}
                       icon={ViewIconMap[ViewTypeEnum.Grid]}
                     ></ViewLayout>
@@ -124,11 +124,22 @@ export const ViewEditor = ({ setEditDialogOpen, view }: IViewEditorProps) => {
                       disabled={disabled}
                       viewId={view.id}
                       isActive={field.value === "gallery"}
-                      title={t('table.view.gallery')}
+                      title={t("table.view.gallery")}
                       viewType={ViewTypeEnum.Gallery}
                       icon={ViewIconMap[ViewTypeEnum.Gallery]}
                     ></ViewLayout>
                     <ViewLayout
+                      onClick={() => {
+                        field.onChange("kanban")
+                        handleChangeViewType(ViewTypeEnum.Kanban)
+                      }}
+                      viewId={view.id}
+                      isActive={field.value === "kanban"}
+                      title={t("table.view.kanban")}
+                      viewType={ViewTypeEnum.Kanban}
+                      icon={ViewIconMap[ViewTypeEnum.Kanban]}
+                    ></ViewLayout>
+                    {/* <ViewLayout
                       viewId={view.id}
                       onClick={() => {
                         field.onChange("doc_list")
@@ -136,13 +147,13 @@ export const ViewEditor = ({ setEditDialogOpen, view }: IViewEditorProps) => {
                       }}
                       disabled={disabled}
                       isActive={field.value === "doc_list"}
-                      title={t('table.view.docList')}
+                      title={t("table.view.docList")}
                       viewType={ViewTypeEnum.DocList}
                       icon={ViewIconMap[ViewTypeEnum.DocList]}
-                    ></ViewLayout>
+                    ></ViewLayout> */}
                     {disabled && (
                       <p className="text-sm  text-muted-foreground">
-                        {t('table.view.disabledViewTypesWarning')}
+                        {t("table.view.disabledViewTypesWarning")}
                       </p>
                     )}
                   </div>
@@ -157,9 +168,9 @@ export const ViewEditor = ({ setEditDialogOpen, view }: IViewEditorProps) => {
             name="query"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t('table.view.query')}</FormLabel>
+                <FormLabel>{t("table.view.query")}</FormLabel>
                 <FormDescription>
-                  {t('table.view.queryDescription')}
+                  {t("table.view.queryDescription")}
                 </FormDescription>
                 <FormControl>
                   <Input {...field} disabled />
@@ -168,7 +179,7 @@ export const ViewEditor = ({ setEditDialogOpen, view }: IViewEditorProps) => {
               </FormItem>
             )}
           />
-          <Button type="submit">{t('common.update')}</Button>
+          <Button type="submit">{t("common.update")}</Button>
         </form>
       </Form>
     </div>

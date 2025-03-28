@@ -12,6 +12,7 @@ import { Button } from "../../ui/button"
 import { DocListViewProperties } from "../views/doc-list/properties"
 import { GalleryViewProperties } from "../views/gallery/properties"
 import { GridViewProperties } from "../views/grid/properties"
+import { KanbanViewProperties } from "../views/kanban/properties"
 
 export const ViewLayout = (props: {
   icon: React.FC
@@ -77,6 +78,9 @@ export const ViewLayout = (props: {
           )}
           {viewType === ViewTypeEnum.Grid && <GridViewProperties />}
           {viewType === ViewTypeEnum.DocList && <DocListViewProperties />}
+          {viewType === ViewTypeEnum.Kanban && (
+            <KanbanViewProperties viewId={viewId} />
+          )}
         </CollapsibleContent>
       </Collapsible>
     )

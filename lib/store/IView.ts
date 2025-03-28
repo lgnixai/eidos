@@ -4,6 +4,7 @@ export enum ViewTypeEnum {
   Grid = "grid",
   Gallery = "gallery",
   DocList = "doc_list",
+  Kanban = "kanban",
 }
 
 export interface IView<T = any> {

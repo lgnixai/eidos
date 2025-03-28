@@ -132,8 +132,11 @@ export class SelectField extends BaseField<SelectCell, SelectProperty> {
    * @param theme theme of the color. eg "light" | "dark"
    * @returns hex value of the color. eg "#cccccc"
    */
-  static getColorValue(colorName: string, theme: "light" | "dark" = "light") {
-    return `#${SelectField.colorNameValueMap[theme][colorName]}`
+  static getColorValue(colorName: string, theme: "light" | "dark" = "light", opacity: number = 1) {
+    const colorValue = SelectField.colorNameValueMap[theme][colorName]
+    // Convert opacity (0-1) to hex (00-FF)
+    const alpha = Math.round(opacity * 255)
+    return `#${colorValue}${alpha.toString(16).padStart(2, '0')}`
   }
 
   get compareOperators() {

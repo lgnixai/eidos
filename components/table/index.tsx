@@ -13,6 +13,7 @@ import { DocListView } from "./views/doc-list"
 import GalleryView from "./views/gallery"
 import GridView from "./views/grid"
 import { FieldEditor } from "./views/grid/fields"
+import KanbanView from "./views/kanban"
 
 // const GalleryView = React.lazy(() => import("./views/gallery"))
 
@@ -78,6 +79,13 @@ export const Table = ({
           )}
           {currentView?.type === ViewTypeEnum.Gallery && (
             <GalleryView
+              space={space}
+              tableName={tableName}
+              view={currentView}
+            />
+          )}
+          {currentView?.type === ViewTypeEnum.Kanban && (
+            <KanbanView
               space={space}
               tableName={tableName}
               view={currentView}

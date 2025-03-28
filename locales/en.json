@@ -477,5 +477,19 @@
     "table.view.query": "Query",
     "table.view.queryDescription": "SQL query to use for this view.",
     "table.view.typeDescription": "The type of view to use for this table.",
-    "table.view.where": "Where"
+    "table.view.where": "Where",
+    "table.view.kanban.hideEmptyFields": "Hide Empty Fields",
+    "table.view.kanban.showCardCount": "Show Card Count",
+    "table.view.kanban.groupByField": "Group By Field",
+    "table.view.kanban.cardSize": "Card Size",
+    "table.view.kanban.collapseAll": "Collapse All",
+    "table.view.kanban.selectField": "Select Field",
+    "table.view.kanban.size.small": "Small",
+    "table.view.kanban.size.medium": "Medium",
+    "table.view.kanban.size.large": "Large",
+    "table.view.kanban.coverPreview": "Cover Preview",
+    "table.view.kanban.coverPreview.content": "Content",
+    "table.view.kanban.coverPreview.cover": "Cover",
+    "table.view.kanban.coverPreview.none": "None",
+    "table.view.kanban": "Kanban"
 }

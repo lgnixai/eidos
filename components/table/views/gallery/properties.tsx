@@ -1,28 +1,19 @@
-import { useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { BanIcon, FileText, ImageIcon, ToyBrickIcon } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { z } from "zod"
 
-import { Button } from "@/components/ui/button"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
-import { Switch } from "@/components/ui/switch"
 import {
   Form,
-  FormControl,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
+  FormMessage
 } from "@/components/react-hook-form/form"
-import { useAllMblocks } from "@/apps/web-app/[database]/scripts/hooks/use-all-mblocks"
+import { Switch } from "@/components/ui/switch"
 
-import { useFileFields, useView, useViewOperation } from "../../hooks"
+import { useView, useViewOperation } from "../../hooks"
+import { CoverPreviewField } from "../shared/cover-preview-field"
 
 export interface IGalleryViewProperties {
   hideEmptyFields?: boolean
@@ -36,60 +27,6 @@ const formSchema = z.object({
   fitContent: z.boolean().optional(),
 })
 
-const PreviewButton = ({
-  item,
-  handleItemClick,
-}: {
-  item: {
-    value: string | null
-    label: string
-    type?: string
-  }
-  handleItemClick: (value: string | null) => void
-}) => {
-  const getIcon = () => {
-    if (item.value === "content") return <FileText className="mr-2 h-4 w-4" />
-    if (item.type === "field") return <ImageIcon className="mr-2 h-4 w-4" />
-    if (item.type === "mblock") return <ToyBrickIcon className="mr-2 h-4 w-4" />
-    return <BanIcon className="mr-2 h-4 w-4" />
-  }
-
-  return (
-    <Button
-      onClick={(e) => {
-        handleItemClick(item.value)
-      }}
-      variant="ghost"
-      className="justify-start"
-      size="sm"
-    >
-      {getIcon()}
-      {item.label}
-    </Button>
-  )
-}
-
-const PreviewSection = ({
-  items,
-  showDivider,
-  handleItemClick,
-}: {
-  items: Array<{ value: string | null; label: string }>
-  showDivider?: boolean
-  handleItemClick: (value: string | null) => void
-}) => (
-  <>
-    {showDivider && <hr className="my-1" />}
-    {items.map((item) => (
-      <PreviewButton
-        key={item.value}
-        item={item}
-        handleItemClick={handleItemClick}
-      />
-    ))}
-  </>
-)
-
 export const GalleryViewProperties = (props: { viewId: string }) => {
   const { updateView } = useViewOperation()
   const view = useView<IGalleryViewProperties>(props.viewId)
@@ -101,54 +38,9 @@ export const GalleryViewProperties = (props: { viewId: string }) => {
       fitContent: view?.properties?.fitContent || false,
     },
   })
-  const { mblocks } = useAllMblocks()
-
-  const [popoverOpen, setPopoverOpen] = useState(false)
-  const { t } = useTranslation()
 
   const onSubmit = (data: IGalleryViewProperties) => console.log(data)
-  const fileFields = useFileFields()
-
-  const coverPreviewItems = {
-    content: [
-      {
-        value: null,
-        label: t("table.view.gallery.none"),
-      },
-      {
-        value: "content",
-        label: t("table.view.gallery.content"),
-      },
-    ],
-    fields: fileFields.map((field) => ({
-      value: field.table_column_name,
-      label: field.name,
-      type: "field",
-    })),
-    mblocks: mblocks.map((mblock) => ({
-      value: `block://${mblock.id}`,
-      label: mblock.name,
-      type: "mblock",
-    })),
-  }
-
-  const displayCoverPreview =
-    [
-      ...coverPreviewItems.content,
-      ...coverPreviewItems.fields,
-      ...coverPreviewItems.mblocks,
-    ].find((item) => item.value === form.watch("coverPreview"))?.label || "None"
-
-  const handleItemClick = (value: string | null) => {
-    form.setValue("coverPreview", value)
-    setPopoverOpen(false)
-    updateView(props.viewId, {
-      properties: {
-        ...view.properties,
-        coverPreview: value,
-      },
-    })
-  }
+  const { t } = useTranslation()
 
   return (
     <Form {...form}>
@@ -176,51 +68,16 @@ export const GalleryViewProperties = (props: { viewId: string }) => {
             </FormItem>
           )}
         ></FormField>
-        <FormField
-          control={form.control}
-          name="coverPreview"
-          render={({ field }) => (
-            <FormItem className="flex items-center justify-between rounded-md p-1 hover:bg-secondary">
-              <FormLabel>{t("table.view.gallery.coverPreview")}</FormLabel>
-              <FormControl>
-                <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
-                  <PopoverTrigger className="!mt-0">
-                    {displayCoverPreview}
-                  </PopoverTrigger>
-                  <PopoverContent
-                    className="p-1 max-h-[300px] overflow-y-auto"
-                    align="end"
-                    container={
-                      document.querySelector("#view-editor") as HTMLElement
-                    }
-                  >
-                    <div className="flex flex-col">
-                      <PreviewSection
-                        items={coverPreviewItems.content}
-                        handleItemClick={handleItemClick}
-                      />
-                      {coverPreviewItems.fields.length > 0 && (
-                        <PreviewSection
-                          items={coverPreviewItems.fields}
-                          showDivider
-                          handleItemClick={handleItemClick}
-                        />
-                      )}
-                      {coverPreviewItems.mblocks.length > 0 && (
-                        <PreviewSection
-                          items={coverPreviewItems.mblocks}
-                          showDivider
-                          handleItemClick={handleItemClick}
-                        />
-                      )}
-                    </div>
-                  </PopoverContent>
-                </Popover>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        ></FormField>
+
+        <CoverPreviewField
+          form={form}
+          viewId={props.viewId}
+          tableId={view.table_id}
+          updateView={updateView}
+          viewProperties={view.properties}
+          namespace="gallery"
+        />
+
         <FormField
           control={form.control}
           name="fitContent"
