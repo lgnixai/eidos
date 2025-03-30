@@ -72,12 +72,15 @@ export const KanbanCard = ({
     id,
     data: { index, parent },
   })
+  const { lastMovedId } = React.useContext(KanbanContext)
+  const isRecentlyMoved = lastMovedId === id
 
   return (
     <Card
       className={cn(
-        "rounded-md p-3 shadow-sm",
+        "rounded-md p-3 shadow-sm transition-colors duration-300",
         isDragging && "opacity-50",
+        isRecentlyMoved && "bg-primary/10",
         className
       )}
       data-draggable-id={id}
@@ -140,12 +143,24 @@ export const KanbanProvider = ({
   className,
 }: KanbanProviderProps) => {
   const [activeNode, setActiveNode] = useState<React.ReactNode | null>(null)
+  const [lastMovedId, setLastMovedId] = useState<string | null>(null)
+
+  // Clear the highlight effect after a delay
+  React.useEffect(() => {
+    if (lastMovedId) {
+      const timer = setTimeout(() => {
+        setLastMovedId(null)
+      }, 1000)
+      return () => clearTimeout(timer)
+    }
+  }, [lastMovedId])
 
   return (
     <DndContext
       collisionDetection={rectIntersection}
       onDragEnd={(event) => {
         setActiveNode(null)
+        setLastMovedId(event.active.id.toString())
         onDragEnd(event)
       }}
       onDragStart={(event) => {
@@ -157,14 +172,16 @@ export const KanbanProvider = ({
         }
       }}
     >
-      <div
-        className={cn(
-          "grid w-full auto-cols-fr grid-flow-col gap-4",
-          className
-        )}
-      >
-        {children}
-      </div>
+      <KanbanContext.Provider value={{ lastMovedId }}>
+        <div
+          className={cn(
+            "grid w-full auto-cols-fr grid-flow-col gap-4",
+            className
+          )}
+        >
+          {children}
+        </div>
+      </KanbanContext.Provider>
       <DragOverlay dropAnimation={null}>
         {activeNode ? (
           <Card className="rounded-md p-3 shadow-sm cursor-grabbing">
@@ -175,3 +192,8 @@ export const KanbanProvider = ({
     </DndContext>
   )
 }
+
+// Add context for tracking last moved card
+const KanbanContext = React.createContext<{ lastMovedId: string | null }>({
+  lastMovedId: null,
+})
