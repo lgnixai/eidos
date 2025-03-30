@@ -1,6 +1,8 @@
 import { useState } from "react"
-import { Trash } from "lucide-react"
+import { Trash, GripVertical } from "lucide-react"
 import { useTheme } from "next-themes"
+import { useSortable } from "@dnd-kit/sortable"
+import { CSS } from "@dnd-kit/utilities"
 
 import { SelectOption as ISelectOption, SelectField } from "@/lib/fields/select"
 import { Input } from "@/components/ui/input"
@@ -43,10 +45,35 @@ export const SelectOption = ({
     onDelete(option.id)
   }
 
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+  } = useSortable({ id: option.id })
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    width: '100%',
+  }
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <div className="flex w-full items-center gap-2 py-1 hover:bg-secondary">
+        <div
+          ref={setNodeRef}
+          style={style}
+          className="flex w-full items-center gap-2 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 overflow-hidden"
+        >
+          <button
+            className="cursor-grab text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+            {...attributes}
+            {...listeners}
+          >
+            <GripVertical size={16} />
+          </button>
           <div
             className="cursor-pointer rounded-sm px-[6px]"
             style={{

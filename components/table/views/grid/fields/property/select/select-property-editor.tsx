@@ -1,12 +1,27 @@
-import { Plus } from "lucide-react"
 import React, { useCallback, useMemo } from "react"
+import { Plus } from "lucide-react"
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core"
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable"
 
+import { SelectField } from "@/lib/fields/select"
+import { IField } from "@/lib/store/interface"
+import { useSqlite } from "@/hooks/use-sqlite"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { useSqlite } from "@/hooks/use-sqlite"
-import { SelectField } from "@/lib/fields/select"
-import { IField } from "@/lib/store/interface"
 
 import { SelectOption } from "./select-option"
 
@@ -59,10 +74,23 @@ const useFieldChange = (
     [field, onPropertyChange, sqlite]
   )
 
+  const handleOptionsReorder = useCallback(
+    (oldIndex: number, newIndex: number) => {
+      const newOptions = [...field.options]
+      const [movedOption] = newOptions.splice(oldIndex, 1)
+      newOptions.splice(newIndex, 0, movedOption)
+      
+      field.column.property.options = newOptions
+      onPropertyChange(field.column.property)
+    },
+    [field, onPropertyChange]
+  )
+
   return {
     handleOptionNameChange,
     handleOptionColorChange,
     handleOptionDelete,
+    handleOptionsReorder,
   }
 }
 
@@ -76,6 +104,7 @@ export const SelectPropertyEditor = (props: IFieldPropertyEditorProps) => {
     handleOptionNameChange,
     handleOptionColorChange,
     handleOptionDelete,
+    handleOptionsReorder,
   } = useFieldChange(field, onPropertyChange)
 
   const handleAddNewOption = useCallback(
@@ -99,47 +128,80 @@ export const SelectPropertyEditor = (props: IFieldPropertyEditorProps) => {
     setNewOptionName(e.target.value)
   }
 
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  )
+
+  const handleDragEnd = useCallback(
+    (event: DragEndEvent) => {
+      const { active, over } = event
+      if (!over) return
+
+      if (active.id !== over.id) {
+        const oldIndex = field.options.findIndex((item) => item.id === active.id)
+        const newIndex = field.options.findIndex((item) => item.id === over.id)
+        handleOptionsReorder(oldIndex, newIndex)
+      }
+    },
+    [field.options, handleOptionsReorder]
+  )
+
   return (
-    <ScrollArea className="max-h-[500px] grow-0" ref={ref}>
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
-            Options
+    <ScrollArea className="max-h-[500px] grow-0 w-full overflow-x-hidden" ref={ref}>
+      <div className="flex flex-col w-full">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              Options
+            </div>
           </div>
+          <Button
+            onClick={() => setIsAddNewOption(!isAddNewOption)}
+            variant="ghost"
+            size="sm"
+            className="flex items-center gap-1"
+          >
+            <Plus size={16} />
+            <span>Add Option</span>
+          </Button>
         </div>
-        <Button
-          onClick={() => setIsAddNewOption(!isAddNewOption)}
-          variant="ghost"
-          size="sm"
-          className="flex items-center gap-1"
-        >
-          <Plus size={16} />
-          <span>Add Option</span>
-        </Button>
-      </div>
-      <hr />
-      <div className="mt-2 flex flex-col items-start overflow-y-auto">
-        {isAddNewOption && (
-          <Input
-            autoFocus
-            value={newOptionName}
-            onChange={handleNewOptionChange}
-            onKeyDown={handleAddNewOption}
-            onBlur={() => setIsAddNewOption(false)}
-          />
-        )}
-        {field.options.map((option) => {
-          return (
-            <SelectOption
-              key={option.id}
-              option={option}
-              container={ref.current}
-              onColorChange={handleOptionColorChange}
-              onNameChange={handleOptionNameChange}
-              onDelete={handleOptionDelete}
+        <hr />
+        <div className="mt-2 flex flex-col items-start w-full">
+          {isAddNewOption && (
+            <Input
+              autoFocus
+              value={newOptionName}
+              onChange={handleNewOptionChange}
+              onKeyDown={handleAddNewOption}
+              onBlur={() => setIsAddNewOption(false)}
+              className="w-full"
             />
-          )
-        })}
+          )}
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext
+              items={field.options.map(opt => opt.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              {field.options.map((option) => (
+                <SelectOption
+                  key={option.id}
+                  option={option}
+                  container={ref.current}
+                  onColorChange={handleOptionColorChange}
+                  onNameChange={handleOptionNameChange}
+                  onDelete={handleOptionDelete}
+                />
+              ))}
+            </SortableContext>
+          </DndContext>
+        </div>
       </div>
     </ScrollArea>
   )

@@ -72,7 +72,6 @@ export const useKanbanViewData = (view: IView) => {
         try {
             const counts = await sqlite.sql2`${countSql}`
             setStatusCounts(counts)
-            console.log('groupByFieldInstance', groupByFieldInstance)
             if (groupByFieldInstance?.type === FieldType.Select) {
                 // combo statusCounts and groupByFieldInstance.options
                 const options = (groupByFieldInstance as IField<SelectProperty>).property.options
@@ -84,7 +83,6 @@ export const useKanbanViewData = (view: IView) => {
                         color: option.color
                     }
                 })
-                console.log(statusCountsWithOptions, "statusCountsWithOptions")
                 setStatusCounts(statusCountsWithOptions)
             }
 

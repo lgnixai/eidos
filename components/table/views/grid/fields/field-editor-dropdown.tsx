@@ -6,8 +6,8 @@ import {
   Settings2,
   Trash2,
 } from "lucide-react"
+import { useTranslation } from "react-i18next"
 import { useLayer } from "react-laag"
-import { useTranslation } from 'react-i18next';
 
 import { FieldType } from "@/lib/fields/const"
 import { IView } from "@/lib/store/IView"
@@ -61,19 +61,16 @@ export const FieldEditorDropdown = (props: IFieldEditorDropdownProps) => {
   const inputRef = useRef<HTMLInputElement>(null)
   const { fields } = useTableFields(tableName)
   const { showColumns } = useColumns(fields, props.view)
-  const { t } = useTranslation();
-
-  useEffect(() => {
-    const currentField = showColumns[currentColIndex!]
-    setCurrentUiColumn(currentField)
-  }, [currentColIndex, setCurrentUiColumn, showColumns, fields])
+  const { t } = useTranslation()
 
   useEffect(() => {
     if (menu) {
       setCurrentColIndex(menu.col)
+      const currentField = showColumns[menu.col]
+      setCurrentUiColumn(currentField)
       inputRef.current?.focus()
     }
-  }, [menu])
+  }, [menu, showColumns, setCurrentUiColumn])
 
   const { layerProps, renderLayer } = useLayer({
     isOpen,
@@ -169,15 +166,15 @@ export const FieldEditorDropdown = (props: IFieldEditorDropdownProps) => {
                 onClick={handleEditFieldPropertiesClick}
               >
                 <Settings2 className="mr-2 h-4 w-4" />
-                {t('table.editProperty')}
+                {t("table.editProperty")}
               </CommonMenuItem>
               <CommonMenuItem className="pl-4" onClick={addASCSort}>
                 <ArrowUpNarrowWideIcon className="mr-2 h-4 w-4" />
-                {t('table.sortAscending')}
+                {t("table.sortAscending")}
               </CommonMenuItem>
               <CommonMenuItem className="pl-4" onClick={addDESCSort}>
                 <ArrowDownWideNarrowIcon className="mr-2 h-4 w-4" />
-                {t('table.sortDescending')}
+                {t("table.sortDescending")}
               </CommonMenuItem>
               {currentUiColumn?.type !== "title" && (
                 <DialogTrigger
@@ -186,17 +183,19 @@ export const FieldEditorDropdown = (props: IFieldEditorDropdownProps) => {
                 >
                   <CommonMenuItem className="pl-4">
                     <Trash2 className="mr-2 h-4 w-4" />
-                    {t('table.deleteField')}
+                    {t("table.deleteField")}
                   </CommonMenuItem>
                 </DialogTrigger>
               )}
               <DialogContent className="max-w-[300px]">
                 <DialogHeader>
-                  <DialogTitle>{t('table.deleteFieldConfirmation')}</DialogTitle>
+                  <DialogTitle>
+                    {t("table.deleteFieldConfirmation")}
+                  </DialogTitle>
                   <DialogDescription>
                     {currentUiColumn?.type === FieldType.Link
-                      ? t('table.deleteLinkFieldWarning')
-                      : t('common.thisActionCannotBeUndone')}
+                      ? t("table.deleteLinkFieldWarning")
+                      : t("common.thisActionCannotBeUndone")}
                   </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
@@ -204,13 +203,13 @@ export const FieldEditorDropdown = (props: IFieldEditorDropdownProps) => {
                     variant="ghost"
                     onClick={() => setIsDeleteDialogOpen(false)}
                   >
-                    {t('common.cancel')}
+                    {t("common.cancel")}
                   </Button>
                   <Button
                     variant="destructive"
                     onClick={handleDeleteFieldConfirm}
                   >
-                    {t('common.delete')}
+                    {t("common.delete")}
                   </Button>
                 </DialogFooter>
               </DialogContent>

@@ -12,7 +12,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { Switch } from "@/components/ui/switch"
 import {
   Form,
   FormControl,
@@ -23,7 +22,9 @@ import {
 } from "@/components/react-hook-form/form"
 
 import { useView, useViewOperation } from "../../hooks"
-import { CoverPreviewField } from "../shared/cover-preview-field"
+import { makeHeaderIcons } from "../grid/fields/header-icons"
+
+const icons = makeHeaderIcons(18)
 
 export interface IKanbanViewProperties {
   //   hideEmptyFields?: boolean
@@ -152,18 +153,29 @@ export const KanbanViewProperties = ({ viewId }: { viewId: string }) => {
                     }
                   >
                     <div className="flex flex-col">
-                      {fields.map((f) => (
-                        <Button
-                          key={f.name}
-                          onClick={() => handleFieldSelect(f.name)}
-                          variant="ghost"
-                          className="justify-start"
-                          size="sm"
-                        >
-                          <FileText className="mr-2 h-4 w-4" />
-                          {f.label}
-                        </Button>
-                      ))}
+                      {fields.map((f) => {
+                        const iconSvgString = icons[f.type]({
+                          bgColor: "#aaa",
+                          fgColor: "currentColor",
+                        })
+                        return (
+                          <Button
+                            key={f.name}
+                            onClick={() => handleFieldSelect(f.name)}
+                            variant="ghost"
+                            className="justify-start"
+                            size="sm"
+                          >
+                            <span
+                              className="mr-2 h-4 w-4"
+                              dangerouslySetInnerHTML={{
+                                __html: iconSvgString,
+                              }}
+                            />
+                            {f.label}
+                          </Button>
+                        )
+                      })}
                     </div>
                   </PopoverContent>
                 </Popover>
