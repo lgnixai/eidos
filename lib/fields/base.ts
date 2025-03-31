@@ -101,7 +101,17 @@ export abstract class BaseField<CD, P, R = string, RC = any, FC = any>
     return {}
   }
 
-  text2RawData(text: string | number): string | number | boolean | null {
-    return text ?? null
+  text2RawData(text: string | number | string[] | Date): string | number | boolean | null {
+    if (typeof text === "string") {
+      return text
+    } else if (Array.isArray(text)) {
+      return text.join(",")
+    } else if (typeof text === "object" && text instanceof Date) {
+      return text.toISOString()
+    } else if (typeof text === "number") {
+      return text
+    } else {
+      return null
+    }
   }
 }

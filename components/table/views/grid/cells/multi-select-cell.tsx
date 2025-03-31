@@ -285,7 +285,7 @@ const renderer: CustomRenderer<MultiSelectCell> = {
       const option = allowedValues.find((t) => t.id === optionId)
       const colorName = option?.color
       const color = SelectField.getColorValue(colorName ?? "default", themeName)
-      const name = option?.name ?? ""
+      const name = option?.name ?? optionId ?? ""
 
       ctx.font = `12px ${theme.fontFamily}`
       const metrics = measureTextCached(name, ctx)
