@@ -1,6 +1,7 @@
 ---
 description: all rules about this project
 globs: *
+alwaysApply: false
 ---
 # Project Rules
 
@@ -15,8 +16,8 @@ globs: *
 ## Internationalization (i18n)
 - Use react-i18next as the i18n solution
 - Language files location:
-  - @en.json (English)
-  - @zh.json (Chinese)
+  - /locales/en.json (English)
+  - /locales/zh.json (Chinese)
 - Use flat mode for i18n keys:
   - Keys should be separated by dots
   - Avoid nested JSON objects
