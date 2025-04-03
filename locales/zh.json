@@ -483,5 +483,9 @@
     "kanban.newItem.cancel": "取消",
     "kanban.status.unassigned": "未分组",
     "kanban.collapse.tooltip": "折叠列表",
-    "kanban.expand.tooltip": "展开列表"
+    "kanban.expand.tooltip": "展开列表",
+    "views.types.grid": "网格视图",
+    "views.types.calendar": "日历视图",
+    "views.types.kanban": "看板视图",
+    "views.types.gallery": "画廊视图"
 }

@@ -1,20 +1,15 @@
 "use client"
 
-import { memo, useMemo, useRef, useState } from "react"
 import { useVirtualList } from "ahooks"
 import {
-  ChevronDown,
-  ChevronLeft,
-  ChevronRight,
   Minimize,
-  Plus,
+  Plus
 } from "lucide-react"
 import { useTheme } from "next-themes"
+import { memo, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 
-import { SelectField } from "@/lib/fields/select"
-import { IField } from "@/lib/store/interface"
-import { cn } from "@/lib/utils"
+import { DataCard } from "@/components/table/views/shared/data-card"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import {
@@ -23,7 +18,9 @@ import {
   KanbanHeader,
   KanbanBoard as OriginKanbanBoard,
 } from "@/components/ui/kibo-ui/kanban"
-import { DataCard } from "@/components/table/views/shared/data-card"
+import { SelectField } from "@/lib/fields/select"
+import { IField } from "@/lib/store/interface"
+import { cn } from "@/lib/utils"
 
 import { IGalleryViewProperties } from "../gallery/properties"
 import { computeCardHeight } from "../gallery/utils"

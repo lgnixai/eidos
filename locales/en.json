@@ -501,5 +501,9 @@
     "kanban.newItem.cancel": "Cancel",
     "kanban.status.unassigned": "Unassigned",
     "kanban.collapse.tooltip": "Collapse list",
-    "kanban.expand.tooltip": "Expand list"
+    "kanban.expand.tooltip": "Expand list",
+    "views.types.grid": "Grid View",
+    "views.types.calendar": "Calendar View",
+    "views.types.kanban": "Kanban View",
+    "views.types.gallery": "Gallery View"
 }

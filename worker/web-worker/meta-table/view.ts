@@ -67,11 +67,11 @@ CREATE TABLE IF NOT EXISTS ${this.name} (
     )
   }
 
-  public async createDefaultView(table_id: string) {
+  public async createDefaultView(table_id: string, type: ViewTypeEnum = ViewTypeEnum.Grid) {
     return await this.add({
       id: getUuid(),
       name: "New View",
-      type: ViewTypeEnum.Grid,
+      type,
       table_id,
       query: `SELECT * FROM tb_${table_id}`,
     })

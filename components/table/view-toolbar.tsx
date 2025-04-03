@@ -1,4 +1,10 @@
-import { useCallback, useContext, useEffect, useRef, useState } from "react"
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react"
 import {
   DndContext,
   DragEndEvent,
@@ -22,7 +28,7 @@ import {
   useSearchParams,
 } from "react-router-dom"
 
-import { IView } from "@/lib/store/IView"
+import { IView, ViewTypeEnum } from "@/lib/store/IView"
 import { cn, getTableIdByRawTableName, shortenId, uuidv7 } from "@/lib/utils"
 import { useCurrentSubPage } from "@/hooks/use-current-sub-page"
 import { useSqlite } from "@/hooks/use-sqlite"
@@ -46,7 +52,7 @@ import { TableContext, useCurrentView, useViewOperation } from "./hooks"
 import { useTableSearchStore } from "./hooks/use-table-search-store"
 import { ViewField } from "./view-field/view-field"
 import { ViewFilter } from "./view-filter"
-import { ViewItem } from "./view-item"
+import { ViewIconMap, ViewItem } from "./view-item"
 import { ViewSearch } from "./view-search"
 import { ViewSort } from "./view-sort"
 
@@ -256,12 +262,15 @@ export const ViewToolbar = (props: {
     [isEmbed, location.pathname, navigate, setCurrentViewId, sharePeerId]
   )
 
-  const handleAddView = useCallback(async () => {
-    const view = await addView()
-    if (view) {
-      jump2View(view.id)
-    }
-  }, [addView, jump2View])
+  const handleAddView = useCallback(
+    async (viewType: ViewTypeEnum = ViewTypeEnum.Grid) => {
+      const view = await addView(viewType)
+      if (view) {
+        jump2View(view.id)
+      }
+    },
+    [addView, jump2View]
+  )
 
   useEffect(() => {
     updateViews()
@@ -314,9 +323,45 @@ export const ViewToolbar = (props: {
             onReorder={handleReorderViews}
           />
           {!props.isReadOnly && (
-            <Button onClick={handleAddView} variant="ghost" size="sm">
-              <PlusIcon className="h-4 w-4"></PlusIcon>
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm">
+                  <PlusIcon className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem
+                  onClick={() => handleAddView(ViewTypeEnum.Grid)}
+                >
+                  <div className="flex items-center gap-2">
+                    {React.createElement(ViewIconMap[ViewTypeEnum.Grid], {
+                      className: "h-4 w-4",
+                    })}
+                    <span>{t("views.types.grid")}</span>
+                  </div>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => handleAddView(ViewTypeEnum.Gallery)}
+                >
+                  <div className="flex items-center gap-2">
+                    {React.createElement(ViewIconMap[ViewTypeEnum.Gallery], {
+                      className: "h-4 w-4",
+                    })}
+                    <span>{t("views.types.gallery")}</span>
+                  </div>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => handleAddView(ViewTypeEnum.Kanban)}
+                >
+                  <div className="flex items-center gap-2">
+                    {React.createElement(ViewIconMap[ViewTypeEnum.Kanban], {
+                      className: "h-4 w-4",
+                    })}
+                    <span>{t("views.types.kanban")}</span>
+                  </div>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           )}
         </div>
         <div

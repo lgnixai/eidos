@@ -12,7 +12,7 @@ import { useSearchParams } from "react-router-dom"
 import { useSqlite, useSqliteStore } from "@/hooks/use-sqlite"
 import { useTableFields, useTableOperation } from "@/hooks/use-table"
 import { FieldType } from "@/lib/fields/const"
-import { IView } from "@/lib/store/IView"
+import { IView, ViewTypeEnum } from "@/lib/store/IView"
 import { IField } from "@/lib/store/interface"
 import { getTableIdByRawTableName } from "@/lib/utils"
 
@@ -68,9 +68,9 @@ export const useViewOperation = () => {
   const { setView } = useSqliteStore()
   const { sqlite } = useSqlite()
 
-  const addView = useCallback(async () => {
+  const addView = useCallback(async (type: ViewTypeEnum = ViewTypeEnum.Grid) => {
     if (tableId && sqlite) {
-      const view = await sqlite.createDefaultView(tableId)
+      const view = await sqlite.createDefaultView(tableId, type)
       await updateViews()
       return view
     }

@@ -12,7 +12,7 @@ import {
   FileSystemType,
 } from "@/lib/storage/eidos-file-system"
 import { ITreeNode } from "@/lib/store/ITreeNode"
-import { IView } from "@/lib/store/IView"
+import { IView, ViewTypeEnum } from "@/lib/store/IView"
 import { IField } from "@/lib/store/interface"
 import {
   extractIdFromShortId,
@@ -519,8 +519,8 @@ export class DataSpace {
     return await this.view.set(viewId, view)
   }
 
-  public async createDefaultView(tableId: string) {
-    return await this.view.createDefaultView(tableId)
+  public async createDefaultView(tableId: string, type: ViewTypeEnum = ViewTypeEnum.Grid) {
+    return await this.view.createDefaultView(tableId, type)
   }
 
   public async isRowExistInQuery(
