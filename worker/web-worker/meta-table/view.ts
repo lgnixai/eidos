@@ -151,7 +151,6 @@ CREATE TABLE IF NOT EXISTS ${this.name} (
     targetDirection: "up" | "down"
   }): Promise<number> {
     const { tableId, targetId, targetDirection } = props
-    const POSITION_GAP = 1 // 使用 1 作为基本间隔
 
     const views = await this.list(
       { table_id: tableId },
@@ -164,27 +163,19 @@ CREATE TABLE IF NOT EXISTS ${this.name} (
     const targetIndex = views.findIndex((view) => view.id === targetId)
     const prevIndex = targetDirection === "up" ? targetIndex - 1 : targetIndex
     const nextIndex = targetDirection === "up" ? targetIndex : targetIndex + 1
+
     const prevView = views[prevIndex]
     const nextView = views[nextIndex]
 
     if (prevIndex === -1) {
-      return nextView ? nextView.position - POSITION_GAP : 1
+      return nextView ? nextView.position - 1.0 : 0.0
     }
 
     if (!nextView) {
-      return prevView.position + POSITION_GAP
+      return prevView.position + 1.0
     }
 
-    if (nextView.position - prevView.position <= 1) {
-      const viewsToReorder = [...views]
-      let position = 1
-      for (const view of viewsToReorder) {
-        await this.updatePosition(view.id, position++)
-      }
-      return this.getPosition(props)
-    }
-
-    return Math.floor((prevView.position + nextView.position) / 2)
+    return (prevView.position + nextView.position) / 2
   }
 
   public async updatePosition(id: string, position: number): Promise<void> {
@@ -209,7 +200,6 @@ CREATE TABLE IF NOT EXISTS ${this.name} (
   }): Promise<void> {
     const { dragId, targetId, direction, tableId } = props
 
-
     // Don't do anything if dragging onto itself
     if (dragId === targetId) {
       return
@@ -222,10 +212,11 @@ CREATE TABLE IF NOT EXISTS ${this.name} (
         targetId,
         targetDirection: direction
       })
-      console.log(newPosition, dragId)
 
       // Update the position in database
       await this.updatePosition(dragId, newPosition)
+
+      await this.checkAndReorderIfNeeded(tableId)
     } catch (error) {
       console.error("Failed to move view position:", error)
       throw new Error("Failed to update view position")
@@ -241,8 +232,6 @@ CREATE TABLE IF NOT EXISTS ${this.name} (
 
     try {
       await this.dataSpace.db.transaction(async (db) => {
-        // Start from a high number and decrease for each item
-        // This ensures proper ordering while maintaining gaps for future insertions
         let position = viewIds.length * 1000
 
         for (const id of viewIds) {
@@ -257,6 +246,26 @@ CREATE TABLE IF NOT EXISTS ${this.name} (
     } catch (error) {
       console.error("Failed to reorder views:", error)
       throw new Error("Failed to reorder views")
+    }
+  }
+
+  private async checkAndReorderIfNeeded(tableId: string): Promise<void> {
+    const views = await this.list(
+      { table_id: tableId },
+      {
+        orderBy: "position",
+        order: "ASC",
+      }
+    )
+
+    const needsReorder = views.some((view, index) => {
+      if (index === 0) return false
+      const diff = Math.abs(view.position - views[index - 1].position)
+      return diff < 0.000001 // 设置一个合理的阈值
+    })
+
+    if (needsReorder) {
+      await this.reorderViews(views.map(v => v.id))
     }
   }
 }
