@@ -142,6 +142,7 @@ export class DataSpaceManager {
         const libPath = getResourcePath(`dist-simple/libsimple`);
         const dictPath = getResourcePath('dist-simple/dict');
         const graftLibPath = getResourcePath('dist-simple/libgraft');
+        const vecLibPath = getResourcePath('dist-simple/vec');
 
         // --- START: Set Graft Environment Variables from Config ---
         applyGraftConfigToEnv(); // Call the helper function
@@ -159,6 +160,9 @@ export class DataSpaceManager {
             },
             graft: {
                 libPath: graftLibPath,
+            },
+            vec: {
+                libPath: vecLibPath,
             },
             enableSync,
             volumeId

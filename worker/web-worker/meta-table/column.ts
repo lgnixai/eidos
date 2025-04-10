@@ -173,11 +173,14 @@ export class ColumnTable extends BaseTableImpl implements BaseTable<IField> {
       }
 
       const column = await this.getColumn(tableName, tableColumnName)
+      const tm = new TableManager(
+        getTableIdByRawTableName(tableName),
+        this.dataSpace
+      )
+      if (column?.type === FieldType.Text) {
+        await tm.fields.text.beforeDeleteColumn(tableName, tableColumnName)
+      }
       if (column?.type === FieldType.Link) {
-        const tm = new TableManager(
-          getTableIdByRawTableName(tableName),
-          this.dataSpace
-        )
         const pairedField = await tm.fields.link.getPairedLinkField(column)
         effectTables.push(pairedField.table_name)
         // delete relation
@@ -322,12 +325,15 @@ export class ColumnTable extends BaseTableImpl implements BaseTable<IField> {
         property
       )} WHERE table_column_name = ${tableColumnName} AND table_name = ${tableName};`
 
+      const tm = new TableManager(
+        getTableIdByRawTableName(tableName),
+        this.dataSpace
+      )
       switch (type) {
+        case FieldType.Text:
+          await tm.fields.text.onPropertyChange(oldField, property)
+          break
         case FieldType.Lookup:
-          const tm = new TableManager(
-            getTableIdByRawTableName(tableName),
-            this.dataSpace
-          )
           await tm.fields.lookup.onPropertyChange(oldField, property)
           break
         case FieldType.Link:

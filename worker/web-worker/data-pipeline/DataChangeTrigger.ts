@@ -17,7 +17,10 @@ export class DataChangeTrigger {
     let json_object = "json_object("
     for (const col of collist) {
       const name = col.name
-      json_object += `'${name}', ${type}.${name}, `
+      // Skip columns ending with __vec
+      if (!name.endsWith('__vec')) {
+        json_object += `'${name}', ${type}.${name}, `
+      }
     }
     json_object += `'rowid', ${type}.rowid)`
     return json_object

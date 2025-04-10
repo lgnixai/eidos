@@ -6,7 +6,7 @@ import { FieldType } from "@/lib/fields/const"
 import { IView } from "@/lib/store/IView"
 import type { IField } from "@/lib/store/interface"
 
-import { BaseServerDatabase } from "@/lib/sqlite/interface"
+import { rewriteQueryWithOffsetAndLimit } from "@/lib/sqlite/sql-view-query"
 import { DataSpace } from "../DataSpace"
 import { workerStore } from "../store"
 import { TableManager } from "./table"
@@ -171,7 +171,7 @@ export class RowsManager {
       viewId?: string
       limit?: number
       offset?: number
-      raw?: boolean
+      raw?: boolean // if true, return raw data, the key is raw column name
       select?: string[]
       rawQuery?: string // if set, it will ignore viewId and filter
     }
@@ -187,7 +187,8 @@ export class RowsManager {
       if (!view) {
         throw new Error("view not found")
       }
-      rows = await this.dataSpace.exec2(view.query)
+      const query = rewriteQueryWithOffsetAndLimit(view.query, options.offset, options.limit)
+      rows = await this.dataSpace.exec2(query)
     } else {
       const { rawData, notExistKeys } = this.transformData(filter || {}, {
         fieldNameRawColumnNameMap,

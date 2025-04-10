@@ -15,28 +15,35 @@ export interface NodeDomainDbInfo {
     };
 }
 
-export class NodeServerDatabase extends BaseServerDatabase {
-    db: Database.Database | null = null;
-    isSyncEnabled: boolean = false;
-    
+interface NodeServerDatabaseOptions {
+    enableSync: boolean,
+    volumeId?: string,
+    // for full text search
+    simple: {
+        libPath: string;
+        dictPath: string;
+    },
+    // for sync
+    graft?: {
+        libPath: string;
+    },
+    // vec extension
+    vec?: {
+        libPath: string;
+    }
+}
 
-    constructor(config: NodeDomainDbInfo['config'], options: {
-        enableSync: boolean,
-        volumeId?: string,
-        // for full text search
-        simple: {
-            libPath: string;
-            dictPath: string;
-        },
-        // for sync
-        graft?: {
-            libPath: string;
-        }
-    }) {
+export class NodeServerDatabase extends BaseServerDatabase {
+    isSyncEnabled: boolean = false;
+    db: Database.Database | null = null;
+    options: NodeServerDatabaseOptions | null = null
+
+    constructor(config: NodeDomainDbInfo['config'], options: NodeServerDatabaseOptions) {
         super();
         console.log('Initializing NodeServerDatabase...');
         console.log('Options:', options);
         console.log('Config:', config);
+        this.options = options;
 
         try {
             // 1. Register Graft VFS if necessary
@@ -80,6 +87,8 @@ export class NodeServerDatabase extends BaseServerDatabase {
             // 4. Initialize the main database connection (Extensions, Pragmas)
             this._initializeDatabaseConnection(options);
 
+            // 5. Load the Vec extension
+            this.loadVecExtension(this.db);
             console.log('NodeServerDatabase initialized successfully.');
 
         } catch (error) {
@@ -94,6 +103,22 @@ export class NodeServerDatabase extends BaseServerDatabase {
                 }
             }
             throw error; // Re-throw the error to signal failure
+        }
+    }
+
+    loadVecExtension(db: Database.Database) {
+        if (this.options?.vec?.libPath) {
+            db.loadExtension(this.options.vec.libPath);
+            const { sqlite_version, vec_version } = db
+                .prepare(
+                    "select sqlite_version() as sqlite_version, vec_version() as vec_version;",
+                )
+                .get() as any;
+            console.log(`sqlite_version=${sqlite_version}, vec_version=${vec_version}`);
+            const result = db
+                .prepare("select vec_f32(?) as result")
+                .get('[1.0,2.0,3.0]');
+            console.log('result', result)
         }
     }
 

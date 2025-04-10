@@ -209,6 +209,21 @@ export class DataSpace {
   }
 
 
+  public updateEmbedding = async (tableId: string, fieldId: string, data: { recordId: string, value: string }[]) => {
+    const tm = new TableManager(tableId, this)
+    await tm.fields.text.updateEmbedding(fieldId, data)
+  }
+
+  public queryEmbedding = async (tableId: string, fieldId: string, query: string) => {
+    const tm = new TableManager(tableId, this)
+    return await tm.fields.text.queryEmbedding(fieldId, query)
+  }
+
+  public getEmbeddingStats = async (tableId: string, fieldId: string) => {
+    const tm = new TableManager(tableId, this)
+    return await tm.fields.text.getEmbeddingStats(fieldId)
+  }
+
   public status() {
     return this.db.status()
   }
