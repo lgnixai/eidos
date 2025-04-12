@@ -5,7 +5,7 @@ import { useCallback, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useLoaderData, useNavigate, useRevalidator } from "react-router-dom"
 
-import { usePlayground } from "@/apps/desktop/hooks/usePlayground"
+import { usePlayground } from "@/apps/desktop/renderer/hooks/usePlayground"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {

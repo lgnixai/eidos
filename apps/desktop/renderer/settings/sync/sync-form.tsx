@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { AppConfig, GraftConfig } from "@/electron/config"
+import { AppConfig, GraftConfig } from "@/apps/desktop/electron/config"
 import { useForm } from "react-hook-form"
 
 import { useEngine } from "@/hooks/use-engine"

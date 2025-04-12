@@ -21,7 +21,7 @@ export const createHtmlPlugin = (serviceMode: string): Plugin => {
           [key: string]: string
         } = {
           "ink": "/apps/publish/index.tsx",
-          "desktop": "/apps/desktop/index.tsx",
+          "desktop": "/apps/desktop/renderer/index.tsx",
           "web-app": "/apps/web-app/index.tsx"
         }
         const src = entryMap[serviceMode]

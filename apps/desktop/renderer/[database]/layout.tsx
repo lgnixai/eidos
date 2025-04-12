@@ -24,8 +24,8 @@ import { ScriptContainer } from "@/components/script-container"
 import { SideBar } from "@/components/sidebar"
 import { ScriptBreadcrumb } from "@/apps/web-app/[database]/scripts/components/extension-breadcrumb"
 
-import { useLayoutInit } from "../../web-app/[database]/hook"
-import { useAppsStore, useSpaceAppStore } from "../../web-app/[database]/store"
+import { useLayoutInit } from "../../../web-app/[database]/hook"
+import { useAppsStore, useSpaceAppStore } from "../../../web-app/[database]/store"
 
 const WebLLM = lazy(() => import("@/components/ai-chat/webllm"))
 

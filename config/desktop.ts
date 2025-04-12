@@ -53,8 +53,8 @@ const desktopConfig: UserConfig = mergeConfig(sharedConfig, {
     electron({
       main: {
         entry: [
-          'electron/main.ts',
-          'electron/worker.ts',
+          'apps/desktop/electron/main.ts',
+          'apps/desktop/electron/worker.ts',
         ],
         vite: {
           resolve: {
@@ -76,11 +76,11 @@ const desktopConfig: UserConfig = mergeConfig(sharedConfig, {
         }
       },
       preload: {
-        input: 'electron/preload.ts',
+        input: 'apps/desktop/electron/preload.ts',
         vite: {
           resolve: {
             alias: {
-              "@/lib": path.resolve(__dirname, './packages/lib'),
+              "@/lib": path.resolve(__dirname, '../packages/lib'),
               "@": path.resolve(__dirname, "../"),
             },
           },
