@@ -2,6 +2,7 @@ import { app } from 'electron';
 import fs from 'fs';
 import path from 'path';
 import { EventEmitter } from 'events';
+import { AIFormValues } from '@/lib/ai/config';
 
 export interface GraftConfig {
     // URL for the Graft MetaStore
@@ -24,6 +25,7 @@ export interface AppConfig {
         url: string;
         enabled: boolean;
     };
+    ai: AIFormValues;
     // Security configuration
     security: {
         webSecurity: boolean;
@@ -41,6 +43,14 @@ const emptyConfig: AppConfig = {
     apiAgentConfig: {
         url: '',
         enabled: false,
+    },
+    ai: {
+        localModels: [],
+        llmProviders: [],
+        autoLoadEmbeddingModel: false,
+        embeddingModel: '',
+        translationModel: '',
+        codingModel: '',
     },
     security: {
         webSecurity: true,
@@ -118,11 +128,11 @@ export class ConfigManager extends EventEmitter {
             this.config.sync = JSON.parse(JSON.stringify(emptyConfig.sync)); // Deep clone default sync
             needsSave = true;
         } else {
-             // Check if sync.enabled is missing and apply default
+            // Check if sync.enabled is missing and apply default
             if (typeof this.config.sync.enabled !== 'boolean') {
-                 console.warn(`Sync config key 'enabled' missing or invalid, applying default.`);
-                 this.config.sync.enabled = emptyConfig.sync.enabled;
-                 needsSave = true;
+                console.warn(`Sync config key 'enabled' missing or invalid, applying default.`);
+                this.config.sync.enabled = emptyConfig.sync.enabled;
+                needsSave = true;
             }
 
             // Ensure sync.graft object exists
@@ -136,19 +146,19 @@ export class ConfigManager extends EventEmitter {
                     // Ensure the key exists and is of the correct type (basic check)
                     // If graft exists, we assume its internal keys might be missing or wrong type
                     if (!(key in this.config.sync.graft) || typeof (this.config.sync.graft as any)[key] !== typeof emptyConfig.sync.graft[key]) {
-                         // Apply default only if key is missing, handle type mismatch potentially elsewhere if needed
-                         if (!(key in this.config.sync.graft)) {
+                        // Apply default only if key is missing, handle type mismatch potentially elsewhere if needed
+                        if (!(key in this.config.sync.graft)) {
                             console.warn(`Sync.graft config key '${key}' missing, applying default.`);
-                           (this.config.sync.graft as any)[key] = emptyConfig.sync.graft[key];
+                            (this.config.sync.graft as any)[key] = emptyConfig.sync.graft[key];
                             needsSave = true;
-                         } else if (key === 'token' && typeof this.config.sync.graft.token === 'undefined') {
-                             // Special case: allow undefined for token
-                         }
-                         else if (typeof (this.config.sync.graft as any)[key] !== typeof emptyConfig.sync.graft[key]) {
+                        } else if (key === 'token' && typeof this.config.sync.graft.token === 'undefined') {
+                            // Special case: allow undefined for token
+                        }
+                        else if (typeof (this.config.sync.graft as any)[key] !== typeof emptyConfig.sync.graft[key]) {
                             console.warn(`Sync.graft config key '${key}' has incorrect type, applying default.`);
                             (this.config.sync.graft as any)[key] = emptyConfig.sync.graft[key];
-                             needsSave = true;
-                         }
+                            needsSave = true;
+                        }
                     }
                 }
             }

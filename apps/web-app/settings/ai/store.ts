@@ -6,54 +6,8 @@ import { createJSONStorage, persist } from "zustand/middleware"
 import { LLMProviderType } from "@/lib/ai/helper"
 
 import { indexedDBStorage } from "@/lib/storage/indexeddb"
+import { AIFormValues, LLMProvider } from "@/lib/ai/config"
 
-// Define the enum using all provider types directly
-const providerTypes: [LLMProviderType, ...LLMProviderType[]] = [
-  "openai",
-  "google",
-  "deepseek",
-  "groq",
-  "xai",
-  "openrouter",
-  "anthropic",
-  "azure",
-  "amazon-bedrock",
-  // "fal",
-  "deepinfra",
-  "mistral",
-  "togetherai",
-  "cohere",
-  "fireworks",
-  "cerebras",
-  // "replicate",
-  "perplexity",
-  // "luma",
-  "openai-compatible",
-];
-
-export const llmProviderSchema = z.object({
-  type: z.enum(providerTypes).default("openai"),
-  name: z.string(),
-  apiKey: z.string().optional(),
-  baseUrl: z.string().url().optional().or(z.literal('')),
-  models: z.string().default(""),
-  enabled: z.boolean().optional(),
-})
-
-export type LLMProvider = z.infer<typeof llmProviderSchema>
-
-export const aiFormSchema = z.object({
-  localModels: z.array(z.string()).default([]),
-  llmProviders: z.array(llmProviderSchema).default([]),
-  // runtime
-  autoLoadEmbeddingModel: z.boolean().default(false),
-  // task model
-  embeddingModel: z.string().optional(),
-  translationModel: z.string().optional(),
-  codingModel: z.string().optional(),
-})
-
-export type AIFormValues = z.infer<typeof aiFormSchema>
 
 interface ConfigState {
   aiConfig: AIFormValues
@@ -62,6 +16,51 @@ interface ConfigState {
   updateLLMProvider: (provider: LLMProvider) => void
   removeLLMProvider: (name: string) => void
 }
+
+// Define a custom storage object that syncs with both IndexedDB and backend config
+const customStorage = {
+  getItem: async (name: string): Promise<string | null> => {
+    // Get from IndexedDB as the primary source on load
+    return indexedDBStorage.getItem(name);
+  },
+  setItem: async (name: string, value: string): Promise<void> => {
+    // Set in IndexedDB
+    await indexedDBStorage.setItem(name, value);
+    // Also set in backend config
+    try {
+      // 'value' is a JSON string representing the state { state: ..., version: ... }
+      const parsedState = JSON.parse(value);
+      // Assuming window.eidos.config.set expects the actual config object
+      // Use the relevant key for the backend configuration, e.g., 'aiConfig'
+      if (window.eidos?.config?.set && parsedState.state?.aiConfig) {
+        await window.eidos.config.set('ai', parsedState.state.aiConfig);
+      }
+    } catch (error) {
+      console.error("Failed to parse state or set backend config:", error);
+    }
+  },
+  removeItem: async (name: string): Promise<void> => {
+    // Remove from IndexedDB
+    await indexedDBStorage.removeItem(name);
+    // Also remove/reset in backend config
+    try {
+      // Set the corresponding backend config key to a default/empty state
+      if (window.eidos?.config?.set) {
+        // Use the default state structure matching AIFormValues
+        await window.eidos.config.set('ai', {
+          localModels: [],
+          llmProviders: [],
+          autoLoadEmbeddingModel: false,
+          embeddingModel: undefined, // Ensure all fields are reset if needed
+          translationModel: undefined,
+          codingModel: undefined,
+        });
+      }
+    } catch (error) {
+      console.error("Failed to remove/reset backend config:", error);
+    }
+  },
+};
 
 export const useAIConfigStore = create<ConfigState>()(
   persist(
@@ -96,7 +95,8 @@ export const useAIConfigStore = create<ConfigState>()(
     }),
     {
       name: "config-ai",
-      storage: createJSONStorage(() => indexedDBStorage),
+      // Use the custom storage wrapper
+      storage: createJSONStorage(() => customStorage),
     }
   )
 )

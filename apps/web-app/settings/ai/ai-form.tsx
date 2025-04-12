@@ -1,9 +1,12 @@
-import { zodResolver } from "@hookform/resolvers/zod"
 import { useEffect } from "react"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { useLocation } from "react-router-dom"
 
+import { AIFormValues, aiFormSchema } from "@/lib/ai/config"
+import { isDesktopMode } from "@/lib/env"
+import { toast } from "@/components/ui/use-toast"
 import { AIModelSelect } from "@/components/ai-chat/ai-chat-model-select"
 import {
   Form,
@@ -14,13 +17,11 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/react-hook-form/form"
-import { toast } from "@/components/ui/use-toast"
-import { isDesktopMode } from "@/lib/env"
 
 import { TaskType } from "./hooks"
 import { LocalLLMManage } from "./local-llm-manage"
 import { ModelTestButton } from "./model-test-button"
-import { AIFormValues, aiFormSchema, useAIConfigStore } from "./store"
+import { useAIConfigStore } from "./store"
 
 export function AIConfigForm() {
   const { setAiConfig, aiConfig } = useAIConfigStore()

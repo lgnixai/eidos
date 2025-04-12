@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 
+import { LLMProvider, llmProviderSchema } from "@/lib/ai/config"
 import { LLM_PROVIDER_INFO } from "@/lib/ai/helper"
 import {
   AlertDialog,
@@ -41,8 +42,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/react-hook-form/form"
-
-import { LLMProvider, llmProviderSchema } from "../store"
 
 interface LLMProviderFormProps {
   value?: LLMProvider
