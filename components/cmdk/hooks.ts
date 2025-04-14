@@ -36,7 +36,8 @@ export const useInput = () => {
   const { input, setInput } = useCMDKStore()
   const isActionMode = input.startsWith("/")
   const isSystemMode = input.startsWith("!")
-  const mode = isActionMode ? "action" : isSystemMode ? "syscall" : "search"
+  const isEmbeddingMode = input.startsWith("@")
+  const mode = isActionMode ? "action" : isSystemMode ? "syscall" : isEmbeddingMode ? "embedding" : "search"
   return {
     input,
     setInput,

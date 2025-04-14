@@ -33,11 +33,11 @@ import {
 import { useLastOpened } from "@/apps/web-app/[database]/hook"
 import { useSpaceAppStore } from "@/apps/web-app/[database]/store"
 
-import { ActionList } from "./action"
+import { ActionCommandItems } from "./action"
 // import { ExtensionCommandItems } from "./extension"
 import { useCMDKGoto, useCMDKStore, useInput } from "./hooks"
 import { NodeCommandItems } from "./nodes"
-import { ScriptList } from "./script"
+import { ScriptCommandItems } from "./script"
 import { SpaceCommandItems } from "./spaces"
 
 export function CommandDialogDemo() {
@@ -106,13 +106,6 @@ export function CommandDialogDemo() {
 
   const { t } = useTranslation()
 
-  if (mode === "action") {
-    return <ScriptList />
-  }
-  if (mode === "syscall") {
-    return <ActionList />
-  }
-
   return (
     <CommandDialog open={isCmdkOpen} onOpenChange={setCmdkOpen}>
       <CommandInput
@@ -124,43 +117,66 @@ export function CommandDialogDemo() {
         <CommandEmpty>
           <span>{t("cmdk.notFound", { input })}</span>
         </CommandEmpty>
-        {!isInkServiceMode && (
-          <CommandGroup heading={t("cmdk.suggestions")}>
-            <CommandItem onSelect={goToday} value="today">
-              <Clock3Icon className="mr-2 h-4 w-4" />
-              <span>{t("common.today")}</span>
-            </CommandItem>
-            <CommandItem onSelect={createNewDoc} value="new draft doc">
-              <FilePlus2Icon className="mr-2 h-4 w-4" />
-              <span>{t("cmdk.newDraftDoc")}</span>
-            </CommandItem>
-            <CommandItem onSelect={toggleAI}>
-              <Bot className="mr-2 h-4 w-4" />
-              <span>{t("common.ai")}</span>
-            </CommandItem>
-          </CommandGroup>
-        )}
 
-        {isDesktopMode && currentNode?.type === "table" && (
-          <CommandGroup heading={t("cmdk.table")}>
-            <CommandItem
-              onSelect={() => {
-                rebuildTableFTS(currentNode.id)
-              }}
-              value="rebuild fts"
-            >
-              <RefreshCcwIcon className="mr-2 h-4 w-4" />
-              <span>{t("cmdk.rebuildFTS")}</span>
-            </CommandItem>
-          </CommandGroup>
-        )}
-        <CommandSeparator />
-        {!isInkServiceMode && (
+        {mode === "search" && (
           <>
-            <NodeCommandItems />
-            <SpaceCommandItems />
+            {!isInkServiceMode && (
+              <CommandGroup heading={t("cmdk.suggestions")}>
+                <CommandItem onSelect={goToday} value="today">
+                  <Clock3Icon className="mr-2 h-4 w-4" />
+                  <span>{t("common.today")}</span>
+                </CommandItem>
+                <CommandItem onSelect={createNewDoc} value="new draft doc">
+                  <FilePlus2Icon className="mr-2 h-4 w-4" />
+                  <span>{t("cmdk.newDraftDoc")}</span>
+                </CommandItem>
+                <CommandItem onSelect={toggleAI}>
+                  <Bot className="mr-2 h-4 w-4" />
+                  <span>{t("common.ai")}</span>
+                </CommandItem>
+              </CommandGroup>
+            )}
+
+            {isDesktopMode && currentNode?.type === "table" && (
+              <CommandGroup heading={t("cmdk.table")}>
+                <CommandItem
+                  onSelect={() => {
+                    rebuildTableFTS(currentNode.id)
+                  }}
+                  value="rebuild fts"
+                >
+                  <RefreshCcwIcon className="mr-2 h-4 w-4" />
+                  <span>{t("cmdk.rebuildFTS")}</span>
+                </CommandItem>
+              </CommandGroup>
+            )}
+            <CommandSeparator />
+            {!isInkServiceMode && (
+              <>
+                <NodeCommandItems />
+                <SpaceCommandItems />
+              </>
+            )}
           </>
         )}
+
+        {mode === "action" && (
+          <ScriptCommandItems
+            input={input}
+            setInput={setInput}
+            setCmdkOpen={setCmdkOpen}
+            mode={mode}
+          />
+        )}
+        {mode === "syscall" && (
+          <ActionCommandItems
+            input={input}
+            setInput={setInput}
+            setCmdkOpen={setCmdkOpen}
+            mode={mode}
+          />
+        )}
+        <CommandSeparator />
         <CommandGroup heading={t("common.settings")}>
           <CommandItem onSelect={switchTheme}>
             <Palette className="mr-2 h-4 w-4" />

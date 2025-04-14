@@ -22,9 +22,18 @@ import {
 } from "../ui/command"
 import { useInput } from "./hooks"
 
-export const ScriptList = () => {
-  const { isCmdkOpen, setCmdkOpen } = useAppRuntimeStore()
-  const { input, setInput, mode } = useInput()
+interface ScriptCommandItemsProps {
+  input: string
+  setInput: (input: string) => void
+  setCmdkOpen: (open: boolean) => void
+  mode: string
+}
+
+export const ScriptCommandItems = ({
+  input,
+  setInput,
+  setCmdkOpen,
+}: ScriptCommandItemsProps) => {
   const { callFunction } = useScriptFunction()
   const [currentAction, setCurrentAction] = useState<IScript>()
   const [currentCommand, setCurrentCommand] = useState<ICommand>()
@@ -39,7 +48,6 @@ export const ScriptList = () => {
     })
   }, [_scripts])
 
-  const inputRef = useRef<HTMLInputElement>(null)
   const onItemSelect = (action: IScript, subCommand?: ICommand) => () => {
     const paramsString = Object.keys(
       subCommand?.inputJSONSchema?.properties || {}
@@ -48,25 +56,14 @@ export const ScriptList = () => {
         return `--${param}=`
       })
       .join(" ")
-    let input = subCommand ? `/${subCommand?.name}` : `/${action.name}`
+    let newInputValue = subCommand ? `/${subCommand?.name}` : `/${action.name}`
     if (paramsString.length > 0) {
-      input += ` ${paramsString}`
+      newInputValue += ` ${paramsString}`
     }
-    setInput(input)
-    setTimeout(() => {
-      setCurrentAction(action)
-      subCommand && setCurrentCommand(subCommand)
-    }, 400)
+    setInput(newInputValue)
+    setCurrentAction(action)
+    subCommand && setCurrentCommand(subCommand)
   }
-
-  useEffect(() => {
-    setTimeout(() => {
-      if (inputRef.current) {
-        const length = inputRef.current.value.length
-        inputRef.current.setSelectionRange(length, length)
-      }
-    }, 0)
-  }, [])
 
   useKeyPress("Enter", async () => {
     if (currentAction) {
@@ -96,72 +93,57 @@ export const ScriptList = () => {
     }
   })
 
-  if (mode === "search") {
-    return <CommandDialogDemo />
-  }
   return (
-    <CommandDialog open={isCmdkOpen} onOpenChange={setCmdkOpen}>
-      <CommandInput
-        placeholder="Type a command or search..."
-        value={input}
-        ref={inputRef}
-        onValueChange={setInput}
-        autoFocus={false}
-      />
-      <CommandList>
-        <CommandEmpty>No results found.</CommandEmpty>
-        <CommandGroup>
-          {scripts.map((script) => {
-            const hasCommands = Boolean(script.commands?.length)
-            const scriptValue = `/${script.name}`
-            return (
-              <React.Fragment key={script.id}>
-                {hasCommands ? (
-                  <>
-                    {script.commands?.map((subCommand) => {
-                      const value = `/${script.name} ${subCommand.name}`
-                      const showValue = `/${subCommand.name}`
-                      return (
-                        <CommandItem
-                          onSelect={onItemSelect(script, subCommand)}
-                          key={value}
-                          value={value}
-                        >
-                          <div className="flex flex-col">
-                            <div className="flex gap-1 font-semibold">
-                              {showValue}
-                              <div className="ml-2 flex gap-1">
-                                {Object.keys(
-                                  subCommand.inputJSONSchema?.properties || {}
-                                ).map((name) => {
-                                  return <span key={name}>{` ${name}`}</span>
-                                })}
-                              </div>
-                            </div>
-                            <span className="text-sm text-gray-500">
-                              {subCommand.description}
-                            </span>
+    <CommandGroup heading="Scripts">
+      {scripts.map((script) => {
+        const hasCommands = Boolean(script.commands?.length)
+        const scriptValue = `/${script.name}`
+        return (
+          <React.Fragment key={script.id}>
+            {hasCommands ? (
+              <>
+                {script.commands?.map((subCommand) => {
+                  const value = `/${script.name} ${subCommand.name}`
+                  const showValue = `/${subCommand.name}`
+                  return (
+                    <CommandItem
+                      onSelect={onItemSelect(script, subCommand)}
+                      key={value}
+                      value={value}
+                    >
+                      <div className="flex flex-col">
+                        <div className="flex gap-1 font-semibold">
+                          {showValue}
+                          <div className="ml-2 flex gap-1">
+                            {Object.keys(
+                              subCommand.inputJSONSchema?.properties || {}
+                            ).map((name) => {
+                              return <span key={name}>{` ${name}`}</span>
+                            })}
                           </div>
-                          <CommandShortcut>{script.name}</CommandShortcut>
-                        </CommandItem>
-                      )
-                    })}
-                  </>
-                ) : (
-                  <CommandItem
-                    onSelect={onItemSelect(script)}
-                    key={script.id}
-                    value={scriptValue}
-                  >
-                    {scriptValue}
-                    <CommandShortcut>{script.name}</CommandShortcut>
-                  </CommandItem>
-                )}
-              </React.Fragment>
-            )
-          })}
-        </CommandGroup>
-      </CommandList>
-    </CommandDialog>
+                        </div>
+                        <span className="text-sm text-gray-500">
+                          {subCommand.description}
+                        </span>
+                      </div>
+                      <CommandShortcut>{script.name}</CommandShortcut>
+                    </CommandItem>
+                  )
+                })}
+              </>
+            ) : (
+              <CommandItem
+                onSelect={onItemSelect(script)}
+                key={script.id}
+                value={scriptValue}
+              >
+                {scriptValue}
+                <CommandShortcut>{script.name}</CommandShortcut>
+              </CommandItem>
+            )}
+          </React.Fragment>
+        )
+      })}
+    </CommandGroup>
   )
 }

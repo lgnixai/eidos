@@ -1,6 +1,5 @@
 import { useState } from "react"
 import { IAction } from "@/worker/web-worker/meta-table/action"
-import { useKeyPress } from "ahooks"
 
 import { ActionExecutor } from "@/lib/action/action"
 import { useAppRuntimeStore } from "@/lib/store/runtime-store"
@@ -19,6 +18,14 @@ import {
   CommandList,
 } from "../ui/command"
 import { useInput } from "./hooks"
+import { useKeyPress } from "ahooks"
+
+interface ActionCommandItemsProps {
+  input: string
+  setInput: (input: string) => void
+  setCmdkOpen: (open: boolean) => void
+  mode: string
+}
 
 const useFunctionCall = (space: string) => {
   const { sqlite } = useSqlite(space)
@@ -37,14 +44,16 @@ const useFunctionCall = (space: string) => {
   }
 }
 
-export const ActionList = () => {
-  const { isCmdkOpen, setCmdkOpen } = useAppRuntimeStore()
-  const { input, setInput, mode } = useInput()
-
+export const ActionCommandItems = ({
+  input,
+  setInput,
+  setCmdkOpen,
+}: ActionCommandItemsProps) => {
   const [currentAction, setCurrentAction] = useState<IAction>()
   const { space } = useCurrentPathInfo()
   const { addRow } = useFunctionCall(space)
   const actions = useActions(space)
+
   const onItemSelect = (action: IAction) => () => {
     const paramsString = action.params
       .map((param) => {
@@ -52,9 +61,7 @@ export const ActionList = () => {
       })
       .join(" ")
     setInput(`/${action.name} ${paramsString}`)
-    setTimeout(() => {
-      setCurrentAction(action)
-    }, 400)
+    setCurrentAction(action)
   }
 
   useKeyPress("Enter", () => {
@@ -70,38 +77,25 @@ export const ActionList = () => {
     }
   })
 
-  if (mode === "search") {
-    return <CommandDialogDemo />
-  }
   return (
-    <CommandDialog open={isCmdkOpen} onOpenChange={setCmdkOpen}>
-      <CommandInput
-        placeholder="Type a command or search..."
-        value={input}
-        onValueChange={setInput}
-      />
-      <CommandList>
-        <CommandEmpty>No results found.</CommandEmpty>
-        <CommandGroup>
-          {actions.map((action) => {
-            const value = `/${action.name}`
-            return (
-              <CommandItem
-                onSelect={onItemSelect(action)}
-                key={action.id}
-                value={value}
-              >
-                {value}
-                <div className="ml-2">
-                  {action.params.map((param) => {
-                    return <span>{` ${param.name}`}</span>
-                  })}
-                </div>
-              </CommandItem>
-            )
-          })}
-        </CommandGroup>
-      </CommandList>
-    </CommandDialog>
+    <CommandGroup heading="Actions">
+      {actions.map((action) => {
+        const value = `/${action.name}`
+        return (
+          <CommandItem
+            onSelect={onItemSelect(action)}
+            key={action.id}
+            value={value}
+          >
+            {value}
+            <div className="ml-2">
+              {action.params.map((param) => {
+                return <span key={param.name}>{` ${param.name}`}</span>
+              })}
+            </div>
+          </CommandItem>
+        )
+      })}
+    </CommandGroup>
   )
 }
