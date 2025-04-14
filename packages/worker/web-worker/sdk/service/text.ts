@@ -16,7 +16,7 @@ export class TextFieldService {
     }
 
 
-    queryEmbedding = async (fieldId: string, query: string) => {
+    queryEmbedding = async (fieldId: string, query: string, limit = 10) => {
         const vectorColumnName = `${fieldId}__vec`
         const sql = `
 select
@@ -25,7 +25,7 @@ select
   ${vectorColumnName},
   vec_distance_L2(${vectorColumnName}, '${query}') as distance
 from ${this.table.rawTableName} where ${vectorColumnName} is not null
-order by distance limit 10;`
+order by distance limit ${limit};`
 
         const result = await this.dataSpace.exec2(sql)
         return result

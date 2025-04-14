@@ -79,7 +79,7 @@ export const TextPropertyEditor = (props: IFieldPropertyEditorProps) => {
   }>()
   useEffect(() => {
     const fetchEmbeddingStats = async () => {
-      if (props.uiColumn.property.enableEmbedding) {
+      if (props.uiColumn.property?.enableEmbedding) {
         const stats = await getEmbeddingStats(
           getTableIdByRawTableName(tableName),
           props.uiColumn.table_column_name
@@ -90,7 +90,7 @@ export const TextPropertyEditor = (props: IFieldPropertyEditorProps) => {
     fetchEmbeddingStats()
   }, [
     props.uiColumn.table_column_name,
-    props.uiColumn.property.enableEmbedding,
+    props.uiColumn.property?.enableEmbedding,
     // when progress is updated, we need to fetch the stats again
     progress,
   ])

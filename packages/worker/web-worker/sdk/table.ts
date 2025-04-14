@@ -12,6 +12,7 @@ import { FieldType } from "@/lib/fields/const"
 import { ColumnTableName } from "@/lib/sqlite/const"
 import { ColumnTable } from "../meta-table/column"
 import { isDesktopMode } from "@/lib/env"
+import { allFieldTypesMap } from "@/lib/fields"
 
 interface ITable {
   id: string
@@ -147,9 +148,10 @@ CREATE TABLE ${rawTableName} (
     INSERT INTO ${ColumnTableName}(name, type, table_name, table_column_name) VALUES ('title', 'title', '${rawTableName}', 'title');
     `
     fieldsWithoutTitle.forEach((field, index) => {
+      const defaultFieldProperty = allFieldTypesMap[field.type].getDefaultFieldProperty()
       const rawColumn = rawColumns[index]
       const escapedName = field.name.replace(/'/g, "''")
-      createTableSql += `INSERT INTO ${ColumnTableName}(name, type, table_name, table_column_name) VALUES ('${escapedName}', '${field.type}', '${rawTableName}', '${rawColumn}');`
+      createTableSql += `INSERT INTO ${ColumnTableName}(name, type, table_name, table_column_name, property) VALUES ('${escapedName}', '${field.type}', '${rawTableName}', '${rawColumn}', '${JSON.stringify(defaultFieldProperty)}');`
     })
 
     return {

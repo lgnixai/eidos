@@ -214,9 +214,9 @@ export class DataSpace {
     await tm.fields.text.updateEmbedding(fieldId, data)
   }
 
-  public queryEmbedding = async (tableId: string, fieldId: string, query: string) => {
+  public queryEmbedding = async (tableId: string, fieldId: string, query: string, limit = 10) => {
     const tm = new TableManager(tableId, this)
-    return await tm.fields.text.queryEmbedding(fieldId, query)
+    return await tm.fields.text.queryEmbedding(fieldId, query, limit)
   }
 
   public getEmbeddingStats = async (tableId: string, fieldId: string) => {
