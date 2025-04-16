@@ -1,8 +1,9 @@
 import { useState } from "react"
 import { IScript } from "@/worker/web-worker/meta-table/script"
 import { useTranslation } from "react-i18next"
-import { useLoaderData, useRevalidator } from "react-router-dom"
+import { useLoaderData, useNavigate, useRevalidator } from "react-router-dom"
 
+import { useCurrentPathInfo } from "@/hooks/use-current-pathinfo"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -11,6 +12,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
@@ -25,14 +35,18 @@ export const ExtensionConfig = () => {
   const script = useLoaderData() as IScript
   const revalidator = useRevalidator()
   const { toast } = useToast()
-  const { updateScript } = useScript()
+  const { updateScript, deleteScript } = useScript()
   const { t } = useTranslation()
+  const router = useNavigate()
+  const { space } = useCurrentPathInfo()
 
   const [formData, setFormData] = useState<Partial<IScript>>({
     name: script.name,
     description: script.description || "",
     enabled: script.enabled,
   })
+
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
 
   const hasChanges = () => {
     return (
@@ -63,6 +77,23 @@ export const ExtensionConfig = () => {
     } catch (error) {
       toast({
         title: "Failed to update basic info",
+        description: error instanceof Error ? error.message : "Unknown error",
+        variant: "destructive",
+      })
+    }
+  }
+
+  const handleDeleteScript = async () => {
+    try {
+      await deleteScript(script.id)
+      setShowDeleteDialog(false)
+      toast({
+        title: "Script Deleted Successfully",
+      })
+      router(`/${space}/extensions`)
+    } catch (error) {
+      toast({
+        title: "Failed to delete script",
         description: error instanceof Error ? error.message : "Unknown error",
         variant: "destructive",
       })
@@ -156,6 +187,55 @@ export const ExtensionConfig = () => {
         <ScriptConfig />
       )}
       {script.type === "m_block" && <BlockConfig />}
+
+      <Card className="border-destructive">
+        <CardHeader>
+          <CardTitle className="text-destructive">
+            {t("extension.config.dangerZone")}
+          </CardTitle>
+          <CardDescription>
+            {t("extension.config.dangerZoneDescription")}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex items-center justify-between">
+          <div className="flex flex-col">
+            <p className="font-medium">{t("extension.config.deleteScript")}</p>
+            <p className="text-sm text-muted-foreground">
+              {t("extension.config.deleteScriptDescription")}
+            </p>
+          </div>
+          <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+            <DialogTrigger asChild>
+              <Button variant="destructive" size="sm">
+                {t("extension.config.deleteScriptButton")}
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>
+                  {t("extension.toolbar.deleteConfirmTitle")}
+                </DialogTitle>
+                <DialogDescription>
+                  {t("extension.toolbar.deleteConfirmDescription", {
+                    name: script.name,
+                  })}
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
+                <Button
+                  variant="outline"
+                  onClick={() => setShowDeleteDialog(false)}
+                >
+                  {t("common.cancel")}
+                </Button>
+                <Button variant="destructive" onClick={handleDeleteScript}>
+                  {t("common.delete")}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </CardContent>
+      </Card>
     </div>
   )
 }

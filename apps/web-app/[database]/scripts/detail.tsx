@@ -1,7 +1,7 @@
 import { Suspense, lazy, useCallback, useEffect, useRef, useState } from "react"
 import { IScript } from "@/worker/web-worker/meta-table/script"
 import { useLocalStorageState, useMount } from "ahooks"
-import { Code, ExternalLink, Eye } from "lucide-react"
+import { Code, ExternalLink, Eye, LayoutGrid } from "lucide-react"
 import { useTheme } from "next-themes"
 import {
   useLoaderData,
@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/resizable"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { useToast } from "@/components/ui/use-toast"
 import { BlockRenderer } from "@/components/block-renderer/block-renderer"
 import { DocEditorPlayground } from "@/components/doc-editor-playground"
@@ -38,23 +39,39 @@ import { useEditorStore } from "./stores/editor-store"
 const CodeEditor = lazy(() => import("./editor/code-editor"))
 
 const PreviewToggle = ({
-  onClick,
-  showPreview,
+  layoutMode,
+  onLayoutModeChange,
 }: {
-  onClick: () => void
-  showPreview: boolean
+  layoutMode: "preview" | "code"
+  onLayoutModeChange: (mode: "preview" | "code") => void
 }) => {
   return (
-    <Button
-      variant="ghost"
+    <ToggleGroup
+      type="single"
       size="sm"
-      onClick={onClick}
-      className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
-      title="Toggle view mode"
+      value={layoutMode}
+      onValueChange={(value) => {
+        if (value) {
+          onLayoutModeChange(value as "preview" | "code")
+        }
+      }}
+      className="gap-1 bg-muted p-[3px] text-muted-foreground"
     >
-      <span>{showPreview ? "Preview" : "Code"}</span>
-      {showPreview ? <Eye className="h-4 w-4" /> : <Code className="h-4 w-4" />}
-    </Button>
+      <ToggleGroupItem
+        value="preview"
+        className="flex items-center gap-1.5 px-2 data-[state=on]:bg-background data-[state=on]:text-foreground data-[state=on]:shadow-sm"
+      >
+        <Eye className="h-3.5 w-3.5" />
+        Preview
+      </ToggleGroupItem>
+      <ToggleGroupItem
+        value="code"
+        className="flex items-center gap-1.5 px-2 data-[state=on]:bg-background data-[state=on]:text-foreground data-[state=on]:shadow-sm"
+      >
+        <Code className="h-3.5 w-3.5" />
+        Code
+      </ToggleGroupItem>
+    </ToggleGroup>
   )
 }
 
@@ -251,10 +268,8 @@ export const ScriptDetailPage = () => {
           <div className="flex items-center gap-2">
             {(script.type === "m_block" || script.type === "doc_plugin") && (
               <PreviewToggle
-                showPreview={isPreviewMode}
-                onClick={() =>
-                  setLayoutMode(isPreviewMode ? "code" : "preview")
-                }
+                layoutMode={layoutMode}
+                onLayoutModeChange={(newMode) => setLayoutMode(newMode)}
               />
             )}
             {script.type === "m_block" && (
@@ -270,8 +285,8 @@ export const ScriptDetailPage = () => {
                 className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
                 title="Open in standalone mode"
               >
-                <span>Standalone</span>
                 <ExternalLink className="h-4 w-4" />
+                <span>Standalone</span>
               </Button>
             )}
             <ExtensionToolbar />

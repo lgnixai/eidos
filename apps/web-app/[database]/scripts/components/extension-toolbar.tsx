@@ -1,22 +1,13 @@
 import { IScript } from "@/worker/web-worker/meta-table/script"
 import { useMount } from "ahooks"
 import { BlendIcon, Copy, Play } from "lucide-react"
-import { useCallback, useRef, useState } from "react"
+import { useCallback, useRef } from "react"
 import { useTranslation } from "react-i18next"
-import { useLoaderData, useNavigate, useRevalidator } from "react-router-dom"
+import { useLoaderData, useRevalidator } from "react-router-dom"
 
 import { usePlayground } from "@/apps/desktop/renderer/hooks/usePlayground"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
 import { useToast } from "@/components/ui/use-toast"
 import { useCurrentPathInfo } from "@/hooks/use-current-pathinfo"
 import { useScriptCall } from "@/hooks/use-script-call"
@@ -32,8 +23,7 @@ import { useEditorStore } from "../stores/editor-store"
 export const ExtensionToolbar = () => {
   const { t } = useTranslation()
   const script = useLoaderData() as IScript
-  const { deleteScript, updateScript } = useScript()
-  const router = useNavigate()
+  const { updateScript } = useScript()
   const editorRef = useRef<{ save: () => void; layout: () => void }>(null)
   const revalidator = useRevalidator()
 
@@ -61,13 +51,6 @@ export const ExtensionToolbar = () => {
   )
 
   const { space } = useCurrentPathInfo()
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
-
-  const handleDeleteScript = async () => {
-    await deleteScript(script.id)
-    setShowDeleteDialog(false)
-    router(`/${space}/extensions`)
-  }
 
   const manualSave = () => {
     editorRef.current?.save()
@@ -143,36 +126,6 @@ export const ExtensionToolbar = () => {
 
   return (
     <div className="flex items-center gap-2">
-      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <DialogTrigger asChild>
-          <Button variant="ghost" size="xs">
-            {t("extension.toolbar.delete")}
-          </Button>
-        </DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              {t("extension.toolbar.deleteConfirmTitle")}
-            </DialogTitle>
-            <DialogDescription>
-              {t("extension.toolbar.deleteConfirmDescription", {
-                name: script.name,
-              })}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setShowDeleteDialog(false)}
-            >
-              {t("common.cancel")}
-            </Button>
-            <Button variant="destructive" onClick={handleDeleteScript}>
-              {t("common.delete")}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
       <Button variant="outline" size="xs" onClick={handleCopyCode}>
         <Copy className="mr-2 h-4 w-4" />
         {t("extension.toolbar.copy")}
