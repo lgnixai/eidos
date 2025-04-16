@@ -1,24 +1,18 @@
-import { useEffect, useRef, useState } from "react"
 import { FunctionSquareIcon } from "lucide-react"
+import { useEffect, useRef, useState } from "react"
 
-import { FieldType } from "@/lib/fields/const"
-import { FormulaProperty } from "@/lib/fields/formula"
-import { IField } from "@/lib/store/interface"
-import { useCurrentUiColumns } from "@/hooks/use-ui-columns"
+import { CodeMirrorFormulaEditorRef } from "@/components/formula-editor/codemirror-editor"
 import { Label } from "@/components/ui/label"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { CodeMirrorFormulaEditorRef } from "@/components/formula-editor/codemirror-editor"
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
+import { useCurrentUiColumns } from "@/hooks/use-ui-columns"
+import { FieldType } from "@/lib/fields/const"
+import { FormulaProperty } from "@/lib/fields/formula"
+import { IField } from "@/lib/store/interface"
 
 import { FormulaEditor } from "../../../plugins/formula-editor"
 
@@ -78,23 +72,36 @@ export const FormulaPropertyEditor = (props: IFieldPropertyEditorProps) => {
             />
           </PopoverContent>
         </Popover>
-        <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2 justify-between">
           <Label>Display as</Label>
-          <Select
+          <ToggleGroup
+            type="single"
+            size="sm"
             value={displayType}
-            onValueChange={(value) =>
-              handleChangeFieldDisplayType(value as any)
-            }
+            onValueChange={(value: string) => {
+              if (value) handleChangeFieldDisplayType(value as any)
+            }}
+            className="w-[200px] click-outside-ignore border rounded-md p-0.5 bg-muted gap-1 flex"
           >
-            <SelectTrigger className="click-outside-ignore w-[200px]">
-              <SelectValue placeholder="display as" />
-            </SelectTrigger>
-            <SelectContent className="click-outside-ignore">
-              <SelectItem value={FieldType.Text}>Text</SelectItem>
-              <SelectItem value={FieldType.URL}>URL</SelectItem>
-              <SelectItem value={FieldType.File}>Files</SelectItem>
-            </SelectContent>
-          </Select>
+            <ToggleGroupItem
+              value={FieldType.Text}
+              className="flex-1 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground px-2.5 py-1 text-xs"
+            >
+              Text
+            </ToggleGroupItem>
+            <ToggleGroupItem
+              value={FieldType.URL}
+              className="flex-1 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground px-2.5 py-1 text-xs"
+            >
+              URL
+            </ToggleGroupItem>
+            <ToggleGroupItem
+              value={FieldType.File}
+              className="flex-1 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground px-2.5 py-1 text-xs"
+            >
+              Files
+            </ToggleGroupItem>
+          </ToggleGroup>
         </div>
       </div>
     </div>
