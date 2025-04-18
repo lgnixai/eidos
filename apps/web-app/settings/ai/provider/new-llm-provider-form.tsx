@@ -7,7 +7,10 @@ import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 import * as z from "zod"
 
-import { LLMProvider, llmProviderSchema as baseLlmProviderSchema } from "@/lib/ai/config"
+import {
+  LLMProvider,
+  llmProviderSchema as baseLlmProviderSchema,
+} from "@/lib/ai/config"
 import {
   AvailableModel,
   LLM_PROVIDER_INFO,
@@ -72,7 +75,7 @@ export const LLMProviderForm = ({
   const llmProviderSchema = useMemo(() => {
     return baseLlmProviderSchema.refine(
       (data) => {
-        if (data.type !== "openai-compatible") {
+        if (data.type !== "openai-compatible" && data.type !== "ollama") {
           return true
         }
         const isEditing = !!value
@@ -163,13 +166,17 @@ export const LLMProviderForm = ({
 
   const { run: fetchModels } = useDebounceFn(
     async () => {
-      if (!apiKey) return
+      if (!apiKey && providerType !== "ollama") return
 
       setIsFetchingModels(true)
       setAvailableModels([])
 
       try {
-        const models = await fetchAvailableModels(apiKey, providerType, baseUrl)
+        const models = await fetchAvailableModels(
+          apiKey || "key for ollama",
+          providerType,
+          baseUrl
+        )
         setAvailableModels(models)
       } catch (error) {
         console.error(error)
@@ -185,6 +192,16 @@ export const LLMProviderForm = ({
     { wait: 500 }
   )
 
+  // Automatically set apiKey for ollama
+  useEffect(() => {
+    if (providerType === "ollama") {
+      form.setValue("apiKey", "ollama", {
+        shouldValidate: false,
+        shouldDirty: false,
+      })
+    }
+  }, [providerType, form])
+
   async function getModelList(
     e?: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) {
@@ -193,7 +210,11 @@ export const LLMProviderForm = ({
   }
 
   useEffect(() => {
-    if (form.watch("type") !== "openai-compatible" && apiKey) {
+    // Fetch models automatically for ollama or other providers when apiKey is present
+    if (
+      providerType === "ollama" ||
+      (providerType !== "openai-compatible" && apiKey)
+    ) {
       fetchModels()
     }
   }, [providerType, apiKey, baseUrl, fetchModels])
@@ -203,7 +224,8 @@ export const LLMProviderForm = ({
   return (
     <Form {...form}>
       <form className="space-y-4">
-        {form.watch("type") === "openai-compatible" && (
+        {(form.watch("type") === "openai-compatible" ||
+          form.watch("type") === "ollama") && (
           <FormField
             control={form.control}
             name="name"
@@ -211,7 +233,10 @@ export const LLMProviderForm = ({
               <FormItem>
                 <FormLabel>{t("common.name")}</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder={t("settings.ai.providerNamePlaceholder")} />
+                  <Input
+                    {...field}
+                    placeholder={t("settings.ai.providerNamePlaceholder")}
+                  />
                 </FormControl>
                 <FormDescription>
                   {t("settings.ai.providerNameDescription")}
@@ -221,7 +246,8 @@ export const LLMProviderForm = ({
             )}
           />
         )}
-        {form.watch("type") === "openai-compatible" && (
+        {(form.watch("type") === "openai-compatible" ||
+          form.watch("type") === "ollama") && (
           <FormField
             name="baseUrl"
             render={({ field }) => (
@@ -238,35 +264,37 @@ export const LLMProviderForm = ({
             )}
           />
         )}
-        <FormField
-          name="apiKey"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t("common.apiKey")}</FormLabel>
-              <FormControl>
-                <Input {...field} type="password" />
-              </FormControl>
-              <FormDescription>
-                {t("settings.ai.apiKeyDescription")}
-                {providerInfo?.urlForGettingApiKey && (
-                  <span className="ml-1">
-                    (
-                    <a
-                      href={providerInfo.urlForGettingApiKey}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="underline"
-                    >
-                      {t("settings.ai.getApiKeyHint")}
-                    </a>
-                    )
-                  </span>
-                )}
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {form.watch("type") !== "ollama" && (
+          <FormField
+            name="apiKey"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t("common.apiKey")}</FormLabel>
+                <FormControl>
+                  <Input {...field} type="password" />
+                </FormControl>
+                <FormDescription>
+                  {t("settings.ai.apiKeyDescription")}
+                  {providerInfo?.urlForGettingApiKey && (
+                    <span className="ml-1">
+                      (
+                      <a
+                        href={providerInfo.urlForGettingApiKey}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="underline"
+                      >
+                        {t("settings.ai.getApiKeyHint")}
+                      </a>
+                      )
+                    </span>
+                  )}
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
         <FormField
           control={form.control}
           name="models"
@@ -274,12 +302,16 @@ export const LLMProviderForm = ({
             <FormItem>
               <div className="flex items-center justify-between">
                 <FormLabel>{t("settings.ai.models")}</FormLabel>
-                {form.watch("type") === "openai-compatible" && (
+                {(form.watch("type") === "openai-compatible" ||
+                  form.watch("type") === "ollama") && (
                   <Button
                     size="xs"
                     variant="outline"
                     onClick={getModelList}
-                    disabled={isFetchingModels || !form.watch("apiKey")}
+                    disabled={
+                      isFetchingModels ||
+                      (!form.watch("apiKey") && form.watch("type") !== "ollama")
+                    }
                   >
                     {isFetchingModels ? (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />

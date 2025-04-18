@@ -1,3 +1,4 @@
+import React from "react"
 import {
   Anthropic,
   Aws,
@@ -10,13 +11,13 @@ import {
   Google,
   Groq,
   Mistral,
+  Ollama,
   OpenAI,
   OpenRouter,
   Perplexity,
   Together,
-  XAI
+  XAI,
 } from "@lobehub/icons"
-import React from "react"
 
 import { LLMProviderType } from "@/lib/ai/helper"
 
@@ -40,6 +41,7 @@ export const providerIcons = {
   // replicate: <Replicate size={16} />,
   perplexity: <Perplexity size={16} />,
   // luma: <Luma size={16} />,
+  ollama: <Ollama size={16} />,
   "openai-compatible": <OpenAI.Avatar size={16} />,
 } as const satisfies Record<LLMProviderType, React.ReactNode>
 
@@ -63,6 +65,7 @@ const colorfulProviderIcons = {
   // replicate: <Replicate.Avatar size={16} />,
   perplexity: <Perplexity.Color size={16} />,
   // luma: <Luma.Avatar size={16} />,
+  ollama: <Ollama.Avatar size={16} />,
   "openai-compatible": <OpenAI.Avatar size={16} />,
 } as const satisfies Record<LLMProviderType, React.ReactNode>
 

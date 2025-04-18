@@ -17,6 +17,9 @@ export const ProviderPage = () => {
   if (isAddNew) {
     const type = searchParams.get("type") as any
     const name = searchParams.get("name") as string
+
+    const defaultBaseUrl = type === "ollama" ? "http://localhost:11434/v1" : ""
+
     return (
       <LLMProviderForm
         value={{
@@ -24,7 +27,7 @@ export const ProviderPage = () => {
           name: name,
           models: "",
           apiKey: "",
-          baseUrl: "",
+          baseUrl: defaultBaseUrl,
           enabled: true,
         }}
         onAdd={addLLMProvider}

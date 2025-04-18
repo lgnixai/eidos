@@ -69,6 +69,7 @@ export default function SettingsAIPage() {
                   className="flex items-center gap-2"
                   disabled={
                     type !== "openai-compatible" &&
+                    type !== "ollama" &&
                     configuredProviderTypes.has(type)
                   }
                 >

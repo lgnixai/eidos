@@ -50,6 +50,7 @@ export type LLMProviderType =
   "cerebras" |
   // "replicate" |
   "perplexity" |
+  "ollama" |
   // "luma" |
   "openai-compatible"
 
@@ -73,6 +74,7 @@ export const ALL_PROVIDERS_RAW = [
   "cerebras",
   // "replicate",
   "perplexity",
+  "ollama",
   // "luma",
   "openai-compatible",
 ]
@@ -162,6 +164,10 @@ export const LLM_PROVIDER_INFO: Record<LLMProviderType, {
   //   name: "Luma AI",
   //   baseUrl: "https://api.luma.ai/v1", // Placeholder, check docs
   // },
+  ollama: {
+    name: "Ollama",
+    baseUrl: "http://localhost:11434/v1",
+  },
   "openai-compatible": {
     name: "OpenAI Compatible",
     baseUrl: "YOUR_COMPATIBLE_ENDPOINT", // User specific
@@ -376,14 +382,14 @@ export function getProvider(data: {
     // case 'luma':
     //   return createLuma(config)
     case 'openai-compatible':
+    case 'ollama':
     default:
       if (!baseUrl) {
         console.warn(`Base URL is missing for OpenAI compatible provider type: ${type}. Falling back to OpenAI default or OpenAICompatible with potentially incorrect base URL.`);
       }
-      return createOpenAICompatible({
-        baseURL: baseUrl!,
+      return createOpenAI({
+        baseURL: baseUrl,
         apiKey,
-        name: "OpenAI Compatible",
       })
   }
 }

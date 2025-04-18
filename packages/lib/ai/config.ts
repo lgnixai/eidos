@@ -23,6 +23,7 @@ const providerTypes: [LLMProviderType, ...LLMProviderType[]] = [
     "cerebras",
     // "replicate",
     "perplexity",
+    "ollama",
     // "luma",
     "openai-compatible",
 ];
