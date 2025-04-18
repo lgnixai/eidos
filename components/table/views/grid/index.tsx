@@ -243,6 +243,7 @@ export default function GridView(props: IGridProps) {
   } = useFreezeLine({
     currentView,
     columns, // Pass the columns array from useColumns
+    gridRef: containerRef,
   })
 
   // Re-introduce the config calculation using freezeColumns from the hook

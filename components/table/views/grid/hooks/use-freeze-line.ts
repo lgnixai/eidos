@@ -7,6 +7,7 @@ import { useViewOperation } from "@/components/table/hooks";
 import { IGridViewProperties, IView } from "@/lib/store/IView";
 
 interface UseFreezeLineProps {
+    gridRef: React.RefObject<HTMLElement | null>;
     currentView: IView<IGridViewProperties> | null | undefined;
     columns: readonly GridColumn[] | undefined;
     // Optional callback if the parent needs to persist the change
@@ -19,6 +20,7 @@ const HOVER_TARGET_WIDTH = 16; // Width of the hoverable/draggable area for the 
 const FREEZE_LINE_OFFSET = HOVER_TARGET_WIDTH / 2 - 1; // Offset for the freeze line
 
 export function useFreezeLine({
+    gridRef,
     currentView,
     columns,
 }: // onFreezeColumnsChange,
@@ -91,63 +93,57 @@ export function useFreezeLine({
 
 
     const handleMouseDown = useCallback((event: React.MouseEvent) => {
+        if (!gridRef.current) return; // Ensure gridRef is available
+
+        const gridRect = gridRef.current.getBoundingClientRect();
+        const relativeX = event.clientX - gridRect.left; // Calculate relative X
+
         setIsDragging(true);
-        setPreviewFreezeColumns(freezeColumns); // Initialize preview with current value
-        dragStartX.current = event.clientX;
-        currentDragX.current = event.clientX; // Initialize current drag X
-        // Prevent text selection and set cursor during drag
+        setPreviewFreezeColumns(freezeColumns);
+        dragStartX.current = relativeX; // Store relative start X
+        currentDragX.current = relativeX; // Store relative current X
+
         document.body.style.userSelect = "none";
         document.body.style.cursor = "col-resize";
         event.preventDefault();
-    }, [freezeColumns]); // Add freezeColumns dependency
+    }, [freezeColumns, gridRef]); // Add gridRef dependency
 
     const handleMouseMove = useCallback(
         (event: MouseEvent) => {
-            // Ensure columns and positions are available, and dragging is active
-            if (!isDragging || !columns || !columnEndPositions || columnEndPositions.length <= 1) return; // Need at least row num pos + 1 col pos
+            // Ensure gridRef, columns, positions are available, and dragging is active
+            if (!isDragging || !gridRef.current || !columns || !columnEndPositions || columnEndPositions.length <= 1) return;
 
-            const currentX = event.clientX;
-            currentDragX.current = currentX; // Update current mouse position
-            // Assuming grid starts at offset 0 for simplicity. Adjust if needed.
-            const targetLinePosition = currentX;
+            const gridRect = gridRef.current.getBoundingClientRect();
+            const currentRelativeX = event.clientX - gridRect.left; // Calculate relative X
+            currentDragX.current = currentRelativeX; // Update current relative mouse position
 
-            let newPreviewFreezeColumns = 0; // Default to freezing 0 columns
+            const targetLinePosition = currentRelativeX; // Use relative X for target position
 
-            // Iterate through the columns to find where the target position falls relative to midpoints
+            let newPreviewFreezeColumns = 0;
             let found = false;
             for (let k = 0; k < columns.length; k++) {
-                // colStartPos is the end position of the previous element (col k-1 or row num)
                 const colStartPos = columnEndPositions[k];
-                // colEndPos is the end position of the current column k
                 const colEndPos = columnEndPositions[k + 1];
-                // Calculate the midpoint of the current column k
                 const midPoint = colStartPos + Math.max(0, colEndPos - colStartPos) / 2;
 
-                // If the target position is before the midpoint of column k,
-                // it means the user intends to freeze k columns.
                 if (targetLinePosition < midPoint) {
                     newPreviewFreezeColumns = k;
                     found = true;
-                    break; // Found the correct count, exit loop
+                    break;
                 }
             }
 
-            // If the loop completes without finding a midpoint before the target,
-            // it means the target is beyond the midpoint of the last column.
             if (!found) {
-                newPreviewFreezeColumns = columns.length; // Freeze all columns
+                newPreviewFreezeColumns = columns.length;
             }
 
-            // Clamp the value to ensure it's within [0, columns.length] bounds
-            // (Should be guaranteed by logic above, but added for safety)
             newPreviewFreezeColumns = Math.max(0, Math.min(newPreviewFreezeColumns, columns.length));
 
-            // Update preview state only if it has actually changed
             if (newPreviewFreezeColumns !== previewFreezeColumns) {
                 setPreviewFreezeColumns(newPreviewFreezeColumns);
             }
         },
-        [isDragging, columns, columnEndPositions, previewFreezeColumns] // Dependencies
+        [isDragging, columns, columnEndPositions, previewFreezeColumns, gridRef] // Add gridRef dependency
     );
 
     const handleMouseUp = useCallback(() => {
