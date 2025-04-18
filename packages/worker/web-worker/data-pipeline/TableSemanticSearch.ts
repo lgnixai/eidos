@@ -31,7 +31,7 @@ export class TableSemanticSearch {
         const embeddingFields = fields.filter((field) => field.type === FieldType.Text).filter((field) => field.property?.enableEmbedding)
 
         if (embeddingFields.length > 1 && !fieldId) {
-            throw new Error('Multiple embedding fields found, please specify the fieldId');
+            console.warn(`Multiple embedding fields found (${embeddingFields.map(f => f.table_column_name).join(', ')}). Using the first one ('${embeddingFields[0].table_column_name}') by default. Specify 'fieldId' for a different field.`);
         }
 
         const _fieldId = fieldId || embeddingFields[0]?.table_column_name
