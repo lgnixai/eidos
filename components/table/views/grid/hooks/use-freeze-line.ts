@@ -8,7 +8,6 @@ import { IGridViewProperties, IView } from "@/lib/store/IView";
 
 interface UseFreezeLineProps {
     currentView: IView<IGridViewProperties> | null | undefined;
-    size: { width?: number; height?: number } | undefined;
     columns: readonly GridColumn[] | undefined;
     // Optional callback if the parent needs to persist the change
     // onFreezeColumnsChange?: (count: number) => void;
@@ -21,7 +20,6 @@ const FREEZE_LINE_OFFSET = HOVER_TARGET_WIDTH / 2 - 1; // Offset for the freeze 
 
 export function useFreezeLine({
     currentView,
-    size,
     columns,
 }: // onFreezeColumnsChange,
     UseFreezeLineProps) {
@@ -34,9 +32,8 @@ export function useFreezeLine({
 
     // Determine initial freeze columns based on view properties or default
     const initialFreezeColumns = useMemo(() => {
-        const isSm = (size?.width ?? 0) < 768;
-        return currentView?.properties?.freezeColumns ?? (isSm ? 0 : 1);
-    }, [currentView?.properties?.freezeColumns, size?.width]);
+        return currentView?.properties?.freezeColumns ?? 0;
+    }, [currentView?.properties?.freezeColumns]);
 
     const [freezeColumns, setFreezeColumns] = useState(initialFreezeColumns);
     const [previewFreezeColumns, setPreviewFreezeColumns] = useState<number | null>(null); // Stores potential freeze index during drag

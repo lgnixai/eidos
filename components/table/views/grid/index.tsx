@@ -242,7 +242,6 @@ export default function GridView(props: IGridProps) {
     previewLinePosition,
   } = useFreezeLine({
     currentView,
-    size,
     columns, // Pass the columns array from useColumns
   })
 
