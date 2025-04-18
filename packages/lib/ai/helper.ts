@@ -15,16 +15,13 @@ import { createCerebras } from "@ai-sdk/cerebras";
 import { createCohere } from "@ai-sdk/cohere";
 import { createDeepInfra } from "@ai-sdk/deepinfra";
 import { createDeepSeek } from '@ai-sdk/deepseek';
-import { createFal } from "@ai-sdk/fal";
 import { createFireworks } from "@ai-sdk/fireworks";
-import { createGoogleGenerativeAI, google } from '@ai-sdk/google';
+import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { createGroq } from '@ai-sdk/groq';
-import { createLuma } from "@ai-sdk/luma";
 import { createMistral } from "@ai-sdk/mistral";
 import { createOpenAI } from "@ai-sdk/openai";
 import { createOpenAICompatible } from '@ai-sdk/openai-compatible';
 import { createPerplexity } from "@ai-sdk/perplexity";
-import { createReplicate } from "@ai-sdk/replicate";
 import { createTogetherAI } from "@ai-sdk/togetherai";
 import { createXai } from '@ai-sdk/xai';
 import { createOpenRouter } from "@openrouter/ai-sdk-provider";
@@ -172,7 +169,7 @@ export const LLM_PROVIDER_INFO: Record<LLMProviderType, {
 }
 
 // order by name alphabetically
-export const ALL_PROVIDERS = Object.keys(LLM_PROVIDER_INFO).sort()
+export const ALL_PROVIDERS = Object.keys(LLM_PROVIDER_INFO).sort() as LLMProviderType[]
 
 export interface AvailableModel {
   id: string
@@ -384,8 +381,9 @@ export function getProvider(data: {
         console.warn(`Base URL is missing for OpenAI compatible provider type: ${type}. Falling back to OpenAI default or OpenAICompatible with potentially incorrect base URL.`);
       }
       return createOpenAICompatible({
-        baseURL: baseUrl,
-        apiKey
+        baseURL: baseUrl!,
+        apiKey,
+        name: "OpenAI Compatible",
       })
   }
 }

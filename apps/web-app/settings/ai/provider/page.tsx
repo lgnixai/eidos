@@ -10,6 +10,8 @@ export const ProviderPage = () => {
     useAIConfigStore()
   const provider = aiConfig.llmProviders.find((p) => p.name === providerId)
 
+  const existingProviderNames = aiConfig.llmProviders.map((p) => p.name)
+
   const isAddNew = providerId === "new"
 
   if (isAddNew) {
@@ -26,6 +28,7 @@ export const ProviderPage = () => {
           enabled: true,
         }}
         onAdd={addLLMProvider}
+        existingNames={existingProviderNames}
       ></LLMProviderForm>
     )
   }
@@ -34,6 +37,7 @@ export const ProviderPage = () => {
       value={provider}
       onChange={updateLLMProvider}
       onDelete={removeLLMProvider}
+      existingNames={existingProviderNames}
     ></LLMProviderForm>
   )
 }

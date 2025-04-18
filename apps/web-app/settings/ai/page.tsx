@@ -2,7 +2,10 @@ import { Plus } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Link, useNavigate } from "react-router-dom"
 
-import { ALL_PROVIDERS, LLMProviderType } from "@/lib/ai/helper"
+import {
+  ALL_PROVIDERS,
+  LLMProviderType,
+} from "@/lib/ai/helper"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -64,7 +67,10 @@ export default function SettingsAIPage() {
                   key={type}
                   onSelect={() => handleAddProvider(type)}
                   className="flex items-center gap-2"
-                  disabled={configuredProviderTypes.has(type)}
+                  disabled={
+                    type !== "openai-compatible" &&
+                    configuredProviderTypes.has(type)
+                  }
                 >
                   <ProviderIcon type={type} />
                   {type.charAt(0).toUpperCase() + type.slice(1)}

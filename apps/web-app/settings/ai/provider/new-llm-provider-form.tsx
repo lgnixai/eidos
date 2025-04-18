@@ -5,8 +5,9 @@ import { Loader2 } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
+import * as z from "zod"
 
-import { LLMProvider, llmProviderSchema } from "@/lib/ai/config"
+import { LLMProvider, llmProviderSchema as baseLlmProviderSchema } from "@/lib/ai/config"
 import {
   AvailableModel,
   LLM_PROVIDER_INFO,
@@ -51,6 +52,7 @@ interface LLMProviderFormProps {
   onChange?: (value: LLMProvider) => void
   onAdd?: (data: LLMProvider) => void
   onDelete?: (name: string) => void
+  existingNames?: string[]
 }
 
 export const LLMProviderForm = ({
@@ -58,6 +60,7 @@ export const LLMProviderForm = ({
   value,
   onChange,
   onDelete,
+  existingNames = [],
 }: LLMProviderFormProps) => {
   const { t } = useTranslation()
   const [availableModels, setAvailableModels] = useState<AvailableModel[]>([])
@@ -65,6 +68,30 @@ export const LLMProviderForm = ({
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
 
   const navigate = useNavigate()
+
+  const llmProviderSchema = useMemo(() => {
+    return baseLlmProviderSchema.refine(
+      (data) => {
+        if (data.type !== "openai-compatible") {
+          return true
+        }
+        const isEditing = !!value
+        const originalName = value?.name
+        const currentName = data.name
+
+        const nameExists = existingNames
+          .filter((name) => !isEditing || name !== originalName)
+          .includes(currentName)
+
+        return !nameExists
+      },
+      {
+        message: t("settings.ai.providerNameUniqueError"),
+        path: ["name"],
+      }
+    )
+  }, [existingNames, value, t])
+
   const form = useForm<LLMProvider>({
     resolver: zodResolver(llmProviderSchema),
     defaultValues: value || {
@@ -176,6 +203,24 @@ export const LLMProviderForm = ({
   return (
     <Form {...form}>
       <form className="space-y-4">
+        {form.watch("type") === "openai-compatible" && (
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t("common.name")}</FormLabel>
+                <FormControl>
+                  <Input {...field} placeholder={t("settings.ai.providerNamePlaceholder")} />
+                </FormControl>
+                <FormDescription>
+                  {t("settings.ai.providerNameDescription")}
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
         {form.watch("type") === "openai-compatible" && (
           <FormField
             name="baseUrl"
