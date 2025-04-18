@@ -18,12 +18,16 @@ export const ShortcutTable = ({ shortcuts, title }: ShortcutTableProps) => {
   const { t } = useTranslation()
   return (
     <div className="flex flex-col">
-      <h2 className=" px-2 font-medium">{title || "Keyboard Shortcuts"}</h2>
+      {/* <h2 className=" px-2 font-medium">{title || "Keyboard Shortcuts"}</h2> */}
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>{t("kbd.shortcuts.common.shortcut")}</TableHead>
-            <TableHead>{t("kbd.shortcuts.common.description")}</TableHead>
+            <TableHead className="w-[30%]">
+              {t("kbd.shortcuts.common.shortcut")}
+            </TableHead>
+            <TableHead className="w-[70%]">
+              {t("kbd.shortcuts.common.description")}
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>

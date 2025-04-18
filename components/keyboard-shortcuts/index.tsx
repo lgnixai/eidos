@@ -1,7 +1,10 @@
+import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 import { useAppRuntimeStore } from "@/lib/store/runtime-store"
+import { useCurrentNode } from "@/hooks/use-current-node"
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 import {
   useCommonKeyboardShortcuts,
@@ -17,6 +20,19 @@ export function KeyboardShortCuts() {
   const CommonKeyboardShortcuts = useCommonKeyboardShortcuts()
   const DocumentKeyboardShortcuts = useDocumentKeyboardShortcuts()
   const TableKeyboardShortcuts = useTableKeyboardShortcuts()
+  const currentNode = useCurrentNode()
+  const [activeTab, setActiveTab] = useState("common")
+
+  useEffect(() => {
+    // TODO: Replace 'type' and specific type strings with actual values from currentNode
+    if (currentNode?.type === "doc") {
+      setActiveTab("document")
+    } else if (currentNode?.type === "table") {
+      setActiveTab("table")
+    } else {
+      setActiveTab("common")
+    }
+  }, [currentNode])
 
   return (
     <Dialog
@@ -26,25 +42,44 @@ export function KeyboardShortCuts() {
       <DialogTrigger>
         <div></div>
       </DialogTrigger>
-      <DialogContent className="flex h-[90%] !max-w-max shrink gap-4 overflow-hidden">
-        <div className="flex flex-1 overflow-y-auto">
-          <div className="flex flex-col gap-5 p-4">
-            <ShortcutTable
-              shortcuts={CommonKeyboardShortcuts}
-              title={t("kbd.shortcuts.common.title")}
-            />
-            <ShortcutTable
-              shortcuts={DocumentKeyboardShortcuts}
-              title={t("kbd.shortcuts.document.title")}
-            />
+      <DialogContent className="flex h-[90%] min-w-[80%] shrink flex-col gap-4 overflow-hidden">
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="flex h-full flex-col overflow-hidden"
+        >
+          <TabsList className="shrink-0 justify-start">
+            <TabsTrigger value="common">
+              {t("kbd.shortcuts.common.title")}
+            </TabsTrigger>
+            <TabsTrigger value="document">
+              {t("kbd.shortcuts.document.title")}
+            </TabsTrigger>
+            <TabsTrigger value="table">
+              {t("kbd.shortcuts.table.title")}
+            </TabsTrigger>
+          </TabsList>
+          <div className="flex-1 overflow-y-auto">
+            <TabsContent value="common">
+              <ShortcutTable
+                shortcuts={CommonKeyboardShortcuts}
+                title={t("kbd.shortcuts.common.title")}
+              />
+            </TabsContent>
+            <TabsContent value="document">
+              <ShortcutTable
+                shortcuts={DocumentKeyboardShortcuts}
+                title={t("kbd.shortcuts.document.title")}
+              />
+            </TabsContent>
+            <TabsContent value="table">
+              <ShortcutTable
+                shortcuts={TableKeyboardShortcuts}
+                title={t("kbd.shortcuts.table.title")}
+              />
+            </TabsContent>
           </div>
-          <div className="flex-shrink-0 p-4">
-            <ShortcutTable
-              shortcuts={TableKeyboardShortcuts}
-              title={t("kbd.shortcuts.table.title")}
-            />
-          </div>
-        </div>
+        </Tabs>
       </DialogContent>
     </Dialog>
   )
