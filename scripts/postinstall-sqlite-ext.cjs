@@ -6,12 +6,10 @@ const process = require("node:process")
 const packagesToProcess = [
   {
     basePackageName: "sqlite-graft",
-    entrypointBaseName: "libgraft",
     destBaseName: "libgraft",
   },
   {
     basePackageName: "sqlite-vec",
-    entrypointBaseName: "vec0",
     destBaseName: "libvec",
   },
 ]
@@ -35,29 +33,42 @@ const platformExtensionMapping = {
   linux: "so",
 }
 
-// Updated function to accept basePackageName and entrypointBaseName
-function getPlatformInfo(basePackageName, entrypointBaseName, destBaseName) {
+// Updated function to accept the full package configuration object
+function getPlatformInfo(pkgConfig) {
   const platformKey = `${process.platform} ${process.arch}`
   const suffix = platformArchMapping[platformKey]
   const extension = platformExtensionMapping[process.platform]
 
   if (!suffix || !extension) {
-    // Add package name to the warning
+    // Use basePackageName from pkgConfig for the warning
     console.warn(
-      `postinstall-${basePackageName}: Unsupported platform ${platformKey}. Skipping copy.`
+      `postinstall-${pkgConfig.basePackageName}: Unsupported platform ${platformKey}. Skipping copy.`
     )
     return null
   }
 
-  const packageName = `${basePackageName}-${suffix}`
-  const sourceFileName = `${entrypointBaseName}.${extension}`
+  // Determine destination base name (still needed)
+  let destBaseName = pkgConfig.destBaseName;
+
+  // Platform-specific destination overrides could still be useful if needed later
+  // if (pkgConfig.overrides && pkgConfig.overrides[process.platform]) {
+  //   const platformOverrides = pkgConfig.overrides[process.platform];
+  //   if (platformOverrides.destBaseName) {
+  //     destBaseName = platformOverrides.destBaseName;
+  //     console.log(`postinstall-${pkgConfig.basePackageName}: Using platform override for destBaseName: ${destBaseName}`);
+  //   }
+  // }
+
+  const packageName = `${pkgConfig.basePackageName}-${suffix}`
+  // No longer determine sourceFileName here
   const destFileName = `${destBaseName}.${extension}`
 
-  return { packageName, sourceFileName, destFileName }
+  // Return necessary info, including the extension for findSourcePath
+  return { packageName, destFileName, extension, basePackageName: pkgConfig.basePackageName }
 }
 
-// Updated function to include basePackageName in logs
-function findSourcePath(basePackageName, packageName, sourceFileName) {
+// Updated function to find the source file by extension
+function findSourcePath(basePackageName, packageName, extension) {
   const pnpmDir = path.join(process.cwd(), "node_modules", ".pnpm")
   let packageVersionDir = ""
 
@@ -67,9 +78,9 @@ function findSourcePath(basePackageName, packageName, sourceFileName) {
   )
 
   try {
-    const entries = fs.readdirSync(pnpmDir)
+    const pnpmEntries = fs.readdirSync(pnpmDir)
     const prefix = `${packageName}@`
-    packageVersionDir = entries.find((entry) => entry.startsWith(prefix))
+    packageVersionDir = pnpmEntries.find((entry) => entry.startsWith(prefix))
 
     if (!packageVersionDir) {
       // Add basePackageName to logs
@@ -77,14 +88,14 @@ function findSourcePath(basePackageName, packageName, sourceFileName) {
         `postinstall-${basePackageName}: Could not find directory starting with ${prefix} in ${pnpmDir}`
       )
       console.log(
-        `postinstall-${basePackageName}: Listing entries in .pnpm:`,
-        entries.slice(0, 20).join(", ") + "..."
+        `postinstall-${basePackageName}: Listing entries in .pnpm: `,
+        pnpmEntries.slice(0, 20).join(", ") + "..."
       ) // Log first few entries for debugging
       return null
     }
     // Add basePackageName to logs
     console.log(
-      `postinstall-${basePackageName}: Found package directory: ${packageVersionDir}`
+      `postinstall-${basePackageName}: Found package version directory: ${packageVersionDir}`
     )
   } catch (e) {
     if (e.code === "ENOENT") {
@@ -102,27 +113,50 @@ function findSourcePath(basePackageName, packageName, sourceFileName) {
     return null // Indicate failure to find source path
   }
 
-  // Construct the direct path to the nested file
-  const fullNestedSourcePath = path.join(
+  // Construct the path to the nested package directory
+  const packageDir = path.join(
     pnpmDir,
     packageVersionDir,
     "node_modules",
-    packageName,
-    sourceFileName
+    packageName
   )
 
   // Add basePackageName to logs
   console.log(
-    `postinstall-${basePackageName}: Directly checking path: ${fullNestedSourcePath}`
+    `postinstall-${basePackageName}: Searching for *.${extension} file in ${packageDir}`
   )
-  if (fs.existsSync(fullNestedSourcePath)) {
-    // Add basePackageName to logs
-    console.log(`postinstall-${basePackageName}: File found at direct path.`)
-    return fullNestedSourcePath // Found it!
-  } else {
+
+  try {
+    const packageFiles = fs.readdirSync(packageDir)
+    const targetFiles = packageFiles.filter((file) => file.endsWith(`.${extension}`))
+
+    if (targetFiles.length === 1) {
+      const sourceFileName = targetFiles[0]
+      const fullSourcePath = path.join(packageDir, sourceFileName)
+      // Add basePackageName to logs
+      console.log(
+        `postinstall-${basePackageName}: Found unique source file: ${sourceFileName}`
+      )
+      return fullSourcePath // Found it!
+    } else if (targetFiles.length === 0) {
+      // Add basePackageName to logs
+      console.error(
+        `postinstall-${basePackageName}: No file found with extension .${extension} in ${packageDir}`
+      )
+      console.log(`postinstall-${basePackageName}: Files in directory: ${packageFiles.join(', ')}`) // Log files for debugging
+      return null
+    } else {
+      // Add basePackageName to logs
+      console.error(
+        `postinstall-${basePackageName}: Found multiple files with extension .${extension} in ${packageDir}: ${targetFiles.join(", ")}. Aborting.`
+      )
+      return null
+    }
+  } catch (e) {
     // Add basePackageName to logs
     console.error(
-      `postinstall-${basePackageName}: File not found at direct path: ${fullNestedSourcePath}`
+      `postinstall-${basePackageName}: Failed to read package directory: ${packageDir}`,
+      e
     )
     return null
   }
@@ -135,32 +169,28 @@ let overallSuccess = true
 packagesToProcess.forEach((pkgConfig) => {
   console.log(`
 --- Processing package: ${pkgConfig.basePackageName} ---`)
-  const basePackageName = pkgConfig.basePackageName // For logging prefix
-
-  const platformInfo = getPlatformInfo(
-    pkgConfig.basePackageName,
-    pkgConfig.entrypointBaseName,
-    pkgConfig.destBaseName
-  )
+  // Pass the whole pkgConfig object to getPlatformInfo
+  const platformInfo = getPlatformInfo(pkgConfig);
 
   if (!platformInfo) {
     console.log(
-      `postinstall-${basePackageName}: Skipping copy due to unsupported platform or config issue.`
+      `postinstall-${pkgConfig.basePackageName}: Skipping copy due to unsupported platform or config issue.` // Use pkgConfig.basePackageName here
     )
     return // Continue to the next package
   }
 
-  const { packageName, sourceFileName, destFileName } = platformInfo
+  // Destructure needed info, including basePackageName and extension from platformInfo
+  const { packageName, destFileName, extension, basePackageName } = platformInfo
 
-  // Pass basePackageName for logging purposes
+  // Pass basePackageName and extension from platformInfo for logging and searching
   const nestedSourceFilePath = findSourcePath(
     basePackageName,
     packageName,
-    sourceFileName
+    extension // Pass the extension
   )
   if (!nestedSourceFilePath) {
     console.log(
-      `postinstall-${basePackageName}: Source file not found for ${packageName}. Skipping copy.`
+      `postinstall-${basePackageName}: Source file with extension .${extension} not found for ${packageName}. Skipping copy.`
     )
     return // Continue to the next package
   }
@@ -219,7 +249,7 @@ packagesToProcess.forEach((pkgConfig) => {
     // Add basePackageName to logs
     // console.error(`postinstall-${basePackageName}: Failed to copy directory for ${packageName}:`, error); // Old log
     console.error(
-      `postinstall-${basePackageName}: Failed to copy file ${sourceFileName} for ${packageName}:`,
+      `postinstall-${basePackageName}: Failed to copy file ${destFileName} for ${packageName}:`,
       error
     )
     overallSuccess = false // Mark overall process as failed if any package fails
@@ -229,3 +259,5 @@ packagesToProcess.forEach((pkgConfig) => {
 
 console.log("--- Postinstall script finished ---")
 process.exit(overallSuccess ? 0 : 1) // Exit with 0 if all succeed, 1 otherwise
+
+
