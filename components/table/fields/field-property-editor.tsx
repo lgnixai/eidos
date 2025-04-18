@@ -8,7 +8,7 @@ import { IField } from "@/lib/store/interface"
 import { Label } from "@/components/ui/label"
 import { CommonMenuItem } from "@/components/common-menu-item"
 
-import { useTableAppStore } from "../store"
+import { useTableAppStore } from "../views/grid/store"
 import { FieldDelete } from "./field-delete"
 import { FieldNameEdit } from "./field-name-edit"
 import { FieldTypeSelect } from "./field-type-select"

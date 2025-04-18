@@ -9,7 +9,7 @@ import "./index.css"
 import { IField } from "@/lib/store/interface"
 import { useTableAppStore } from "@/components/table/views/grid/store"
 
-import { makeHeaderIcons } from "../views/grid/fields/header-icons"
+import { makeHeaderIcons } from "../fields/header-icons"
 
 export const ItemTypes = {
   CARD: "card",

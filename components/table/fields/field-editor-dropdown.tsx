@@ -28,8 +28,8 @@ import { FieldType } from "@/lib/fields/const"
 import { IGridViewProperties, IView } from "@/lib/store/IView"
 import { cn } from "@/lib/utils"
 
-import { useColumns } from "../hooks/use-col"
-import { useTableAppStore } from "../store"
+import { useColumns } from "../views/grid/hooks/use-col"
+import { useTableAppStore } from "../views/grid/store"
 import { FieldNameEdit } from "./field-name-edit"
 
 interface IFieldEditorDropdownProps {

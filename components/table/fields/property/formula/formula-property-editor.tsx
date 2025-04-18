@@ -14,7 +14,7 @@ import { FieldType } from "@/lib/fields/const"
 import { FormulaProperty } from "@/lib/fields/formula"
 import { IField } from "@/lib/store/interface"
 
-import { FormulaEditor } from "../../../plugins/formula-editor"
+import { FormulaEditor } from "../../../views/grid/plugins/formula-editor"
 
 interface IFieldPropertyEditorProps {
   uiColumn: IField<FormulaProperty>

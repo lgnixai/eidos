@@ -8,7 +8,7 @@ import { useSqlite } from "@/hooks/use-sqlite"
 import { useCurrentUiColumns, useUiColumns } from "@/hooks/use-ui-columns"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
-import { FieldSelector } from "@/components/table/field-selector"
+import { FieldSelector } from "@/components/table/fields/field-selector"
 
 interface IFieldPropertyEditorProps {
   uiColumn: IField<ILookupProperty>

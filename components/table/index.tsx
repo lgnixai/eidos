@@ -12,7 +12,7 @@ import { ViewToolbar } from "./view-toolbar"
 import { DocListView } from "./views/doc-list"
 import GalleryView from "./views/gallery"
 import GridView from "./views/grid"
-import { FieldEditor } from "./views/grid/fields"
+import { FieldEditor } from "./fields"
 import KanbanView from "./views/kanban"
 
 // const GalleryView = React.lazy(() => import("./views/gallery"))

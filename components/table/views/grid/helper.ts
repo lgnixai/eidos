@@ -3,8 +3,8 @@ import { DataEditorProps, GridCellKind } from "@glideapps/glide-data-grid"
 import { ColumnTableName } from "@/lib/sqlite/const"
 import { IField } from "@/lib/store/interface"
 
-import { defaultAllColumnsHandle } from "./fields/colums"
-import { headerIcons } from "./fields/header-icons"
+import { defaultAllColumnsHandle } from "../../fields/colums"
+import { headerIcons } from "../../fields/header-icons"
 
 
 export const defaultConfig: Partial<DataEditorProps> = {

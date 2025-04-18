@@ -1,11 +1,11 @@
-import { useContext } from "react"
+import { useContext, useEffect } from "react"
 
 import { IView } from "@/lib/store/IView"
 import { useTableOperation } from "@/hooks/use-table"
 import { useUiColumns } from "@/hooks/use-ui-columns"
 import { TableContext } from "@/components/table/hooks"
 
-import { useTableAppStore } from "../store"
+import { useTableAppStore } from "../views/grid/store"
 import { FieldAppendPanel } from "./field-append-panel"
 import { FieldEditorDropdown } from "./field-editor-dropdown"
 import { FieldPropertyEditor } from "./field-property-editor"
@@ -18,9 +18,26 @@ interface IFieldEditorProps {
 
 export const FieldEditor = (props: IFieldEditorProps) => {
   const { tableName, databaseName } = props
-  const { isAddFieldEditorOpen, isFieldPropertiesEditorOpen } =
-    useTableAppStore()
+  const {
+    isAddFieldEditorOpen,
+    isFieldPropertiesEditorOpen,
+    setCurrentUiColumn,
+    currentUiColumn,
+  } = useTableAppStore()
   const { uiColumns } = useUiColumns(tableName, databaseName)
+
+  useEffect(() => {
+    if (currentUiColumn) {
+      const newCurrentUiColumn = uiColumns.find(
+        (column) =>
+          column.table_column_name === currentUiColumn.table_column_name &&
+          column.table_name === currentUiColumn.table_name
+      )
+      if (newCurrentUiColumn) {
+        setCurrentUiColumn(newCurrentUiColumn)
+      }
+    }
+  }, [uiColumns, setCurrentUiColumn, currentUiColumn])
 
   const { deleteField, addField, updateFieldProperty, changeFieldType } =
     useTableOperation(tableName, databaseName)

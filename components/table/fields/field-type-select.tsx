@@ -17,7 +17,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { FieldIcon } from "@/components/table/field-icon"
+import { FieldIcon } from "@/components/table/fields/field-icon"
 
 // for now only support these fields
 const fields = [

@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-import { FieldSelector } from "./field-selector"
+import { FieldSelector } from "./fields/field-selector"
 import { TableContext, useCurrentView } from "./hooks"
 import { useViewQuery } from "./hooks/use-view-query"
 

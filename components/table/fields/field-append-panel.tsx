@@ -24,7 +24,7 @@ import { cn, generateColumnName } from "@/lib/utils"
 import { useCurrentPathInfo } from "@/hooks/use-current-pathinfo"
 import { Button } from "@/components/ui/button"
 
-import { useTableAppStore } from "../store"
+import { useTableAppStore } from "../views/grid/store"
 import {
   NotImplementEditor,
   PropertyEditorTypeMap,

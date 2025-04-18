@@ -22,7 +22,7 @@ import {
 } from "@/components/react-hook-form/form"
 
 import { useView, useViewOperation } from "../../hooks"
-import { makeHeaderIcons } from "../grid/fields/header-icons"
+import { makeHeaderIcons } from "../../fields/header-icons"
 
 const icons = makeHeaderIcons(18)
 

@@ -4,8 +4,8 @@ import { useCurrentPathInfo } from "@/hooks/use-current-pathinfo"
 import { useUiColumns } from "@/hooks/use-ui-columns"
 
 import { CellEditor } from "../cell-editor"
-import { FieldCompareSelector } from "../field-compare-selector"
-import { FieldSelector } from "../field-selector"
+import { FieldCompareSelector } from "../fields/field-compare-selector"
+import { FieldSelector } from "../fields/field-selector"
 import { IFilterValue } from "./interface"
 
 interface IViewFilterItemEditorProps {
