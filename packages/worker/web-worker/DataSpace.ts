@@ -243,6 +243,11 @@ export class DataSpace {
     return await tm.fields.text.getEmbeddingStats(fieldId)
   }
 
+  public resetEmbedding = async (tableId: string, fieldId: string) => {
+    const tm = new TableManager(tableId, this)
+    return await tm.fields.text.resetEmbedding(fieldId)
+  }
+
   public status() {
     return this.db.status()
   }

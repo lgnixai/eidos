@@ -58,6 +58,32 @@ order by distance limit ${limit};`
         }
     }
 
+    resetEmbedding = async (fieldId: string) => {
+        const vectorColumnName = `${fieldId}__vec`
+        const vectorMetaColumnName = `${fieldId}__vec_meta`
+
+        // Clear the vector data in the table
+        const sql = `
+            UPDATE ${this.table.rawTableName}
+            SET 
+                ${vectorColumnName} = NULL,
+                ${vectorMetaColumnName} = NULL
+        `
+        await this.dataSpace.exec(sql)
+
+        // Clear the model property from the field definition
+        const currentField = await this.dataSpace.column.getColumn(this.table.rawTableName, fieldId);
+        if (currentField && currentField.property?.model) {
+            const updatedProperty = { ...currentField.property, model: null };
+            await this.dataSpace.column.updateProperty({
+                tableName: this.table.rawTableName,
+                tableColumnName: fieldId,
+                property: updatedProperty,
+                type: currentField.type
+            });
+        }
+    }
+
     // ... existing code ...
     onPropertyChange = async (oldField: IField<TextProperty>, property: TextProperty) => {
         const { table_column_name, table_name } = oldField

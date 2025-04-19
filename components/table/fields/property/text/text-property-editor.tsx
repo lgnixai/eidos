@@ -1,9 +1,16 @@
-import { useContext, useEffect, useState } from "react"
-import { ChevronDown, ChevronRight, HelpCircle, Sparkles } from "lucide-react"
+import { useCallback, useContext, useEffect, useState } from "react"
+import {
+  AlertTriangle,
+  ChevronDown,
+  ChevronRight,
+  HelpCircle,
+  Sparkles,
+} from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 import { toast } from "sonner"
 
+import { TextProperty } from "@/lib/fields/text"
 import { IField } from "@/lib/store/interface"
 import { getTableIdByRawTableName } from "@/lib/utils"
 import { useAiConfig } from "@/hooks/use-ai-config"
@@ -26,12 +33,6 @@ import { TableContext } from "@/components/table/hooks"
 
 import { usePreview } from "./hooks"
 
-export interface TextProperty {
-  model?: string | null // Add other text-specific properties here if needed
-  enableEmbedding?: boolean | null
-  enableColorHint?: boolean | null // Add color hint option for vector status indication
-}
-
 interface IFieldPropertyEditorProps {
   uiColumn: IField<TextProperty>
   onPropertyChange: (property: TextProperty) => void
@@ -48,9 +49,9 @@ export const TextPropertyEditor = (props: IFieldPropertyEditorProps) => {
     props.uiColumn.property?.enableColorHint ?? false
   )
   const { viewId, tableName } = useContext(TableContext)
-  const { process, getEmbeddingStats } = usePreview()
   const { embeddingModel } = useAiConfig()
   const [isProcessing, setIsProcessing] = useState(false)
+  const [isResetting, setIsResetting] = useState(false)
   const [progress, setProgress] = useState({
     processed: 0,
     total: 0,
@@ -66,6 +67,14 @@ export const TextPropertyEditor = (props: IFieldPropertyEditorProps) => {
     props.onPropertyChange(updatedProperty as TextProperty)
   }
 
+  const { process, getEmbeddingStats, resetEmbedding } =
+    usePreview(updateProperty)
+
+  const modelMismatch =
+    !!props.uiColumn.property?.model &&
+    !!embeddingModel &&
+    props.uiColumn.property.model !== embeddingModel
+
   const [embeddingStats, setEmbeddingStats] = useState<{
     total: number
     vectorized: number
@@ -75,16 +84,23 @@ export const TextPropertyEditor = (props: IFieldPropertyEditorProps) => {
     outdatedPercentage: number
     upToDatePercentage: number
   }>()
-  useEffect(() => {
-    const fetchEmbeddingStats = async () => {
-      if (props.uiColumn.property?.enableEmbedding) {
-        const stats = await getEmbeddingStats(
-          getTableIdByRawTableName(tableName),
-          props.uiColumn.table_column_name
-        )
-        setEmbeddingStats(stats)
-      }
+
+  const fetchEmbeddingStats = useCallback(async () => {
+    if (props.uiColumn.property?.enableEmbedding) {
+      const stats = await getEmbeddingStats(
+        getTableIdByRawTableName(tableName),
+        props.uiColumn.table_column_name
+      )
+      setEmbeddingStats(stats)
     }
+  }, [
+    props.uiColumn.property?.enableEmbedding,
+    getEmbeddingStats,
+    tableName,
+    props.uiColumn.table_column_name,
+  ])
+
+  useEffect(() => {
     fetchEmbeddingStats()
   }, [
     props.uiColumn.table_column_name,
@@ -141,6 +157,24 @@ export const TextPropertyEditor = (props: IFieldPropertyEditorProps) => {
     }
   }
 
+  const handleResetVectors = async () => {
+    if (isResetting) return
+    setIsResetting(true)
+    try {
+      console.log("Resetting vectors for", props.uiColumn.table_column_name)
+      const res = await resetEmbedding(
+        getTableIdByRawTableName(tableName),
+        props.uiColumn.table_column_name
+      )
+      console.log("resetEmbedding result", res)
+      toast.success(t("table.propertyEditor.resetVectorsSuccess"))
+    } catch (error) {
+      toast.error(t("table.propertyEditor.resetVectorsError"))
+    } finally {
+      setIsResetting(false)
+    }
+  }
+
   return (
     <Collapsible
       open={open}
@@ -177,6 +211,32 @@ export const TextPropertyEditor = (props: IFieldPropertyEditorProps) => {
             </Link>{" "}
           </p>
         )}
+        {modelMismatch && (
+          <>
+            <p className="text-sm text-destructive"></p>
+            <div className="flex items-center gap-2 rounded-md border border-yellow-300 bg-yellow-50 p-3 text-sm text-yellow-700 dark:border-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300">
+              <AlertTriangle className="h-4 w-4 flex-shrink-0" />
+              <span>
+                {t("table.propertyEditor.modelMismatchWarning")}{" "}
+                {t("table.propertyEditor.usedModel")}:{" "}
+                {props.uiColumn.property?.model}
+              </span>
+            </div>
+            {/* Buttons for mismatch resolution */}
+
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={handleResetVectors}
+              disabled={isResetting}
+            >
+              {isResetting
+                ? t("table.propertyEditor.resettingVectors")
+                : t("table.propertyEditor.resetVectors")}
+            </Button>
+          </>
+        )}
+
         {/* Enable embedding toggle */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1">
@@ -242,7 +302,12 @@ export const TextPropertyEditor = (props: IFieldPropertyEditorProps) => {
             variant="outline"
             className="w-full relative"
             onClick={handleProcess}
-            disabled={isProcessing || !enableEmbedding || !embeddingModel}
+            disabled={
+              isProcessing ||
+              !enableEmbedding ||
+              !embeddingModel ||
+              modelMismatch
+            }
           >
             <div
               className="absolute inset-0 bg-primary/10 origin-left transition-all duration-300"

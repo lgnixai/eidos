@@ -1,19 +1,37 @@
-import { useEmbedding } from "@/hooks/use-embedding"
-import { useSqlite } from "@/hooks/use-sqlite"
+import { useAiConfig } from "@/hooks/use-ai-config";
+import { useEmbedding } from "@/hooks/use-embedding";
+import { useSqlite } from "@/hooks/use-sqlite";
+import { toast } from "@/hooks/use-toast";
+import { TextProperty } from "@/lib/fields/text";
+import { getRawTableNameById } from "@/lib/utils";
+import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
 
 type ProgressCallback = (progress: { processed: number; total: number; percentage: number }) => void
 
-export const usePreview = () => {
+export const usePreview = (
+    updateProperty: (property: TextProperty) => void
+) => {
     const { sqlite } = useSqlite()
+    const { t } = useTranslation()
 
     const { embeddingTexts } = useEmbedding()
+    const { embeddingModel } = useAiConfig()
 
-    const getEmbeddingStats = async (tableId: string, fieldId: string) => {
+    const getEmbeddingStats = useCallback(async (tableId: string, fieldId: string) => {
         if (!sqlite) {
             return
         }
         console.log("getEmbeddingStats", tableId, fieldId)
         return await sqlite?.getEmbeddingStats(tableId, fieldId)
+    }, [sqlite])
+
+    const resetEmbedding = async (tableId: string, fieldId: string) => {
+        if (!sqlite) {
+            return
+        }
+        updateProperty({ model: null })
+        return await sqlite?.resetEmbedding(tableId, fieldId)
     }
 
     const process = async (
@@ -22,19 +40,58 @@ export const usePreview = () => {
         fieldId: string,
         onProgress?: ProgressCallback
     ) => {
-        if (!sqlite) {
+        if (!sqlite || !embeddingModel) {
+            if (!embeddingModel) {
+                toast({
+                    title: t("table.propertyEditor.noEmbeddingModel"),
+                    description: t("table.propertyEditor.noEmbeddingModelHint"),
+                    variant: "destructive"
+                });
+            }
             return
         }
+
+        const field = await sqlite.column.getColumn<TextProperty>(getRawTableNameById(tableId), fieldId);
+        if (!field) {
+            console.error(`Field ${fieldId} not found in table ${tableId}`);
+            toast({
+                title: "Field definition not found.",
+                variant: "destructive"
+            });
+            return;
+        }
+        const storedModel = field.property?.model;
+
+        if (storedModel && embeddingModel && storedModel !== embeddingModel) {
+            toast({
+                title: t("table.propertyEditor.processModelMismatchError"),
+                variant: "destructive"
+            });
+            return;
+        }
+
+        if (!storedModel && embeddingModel) {
+            try {
+                updateProperty({ model: embeddingModel })
+                console.log(`Stored embedding model '${embeddingModel}' for field ${fieldId}`);
+            } catch (error) {
+                console.error(`Failed to update field property for ${fieldId}:`, error);
+                toast({
+                    title: "Failed to store embedding model information.",
+                    variant: "destructive"
+                });
+                return;
+            }
+        }
+
         const batchSize = 10
-        let processed = 0 // Count of successfully processed items in this run
-        let stillProcessing = true // Loop control flag
+        let processed = 0
+        let stillProcessing = true
 
         const vectorMetaColumnName = `${fieldId}__vec_meta`
 
-        // Base query to find items needing processing
         const rawQueryBase = `SELECT * FROM tb_${tableId} WHERE ${fieldId} IS NOT NULL AND (${vectorMetaColumnName} IS NULL OR json_extract(${vectorMetaColumnName}, '$.outOfDate') = 1)`
 
-        // Get the initial total count of items to process (for percentage calculation)
         const countQuery = `SELECT COUNT(*) FROM (${rawQueryBase})`
         const countResult = await sqlite?.table(tableId).rows.query({}, {
             raw: true,
@@ -43,17 +100,15 @@ export const usePreview = () => {
         const total = countResult?.[0]?.['COUNT(*)'] || 0
         console.log("Initial total to process:", total)
         if (total === 0) {
-            onProgress?.({ processed: 0, total: 0, percentage: 100 }) // Already done
+            onProgress?.({ processed: 0, total: 0, percentage: 100 })
             return;
         }
 
-        // Initial progress report
         onProgress?.({ processed: 0, total, percentage: 0 })
 
         while (stillProcessing) {
-            let batchDataLength = 0; // Track successfully processed items in this specific batch
+            let batchDataLength = 0;
             try {
-                // --- KEY CHANGE: Query next batch directly without offset ---
                 const query = `${rawQueryBase} LIMIT ${batchSize}`
                 console.log("Querying next batch:", query)
 
@@ -62,10 +117,9 @@ export const usePreview = () => {
                     rawQuery: query
                 })
 
-                // --- KEY CHANGE: If no rows are returned, we are done ---
                 if (!rows || rows.length === 0) {
                     stillProcessing = false
-                    break // Exit the while loop
+                    break
                 }
 
                 const texts = rows.map((row) => row[fieldId])
@@ -76,15 +130,11 @@ export const usePreview = () => {
                         batchEmbeddings = await embeddingTexts(texts) ?? null
                     } catch (embeddingError) {
                         console.error(`Embedding generation failed for a batch. Error:`, embeddingError, "Rows:", rows.map(r => r._id));
-                        // Decide how to handle embedding errors. Option: Mark as failed? Skip for now?
-                        // For now, we will skip this batch and let the loop try again later (or fail persistently)
-                        // We *don't* set stillProcessing = false, allowing the loop to potentially retry or pick up other tasks
-                        continue; // Skip to the next iteration of the while loop
+                        continue;
                     }
 
                     if (!batchEmbeddings || batchEmbeddings.length !== texts.length) {
                         console.error(`Embedding returned incomplete results. Expected ${texts.length}, got ${batchEmbeddings?.length}. Skipping batch.`, "Rows:", rows.map(r => r._id));
-                        // Skip this batch
                         continue;
                     }
 
@@ -108,35 +158,24 @@ export const usePreview = () => {
 
                         if (batchData.length > 0) {
                             await sqlite?.updateEmbedding(tableId, fieldId, batchData)
-                            // Increment processed count *only* after successful update
-                            batchDataLength = batchData.length; // Store how many were successful in this batch
+                            batchDataLength = batchData.length;
                             processed += batchDataLength;
                         } else {
                             console.warn(`No valid embeddings generated or records to update for this batch.`)
-                            // Even if batchData is empty (e.g., all embeddings failed), we need to continue the loop
-                            // to check if other records exist. The rows were fetched, so the loop should continue.
                         }
                     }
                 }
             } catch (dbError) {
                 console.error(`Error during database update for a batch:`, dbError)
-                // Decide how to handle DB errors. Log and continue?
-                // We continue the loop, hoping the issue was temporary or affects other batches differently.
-                // The failed batch might be picked up again in the next iteration if the update didn't mark them.
             } finally {
-                // Report progress after each batch attempt
-                const percentage = total > 0 ? Math.round((processed / total) * 100) : (processed > 0 ? 100 : 0) // Use initial total for percentage
+                const percentage = total > 0 ? Math.round((processed / total) * 100) : (processed > 0 ? 100 : 0)
                 console.log("Progress:", { processed, total, percentage });
                 onProgress?.({ processed, total, percentage })
-
-                // If the last query returned fewer rows than batchSize, it implies we might be done after this.
-                // The !rows || rows.length === 0 check at the start of the loop is the definitive exit condition.
             }
         }
 
-        // Final progress report upon completion
         console.log("Processing finished.");
-        onProgress?.({ processed, total, percentage: 100 }) // Ensure 100% on completion
+        onProgress?.({ processed, total, percentage: 100 })
     }
 
     const queryEmbedding = async (tableId: string, fieldId: string, query: string) => {
@@ -150,6 +189,7 @@ export const usePreview = () => {
     return {
         process,
         queryEmbedding,
+        resetEmbedding,
         getEmbeddingStats
     }
 }
