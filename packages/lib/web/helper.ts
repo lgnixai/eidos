@@ -6,3 +6,5 @@ export const isWindows = () =>
 export const isMac = () => navigator.userAgent.toLowerCase().indexOf("mac") > -1
 
 export const isWindowsDesktop = isDesktopMode && isWindows()
+
+export const isMacDesktop = isDesktopMode && isMac()

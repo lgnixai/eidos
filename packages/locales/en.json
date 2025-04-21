@@ -609,5 +609,8 @@
     "views.types.calendar": "Calendar View",
     "views.types.gallery": "Gallery View",
     "views.types.grid": "Grid View",
-    "views.types.kanban": "Kanban View"
+    "views.types.kanban": "Kanban View",
+    "common.tooltip.goBack": "Go Back",
+    "common.tooltip.goForward": "Go Forward",
+    "common.tooltip.reload": "Reload"
 }

@@ -9,14 +9,14 @@ import {
   ListTreeIcon,
   PinIcon,
 } from "lucide-react"
-import { Link } from "react-router-dom"
 import { useTranslation } from "react-i18next"
+import { Link } from "react-router-dom"
 
 import { isDesktopMode } from "@/lib/env"
 import { useAppStore } from "@/lib/store/app-store"
 import { useAppRuntimeStore } from "@/lib/store/runtime-store"
 import { cn } from "@/lib/utils"
-import { isMac } from "@/lib/web/helper"
+import { isMac, isMacDesktop } from "@/lib/web/helper"
 import { useAllExtensions } from "@/hooks/use-all-extensions"
 import { useCurrentPathInfo } from "@/hooks/use-current-pathinfo"
 import { useAllNodes } from "@/hooks/use-nodes"
@@ -27,6 +27,7 @@ import { DatabaseSelect } from "@/components/database-select"
 import { useExperimentConfigStore } from "@/apps/web-app/settings/experiment/store"
 
 import { FileManager } from "../file-manager"
+import { NavigationControls } from "../navigation-controls"
 import { SpaceSettings } from "../space-settings"
 import { Button } from "../ui/button"
 import {
@@ -35,7 +36,6 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "../ui/context-menu"
-// import { BackupStatus } from "./backup"
 import { EverydaySidebarItem } from "./everyday"
 import { ImportFileDialog } from "./import-file"
 import { CurrentItemTree } from "./item-tree"
@@ -56,8 +56,7 @@ export const SideBar = ({ className }: any) => {
   const scripts = useAllExtensions(space)
   const apps = scripts.filter((script) => script.type === "app")
 
-  const { isFileManagerOpen, setFileManagerOpen, setSidebarOpen } =
-    useAppStore()
+  const { isFileManagerOpen, setFileManagerOpen } = useAppStore()
 
   const toggleFileManager = () => {
     setFileManagerOpen(!isFileManagerOpen)
@@ -75,6 +74,13 @@ export const SideBar = ({ className }: any) => {
   return (
     <Sidebar>
       <SidebarRail />
+      <div
+        className={cn("absolute top-[5px] right-2", {
+          hidden: !isMacDesktop,
+        })}
+      >
+        <NavigationControls />
+      </div>
       <div
         className={cn("flex flex-col h-full shrink-0", {
           "pt-8":
@@ -95,6 +101,7 @@ export const SideBar = ({ className }: any) => {
                 </>
               )}
             </div>
+
             <div className="flex h-full w-full flex-col justify-between overflow-y-auto">
               {loading ? (
                 <TableListLoading />
@@ -120,7 +127,10 @@ export const SideBar = ({ className }: any) => {
                         className="w-full justify-start font-normal"
                         asChild
                       >
-                        <Link to={`/${space}/extensions`} className="[&>svg]:!size-5">
+                        <Link
+                          to={`/${space}/extensions`}
+                          className="[&>svg]:!size-5"
+                        >
                           <BlocksIcon className="pr-1" />
                           {t("common.extensions")}
                         </Link>
