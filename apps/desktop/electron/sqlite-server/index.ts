@@ -4,7 +4,7 @@ import console from 'electron-log';
 import fs from 'fs';
 import path from 'path';
 import { generatePragmaList } from './config';
-import { parseGraftStatus, parsePagesStatus } from '@/lib/sync/graft/helpers';
+import { parseGraftStatus, parsePagesStatus } from '@/packages/sync/graft/helpers';
 
 
 export interface NodeDomainDbInfo {

@@ -3,7 +3,7 @@
 import React from "react"
 import { AlertCircle, CheckCircle, CloudOff, Database } from "lucide-react"
 
-import type { GraftStatus } from "@/lib/sync/graft/helpers"
+import type { GraftStatus } from "@/packages/sync/graft/helpers"
 import { SpaceInfo } from "@/hooks/use-space"
 import { useSpaceSyncStatus } from "@/hooks/use-sync-status"
 

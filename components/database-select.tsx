@@ -33,11 +33,11 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import { Switch } from "@/components/ui/switch"
 import { useLastOpened } from "@/apps/web-app/[database]/hook"
 
 import { Input } from "./ui/input"
 import { Label } from "./ui/label"
-import { Switch } from "@/components/ui/switch"
 
 interface IDatabaseSelectorProps {
   databases: string[]
@@ -129,13 +129,13 @@ export function DatabaseSelect({ databases }: IDatabaseSelectorProps) {
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
-            variant="outline"
+            variant="ghost"
             role="combobox"
-            size="xs"
+            size="sm"
             aria-expanded={open}
             className="w-full min-w-[180px] justify-between"
           >
-            {space ? <div>{space}</div> : t('space.select.selectDatabase')}
+            {space ? <div>{space}</div> : t("space.select.selectDatabase")}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
@@ -143,12 +143,12 @@ export function DatabaseSelect({ databases }: IDatabaseSelectorProps) {
           <Command>
             <CommandList>
               <CommandInput
-                placeholder={t('space.select.searchDatabase')}
+                placeholder={t("space.select.searchDatabase")}
                 value={searchValue}
                 onValueChange={setSearchValue}
               />
               <CommandEmpty>
-                <div>{t('common.noResultsFound')}</div>
+                <div>{t("common.noResultsFound")}</div>
               </CommandEmpty>
               <CommandGroup>
                 {databases.map((database) => (
@@ -177,7 +177,7 @@ export function DatabaseSelect({ databases }: IDatabaseSelectorProps) {
                     }}
                   >
                     <PlusCircle className="mr-2 h-4 w-4" />
-                    <span>{t('space.select.createNew')}</span>
+                    <span>{t("space.select.createNew")}</span>
                   </CommandItem>
                 </DialogTrigger>
               </CommandGroup>
@@ -187,18 +187,20 @@ export function DatabaseSelect({ databases }: IDatabaseSelectorProps) {
       </Popover>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{t('space.select.createSpace')}</DialogTitle>
+          <DialogTitle>{t("space.select.createSpace")}</DialogTitle>
           <DialogDescription>
-            {t('space.select.createSpaceDescription')}
+            {t("space.select.createSpaceDescription")}
           </DialogDescription>
         </DialogHeader>
         <div>
           <div className="space-y-4 py-2 pb-4">
             <div className="space-y-2">
-              <Label htmlFor="database-name">{t('space.select.spaceName')}</Label>
+              <Label htmlFor="database-name">
+                {t("space.select.spaceName")}
+              </Label>
               <Input
                 id="database-name"
-                placeholder={t('space.select.spaceNamePlaceholder')}
+                placeholder={t("space.select.spaceNamePlaceholder")}
                 value={databaseName}
                 autoComplete="off"
                 type="text"
@@ -216,7 +218,7 @@ export function DatabaseSelect({ databases }: IDatabaseSelectorProps) {
               <span>
                 {isExistingSpace && !isOverwrite && (
                   <span className="text-sm text-red-500">
-                    {t('space.select.spaceAlreadyExists')}
+                    {t("space.select.spaceAlreadyExists")}
                   </span>
                 )}
               </span>
@@ -224,9 +226,11 @@ export function DatabaseSelect({ databases }: IDatabaseSelectorProps) {
           </div>
           <div className="space-y-4 py-2 pb-4">
             <div className="space-y-2">
-              <Label htmlFor="importFromFile">{t('space.select.importFromFile')}</Label>
+              <Label htmlFor="importFromFile">
+                {t("space.select.importFromFile")}
+              </Label>
               <div className="text-sm text-muted-foreground">
-                {t('space.select.importFromFileDescription')}
+                {t("space.select.importFromFileDescription")}
               </div>
               <Input
                 type="file"
@@ -237,7 +241,7 @@ export function DatabaseSelect({ databases }: IDatabaseSelectorProps) {
               />
               {isOverwrite && (
                 <span className="text-sm text-red-500">
-                  {t('space.select.overwriteWarning')}
+                  {t("space.select.overwriteWarning")}
                 </span>
               )}
             </div>
@@ -273,14 +277,14 @@ export function DatabaseSelect({ databases }: IDatabaseSelectorProps) {
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => setShowNewTeamDialog(false)}>
-            {t('common.cancel')}
+            {t("common.cancel")}
           </Button>
           <Button
             type="submit"
             onClick={handleCreateDatabase}
             disabled={loading}
           >
-            {loading ? t('space.select.creating') : t('common.continue')}
+            {loading ? t("space.select.creating") : t("common.continue")}
           </Button>
         </DialogFooter>
       </DialogContent>
