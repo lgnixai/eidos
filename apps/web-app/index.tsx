@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client"
 import { RouterProvider, createBrowserRouter, redirect } from "react-router-dom"
 
 import "@/locales/i18n"
+import { SpaceFileSystem } from "@/lib/storage/space"
 import NodePage from "@/apps/web-app/[database]/[node]/page"
 import EverydayPage from "@/apps/web-app/[database]/everyday/[day]/page"
 import EverydayHomePage from "@/apps/web-app/[database]/everyday/page"
@@ -18,16 +19,15 @@ import SettingsApiPage from "@/apps/web-app/settings/api/page"
 import SettingsAppearancePage from "@/apps/web-app/settings/appearance/page"
 import { BackupSettings } from "@/apps/web-app/settings/backup/page"
 import SettingsExperimentPage from "@/apps/web-app/settings/experiment/page"
+import SettingsPage from "@/apps/web-app/settings/general/page"
 // settings
 import SettingsLayout from "@/apps/web-app/settings/layout"
-import SettingsPage from "@/apps/web-app/settings/general/page"
 import SettingsStoragePage from "@/apps/web-app/settings/storage/page"
 import ShareNodePage from "@/apps/web-app/share/[database]/[table]/page"
 import ShareLayout from "@/apps/web-app/share/[database]/layout"
 // share
 import SharePage from "@/apps/web-app/share/page"
 
-import { SpaceFileSystem } from "@/lib/storage/space"
 import { NotFound } from "./404"
 import { AppPage } from "./[database]/apps/page"
 import { ScriptDetailPage } from "./[database]/scripts/detail"
@@ -38,6 +38,7 @@ import { DocEditor } from "./eidtor/doc"
 import { ErrorBoundary } from "./error"
 import { LabPage } from "./lab"
 import { LicenseManagePage } from "./license-manage/page"
+import { SettingsAILayout } from "./settings/ai/layout"
 import { ProviderPage } from "./settings/ai/provider/page"
 import { DevtoolsPage } from "./settings/dev/page"
 
@@ -85,8 +86,12 @@ const router = createBrowserRouter([
           },
           {
             path: "ai",
-            element: <SettingsAIPage />,
+            element: <SettingsAILayout />,
             children: [
+              {
+                index: true,
+                element: <SettingsAIPage />,
+              },
               {
                 path: "provider",
                 children: [

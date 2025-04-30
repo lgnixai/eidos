@@ -1,16 +1,23 @@
-import { useParams, useSearchParams } from "react-router-dom"
+import { useParams, useSearchParams, useNavigate } from "react-router-dom"
 
+import { LLMProvider } from "@/lib/ai/config"
 import { useAIConfigStore } from "../store"
 import { LLMProviderForm } from "./new-llm-provider-form"
 
 export const ProviderPage = () => {
   const { providerId } = useParams()
   const [searchParams] = useSearchParams()
+  const navigate = useNavigate()
   const { aiConfig, addLLMProvider, updateLLMProvider, removeLLMProvider } =
     useAIConfigStore()
   const provider = aiConfig.llmProviders.find((p) => p.name === providerId)
 
   const existingProviderNames = aiConfig.llmProviders.map((p) => p.name)
+
+  const handleAddProviderAndNavigate = (providerData: LLMProvider) => {
+    addLLMProvider(providerData)
+    navigate(`/settings/ai/provider/${providerData.name}`)
+  }
 
   const isAddNew = providerId === "new"
 
@@ -30,7 +37,7 @@ export const ProviderPage = () => {
           baseUrl: defaultBaseUrl,
           enabled: true,
         }}
-        onAdd={addLLMProvider}
+        onAdd={handleAddProviderAndNavigate}
         existingNames={existingProviderNames}
       ></LLMProviderForm>
     )

@@ -1,13 +1,9 @@
-import { useEffect } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { useLocation } from "react-router-dom"
 
-import { AIFormValues, aiFormSchema } from "@/lib/ai/config"
-import { isDesktopMode } from "@/lib/env"
-import { Button } from "@/components/ui/button"
-import { toast } from "@/components/ui/use-toast"
 import { AIModelSelect } from "@/components/ai-chat/ai-chat-model-select"
 import {
   Form,
@@ -18,9 +14,11 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/react-hook-form/form"
+import { Button } from "@/components/ui/button"
+import { toast } from "@/components/ui/use-toast"
+import { AIFormValues, aiFormSchema } from "@/lib/ai/config"
 
 import { TaskType } from "./hooks"
-import { LocalLLMManage } from "./local-llm-manage"
 import { ModelTestButton } from "./model-test-button"
 import { useAIConfigStore } from "./store"
 
@@ -65,12 +63,12 @@ export function AITaskConfigForm() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        {!isDesktopMode && (
+        {/* {!isDesktopMode && (
           <LocalLLMManage
             models={form.getValues("localModels")}
             setModels={updateModels}
           />
-        )}
+        )} */}
         <div
           id="model-preferences"
           className={`space-y-6 rounded-lg border p-4 ${getCardClassName(
