@@ -7,7 +7,7 @@ import {
   LexicalComposer,
 } from "@lexical/react/LexicalComposer"
 import { ContentEditable } from "@lexical/react/LexicalContentEditable"
-import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary"
+import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary"
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin"
 import { useDebounceFn } from "ahooks"
 

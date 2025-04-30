@@ -1,5 +1,5 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
-import LexicalTableOfContents from "@lexical/react/LexicalTableOfContents"
+import { TableOfContentsPlugin } from "@lexical/react/LexicalTableOfContentsPlugin"
 import { NodeKey } from "lexical"
 
 import { cn } from "@/lib/utils"
@@ -23,13 +23,14 @@ export const TableOfContentsComponent = () => {
   }
 
   return (
-    <LexicalTableOfContents>
+    <TableOfContentsPlugin>
       {(tableOfContents) => {
         if (tableOfContents.length === 0) {
           return (
             <div>
               <div className="w-full cursor-pointer underline opacity-70 hover:bg-secondary">
-                add some headings to your document to create a table of contents.
+                add some headings to your document to create a table of
+                contents.
               </div>
             </div>
           )
@@ -63,6 +64,6 @@ export const TableOfContentsComponent = () => {
           </div>
         )
       }}
-    </LexicalTableOfContents>
+    </TableOfContentsPlugin>
   )
-} 
+}

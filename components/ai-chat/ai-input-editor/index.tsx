@@ -11,13 +11,18 @@ import {
 } from "@lexical/react/LexicalComposer"
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
 import { ContentEditable } from "@lexical/react/LexicalContentEditable"
-import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary"
+import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary"
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin"
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin"
 import { HeadingNode, QuoteNode } from "@lexical/rich-text"
 import { Attachment, ChatRequestOptions, CreateMessage } from "ai"
 import { Message } from "ai/react"
-import { $getRoot, $getSelection, $isRangeSelection, createCommand } from "lexical"
+import {
+  $getRoot,
+  $getSelection,
+  $isRangeSelection,
+  createCommand,
+} from "lexical"
 import { useTranslation } from "react-i18next"
 
 import { BGEM3 } from "@/lib/ai/llm_vendors/bge"
@@ -85,14 +90,14 @@ function PlainTextPastePlugin() {
 
   useEffect(() => {
     return editor.registerCommand(
-      createCommand('PASTE_COMMAND'),
+      createCommand("PASTE_COMMAND"),
       (event: ClipboardEvent) => {
         event.preventDefault()
-        
+
         const selection = $getSelection()
         if (!$isRangeSelection(selection)) return false
 
-        const text = event.clipboardData?.getData('text/plain')
+        const text = event.clipboardData?.getData("text/plain")
         if (text) {
           selection.insertText(text)
         }

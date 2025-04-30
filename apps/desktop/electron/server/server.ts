@@ -4,7 +4,6 @@ import { getOrSetDataSpace } from '../data-space';
 import { serveStatic } from '@hono/node-server/serve-static';
 import { serve } from '@hono/node-server';
 import { getFileFromPath, getSpaceFileFromPath } from '../file-system/space';
-import aiCompletionHandler, { pathname as aiCompletionPath } from '@/worker/service-worker/routes/ai_completion';
 import aiHandler, { pathname as aiPath } from '@/worker/service-worker/ai';
 import { log } from 'electron-log';
 
@@ -44,13 +43,13 @@ export function startServer({ dist, port }: { dist: string, port: number }) {
     });
 
     // AI completion route
-    app.post(aiCompletionPath, async (c) => {
-        const response = await aiCompletionHandler({
-            request: c.req,
-            respondWith: (response: Response) => response,
-        } as unknown as FetchEvent);
-        return response;
-    });
+    // app.post(aiCompletionPath, async (c) => {
+    //     const response = await aiCompletionHandler({
+    //         request: c.req,
+    //         respondWith: (response: Response) => response,
+    //     } as unknown as FetchEvent);
+    //     return response;
+    // });
 
     // AI route
     app.all(aiPath, async (c) => {

@@ -1,7 +1,7 @@
 import { useEffect } from "react"
 import { Transformer } from "@lexical/markdown"
 import { CheckListPlugin } from "@lexical/react/LexicalCheckListPlugin"
-import LexicalClickableLinkPlugin from "@lexical/react/LexicalClickableLinkPlugin"
+import { ClickableLinkPlugin } from "@lexical/react/LexicalClickableLinkPlugin"
 import { HashtagPlugin } from "@lexical/react/LexicalHashtagPlugin"
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin"
 import { HorizontalRulePlugin } from "@lexical/react/LexicalHorizontalRulePlugin"
@@ -66,7 +66,7 @@ export const AllPlugins = ({
       <ShortcutPlugin />
       <AutoLinkPlugin />
       <DragDropPaste />
-      <LexicalClickableLinkPlugin />
+      <ClickableLinkPlugin />
       <ComponentPickerMenuPlugin />
       <MarkdownShortcutPlugin transformers={__allTransformers} />
       <FloatingLinkEditorPlugin />
