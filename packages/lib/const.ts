@@ -82,6 +82,9 @@ export const DOMAINS = {
   GITHUB_ISSUES: "https://github.com/mayneyao/eidos/issues/",
   // API for Browser running in Electron
   GEOLOCATION_API: "https://geolocation.api.eidos.space/",
+
+  // Account Registration
+  ACCOUNT_REGISTRATION: "https://preview.eidos.space/auth/register",
 }
 
 // custom Event, dispatch via window

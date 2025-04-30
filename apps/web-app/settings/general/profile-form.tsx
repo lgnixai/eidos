@@ -1,6 +1,8 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { Check, X } from "lucide-react"
 import { ControllerRenderProps, useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import * as z from "zod"
@@ -10,6 +12,7 @@ import { useEidosFileSystemManager } from "@/hooks/use-fs"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Separator } from "@/components/ui/separator"
 import { toast } from "@/components/ui/use-toast"
 import {
   Form,
@@ -20,7 +23,8 @@ import {
   FormMessage,
 } from "@/components/react-hook-form/form"
 
-import { useConfigStore } from "./store"
+import { useConfigStore } from "../store"
+import { AccountSection } from "./account-section"
 
 const profileFormSchema = z.object({
   username: z
@@ -53,6 +57,20 @@ export function ProfileForm() {
   const { clientId } = useActivationCodeStore()
   const { efsManager } = useEidosFileSystemManager()
   const { t } = useTranslation()
+
+  // State to track if username has changed
+  const [usernameChanged, setUsernameChanged] = useState(false)
+
+  // Effect to detect username changes
+  useEffect(() => {
+    const subscription = form.watch((value, { name }) => {
+      if (name === "username") {
+        setUsernameChanged(value.username !== profile?.username)
+      }
+    })
+    return () => subscription.unsubscribe()
+  }, [form, profile?.username])
+
   const handleChangeAvatar = async (
     field: ControllerRenderProps<
       {
@@ -63,34 +81,63 @@ export function ProfileForm() {
       "avatar"
     >
   ) => {
-    const [fileHandle] = await (window as any).showOpenFilePicker({
-      types: [
-        {
-          description: "Images",
-          accept: {
-            "image/*": [".png", ".gif", ".jpeg", ".jpg"],
+    try {
+      const [fileHandle] = await (window as any).showOpenFilePicker({
+        types: [
+          {
+            description: "Images",
+            accept: {
+              "image/*": [".png", ".gif", ".jpeg", ".jpg"],
+            },
           },
-        },
-      ],
-      excludeAcceptAllOption: true,
-      multiple: false,
-    })
-    const file = await fileHandle.getFile()
-    const res = await efsManager.addFile(["static"], file)
-    const url = "/" + res?.join("/")
-    field.onChange(url)
+        ],
+        excludeAcceptAllOption: true,
+        multiple: false,
+      })
+      const file = await fileHandle.getFile()
+      const res = await efsManager.addFile(["static"], file)
+      if (!res) {
+        throw new Error("Failed to upload avatar.")
+      }
+      const url = "/" + res?.join("/")
+      field.onChange(url)
+
+      const currentProfile = form.getValues()
+      setProfile({ ...currentProfile, avatar: url })
+
+      toast({
+        title: t("settings.profile.avatarUpdateSuccess"),
+      })
+    } catch (error) {
+      console.error("Error changing avatar:", error)
+      toast({
+        title: t("settings.profile.avatarUpdateError"),
+        variant: "destructive",
+      })
+    }
   }
 
   function onSubmit(data: ProfileFormValues) {
     setProfile(data)
+    setUsernameChanged(false) // Reset change state after submit
     toast({
-      title: "Profile updated.",
+      title: t("settings.profile.updateSuccess"), // Use i18n key
     })
+  }
+
+  const handleRevertUsername = () => {
+    form.setValue("username", profile?.username ?? "")
+    setUsernameChanged(false)
+  }
+
+  const handleSaveUsername = () => {
+    // Trigger form validation and submission specifically for username
+    form.handleSubmit(onSubmit)()
   }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={(e) => e.preventDefault()} className="space-y-8">
         <div className="flex items-center gap-4">
           <FormField
             control={form.control}
@@ -115,12 +162,33 @@ export function ProfileForm() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>{t("common.name")}</FormLabel>
-                <FormControl>
-                  <Input placeholder="yahaha" {...field} />
-                </FormControl>
-                {/* <FormDescription>
-                  {`When you visit other's shared pages, others will see this display name.`}
-                </FormDescription> */}
+                <div className="flex items-center gap-2">
+                  <FormControl>
+                    <Input placeholder="yahaha" {...field} />
+                  </FormControl>
+                  {usernameChanged && (
+                    <>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={handleSaveUsername}
+                        aria-label={t("common.save")}
+                      >
+                        <Check className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={handleRevertUsername}
+                        aria-label={t("common.cancel")}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </>
+                  )}
+                </div>
                 <FormMessage />
               </FormItem>
             )}
@@ -149,7 +217,6 @@ export function ProfileForm() {
             </FormItem>
           )}
         />
-        <Button type="submit">{t("common.update")}</Button>
       </form>
     </Form>
   )

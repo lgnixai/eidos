@@ -142,6 +142,7 @@
     "ai": "^4.1.8",
     "aws-sdk": "^2.1526.0",
     "aws4fetch": "^1.0.17",
+    "better-auth": "^1.2.7",
     "bindings": "^1.5.0",
     "bufferutil": "^4.0.7",
     "class-variance-authority": "^0.4.0",

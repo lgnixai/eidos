@@ -4,7 +4,7 @@ import { persist } from "zustand/middleware"
 import { uuidv7 } from "@/lib/utils"
 import { BackupServerFormValues } from "@/apps/web-app/settings/backup/page"
 
-import { ProfileFormValues } from "./profile-form"
+import { ProfileFormValues } from "./general/profile-form"
 
 interface ConfigState {
   profile: ProfileFormValues
