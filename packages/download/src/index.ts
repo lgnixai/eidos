@@ -32,8 +32,8 @@ export default {
 		const platform = url.pathname.split('/').pop()?.toLowerCase();
 		const arch = url.searchParams.get('arch')?.toLowerCase();
 
-		if (platform !== 'mac' && platform !== 'win') {
-			return new Response('Invalid platform. Use /mac or /win', { status: 400 });
+		if (platform !== 'mac' && platform !== 'win' && platform !== 'linux') {
+			return new Response('Invalid platform. Use /mac or /win or /linux', { status: 400 });
 		}
 
 		const baseUrl = 'https://api.github.com/repos'
@@ -62,7 +62,8 @@ export default {
 			}
 			const extMap = {
 				mac: '.dmg',
-				win: '.exe'
+				win: '.exe',
+				linux: '.AppImage'.toLowerCase()
 			}
 
 			const asset = latestRelease.assets.find((asset: any) => {
