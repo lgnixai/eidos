@@ -82,7 +82,7 @@ export const SideBar = ({ className }: any) => {
         <NavigationControls />
       </div>
       <div
-        className={cn("flex flex-col h-full shrink-0", {
+        className={cn("flex flex-col h-full shrink-0 select-none", {
           "pt-8":
             isMac() &&
             (isDesktopMode || navigator.windowControlsOverlay?.visible),
