@@ -91,3 +91,5 @@ export const DOMAINS = {
 export enum CustomEventType {
   UpdateColumn = "eidos-update-column",
 }
+
+export const EIDOS_SPACE_BASE_URL = process.env.NODE_ENV === "production" ? "https://preview.eidos.space" : "http://localhost:4321";

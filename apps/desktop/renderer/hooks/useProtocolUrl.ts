@@ -5,13 +5,13 @@ import { getSqliteProxy } from "@/lib/sqlite/channel";
 import { getToday, uuidv7 } from "@/lib/utils";
 import { useCallback, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-
-
+import { useExtensionInstaller } from "./useExtensionInstaller";
 
 export const useProtocolUrl = () => {
     const navigate = useNavigate();
     const { id: userId } = useCurrentUser();
     const listenerRef = useRef<any>();
+    const { installExtension } = useExtensionInstaller();
 
     const createDocWithMarkdown = useCallback(async (props: {
         spaceId: string; docId: string; markdown: string; title?: string; mode?: "replace" | "append" | "prepend";
@@ -50,7 +50,6 @@ export const useProtocolUrl = () => {
         }
         switch (action) {
             case 'open':
-                // 处理打开空间或特定视图
                 if ('space' in searchParams) {
                     const spaceId = searchParams['space'];
 
@@ -58,7 +57,6 @@ export const useProtocolUrl = () => {
                 break;
 
             case 'search':
-                // 处理搜索请求
                 if ('space' in searchParams) {
                     const spaceId = searchParams['space'];
                 }
@@ -89,10 +87,15 @@ export const useProtocolUrl = () => {
                 }
                 break;
 
+            case 'extension':
+                const extensionId = data.extensionId;
+                await installExtension(extensionId);
+                break;
+
             default:
                 console.warn('Unhandled protocol action:', action);
         }
-    }, [createDocWithMarkdown]);
+    }, [createDocWithMarkdown, navigate, installExtension]);
 
     useEffect(() => {
         if (!isDesktopMode) return;

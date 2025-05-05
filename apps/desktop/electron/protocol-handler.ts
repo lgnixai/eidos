@@ -6,6 +6,7 @@ export interface ProtocolUrlPayload {
     url: string;
     action?: string;
     searchParams?: Record<string, string>;
+    extensionId?: string;
 }
 
 export class ProtocolHandler {
@@ -17,6 +18,7 @@ export class ProtocolHandler {
     }
 
     handleUrl(url: string) {
+        console.log('Handling URL:', url);
         try {
             if (!url.startsWith(`${this.PROTOCOL}://`)) {
                 throw new Error(`Invalid protocol: ${url.split(':')[0]}`);
@@ -32,6 +34,12 @@ export class ProtocolHandler {
                 return;
             }
 
+            // Handle extension action
+            // eidos://extension/extensionId
+            if (action === 'extension') {
+                this.handleExtensionAction(urlObj, url, searchParams);
+                return;
+            }
             // Handle regular eidos protocol actions
             // convert vault to space
             if (searchParams.vault) {
@@ -56,6 +64,28 @@ export class ProtocolHandler {
             log('Error handling protocol URL:', error);
             throw error;
         }
+    }
+
+
+    private handleExtensionAction(urlObj: URL, originalUrl: string, searchParams: Record<string, string>) {
+        const pathParts = urlObj.pathname.split('/').filter(part => part);
+        if (pathParts.length === 0) {
+            throw new Error(`Invalid extension URL format, missing extension ID: ${originalUrl}`);
+        }
+        const extensionId = pathParts[0];
+        const payload: ProtocolUrlPayload = {
+            url: originalUrl,
+            action: 'extension',
+            extensionId: extensionId,
+            searchParams: searchParams,
+        };
+        console.log('Main process sending protocol-url event (extension):', payload);
+        this.mainWindow.webContents.send(EidosProtocolUrlChannelName, payload);
+        if (this.mainWindow.isMinimized()) {
+            this.mainWindow.restore();
+        }
+        this.mainWindow.focus();
+        return; // Exit after handling extension
     }
 
     private handleBlockAction(urlObj: URL, originalUrl: string) {

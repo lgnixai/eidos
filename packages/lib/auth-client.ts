@@ -2,5 +2,5 @@ import { createAuthClient } from "better-auth/react";
 
 export const authClient = createAuthClient({
     /** The base URL of the server (optional if you're using the same domain) */
-    baseURL: "https://preview.eidos.space",
+    baseURL: process.env.NODE_ENV === "production" ? "https://preview.eidos.space" : "http://localhost:4321",
 })

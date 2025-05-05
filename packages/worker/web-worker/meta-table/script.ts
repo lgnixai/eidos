@@ -30,6 +30,8 @@ export interface IScript {
   description: string
   version: string
   code: string
+  // if the script is published to marketplace, it will have a marketplace_id
+  marketplace_id?: string
   ts_code?: string
   enabled?: boolean
   // for prompt
@@ -84,6 +86,7 @@ export class ScriptTable
         version TEXT,
         code TEXT,
         ts_code TEXT,
+        marketplace_id TEXT,
         model TEXT,
         prompt_config TEXT,
         commands TEXT,
