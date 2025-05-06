@@ -4,11 +4,13 @@ import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useScript } from "../../../web-app/[database]/scripts/hooks/use-script";
 import { EIDOS_SPACE_BASE_URL } from "@/lib/const";
+import { useSqlite } from "@/hooks/use-sqlite";
 
 
 export const useExtensionInstaller = () => {
     const navigate = useNavigate();
     const { addScript } = useScript();
+    const { sqlite } = useSqlite();
     const [lastOpenedDatabase,] = useIndexedDB(
         "kv",
         "lastOpenedDatabase",
@@ -23,26 +25,35 @@ export const useExtensionInstaller = () => {
             }
             const extensionData = await response.json();
 
-            // Map the API response to the IScript interface
-            // Using the new nested structure with extension and latestVersion
+            const extensionIdFromApi = extensionData.extension.id;
+
+            if (sqlite) {
+                const existingScript = await sqlite.script.get(extensionIdFromApi);
+                if (existingScript) {
+                    console.log(`Extension ${extensionIdFromApi} already installed. Navigating...`);
+                    if (lastOpenedDatabase) {
+                        navigate(`/${lastOpenedDatabase}/extensions/${existingScript.id}`);
+                    }
+                    return;
+                }
+            }
+
             const script: IScript = {
-                id: extensionData.extension.id, // Use the main extension ID
-                name: extensionData.extension.name, // Use name from extension object
-                type: extensionData.extension.type, // Assuming type is 'script', adjust if extensionData.extension.type is relevant
-                description: extensionData.extension.description, // Use description from extension object
+                id: extensionIdFromApi,
+                name: extensionData.extension.name,
+                type: extensionData.extension.type,
+                description: extensionData.extension.description,
                 icon: extensionData.extension.icon_url,
-                version: extensionData.latestVersion.version, // Use version from latestVersion object
+                version: extensionData.latestVersion.version,
                 ...(extensionData.extension.type === 'm_block' || extensionData.extension.type === 'script'
                     ? { ts_code: extensionData.latestVersion.code, code: '' }
                     : { code: extensionData.latestVersion.code }),
-                enabled: true, // Assuming newly installed extensions should be enabled
-                commands: [], // Placeholder: API response doesn't include commands
-                // model, prompt_config, tables, envs, env_map, fields_map, bindings, dependencies can be added if available from API
+                enabled: true,
+                commands: [],
             };
 
             await addScript(script);
             console.log(`Successfully installed extension: ${extensionId}`);
-            // Optional: Navigate to a relevant page after install?
             if (lastOpenedDatabase) {
                 navigate(`/${lastOpenedDatabase}/extensions/${script.id}`);
             }
@@ -52,7 +63,7 @@ export const useExtensionInstaller = () => {
             console.error("Error handling extension protocol action:", error);
             // TODO: Show error to user?
         }
-    }, [addScript, navigate, lastOpenedDatabase]);
+    }, [addScript, navigate, lastOpenedDatabase, sqlite]);
 
     return { installExtension };
 };
