@@ -172,6 +172,10 @@ export class ImageNode extends DecoratorBlockNode {
     }
   }
 
+  getTextContent(): string {
+    return `![${this.getAltText()}](${this.getSrc()})`
+  }
+
   setWidthAndHeight(
     width: "inherit" | number,
     height: "inherit" | number
@@ -275,6 +279,7 @@ export function $isImageNode(
 
 export const IMAGE_NODE_TRANSFORMER: TextMatchTransformer = {
   dependencies: [ImageNode],
+  // export not working as expected, use getTextContent instead
   export: (node) => {
     if (!$isImageNode(node)) {
       return null
