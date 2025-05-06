@@ -52,9 +52,9 @@ export const ExtensionConfig = () => {
   const hasChanges = () => {
     return (
       formData.name !== script.name ||
-      formData.description !== script.description ||
+      formData.description !== (script.description || "") ||
       formData.enabled !== script.enabled ||
-      formData.icon !== script.icon
+      formData.icon !== (script.icon || "")
     )
   }
 
@@ -188,7 +188,9 @@ export const ExtensionConfig = () => {
                         reader.onloadend = () => {
                           setFormData({
                             ...formData,
-                            icon: `data:image/svg+xml,${encodeURIComponent(reader.result as string)}`,
+                            icon: `data:image/svg+xml,${encodeURIComponent(
+                              reader.result as string
+                            )}`,
                           })
                         }
                         reader.onerror = () => {
