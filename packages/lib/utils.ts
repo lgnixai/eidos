@@ -277,7 +277,7 @@ export const getBlockUrlWithParams = (id: string, params: Record<string, any>) =
 
 export const isStandaloneBlocksPath = (pathname: string) => {
   // /:space/standalone-blocks/:id
-  return /^\/[\w-]+\/standalone-blocks\/\w+$/.test(pathname)
+  return /^\/[\w-]+\/standalone-blocks\/[\w+-]+$/.test(pathname)
 }
 
 export const isFilesPath = (pathname: string) => {

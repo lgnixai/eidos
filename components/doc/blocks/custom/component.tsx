@@ -145,7 +145,8 @@ export const CustomBlockComponent = (props: {
         pointerEvents: isSelecting ? "none" : "auto",
       }}
     >
-      <BlockApp ref={blockRef} url={props.url} />
+      {/* why 18? because the container has 16px padding(p-2) we need some space for BlockApp*/}
+      <BlockApp ref={blockRef} url={props.url} height={height - 18} />
       <Tooltip delayDuration={1000}>
         <TooltipTrigger asChild>
           <div
