@@ -139,17 +139,19 @@ export const ScriptDetailPage = () => {
   const { toast } = useToast()
 
   const onSubmit = useCallback(
-    async (code: string, ts_code?: string) => {
-      if (code !== script.code || ts_code !== script.ts_code) {
+    async (code: string, ts_code?: string, version?: string) => {
+      if (code !== script.code || ts_code !== script.ts_code || (version && version !== script.version)) {
         setEditorContent(ts_code || code)
         await updateScript({
           id: script.id,
           code,
           ts_code,
+          version,
         })
         revalidator.revalidate()
         toast({
           title: "Code Updated Successfully",
+          description: version ? `Version updated to ${version}` : "Content updated.",
         })
       }
       if (script.type === "script") {

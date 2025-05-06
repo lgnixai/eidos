@@ -21,7 +21,12 @@ export const useScript = () => {
   }
   const updateScript = async (script: Partial<IScript>) => {
     if (!sqlite || !script.id) return
-    await sqlite.script.set(script.id, script)
+    const { version, ...rest } = script
+    if (!version) {
+      await sqlite.script.set(script.id, rest)
+    } else {
+      await sqlite.script.set(script.id, script)
+    }
     console.log("updateScript", script)
   }
   const installScript = async (script: IScript) => {

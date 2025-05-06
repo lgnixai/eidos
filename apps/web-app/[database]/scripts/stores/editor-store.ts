@@ -18,6 +18,9 @@ interface EditorStore {
     scriptCodeMap: Record<string, string>
     setScriptCodeMap: (id: string, code: string) => void
 
+    pendingVersionUpdateMap: Record<string, string | null>
+    setPendingVersionUpdate: (id: string, version: string | null) => void
+
     chatId: string
     setChatId: (id: string) => void
     chatHistory: Array<Message>
@@ -50,6 +53,11 @@ export const useEditorStore = create<EditorStore>((set) => ({
     scriptCodeMap: {},
     setScriptCodeMap: (id, code) =>
         set((state) => ({ scriptCodeMap: { ...state.scriptCodeMap, [id]: code } })),
+    pendingVersionUpdateMap: {},
+    setPendingVersionUpdate: (id, version) =>
+        set((state) => ({
+            pendingVersionUpdateMap: { ...state.pendingVersionUpdateMap, [id]: version },
+        })),
     chatHistory: [],
     setChatHistory: (history) => set((state) => {
         const processedHistory = history.map(msg => ({

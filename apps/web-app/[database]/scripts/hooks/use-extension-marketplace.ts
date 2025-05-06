@@ -5,7 +5,7 @@ import { getEditorLanguage } from "../helper";
 import { useScript } from "./use-script";
 import { EIDOS_SPACE_BASE_URL } from "@/lib/const";
 
-interface UseExtensionSubmitProps {
+interface UseExtensionMarketplaceProps {
     script: IScript;
     editorContent: string;
 }
@@ -18,13 +18,41 @@ interface PublishNewVersionPayload {
     language?: string; // Optional, to allow language updates
 }
 
+// Define the structure for the latestVersion API response
+interface LatestVersionResponse {
+    id: string;
+    extension_id: string;
+    version: string;
+    code: string;
+    language: string | null;
+    changelog: string;
+    is_published: number; // Assuming 1 for true, 0 for false based on typical DB boolean representation
+    download_count: number;
+    created_at: string; // ISO date string
+}
 
 
-export const useExtensionSubmit = ({ script, editorContent }: UseExtensionSubmitProps) => {
+export const useExtensionMarketplace = ({ script, editorContent }: UseExtensionMarketplaceProps) => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isPublishing, setIsPublishing] = useState(false); // Add state for publishing
     const { toast } = useToast();
     const { updateScript } = useScript();
+
+    // check update
+    const checkUpdate = useCallback(async (): Promise<LatestVersionResponse | null> => {
+        if (!script?.marketplace_id) {
+            // Optionally, handle this case more specifically, e.g., return null or throw an error
+            console.warn("Marketplace ID is missing, cannot check for updates.");
+            return null;
+        }
+        const url = `${EIDOS_SPACE_BASE_URL}/api/extensions/${script.marketplace_id}/latestVersion`;
+        const response = await fetch(url, {
+            method: "GET",
+            credentials: 'include' // Include cookies for cross-origin requests
+        });
+        const result: LatestVersionResponse = await response.json();
+        return result;
+    }, [script?.marketplace_id]);
 
     const submitExtension = useCallback(async () => {
         if (!script || !editorContent) {
@@ -172,5 +200,6 @@ export const useExtensionSubmit = ({ script, editorContent }: UseExtensionSubmit
         submitExtension,
         isPublishing, // Expose the new state
         publishNewVersion, // Expose the new function
+        checkUpdate,
     };
 }; 

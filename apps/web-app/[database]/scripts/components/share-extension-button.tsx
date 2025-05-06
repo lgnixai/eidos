@@ -18,7 +18,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { LoginDialog } from "@/components/login-dialog"
 
-import { useExtensionSubmit } from "../hooks/use-extension-submit"
+import { useExtensionMarketplace } from "../hooks/use-extension-marketplace"
 
 interface ShareExtensionButtonProps {
   script: IScript
@@ -31,7 +31,7 @@ export const ShareExtensionButton = ({
 }: ShareExtensionButtonProps) => {
   const { t } = useTranslation()
   const { isSubmitting, submitExtension, isPublishing, publishNewVersion } =
-    useExtensionSubmit({
+    useExtensionMarketplace({
       script,
       editorContent: script.ts_code || script.code,
     })

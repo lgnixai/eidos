@@ -141,6 +141,19 @@ export const ExtensionConfig = () => {
                 disabled
               />
             </div>
+            {/* readonly version */}
+            <div className="grid grid-cols-4 items-center gap-2">
+              <label htmlFor="version" className="text-sm font-medium">
+                Version
+              </label>
+              <Input
+                id="version"
+                value={script.version}
+                className="col-span-3"
+                readOnly
+                disabled
+              />
+            </div>
             <div className="grid grid-cols-4 items-center gap-2">
               <label htmlFor="icon" className="text-sm font-medium">
                 {t("common.icon")}

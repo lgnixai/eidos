@@ -49,7 +49,7 @@ loader.init().then(/* ... */)
 
 export interface CodeEditorProps {
   value: string
-  onSave?: (code: string, ts_code?: string) => void
+  onSave?: (code: string, ts_code?: string, version?: string) => void
   language?: string
   customCompile?: (code: string) => Promise<string>
   theme?: "vs-dark" | "light"
@@ -73,7 +73,7 @@ export const CodeEditor = forwardRef(
     const monaco = useMonaco()
     const [code, setCode] = useState<string | undefined>(value)
     const editorRef = useRef<monaco.editor.IStandaloneCodeEditor>()
-    const { scriptCodeMap, setScriptCodeMap, setActiveTab } = useEditorStore()
+    const { scriptCodeMap, setScriptCodeMap, setActiveTab, pendingVersionUpdateMap, setPendingVersionUpdate } = useEditorStore()
 
     const toApplyCode = scriptId ? scriptCodeMap[scriptId] : undefined
 
@@ -83,19 +83,19 @@ export const CodeEditor = forwardRef(
 
     const dynamicPrompt = useMemo(() => getDynamicPrompt(bindings), [bindings])
     const handleSave = useCallback(
-      async (code: string) => {
-        setCode(code)
+      async (codeToSave: string, versionToSave?: string) => {
+        setCode(codeToSave)
         if (language === "typescript" || language === "typescriptreact") {
           if (customCompile) {
-            customCompile(code).then((jsCode) => {
-              onSave?.(jsCode, code)
+            customCompile(codeToSave).then((jsCode) => {
+              onSave?.(jsCode, codeToSave, versionToSave)
             })
           } else {
-            const jsCode = compile(code)
-            onSave?.(jsCode, code)
+            const jsCode = compile(codeToSave)
+            onSave?.(jsCode, codeToSave, versionToSave)
           }
         } else {
-          onSave?.(code)
+          onSave?.(codeToSave, undefined, versionToSave)
         }
       },
       [language, onSave, customCompile]
@@ -286,20 +286,21 @@ export const CodeEditor = forwardRef(
     }, [size, resetEditorLayout, isAiOpen, isExtAppOpen])
 
     const handleAcceptChanges = useCallback(() => {
-      if (toApplyCode) {
-        handleSave(toApplyCode)
-        if (scriptId) {
-          setScriptCodeMap(scriptId, "")
-          setActiveTab("preview")
-        }
+      if (toApplyCode && scriptId) {
+        const newVersion = pendingVersionUpdateMap[scriptId]
+        handleSave(toApplyCode, newVersion || undefined)
+        setScriptCodeMap(scriptId, "")
+        setPendingVersionUpdate(scriptId, null)
+        setActiveTab("preview")
       }
-    }, [toApplyCode, handleSave, scriptId, setScriptCodeMap])
+    }, [toApplyCode, handleSave, scriptId, setScriptCodeMap, setActiveTab, pendingVersionUpdateMap, setPendingVersionUpdate])
 
     const handleRejectChanges = useCallback(() => {
       if (scriptId) {
         setScriptCodeMap(scriptId, "")
+        setPendingVersionUpdate(scriptId, null)
       }
-    }, [scriptId, setScriptCodeMap])
+    }, [scriptId, setScriptCodeMap, setPendingVersionUpdate])
 
     return (
       <div className="h-full w-full relative" ref={monacoEl}>

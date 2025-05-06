@@ -1,23 +1,24 @@
+import { useCallback, useRef } from "react"
 import { IScript } from "@/worker/web-worker/meta-table/script"
 import { useMount } from "ahooks"
 import { Copy, ExternalLink, Play } from "lucide-react"
-import { useCallback, useRef } from "react"
 import { useTranslation } from "react-i18next"
 import { useLoaderData, useRevalidator } from "react-router-dom"
 
-import { usePlayground } from "@/apps/desktop/renderer/hooks/usePlayground"
-import { Button } from "@/components/ui/button"
-import { useToast } from "@/components/ui/use-toast"
-import { useCurrentPathInfo } from "@/hooks/use-current-pathinfo"
-import { useScriptCall } from "@/hooks/use-script-call"
 import { useAppRuntimeStore } from "@/lib/store/runtime-store"
 import { compileCode } from "@/lib/v3/compiler"
 import { getCompileMethod } from "@/lib/v3/script-compiler"
 import { openCursor } from "@/lib/web/schema"
+import { useCurrentPathInfo } from "@/hooks/use-current-pathinfo"
+import { useScriptCall } from "@/hooks/use-script-call"
+import { Button } from "@/components/ui/button"
+import { useToast } from "@/components/ui/use-toast"
+import { usePlayground } from "@/apps/desktop/renderer/hooks/usePlayground"
 
 import { useRemixPrompt } from "../hooks/use-remix-prompt"
 import { useScript } from "../hooks/use-script"
 import { useEditorStore } from "../stores/editor-store"
+import { CheckForUpdatesButton } from "./check-for-updates-button"
 import { ShareExtensionButton } from "./share-extension-button"
 
 export const ExtensionToolbar = () => {
@@ -208,6 +209,12 @@ export const ExtensionToolbar = () => {
         script={script}
         onSuccess={() => revalidator.revalidate()}
       />
+      {script.marketplace_id && (
+        <CheckForUpdatesButton
+          script={script}
+          editorContent={script.ts_code || script.code}
+        />
+      )}
       {/* {script.type === "m_block" && (
         <Button
           size="xs"
