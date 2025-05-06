@@ -8,7 +8,10 @@ export class DocLoader implements BaseLoader {
   async load(docId: string) {
     const markdown = await this.dataSpace.getDocMarkdown(docId)
     // split markdown into pages,every 100 lines is a page
-    const lines = markdown.split("\n")
+    const lines = markdown?.split("\n")
+    if (!lines) {
+      return []
+    }
     const pages: {
       content: string
       meta: Record<string, any>
