@@ -1,16 +1,17 @@
+import { Suspense, lazy, useCallback, useEffect, useRef, useState } from "react"
 import { IScript } from "@/worker/web-worker/meta-table/script"
 import { useLocalStorageState, useMount, useSize } from "ahooks"
 import { Code, Eye } from "lucide-react"
 import { useTheme } from "next-themes"
-import { Suspense, lazy, useCallback, useEffect, useRef, useState } from "react"
 import {
   useLoaderData,
   useRevalidator,
   useSearchParams,
 } from "react-router-dom"
 
-import { BlockRenderer } from "@/components/block-renderer/block-renderer"
-import { DocEditorPlayground } from "@/components/doc-editor-playground"
+import { compileCode } from "@/lib/v3/compiler"
+import { compileLexicalCode } from "@/lib/v3/lexical-compiler"
+import { getCompileMethod } from "@/lib/v3/script-compiler"
 import { Button } from "@/components/ui/button"
 import {
   ResizableHandle,
@@ -21,9 +22,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { useToast } from "@/components/ui/use-toast"
-import { compileCode } from "@/lib/v3/compiler"
-import { compileLexicalCode } from "@/lib/v3/lexical-compiler"
-import { getCompileMethod } from "@/lib/v3/script-compiler"
+import { BlockRenderer } from "@/components/block-renderer/block-renderer"
+import { DocEditorPlayground } from "@/components/doc-editor-playground"
 
 import { ChatSidebar } from "./components/chat"
 import { Header } from "./components/chat/header"
@@ -140,7 +140,11 @@ export const ScriptDetailPage = () => {
 
   const onSubmit = useCallback(
     async (code: string, ts_code?: string, version?: string) => {
-      if (code !== script.code || ts_code !== script.ts_code || (version && version !== script.version)) {
+      if (
+        code !== script.code ||
+        ts_code !== script.ts_code ||
+        (version && version !== script.version)
+      ) {
         setEditorContent(ts_code || code)
         await updateScript({
           id: script.id,
@@ -151,7 +155,9 @@ export const ScriptDetailPage = () => {
         revalidator.revalidate()
         toast({
           title: "Code Updated Successfully",
-          description: version ? `Version updated to ${version}` : "Content updated.",
+          description: version
+            ? `Version updated to ${version}`
+            : "Content updated.",
         })
       }
       if (script.type === "script") {
@@ -335,6 +341,7 @@ export const ScriptDetailPage = () => {
                               )}
                               {script.type === "m_block" && (
                                 <BlockRenderer
+                                  blockId={script.id}
                                   code={script.ts_code || ""}
                                   compiledCode={
                                     currentCompiledDraftCode ||

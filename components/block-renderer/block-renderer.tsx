@@ -1,6 +1,7 @@
 import React, { useEffect, useImperativeHandle, useRef, useState } from "react"
 import { useTheme } from "next-themes"
 
+import { isDesktopMode } from "@/lib/env"
 import { generateImportMap, getAllLibs } from "@/lib/v3/compiler"
 import { useCurrentPathInfo } from "@/hooks/use-current-pathinfo"
 
@@ -17,6 +18,7 @@ export interface BlockRendererRef {
 interface BlockRendererProps {
   code: string
   compiledCode: string
+  blockId: string
   env?: Record<string, string>
   bindings?: Record<string, { type: "table"; value: string }>
   width?: string | number
@@ -32,6 +34,7 @@ export const BlockRenderer = React.forwardRef<
     {
       code,
       compiledCode,
+      blockId,
       env = {},
       width,
       height,
@@ -43,21 +46,16 @@ export const BlockRenderer = React.forwardRef<
     const iframeRef = useRef<HTMLIFrameElement>(null)
     const [dependencies, setDependencies] = useState<string[]>([])
     const [uiComponents, setUiComponents] = useState<string[]>([])
-    const [isLoading, setIsLoading] = useState(true)
+    const [isLoading, setIsLoading] = useState(!isDesktopMode)
     const { space } = useCurrentPathInfo()
     const { theme } = useTheme()
-
-    const sdkInjectScriptContent = makeSdkInjectScript({
-      space,
-      bindings,
-    })
 
     const [importMap, setImportMap] = useState<string>("")
 
     const defaultPropsString = JSON.stringify(defaultProps)
 
     useEffect(() => {
-      if (!code.length) {
+      if (!code.length || isDesktopMode) {
         return
       }
       const { thirdPartyLibs, uiLibs } = getAllLibs(code)
@@ -87,6 +85,23 @@ export const BlockRenderer = React.forwardRef<
 
     useEffect(() => {
       if (!iframeRef.current) return
+      if (isDesktopMode) {
+        iframeRef.current.src = `http://${blockId}.ext.${space}.eidos.localhost:13127/`
+
+        // set defaultProps in iframe window when src is loaded
+        iframeRef.current.onload = () => {
+          if (iframeRef.current?.contentWindow) {
+            ;(iframeRef.current.contentWindow as any)["__defaultProps"] =
+              defaultProps
+          }
+        }
+        return
+      }
+
+      const sdkInjectScriptContent = makeSdkInjectScript({
+        space,
+        bindings,
+      })
 
       const html = `
       <!DOCTYPE html>
@@ -271,7 +286,6 @@ export const BlockRenderer = React.forwardRef<
       )
     }, [theme])
 
-    // 添加 useImperativeHandle
     useImperativeHandle(
       ref,
       () => ({

@@ -15,7 +15,7 @@
     "dev:ink": "cross-env EIDOS_SERVICE_MODE=ink vite --mode ink",
     "dev:desktop": "cross-env EIDOS_SERVICE_MODE=desktop vite --mode desktop",
     "build:ink": "pnpm recursive run build && cross-env EIDOS_SERVICE_MODE=ink vite build --mode ink && pnpm build:cf-worker",
-    "build:desktop": "pnpm recursive run build && cross-env NODE_OPTIONS=--max-old-space-size=8192 EIDOS_SERVICE_MODE=desktop vite build --mode desktop",
+    "build:desktop": "shx rm -rf dist-electron && pnpm recursive run build && cross-env NODE_OPTIONS=--max-old-space-size=8192 EIDOS_SERVICE_MODE=desktop vite build --mode desktop",
     "build:cf-worker": "node scripts/build-cf-worker.cjs",
     "build:cf-worker-do": "node scripts/build-cf-worker-do.cjs",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",

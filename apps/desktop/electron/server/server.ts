@@ -6,6 +6,7 @@ import { Hono } from 'hono';
 import { getOrSetDataSpace } from '../data-space';
 import { getFileFromPath, getSpaceFileFromPath } from '../file-system/space';
 import { serveStatic } from './server-static';
+import { interceptExtensionRequest } from './ext-server';
 
 const app = new Hono();
 
@@ -14,6 +15,8 @@ app.use('*', async (c, next) => {
     c.header("Cross-Origin-Embedder-Policy", "require-corp");
     await next();
 });
+
+
 
 const handleStaticFile = async (c: any) => {
     const pathname = new URL(c.req.url).pathname
@@ -25,6 +28,9 @@ const handleStaticFile = async (c: any) => {
 }
 
 export function startServer({ dist, port }: { dist: string, port: number }) {
+
+    // New middleware to intercept *.eidos.localhost requests
+    app.use('*', interceptExtensionRequest(dist, port));
 
     // host static files
     app.use('/*', serveStatic({ root: dist }));

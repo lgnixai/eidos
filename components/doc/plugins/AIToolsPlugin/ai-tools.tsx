@@ -82,6 +82,7 @@ export function AITools({
   const { t } = useTranslation()
   const { generateConfig, isLoading: isChartLoading } = useGenerateChartConfig()
 
+  const [scriptId, setScriptId] = useState<string | null>(null)
   const aiContentBoxRef = useRef<HTMLDivElement>(null)
   const isMakeItRealRef = useRef(false)
   const isGenerateChartRef = useRef(false)
@@ -208,6 +209,7 @@ export function AITools({
               commands: [],
             })
             reloadBlocks()
+            setScriptId(scriptId)
           }
           return scriptId
         }
@@ -237,11 +239,13 @@ export function AITools({
           } catch (error) {}
           if (node) {
             try {
-              const insertionPointNode = $isTextNode(node) ? node.getParent() : node
-              
+              const insertionPointNode = $isTextNode(node)
+                ? node.getParent()
+                : node
+
               if (insertionPointNode) {
                 let insertAfterNode = insertionPointNode
-                
+
                 for (const newNode of generatedNodes) {
                   insertAfterNode.insertAfter(newNode)
                   insertAfterNode = newNode
@@ -453,8 +457,10 @@ be between <content-begin> and <content-end>. you just output the transformed co
               (isLoading ? (
                 <Thinking />
               ) : (
-                generatedCode && (
+                generatedCode &&
+                scriptId && (
                   <BlockRenderer
+                    blockId={scriptId}
                     code={generatedCode?.ts_code}
                     compiledCode={generatedCode?.code}
                   />

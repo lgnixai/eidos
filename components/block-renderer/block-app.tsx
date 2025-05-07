@@ -1,6 +1,7 @@
 import { forwardRef, useMemo } from "react"
 import { useTranslation } from "react-i18next"
 
+import { isDesktopMode } from "@/lib/env"
 import { getBlockIdFromUrl } from "@/lib/utils"
 import { useCurrentNode } from "@/hooks/use-current-node"
 import { useCurrentPathInfo } from "@/hooks/use-current-pathinfo"
@@ -54,8 +55,10 @@ export const BlockApp = forwardRef<
       </div>
     )
   }
+
   return (
     <BlockRenderer
+      blockId={block.id}
       ref={ref}
       code={block?.ts_code ?? ""}
       compiledCode={block?.code ?? ""}
