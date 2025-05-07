@@ -4,7 +4,7 @@ import { transform } from 'esbuild';
 
 
 const UI_COMPONENTS_DIR = path.join(process.cwd(), 'components', 'ui');
-const OUTPUT_DIR = path.join(process.cwd(), 'dist', 'compiled-ui');
+const OUTPUT_DIR = path.join(process.cwd(), 'public', 'compiled-ui');
 
 
 interface CompileResult {
