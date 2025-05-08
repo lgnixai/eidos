@@ -111,9 +111,9 @@ export class ProtocolHandler {
             const currentUrl = this.mainWindow.webContents.getURL();
             const currentUrlObj = new URL(currentUrl);
             // Only keep the origin part (protocol + hostname + port)
-            const baseUrl = currentUrlObj.origin + '/';
-            // Format should be /:space/standalone-blocks/:id
-            const standaloneBlockUrl = new URL(`${baseUrl}${database}/standalone-blocks/${blockId}`);
+
+            // now the url change to <extensionId>.ext.<spaceId>.eidos.localhost:13127/
+            const standaloneBlockUrl = new URL(`${blockId}.ext.${database}.eidos.localhost:13127`);
 
             // Copy any additional search parameters
             urlObj.searchParams.forEach((value, key) => {

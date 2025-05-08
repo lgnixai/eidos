@@ -7,6 +7,7 @@ export const defaultViewOptions: WebContentsViewConstructorOptions = {
         preload: path.join(__dirname, './preload.mjs'),
         nodeIntegration: true,
         contextIsolation: true,
+        webviewTag: true,
     }
 }
 
@@ -69,7 +70,9 @@ export class WindowManager {
             const { hostname } = new URL(url);
             if (hostname !== 'localhost') {
                 event.preventDefault();
-                shell.openExternal(url);
+                shell.openExternal(url).catch(err => {
+                    console.error(`Failed to open external URL (${url}):`, err);
+                });
             }
         };
 
@@ -102,6 +105,8 @@ export class WindowManager {
                     // });
                 }
                 return { action: 'deny' };
+            } else if (url.startsWith('blob:')) {
+                return { action: 'allow' };
             } else {
                 handleExternalLinks(new Event(''), url);
                 return { action: 'deny' };

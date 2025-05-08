@@ -300,6 +300,7 @@ export const BlockRenderer = React.forwardRef<
 
     const style = {
       border: "none",
+      display: "block",
       width: width
         ? typeof width === "number"
           ? `${width}px`
@@ -318,13 +319,25 @@ export const BlockRenderer = React.forwardRef<
         </div>
       )
     }
+    if (isDesktopMode) {
+      return (
+        <webview
+          src={`http://${blockId}.ext.${space}.eidos.localhost:13127/`}
+          style={{
+            minHeight: height,
+            minWidth: width,
+          }}
+          autosize
+        />
+      )
+    }
 
     return (
       <iframe
         ref={iframeRef}
         title="preview"
         name={defaultPropsString}
-        sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+        sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-downloads"
         style={style}
       />
     )

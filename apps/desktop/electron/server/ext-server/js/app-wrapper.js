@@ -8,7 +8,14 @@ let AppComponentRef = null
 let currentProps = {}
 
 try {
-  currentProps = JSON.parse(window.name)
+  if (window.name) {
+    currentProps = JSON.parse(window.name || "{}")
+  } else {
+    // check url params
+    const urlParams = new URLSearchParams(window.location.search)
+    const props = Object.fromEntries(urlParams.entries())
+    currentProps = props
+  }
 } catch (err) {
   console.error("Error parsing props:", err)
 }

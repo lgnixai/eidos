@@ -11,6 +11,7 @@ const defaultViewOptions: WebContentsViewConstructorOptions = {
         preload: path.join(__dirname, './preload.mjs'),
         nodeIntegration: true,
         contextIsolation: true,
+        webviewTag: true,
         webSecurity: getConfigManager().get('security')?.webSecurity ?? true,
     }
 }
