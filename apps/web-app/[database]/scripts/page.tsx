@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react"
 import { IScript } from "@/worker/web-worker/meta-table/script"
+import useUrlState from "@ahooksjs/use-url-state"
 import { useMount } from "ahooks"
 import {
   AppWindowIcon,
@@ -89,9 +90,21 @@ export const IconMap = Object.fromEntries(
 export const ScriptPage = () => {
   const scripts = useLoaderData() as IScript[]
   const { space } = useCurrentPathInfo()
-  const [filter, setFilter] = useState("All")
-  const [searchTerm, setSearchTerm] = useState("")
-  const [showEnabledOnly, setShowEnabledOnly] = useState(false)
+  const [state, setState] = useUrlState({
+    filter: "All",
+    searchTerm: "",
+    showEnabledOnly: false,
+  })
+  const { filter, searchTerm, showEnabledOnly } = state
+  const setFilter = (value: string) => {
+    setState({ filter: value })
+  }
+  const setSearchTerm = (value: string) => {
+    setState({ searchTerm: value })
+  }
+  const setShowEnabledOnly = (value: boolean) => {
+    setState({ showEnabledOnly: value })
+  }
 
   const blocks = useAllBlocks()
   const apps = useAllApps()
