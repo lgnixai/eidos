@@ -90,11 +90,18 @@ export const IconMap = Object.fromEntries(
 export const ScriptPage = () => {
   const scripts = useLoaderData() as IScript[]
   const { space } = useCurrentPathInfo()
-  const [state, setState] = useUrlState({
-    filter: "All",
-    searchTerm: "",
-    showEnabledOnly: false,
-  })
+  const [state, setState] = useUrlState(
+    {
+      filter: "All",
+      searchTerm: "",
+      showEnabledOnly: false,
+    },
+    {
+      parseOptions: {
+        parseBooleans: true,
+      },
+    }
+  )
   const { filter, searchTerm, showEnabledOnly } = state
   const setFilter = (value: string) => {
     setState({ filter: value })
