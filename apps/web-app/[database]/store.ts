@@ -8,6 +8,9 @@ interface ISpaceAppState {
   currentAppIndex: number
   setCurrentAppIndex: (currentAppIndex: number) => void
 
+  currentApp: string
+  setCurrentApp: (currentApp: string) => void
+
   isRightPanelOpen: boolean
   setIsRightPanelOpen: (isAiOpen: boolean, index?: number) => void
 
@@ -30,13 +33,11 @@ interface ISpaceAppState {
   setMobileSidebarOpen: (isMobileSidebarOpen: boolean) => void
 }
 
-// 新增 apps store
 interface IAppsState {
   apps: string[]
   setApps: (apps: string[]) => void
   addApp: (app: string) => void
   deleteApp: (app: string) => void
-  deleteByIndex: (index: number) => void
 }
 
 export const useAppsStore = create<IAppsState>()(
@@ -47,8 +48,6 @@ export const useAppsStore = create<IAppsState>()(
       addApp: (app) => set((state) => ({ apps: [...state.apps, app] })),
       deleteApp: (app) =>
         set((state) => ({ apps: state.apps.filter((a) => a !== app) })),
-      deleteByIndex: (index) =>
-        set((state) => ({ apps: state.apps.filter((_, i) => i !== index) })),
     }),
     {
       name: 'space-apps-storage',
@@ -64,6 +63,9 @@ export const useSpaceAppStore = create<ISpaceAppState>()((set, get) => ({
 
   currentAppIndex: -1,
   setCurrentAppIndex: (currentAppIndex) => set({ currentAppIndex }),
+
+  currentApp: "chat",
+  setCurrentApp: (currentApp) => set({ currentApp }),
 
   isRightPanelOpen: false,
   setIsRightPanelOpen: (isRightPanelOpen, index) => {

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import {
   BotIcon,
   LucideIcon,
@@ -60,20 +60,38 @@ const DefaultAppInfoMap: Record<
 }
 
 export const RightPanelNav = () => {
-  const { setIsRightPanelOpen, currentAppIndex, setCurrentAppIndex, setApps } =
+  const { setIsRightPanelOpen, setCurrentApp, currentApp, setApps } =
     useSpaceAppStore()
-  const { apps, addApp, deleteByIndex } = useAppsStore()
+  const { apps, addApp, deleteApp } = useAppsStore()
   const { space } = useCurrentPathInfo()
   const { t } = useTranslation()
-  const handleAppChange = (index: number) => {
-    setCurrentAppIndex(index)
+  const handleAppChange = (app: string) => {
+    setCurrentApp(app)
   }
   const handleAddApp = (blockId: string) => {
-    addApp(`block://${blockId}@${space}`)
-    setCurrentAppIndex(apps.length) // Set focus to the newly added app
+    const app = `block://${blockId}@${space}`
+    addApp(app)
+    setCurrentApp(app)
   }
+  const displayApps = useMemo(() => {
+    return apps.filter((app) => {
+      if (app.startsWith("block://")) {
+        const id = getBlockIdFromUrl(app)
+        const [blockId, blockSpace] = id.split("@")
+        return blockSpace === space
+      }
+      return true
+    })
+  }, [apps, space])
 
   const { mblocks } = useAllMblocks()
+
+  const displayMblocks = useMemo(() => {
+    return mblocks.filter((mblock) => {
+      return !apps.includes(`block://${mblock.id}@${space}`)
+    })
+  }, [mblocks, apps, space])
+
   const getAppInfo = (app: string) => {
     if (app.startsWith("block://")) {
       const id = getBlockIdFromUrl(app)
@@ -141,10 +159,15 @@ export const RightPanelNav = () => {
   return (
     <div className="flex gap-2 justify-between w-full" ref={containerRef}>
       <div className="flex gap-2 overflow-hidden">
-        {apps.slice(0, visibleCount).map((app, index) => {
+        {displayApps.slice(0, visibleCount).map((app, index) => {
           const appInfo = getAppInfo(app)
-          const { icon: IconOrUri, title, description, shortcut } = appInfo ?? {}
-          const isCurrentApp = index === currentAppIndex
+          const {
+            icon: IconOrUri,
+            title,
+            description,
+            shortcut,
+          } = appInfo ?? {}
+          const isCurrentApp = app === currentApp
           const isBlock = app.startsWith("block://")
           return (
             <TooltipProvider key={app}>
@@ -157,7 +180,7 @@ export const RightPanelNav = () => {
                           <Button
                             size="xs"
                             variant="ghost"
-                            onClick={() => handleAppChange(index)}
+                            onClick={() => handleAppChange(app)}
                             className={cn("rounded-b-none relative", {
                               "after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-primary":
                                 isCurrentApp,
@@ -178,8 +201,8 @@ export const RightPanelNav = () => {
                         <ContextMenuContent>
                           <ContextMenuItem
                             onClick={() => {
-                              deleteByIndex(index)
-                              setCurrentAppIndex(0)
+                              deleteApp(app)
+                              setCurrentApp("chat")
                             }}
                           >
                             <Trash2 className="h-4 w-4 mr-2" />
@@ -195,7 +218,7 @@ export const RightPanelNav = () => {
                       <Button
                         size="xs"
                         variant="ghost"
-                        onClick={() => handleAppChange(index)}
+                        onClick={() => handleAppChange(app)}
                         className={cn("rounded-b-none relative", {
                           "after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-primary":
                             isCurrentApp,
@@ -229,7 +252,7 @@ export const RightPanelNav = () => {
           )
         })}
 
-        {apps.length > visibleCount && (
+        {displayApps.length > visibleCount && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button size="xs" variant="ghost" className="rounded-b-none">
@@ -237,23 +260,17 @@ export const RightPanelNav = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              {apps.slice(visibleCount).map((app, index) => {
+              {displayApps.slice(visibleCount).map((app, index) => {
                 const appInfo = getAppInfo(app)
                 const { icon: IconOrUri, title } = appInfo ?? {}
-                const actualIndex = index + visibleCount
-
                 return (
                   <DropdownMenuItem
                     key={app}
-                    onClick={() => handleAppChange(actualIndex)}
+                    onClick={() => handleAppChange(app)}
                   >
                     <div className="flex items-center gap-2">
                       {typeof IconOrUri === "string" ? (
-                        <img
-                          src={IconOrUri}
-                          alt={title}
-                          className="h-4 w-4"
-                        />
+                        <img src={IconOrUri} alt={title} className="h-4 w-4" />
                       ) : (
                         IconOrUri && <IconOrUri className="h-4 w-4" />
                       )}
@@ -284,7 +301,7 @@ export const RightPanelNav = () => {
                 </Link>
               </p>
             )}
-            {mblocks.map((block) => (
+            {displayMblocks.map((block) => (
               <DropdownMenuItem
                 key={block.id}
                 onClick={() => {

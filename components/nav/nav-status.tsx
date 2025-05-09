@@ -27,8 +27,6 @@ export const NavStatus = () => {
     isExtAppOpen,
     setIsExtAppOpen,
     apps,
-    currentAppIndex,
-    setCurrentAppIndex,
   } = useSpaceAppStore()
   const { connected } = useAPIAgent()
   const { runningCommand } = useAppRuntimeStore()
@@ -37,14 +35,6 @@ export const NavStatus = () => {
   const nameList = currentCollaborators.map((c) => c.name)
   const currentNode = useCurrentNode()
   const { pin, unpin } = useNodeTree()
-
-  const handleAppChange = (index: number) => {
-    if (index === currentAppIndex) {
-      setIsRightPanelOpen(false)
-    } else {
-      setIsRightPanelOpen(true, index)
-    }
-  }
 
   return (
     <>

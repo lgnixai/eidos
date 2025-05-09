@@ -35,9 +35,7 @@ const AIChat = lazy(() => import("@/components/ai-chat/ai-chat-new"))
 export function DesktopSpaceLayout() {
   const { sqlite } = useSqlite()
   const { isShareMode, currentPreviewFile } = useAppRuntimeStore()
-  const { isRightPanelOpen, currentAppIndex } = useSpaceAppStore()
-  const { apps } = useAppsStore()
-  const currentApp = apps[currentAppIndex]
+  const { isRightPanelOpen, currentApp } = useSpaceAppStore()
   const navigate = useNavigate()
   const { isActivated } = useActivation()
   const isBlocksPath = isStandaloneBlocksPath(useLocation().pathname)
