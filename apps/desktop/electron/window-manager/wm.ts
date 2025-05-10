@@ -88,7 +88,8 @@ export class WindowManager {
                     new BrowserWindow({
                         width: 512,
                         height: 800,
-                        webPreferences: defaultViewOptions.webPreferences
+                        webPreferences: defaultViewOptions.webPreferences,
+                        autoHideMenuBar: true,
                     }).loadURL(url);
                 } else if (isFilesPath(pathname)) {
 

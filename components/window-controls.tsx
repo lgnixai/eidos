@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
+import { useLocation } from "react-router-dom"
 
-import { cn } from "@/lib/utils"
+import { cn, isStandaloneBlocksPath } from "@/lib/utils"
 import { isWindowsDesktop } from "@/lib/web/helper"
 
 export function WindowControls() {
@@ -13,12 +14,15 @@ export function WindowControls() {
     return () => unsubscribe()
   }, [])
 
+  const { pathname } = useLocation()
+  const isAppWindow = isStandaloneBlocksPath(pathname)
+
   return (
     <div
       className={cn(
         "fixed top-0 right-0 z-50 flex items-center no-drag space-x-1 pr-2 pt-1",
         {
-          hidden: !isWindowsDesktop,
+          hidden: !isWindowsDesktop || isAppWindow,
         }
       )}
     >
