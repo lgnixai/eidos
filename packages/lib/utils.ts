@@ -284,6 +284,24 @@ export const isStandaloneBlocksPath = (pathname: string) => {
   return /^\/[\w-]+\/standalone-blocks\/[\w+-]+$/.test(pathname)
 }
 
+export const isExtensionURL = (url: string) => {
+  // extension <extensionId>.ext.<spaceId>.eidos.localhost:13127/
+  // 287c3686-f1e1-4b10-965e-2daa35a422fc.ext.25-w19.eidos.localhost:13127
+  return url.endsWith('.eidos.localhost:13127')
+}
+
+
+export const getExtensionUrl = (id: string, space: string, searchParams?: Record<string, string>) => {
+  const standaloneBlockUrl = new URL(
+    `http://${id}.ext.${space}.eidos.localhost:13127`
+  )
+  let newUrl = standaloneBlockUrl.toString()
+  const searchParamsString = new URLSearchParams(searchParams).toString()
+  if (searchParamsString) {
+    newUrl += `?${searchParamsString}`
+  }
+  return newUrl
+}
 export const isFilesPath = (pathname: string) => {
   // /:space/files/:id - now supports file names with special characters and subdirectories
   return /^\/[\w-]+\/files\/.*$/.test(pathname)

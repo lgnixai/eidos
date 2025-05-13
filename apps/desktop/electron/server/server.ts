@@ -71,11 +71,15 @@ export function startServer({ dist, port }: { dist: string, port: number }) {
     // handle api calls
     app.post('/rpc', async (c) => {
         try {
-            const { space, method, params } = await c.req.json();
-            const dataSpace = await getOrSetDataSpace(space);
-            log('rpc', method, params, space, dataSpace.dbName)
-            const result = await handleFunctionCall({ method, params, space, dbName: space, userId: 'unknown' }, dataSpace);
-            return c.json({ success: true, data: result });
+            const { space, method, params, scope } = await c.req.json();
+            if (space) {
+                const dataSpace = await getOrSetDataSpace(space);
+                log('rpc', method, params, space, dataSpace.dbName)
+                const result = await handleFunctionCall({ method, params, space, dbName: space, userId: 'unknown' }, dataSpace);
+                return c.json({ success: true, data: result });
+            } else {
+                throw new Error('Invalid request, space is required')
+            }
         } catch (error: any) {
             return c.json({ success: false, error: error.message }, 400);
         }

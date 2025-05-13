@@ -1,4 +1,4 @@
-import { isFilesPath, isStandaloneBlocksPath } from "@/lib/utils";
+import { isExtensionURL, isFilesPath, isStandaloneBlocksPath } from "@/lib/utils";
 import { BrowserWindow, WebContents, WebContentsView, WebContentsViewConstructorOptions, shell } from "electron";
 import path from "path";
 
@@ -68,7 +68,9 @@ export class WindowManager {
         // Ensure links open in the default browser based on domain
         const handleExternalLinks = (event: Electron.Event, url: string) => {
             const { hostname } = new URL(url);
-            if (hostname !== 'localhost') {
+            const currentDomain = new URL(this.win.webContents.getURL()).origin
+            const newDomain = new URL(url).origin
+            if (currentDomain !== newDomain) {
                 event.preventDefault();
                 shell.openExternal(url).catch(err => {
                     console.error(`Failed to open external URL (${url}):`, err);
@@ -76,13 +78,25 @@ export class WindowManager {
             }
         };
 
-        webContents.on('will-navigate', handleExternalLinks);
-
         webContents.setWindowOpenHandler(({ url }) => {
             const currentDomain = new URL(this.win.webContents.getURL()).origin;
-            const newDomain = new URL(url).origin;
-            const pathname = new URL(url).pathname;
-            if (currentDomain === newDomain) {
+            const newURL = new URL(url);
+            const newDomain = newURL.origin;
+            const pathname = newURL.pathname;
+
+            if (isExtensionURL(newURL.origin)) {
+                new BrowserWindow({
+                    width: 512,
+                    height: 800,
+                    webPreferences: {
+                        nodeIntegration: false,
+                        contextIsolation: false,
+                        webviewTag: true,
+                    },
+                    autoHideMenuBar: true,
+                }).loadURL(url);
+                return { action: 'deny' };
+            } else if (currentDomain === newDomain) {
                 console.log("pathname", pathname)
                 if (isStandaloneBlocksPath(pathname)) {
                     new BrowserWindow({
@@ -106,7 +120,8 @@ export class WindowManager {
                     // });
                 }
                 return { action: 'deny' };
-            } else if (url.startsWith('blob:')) {
+            }
+            else if (url.startsWith('blob:')) {
                 return { action: 'allow' };
             } else {
                 handleExternalLinks(new Event(''), url);

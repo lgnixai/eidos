@@ -225,7 +225,7 @@
     )
   }
 
-  function createFunction(method) {
+  function createFunction(scope, method) {
     const isParentAvailable = () => {
       try {
         return window.parent && window.parent !== window
@@ -236,12 +236,14 @@
 
     const createTransport = () => {
       if (isParentAvailable()) {
+        // PostMessage Transport
         const msgChannel = new MessageChannel()
         return {
           send: (data) => {
+            console.log("send via postMessage", data)
             window.parent.postMessage(
               {
-                type: `scriptCallMain`,
+                type: "rpcCall",
                 data,
               },
               "*",
@@ -252,8 +254,9 @@
           close: () => msgChannel.port1.close(),
         }
       } else {
+        // HTTP Transport
         return {
-          send: async (data) => {
+          send: async (requestData) => {
             const controller = new AbortController()
             const timeoutId = setTimeout(
               () => controller.abort(),
@@ -263,7 +266,7 @@
               const response = await fetch(EIDOS_CONFIG.httpEndpoint, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data),
+                body: JSON.stringify(requestData),
                 signal: controller.signal,
               })
               clearTimeout(timeoutId)
@@ -297,6 +300,7 @@
     const run = async (...args) => {
       const transport = createTransport()
       const port = await transport.send({
+        scope,
         method,
         args,
       })

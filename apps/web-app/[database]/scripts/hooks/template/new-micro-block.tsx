@@ -15,7 +15,7 @@ export default function MyBlock() {
     setTreeNodes(res)
   }
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 p-2">
       <h1>Welcome to my block</h1>
       <MyButton />
       {/* shadcn component support */}

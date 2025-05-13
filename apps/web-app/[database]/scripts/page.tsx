@@ -14,8 +14,10 @@ import {
 } from "lucide-react"
 import { useLoaderData, useRevalidator } from "react-router-dom"
 
+import { EIDOS_SPACE_BASE_URL } from "@/lib/const"
 import { useCurrentPathInfo } from "@/hooks/use-current-pathinfo"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -226,7 +228,7 @@ export const ScriptPage = () => {
   }
 
   const { toast } = useToast()
-
+  const storeURL = `${EIDOS_SPACE_BASE_URL}/extensions`
   const handleReload = async () => {
     const script = await reload()
     await updateScript(script)
@@ -292,7 +294,13 @@ export const ScriptPage = () => {
               })}
             </SelectContent>
           </Select>
-          <InstallScript />
+          <Button
+            variant="outline"
+            size="xs"
+            onClick={() => window.open(storeURL, "_blank")}
+          >
+            Install
+          </Button>
         </div>
       </div>
       <Separator />

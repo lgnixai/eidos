@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { ArrowLeft, ArrowUpRight, Settings, Trash2 } from "lucide-react"
 
-import { getBlockIdFromUrl } from "@/lib/utils"
+import { getBlockIdFromUrl, getExtensionUrl } from "@/lib/utils"
 import { useExtensionNavigate } from "@/hooks/use-extension-navigate"
 import { Button } from "@/components/ui/button"
 import { ContextMenuItem } from "@/components/ui/context-menu"
@@ -81,16 +81,8 @@ export const BlockContextMenu = ({
 
   const handleOpenInNewWindow = (e: Event) => {
     const [id, space] = getBlockIdFromUrl(url).split("@")
-    // add params to the url
-    const _url = new URL(url)
-    const standaloneBlockUrl = new URL(
-      `http://${id}.ext.${space}.eidos.localhost:13127`
-    )
-    let newUrl = standaloneBlockUrl.toString()
-    const searchParams = _url.searchParams.toString()
-    if (searchParams) {
-      newUrl += `?${searchParams}`
-    }
+    const searchParams = Object.fromEntries(new URL(url).searchParams)
+    const newUrl = getExtensionUrl(id, space, searchParams)
     window.open(newUrl)
   }
 

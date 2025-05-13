@@ -50,6 +50,7 @@ export const BlockRenderer = React.forwardRef<
     const { space } = useCurrentPathInfo()
     const { theme } = useTheme()
 
+    const webviewRef = useRef<HTMLWebViewElement | null>(null)
     const [importMap, setImportMap] = useState<string>("")
 
     const defaultPropsString = JSON.stringify(defaultProps)
@@ -284,6 +285,25 @@ export const BlockRenderer = React.forwardRef<
       )
     }, [defaultProps])
 
+    useEffect(() => {
+      if (!webviewRef.current) return
+      webviewRef.current.contentWindow?.postMessage(
+        { type: "props-change", props: defaultProps },
+        "*"
+      )
+    }, [defaultProps])
+
+    useEffect(() => {
+      if (!webviewRef.current) return
+      webviewRef.current.addEventListener("dom-ready", () => {
+        setTimeout(() => {
+          webviewRef.current?.contentWindow?.postMessage(
+            JSON.stringify({ type: "props-change", props: defaultProps })
+          )
+        }, 5000)
+      })
+    }, [])
+
     useImperativeHandle(
       ref,
       () => ({
@@ -322,7 +342,8 @@ export const BlockRenderer = React.forwardRef<
     if (isDesktopMode) {
       return (
         <webview
-          src={`http://${blockId}.ext.${space}.eidos.localhost:13127/`}
+          ref={webviewRef}
+          src={`http://${blockId}.ext.${space}.eidos.localhost:13127/?${defaultPropsString}`}
           style={{
             minHeight: height,
             minWidth: width,

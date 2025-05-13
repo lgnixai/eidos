@@ -1,20 +1,20 @@
+import { useCallback, useMemo, useRef } from "react"
 import { IScript } from "@/worker/web-worker/meta-table/script"
 import { useMount } from "ahooks"
 import { Copy, ExternalLink, Play } from "lucide-react"
-import { useCallback, useMemo, useRef } from "react"
 import { useTranslation } from "react-i18next"
 import { useLoaderData, useRevalidator } from "react-router-dom"
 
-import { usePlayground } from "@/apps/desktop/renderer/hooks/usePlayground"
-import { Button } from "@/components/ui/button"
-import { useToast } from "@/components/ui/use-toast"
-import { useCurrentPathInfo } from "@/hooks/use-current-pathinfo"
-import { useScriptCall } from "@/hooks/use-script-call"
 import { useAppRuntimeStore } from "@/lib/store/runtime-store"
-import { isUuid } from "@/lib/utils"
+import { getExtensionUrl, isUuid } from "@/lib/utils"
 import { compileCode } from "@/lib/v3/compiler"
 import { getCompileMethod } from "@/lib/v3/script-compiler"
 import { openCursor } from "@/lib/web/schema"
+import { useCurrentPathInfo } from "@/hooks/use-current-pathinfo"
+import { useScriptCall } from "@/hooks/use-script-call"
+import { Button } from "@/components/ui/button"
+import { useToast } from "@/components/ui/use-toast"
+import { usePlayground } from "@/apps/desktop/renderer/hooks/usePlayground"
 
 import { useRemixPrompt } from "../hooks/use-remix-prompt"
 import { useScript } from "../hooks/use-script"
@@ -202,7 +202,7 @@ export const ExtensionToolbar = () => {
           variant="ghost"
           size="sm"
           onClick={() =>
-            window.open(`/${space}/standalone-blocks/${script.id}`, "_blank")
+            window.open(getExtensionUrl(script.id, space), "_blank")
           }
           className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
           title="Open in standalone mode"
