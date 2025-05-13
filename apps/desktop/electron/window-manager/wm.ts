@@ -1,6 +1,7 @@
 import { isExtensionURL, isFilesPath, isStandaloneBlocksPath } from "@/lib/utils";
 import { BrowserWindow, WebContents, WebContentsView, WebContentsViewConstructorOptions, shell } from "electron";
 import path from "path";
+import { getExtensionByUrl } from "../helper";
 
 export const defaultViewOptions: WebContentsViewConstructorOptions = {
     webPreferences: {
@@ -85,7 +86,7 @@ export class WindowManager {
             const pathname = newURL.pathname;
 
             if (isExtensionURL(newURL.origin)) {
-                new BrowserWindow({
+                const win = new BrowserWindow({
                     width: 512,
                     height: 800,
                     webPreferences: {
@@ -94,7 +95,22 @@ export class WindowManager {
                         webviewTag: true,
                     },
                     autoHideMenuBar: true,
-                }).loadURL(url);
+                })
+
+                win.loadURL(url)
+                win.webContents.setWindowOpenHandler(({ url }) => {
+                    // if is extension url, open in new window
+                    const newDomain = new URL(url).origin
+                    if (newURL.origin !== newDomain) {
+                        shell.openExternal(url).catch(err => {
+                            console.error(`Failed to open external URL (${url}):`, err);
+                        });
+                    }
+                    return { action: 'deny' };
+                });
+                getExtensionByUrl(url).then((extension) => {
+                    win.setTitle(`Eidos - ${extension.name}`)
+                })
                 return { action: 'deny' };
             } else if (currentDomain === newDomain) {
                 console.log("pathname", pathname)

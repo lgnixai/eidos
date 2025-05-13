@@ -10,6 +10,7 @@ interface ISpaceAppState {
 
   currentApp: string
   setCurrentApp: (currentApp: string) => void
+  resetCurrentApp: () => void
 
   isRightPanelOpen: boolean
   setIsRightPanelOpen: (isAiOpen: boolean, index?: number) => void
@@ -66,7 +67,7 @@ export const useSpaceAppStore = create<ISpaceAppState>()((set, get) => ({
 
   currentApp: "chat",
   setCurrentApp: (currentApp) => set({ currentApp }),
-
+  resetCurrentApp: () => set({ currentApp: "chat" }),
   isRightPanelOpen: false,
   setIsRightPanelOpen: (isRightPanelOpen, index) => {
     if (index == null) {

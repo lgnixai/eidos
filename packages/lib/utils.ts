@@ -290,6 +290,23 @@ export const isExtensionURL = (url: string) => {
   return url.endsWith('.eidos.localhost:13127')
 }
 
+/**
+ * 
+ * @param url http://287c3686-f1e1-4b10-965e-2daa35a422fc.ext.25-w19.eidos.localhost:13127
+ * return {
+ *  id: '287c3686-f1e1-4b10-965e-2daa35a422fc',
+ *  space: '25-w19',
+ * }
+ */
+export const getInfoFromExtensionUrl = (url: string) => {
+  const urlObj = new URL(url)
+  const id = urlObj.hostname.split('.')[0]
+  const space = urlObj.hostname.split('.')[2]
+  return {
+    id,
+    space,
+  }
+}
 
 export const getExtensionUrl = (id: string, space: string, searchParams?: Record<string, string>) => {
   const standaloneBlockUrl = new URL(

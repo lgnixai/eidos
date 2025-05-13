@@ -1,19 +1,8 @@
-import { Suspense, lazy, useEffect, useRef } from "react"
 import { useLocalStorageState, useSize } from "ahooks"
+import { Suspense, lazy, useEffect, useRef } from "react"
 import { Outlet, useLocation, useNavigate, useParams } from "react-router-dom"
 
-import { EidosDataEventChannelName } from "@/lib/const"
-import { useAppRuntimeStore } from "@/lib/store/runtime-store"
-import { cn, isStandaloneBlocksPath } from "@/lib/utils"
-import { isWindowsDesktop } from "@/lib/web/helper"
-import { useActivation } from "@/hooks/use-activation"
-import { useEidosFileSystemManager } from "@/hooks/use-fs"
-import { useSqlite } from "@/hooks/use-sqlite"
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@/components/ui/resizable"
+import { ScriptBreadcrumb } from "@/apps/web-app/[database]/scripts/components/extension-breadcrumb"
 import { BlockApp } from "@/components/block-renderer/block-app"
 import { DocExtBlockLoader } from "@/components/doc-ext-block-loader"
 import { KeyboardShortCuts } from "@/components/keyboard-shortcuts"
@@ -22,12 +11,23 @@ import { Nav } from "@/components/nav"
 import { RightPanelNav } from "@/components/nav/right-panel-nav"
 import { ScriptContainer } from "@/components/script-container"
 import { SideBar } from "@/components/sidebar"
-import { ScriptBreadcrumb } from "@/apps/web-app/[database]/scripts/components/extension-breadcrumb"
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable"
+import { useActivation } from "@/hooks/use-activation"
+import { useCurrentPathInfo } from "@/hooks/use-current-pathinfo"
+import { useEidosFileSystemManager } from "@/hooks/use-fs"
+import { useSqlite } from "@/hooks/use-sqlite"
+import { EidosDataEventChannelName } from "@/lib/const"
+import { useAppRuntimeStore } from "@/lib/store/runtime-store"
+import { cn, isStandaloneBlocksPath } from "@/lib/utils"
+import { isWindowsDesktop } from "@/lib/web/helper"
 
 import { useLayoutInit } from "../../../web-app/[database]/hook"
 import {
-  useAppsStore,
-  useSpaceAppStore,
+  useSpaceAppStore
 } from "../../../web-app/[database]/store"
 
 const AIChat = lazy(() => import("@/components/ai-chat/ai-chat-new"))
@@ -35,7 +35,7 @@ const AIChat = lazy(() => import("@/components/ai-chat/ai-chat-new"))
 export function DesktopSpaceLayout() {
   const { sqlite } = useSqlite()
   const { isShareMode, currentPreviewFile } = useAppRuntimeStore()
-  const { isRightPanelOpen, currentApp } = useSpaceAppStore()
+  const { isRightPanelOpen, currentApp, resetCurrentApp } = useSpaceAppStore()
   const navigate = useNavigate()
   const { isActivated } = useActivation()
   const isBlocksPath = isStandaloneBlocksPath(useLocation().pathname)
@@ -43,6 +43,11 @@ export function DesktopSpaceLayout() {
   const { scriptId } = useParams()
   const rightPanelRef = useRef<HTMLDivElement>(null)
   const size = useSize(rightPanelRef)
+  const { space } = useCurrentPathInfo()
+
+  useEffect(() => {
+    resetCurrentApp()
+  }, [space])
 
   useLayoutInit()
   const { efsManager } = useEidosFileSystemManager()
