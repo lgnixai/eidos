@@ -630,5 +630,20 @@
     "views.types.calendar": "日历视图",
     "views.types.gallery": "画廊视图",
     "views.types.grid": "网格视图",
-    "views.types.kanban": "看板视图"
+    "views.types.kanban": "看板视图",
+    "settings.apiKeyManagement": "密钥管理",
+    "settings.apiKeyManagement.description": "管理您的 API 密钥和其他密钥。",
+    "settings.apiKeyManagement.title": "API 密钥",
+    "settings.apiKeyManagement.publishingKey": "发布 API 密钥",
+    "settings.apiKeyManagement.placeholder": "输入您的 API 密钥",
+    "settings.apiKeyManagement.getKeyHere": "在此获取您的 API 密钥。",
+    "settings.apiKeyManagement.clearKey": "清除密钥",
+    "settings.apiKeyManagement.saveKey": "保存密钥",
+    "settings.apiKeyManagement.confirmClearTitle": "您确定要这样做吗？",
+    "settings.apiKeyManagement.confirmClearDescription": "此操作将删除您当前保存的扩展发布 API 密钥。如果您希望将来发布扩展，您需要重新输入它。",
+    "settings.apiKeyManagement.confirmClear": "是的，清除 API 密钥",
+    "settings.apiKeyManagement.keySaved": "API 密钥已保存",
+    "settings.apiKeyManagement.keySavedDescription": "您的扩展发布 API 密钥已更新。",
+    "settings.apiKeyManagement.keyCleared": "API 密钥已清除",
+    "settings.apiKeyManagement.keyClearedDescription": "您的扩展发布 API 密钥已被删除。"
 }
