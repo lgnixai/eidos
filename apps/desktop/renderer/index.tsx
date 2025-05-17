@@ -42,6 +42,7 @@ import { ProviderPage } from "../../web-app/settings/ai/provider/page"
 import { DevtoolsPage } from "../../web-app/settings/dev/page"
 import { DesktopSpaceLayout } from "./[database]/layout"
 import BlockPage from "./[database]/standalone-blocks/page"
+import SettingsApiKeyPage from "../../web-app/settings/api-key/page"
 // extensions
 import RootLayout from "./layout"
 
@@ -92,6 +93,10 @@ const router = createBrowserRouter([
           {
             path: "api",
             element: <SettingsApiPage />,
+          },
+          {
+            path: "api-key",
+            element: <SettingsApiKeyPage />,
           },
           {
             path: "ai",

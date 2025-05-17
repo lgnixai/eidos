@@ -10,6 +10,7 @@ import {
   Palette,
   Settings,
   Shield,
+  KeyRound,
 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Outlet } from "react-router-dom"
@@ -40,6 +41,11 @@ const sidebarNavItems = [
     href: "/settings/api",
     icon: Cable,
     isAlpha: true,
+  },
+  {
+    titleKey: "settings.apiKeyManagement",
+    href: "/settings/api-key",
+    icon: KeyRound,
   },
   {
     titleKey: "settings.storage",

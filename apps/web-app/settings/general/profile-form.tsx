@@ -24,7 +24,6 @@ import {
 } from "@/components/react-hook-form/form"
 
 import { useConfigStore } from "../store"
-import { AccountSection } from "./account-section"
 
 const profileFormSchema = z.object({
   username: z

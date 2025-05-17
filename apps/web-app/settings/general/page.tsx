@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next"
 import { Separator } from "@/components/ui/separator"
 import { ProfileForm } from "@/apps/web-app/settings/general/profile-form"
 
-import { AccountSection } from "./account-section"
+// import { AccountSection } from "./account-section"
 
 export default function SettingsGeneralPage() {
   const { t } = useTranslation()
@@ -18,8 +18,8 @@ export default function SettingsGeneralPage() {
       </div>
       <Separator />
       <ProfileForm />
-      <Separator />
-      <AccountSection />
+      {/* <Separator />
+      <AccountSection /> */}
     </div>
   )
 }

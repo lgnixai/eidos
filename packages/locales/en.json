@@ -306,6 +306,7 @@
     "queryBuilder.selectGroupField": "Select Group Field",
     "queryBuilder.sum": "Sum",
     "queryBuilder.title": "Query Builder",
+    "settings.apiKeyManagement": "Key Management",
     "settings.account.loggedIneNoEmail": "Logged in",
     "settings.account.login": "Log in",
     "settings.account.loginFailed": "Login failed",

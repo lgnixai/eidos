@@ -9,6 +9,7 @@ import { isUuid } from "@/lib/utils";
 interface UseExtensionMarketplaceProps {
     script: IScript;
     editorContent: string;
+    apiKey?: string;
 }
 
 // Define input structure for publishing a new version, mirroring the backend
@@ -33,7 +34,7 @@ interface LatestVersionResponse {
 }
 
 
-export const useExtensionMarketplace = ({ script, editorContent }: UseExtensionMarketplaceProps) => {
+export const useExtensionMarketplace = ({ script, editorContent, apiKey }: UseExtensionMarketplaceProps) => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isPublishing, setIsPublishing] = useState(false); // Add state for publishing
     const { toast } = useToast();
@@ -53,7 +54,6 @@ export const useExtensionMarketplace = ({ script, editorContent }: UseExtensionM
         const url = `${EIDOS_SPACE_BASE_URL}/api/extensions/${marketplaceId}/latestVersion`;
         const response = await fetch(url, {
             method: "GET",
-            credentials: 'include' // Include cookies for cross-origin requests
         });
         const result: LatestVersionResponse = await response.json();
         return result;
@@ -65,6 +65,14 @@ export const useExtensionMarketplace = ({ script, editorContent }: UseExtensionM
                 variant: "destructive",
                 title: "Submission Failed",
                 description: "Missing script data or content.",
+            });
+            return;
+        }
+        if (!apiKey) {
+            toast({
+                variant: "destructive",
+                title: "Submission Failed",
+                description: "API Key is missing.",
             });
             return;
         }
@@ -93,9 +101,9 @@ export const useExtensionMarketplace = ({ script, editorContent }: UseExtensionM
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
+                        'x-api-key': apiKey,
                     },
                     body: JSON.stringify(payload),
-                    credentials: 'include' // Include cookies for cross-origin requests
                 }
             );
 
@@ -126,7 +134,7 @@ export const useExtensionMarketplace = ({ script, editorContent }: UseExtensionM
         } finally {
             setIsSubmitting(false);
         }
-    }, [script, editorContent, toast, updateScript]); // Added updateScript dependency
+    }, [script, editorContent, toast, updateScript, apiKey]);
 
     const publishNewVersion = useCallback(async () => {
         if (!script?.marketplace_id) {
@@ -137,6 +145,15 @@ export const useExtensionMarketplace = ({ script, editorContent }: UseExtensionM
             });
             return;
         }
+        if (!apiKey) {
+            toast({
+                variant: "destructive",
+                title: "Publish Failed",
+                description: "API Key is missing.",
+            });
+            return;
+        }
+
         const payload = {
             code: editorContent,
             changelog: "Updated",
@@ -160,15 +177,14 @@ export const useExtensionMarketplace = ({ script, editorContent }: UseExtensionM
 
 
             const response = await fetch(
-                // Use the endpoint structure implied by the backend code
                 `${EIDOS_SPACE_BASE_URL}/api/extensions/${extensionId}/publishNewVersion`,
                 {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
+                        'x-api-key': apiKey,
                     },
                     body: JSON.stringify(apiPayload),
-                    credentials: 'include' // Include cookies for cross-origin requests
                 }
             );
 
@@ -198,13 +214,13 @@ export const useExtensionMarketplace = ({ script, editorContent }: UseExtensionM
         } finally {
             setIsPublishing(false);
         }
-    }, [script, editorContent, toast]); // Dependencies for the new function
+    }, [script, editorContent, toast, apiKey]);
 
     return {
         isSubmitting,
         submitExtension,
-        isPublishing, // Expose the new state
-        publishNewVersion, // Expose the new function
+        isPublishing,
+        publishNewVersion,
         checkUpdate,
     };
 }; 

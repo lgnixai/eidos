@@ -60,16 +60,20 @@ export async function compileScript(
 }
 
 export function getCompileMethod(script: Pick<IScript, "type">) {
-    if (script.type === "py_script") {
+    return getCompileMethodByScriptType(script.type)
+}
+
+export function getCompileMethodByScriptType(scriptType: string) {
+    if (scriptType === "py_script") {
         return pythonCodeCompile;
     }
-    if (script.type === "doc_plugin") {
+    if (scriptType === "doc_plugin") {
         return lexicalCodeCompile;
     }
-    if (script.type === "m_block") {
+    if (scriptType === "m_block") {
         return blockCodeCompile;
     }
-    if (script.type === "script") {
+    if (scriptType === "script") {
         return scriptCodeCompile;
     }
     return undefined

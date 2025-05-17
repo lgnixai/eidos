@@ -41,6 +41,7 @@ import { LicenseManagePage } from "./license-manage/page"
 import { SettingsAILayout } from "./settings/ai/layout"
 import { ProviderPage } from "./settings/ai/provider/page"
 import { DevtoolsPage } from "./settings/dev/page"
+import SettingsApiKeyPage from "./settings/api-key/page"
 
 const router = createBrowserRouter([
   {
@@ -83,6 +84,10 @@ const router = createBrowserRouter([
           {
             path: "api",
             element: <SettingsApiPage />,
+          },
+          {
+            path: "api-key",
+            element: <SettingsApiKeyPage />,
           },
           {
             path: "ai",
