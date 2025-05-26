@@ -300,6 +300,15 @@ export const BlockRenderer = React.forwardRef<
       )
     }, [defaultProps])
 
+    // theme change
+    useEffect(() => {
+      if (!webviewRef.current) return
+      webviewRef.current.contentWindow?.postMessage(
+        { type: "theme-change", theme },
+        "*"
+      )
+    }, [theme])
+
     useEffect(() => {
       if (!webviewRef.current) return
       webviewRef.current.addEventListener("dom-ready", () => {
