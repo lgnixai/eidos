@@ -176,7 +176,7 @@ export function NavDropdownMenu() {
                 <span>Discord</span>
               </DropdownMenuItem>
             </Link>
-            <Link to={DOMAINS.HOME}>
+            <Link to={DOMAINS.HOME} target="_blank">
               <DropdownMenuItem>
                 <HomeIcon className="mr-2 h-4 w-4" />
                 <span>{t("nav.dropdown.menu.website")}</span>
@@ -268,7 +268,7 @@ export function NavDropdownMenu() {
               </>
             )}
             <DropdownMenuSeparator />
-            <Link to={DOMAINS.DOWNLOAD}>
+            <Link to={DOMAINS.DOWNLOAD} target="_blank">
               <DropdownMenuItem>
                 <Download className="mr-2 h-4 w-4" />
                 <span>{t("common.download")}</span>

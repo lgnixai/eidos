@@ -70,11 +70,11 @@ export const EidosMessageChannelName = "eidos-message"
 export const EidosProtocolUrlChannelName = "eidos-protocol-url"
 // TODO: replace hard-coded link
 export const DOMAINS = {
-  HOME: "https://eidos.space",
+  HOME: "https://preview.eidos.space",
   IMAGE_PROXY: "https://proxy.eidos.space",
   LINK_PREVIEW: "https://link-preview.eidos.space",
   WIKI: "https://wiki.eidos.space",
-  DOWNLOAD: "https://eidos.space/download",
+  DOWNLOAD: "https://preview.eidos.space/download",
   ACTIVATION_SERVER: "https://active.eidos.space",
   EXTENSION_SERVER: "https://ext.eidos.space",
   API_AGENT_SERVER: "https://api.eidos.space",
