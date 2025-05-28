@@ -753,8 +753,12 @@ export class DataSpace {
   } = {}) {
     const doc = await this.doc.get(docId)
     if (withTitle) {
-      const node = await this.tree.get(docId)
-      return `# ${node?.name}\n\n${doc?.markdown}`
+      if (isDayPageId(docId)) {
+        return `# ${docId}\n\n${doc?.markdown}`
+      } else {
+        const node = await this.tree.get(docId)
+        return `# ${node?.name}\n\n${doc?.markdown}`
+      }
     }
     return doc?.markdown
   }

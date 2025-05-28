@@ -16,7 +16,7 @@ export const useNodeMap = () => {
 export const useCurrentNode = () => {
   const { table: nodeId, day } = useParams()
   const allNodesMap = useNodeMap()
-  if (day) {
+  if (day && isDayPageId(day)) {
     return {
       id: day,
       name: day,

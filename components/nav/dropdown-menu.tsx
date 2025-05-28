@@ -60,6 +60,7 @@ import { Switch } from "../ui/switch"
 import { useToast } from "../ui/use-toast"
 import { VCardQrCode } from "../vcard-qr-code"
 import { UpdateStatusComponent } from "./update-status"
+import { isDayPageId } from "@/lib/utils"
 
 export function NavDropdownMenu() {
   const { t } = useTranslation()
@@ -185,7 +186,7 @@ export function NavDropdownMenu() {
 
             {node && (
               <>
-                {node.type === "doc" && (
+                {node.type === "doc" && !isDayPageId(node.id) && (
                   <>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
@@ -234,7 +235,7 @@ export function NavDropdownMenu() {
                 )}
                 <DropdownMenuSeparator />
                 <NodeExport node={node} />
-                {node.type === "doc" && (
+                {node.type === "doc" && !isDayPageId(node.id) && (
                   <>
                     <DropdownMenuSub>
                       <DropdownMenuSubTrigger>
@@ -260,10 +261,14 @@ export function NavDropdownMenu() {
                     </DropdownMenuSub>
                   </>
                 )}
-                <DropdownMenuItem onClick={deleteCurrentNode}>
-                  <Trash2Icon className="mr-2 h-4 w-4"></Trash2Icon>
-                  <span>{t("common.delete")}</span>
-                </DropdownMenuItem>
+                {
+                  !isDayPageId(node.id) && (
+                    <DropdownMenuItem onClick={deleteCurrentNode}>
+                      <Trash2Icon className="mr-2 h-4 w-4"></Trash2Icon>
+                      <span>{t("common.delete")}</span>
+                    </DropdownMenuItem>
+                  )
+                }
                 <NodeUpdateTime />
               </>
             )}
