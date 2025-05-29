@@ -15,6 +15,7 @@ import {
 import { useLoaderData, useRevalidator } from "react-router-dom"
 
 import { EIDOS_SPACE_BASE_URL } from "@/lib/const"
+import { getExtensionUrl } from "@/lib/utils"
 import { useCurrentPathInfo } from "@/hooks/use-current-pathinfo"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -32,6 +33,7 @@ import { Separator } from "@/components/ui/separator"
 import { Switch } from "@/components/ui/switch"
 import { useToast } from "@/components/ui/use-toast"
 
+import { useAppsStore, useSpaceAppStore } from "../store"
 import { NewExtensionButton } from "./components/NewExtensionButton"
 import { ScriptCard } from "./components/ScriptCard"
 import { useAllApps } from "./hooks/use-all-apps"
@@ -181,6 +183,10 @@ export const ScriptPage = () => {
     useScript()
   const revalidator = useRevalidator()
 
+  // Add sidebar functionality
+  const { addApp } = useAppsStore()
+  const { setCurrentApp } = useSpaceAppStore()
+
   useMount(() => {
     revalidator.revalidate()
   })
@@ -189,6 +195,35 @@ export const ScriptPage = () => {
     await deleteScript(id)
     revalidator.revalidate()
   }
+
+  const handleAddToSidebar = (blockId: string) => {
+    const app = `block://${blockId}@${space}`
+    const { apps } = useAppsStore.getState()
+    
+    // Check if app already exists in sidebar
+    if (apps.includes(app)) {
+      toast({
+        title: "Already in Sidebar",
+        description: `Micro block "${blockId}" is already in the sidebar.`,
+        variant: "default",
+      })
+      return
+    }
+    
+    addApp(app)
+    setCurrentApp(app)
+    toast({
+      title: "Added to Sidebar",
+      description: `Micro block "${blockId}" has been added to the sidebar.`,
+    })
+  }
+
+  const handleOpenStandalone = (blockId: string) => {
+    // Open micro block in standalone mode (new window/tab)
+    const newUrl = getExtensionUrl(blockId, space)
+    window.open(newUrl)
+  }
+
   const { dirHandle, scriptId } = useDirHandleStore()
   const { reload } = useLocalScript()
 
@@ -312,6 +347,8 @@ export const ScriptPage = () => {
             space={space}
             onDelete={handleDelete}
             onToggleEnabled={handleToggleEnabled}
+            onAddToSidebar={handleAddToSidebar}
+            onOpenStandalone={handleOpenStandalone}
             showReload={Boolean(dirHandle) && scriptId === script.id}
             onReload={handleReload}
           />

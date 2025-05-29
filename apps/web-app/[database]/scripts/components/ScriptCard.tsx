@@ -1,5 +1,10 @@
 import { IScript } from "@/worker/web-worker/meta-table/script"
-import { RotateCcwIcon } from "lucide-react"
+import {
+  ExternalLinkIcon,
+  MoreVerticalIcon,
+  PlusIcon,
+  RotateCcwIcon,
+} from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 
@@ -16,6 +21,12 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { Switch } from "@/components/ui/switch"
 
 import { IconMap } from "../page"
@@ -25,6 +36,8 @@ interface ScriptCardProps {
   space: string
   onDelete: (id: string) => void
   onToggleEnabled: (script: IScript, checked: boolean) => void
+  onAddToSidebar?: (blockId: string) => void
+  onOpenStandalone?: (blockId: string) => void
   showReload?: boolean
   onReload?: () => void
 }
@@ -34,6 +47,8 @@ export const ScriptCard = ({
   space,
   onDelete,
   onToggleEnabled,
+  onAddToSidebar,
+  onOpenStandalone,
   showReload,
   onReload,
 }: ScriptCardProps) => {
@@ -41,8 +56,39 @@ export const ScriptCard = ({
   const IconFromMap = IconMap[script.type]
   const iconIsDataUri = script.icon && script.icon.startsWith("data:image")
 
+  const isEnabledMicroBlock = script.type === "m_block" && script.enabled
+  const hasMenuItems =
+    isEnabledMicroBlock && (onAddToSidebar || onOpenStandalone)
+
   return (
     <div className="group relative overflow-hidden rounded-lg border bg-card text-card-foreground shadow transition-all hover:shadow-lg flex flex-col min-h-[160px]">
+      {/* Top-right menu */}
+      {Boolean(hasMenuItems) && (
+        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                <MoreVerticalIcon className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {isEnabledMicroBlock && onAddToSidebar && (
+                <DropdownMenuItem onClick={() => onAddToSidebar(script.id)}>
+                  <PlusIcon className="h-4 w-4 mr-2" />
+                  Add to Sidebar
+                </DropdownMenuItem>
+              )}
+              {isEnabledMicroBlock && onOpenStandalone && (
+                <DropdownMenuItem onClick={() => onOpenStandalone(script.id)}>
+                  <ExternalLinkIcon className="h-4 w-4 mr-2" />
+                  Open Standalone
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      )}
+
       <div className="flex flex-col space-y-1.5 p-4">
         <div className="flex items-start gap-3">
           {iconIsDataUri ? (

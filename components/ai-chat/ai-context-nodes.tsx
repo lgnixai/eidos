@@ -38,7 +38,7 @@ export const AIContextNodes = ({
         <Badge
           key={node.id}
           variant="secondary"
-          className="flex items-center gap-1 px-1.5 py-0.5 max-w-[150px]"
+          className="flex items-center gap-1 px-1.5 py-0.5"
         >
           <div
             className="flex items-center gap-1 min-w-0 flex-1 cursor-pointer hover:opacity-80 transition-opacity"
