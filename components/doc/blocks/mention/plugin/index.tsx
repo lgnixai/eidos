@@ -7,7 +7,6 @@
  * fork from lexical, but change a lot
  */
 
-import { useCallback, useEffect, useMemo, useState } from "react"
 import {
   FloatingPortal,
   Placement,
@@ -21,14 +20,20 @@ import {
   LexicalTypeaheadMenuPlugin,
   useBasicTypeaheadTriggerMatch,
 } from "@lexical/react/LexicalTypeaheadMenuPlugin"
-import { $getSelection, $insertNodes, RangeSelection, TextNode } from "lexical"
+import {
+  $getSelection,
+  $insertNodes,
+  RangeSelection,
+  TextNode
+} from "lexical"
+import { useCallback, useEffect, useMemo, useState } from "react"
 
-import { shortenId, uuidv7 } from "@/lib/utils"
-import { useSqlite } from "@/hooks/use-sqlite"
 import { useEditorInstance } from "@/components/doc/hooks/editor-instance-context"
+import { useSqlite } from "@/hooks/use-sqlite"
+import { shortenId, uuidv7 } from "@/lib/utils"
 
 import { $createSyncBlockNode } from "../../sync/node"
-import { $createMentionNode } from "../node"
+import { $createMentionNode, MentionNode } from "../node"
 import { MentionTypeaheadOption } from "./MentionTypeaheadOption"
 import { MentionsTypeaheadMenuItem } from "./MentionsTypeaheadMenuItem"
 import { getPossibleQueryMatch } from "./helper"
@@ -39,6 +44,7 @@ const SUGGESTION_LIST_LENGTH_LIMIT = 5
 
 export interface MentionPluginProps {
   onOptionSelectCallback?: (selectedOption: MentionTypeaheadOption) => void
+  onDeleteCallback?: (nodeId: string) => void
   placement?: Placement
 }
 
@@ -69,6 +75,33 @@ export default function NewMentionsPlugin(
     currentDocId
   )
   const { createDoc } = useSqlite()
+
+  useEffect(() => {
+    if (!props.onDeleteCallback) {
+      return
+    }
+    const removeMutationListener = editor.registerMutationListener(
+      MentionNode,
+      (mutatedNodes, { updateTags, dirtyLeaves, prevEditorState }) => {
+        for (const [nodeKey, mutation] of mutatedNodes) {
+          if (mutation === "destroyed") {
+            prevEditorState.read(() => {
+              const node = prevEditorState._nodeMap.get(nodeKey)
+              if (node && node instanceof MentionNode) {
+                const nodeId = node.__id
+                if (nodeId && props.onDeleteCallback) {
+                  props.onDeleteCallback(nodeId)
+                }
+              }
+            })
+          }
+        }
+      },
+      { skipInitialization: true }
+    )
+
+    return removeMutationListener
+  }, [editor, props.onDeleteCallback])
 
   const checkForSlashTriggerMatch = useBasicTypeaheadTriggerMatch("/", {
     minLength: 0,
@@ -109,6 +142,7 @@ export default function NewMentionsPlugin(
         $insertNodes([mentionNode])
         selectedNode.insertAfter(mentionNode)
         nodeToReplace?.remove()
+
         closeMenu()
         props.onOptionSelectCallback?.(selectedOption)
       })

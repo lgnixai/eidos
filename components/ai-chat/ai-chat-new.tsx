@@ -1,4 +1,3 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { IEmbedding } from "@/worker/web-worker/meta-table/embedding"
 import { useChat } from "ai/react"
 import {
@@ -7,21 +6,22 @@ import {
   PauseIcon,
   RefreshCcwIcon,
 } from "lucide-react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useWindowSize } from "usehooks-ts"
 
-import { ITreeNode } from "@/lib/store/ITreeNode"
-import { useAppStore } from "@/lib/store/app-store"
-import { useAiConfig } from "@/hooks/use-ai-config"
-import { useAIFunctions } from "@/hooks/use-ai-functions"
-import { Button } from "@/components/ui/button"
-import { toast } from "@/components/ui/use-toast"
 import { useAIConfigStore } from "@/apps/web-app/settings/ai/store"
 import { useExperimentConfigStore } from "@/apps/web-app/settings/experiment/store"
+import { Button } from "@/components/ui/button"
+import { toast } from "@/components/ui/use-toast"
+import { useAiConfig } from "@/hooks/use-ai-config"
+import { useAIFunctions } from "@/hooks/use-ai-functions"
+import { ITreeNode } from "@/lib/store/ITreeNode"
+import { useAppStore } from "@/lib/store/app-store"
 
+import { useTranslation } from "react-i18next"
 import { Label } from "../ui/label"
 import { Switch } from "../ui/switch"
-import { AIModelSelect } from "./ai-chat-model-select"
-import { AIChatPromptSelect } from "./ai-chat-prompt-select"
+import { AIContextNodes } from "./ai-context-nodes"
 import { AIInputEditor } from "./ai-input-editor"
 import {
   sysPrompts,
@@ -30,7 +30,6 @@ import {
   useUserPrompts,
 } from "./hooks"
 import "./index.css"
-import { useTranslation } from "react-i18next"
 
 import { UIBlock } from "../remix-chat/components/block"
 import {
@@ -202,6 +201,10 @@ export default function Chat() {
     handleFileChange,
   } = useAttachments()
 
+  const removeContextNode = (nodeId: string) => {
+    setContextNodes((prev) => prev.filter((node) => node.id !== nodeId))
+  }
+
   return (
     <div
       className="relative flex h-full w-full flex-col overflow-hidden"
@@ -281,8 +284,12 @@ export default function Chat() {
               ></Switch>
             </div>
             <div className="flex w-full items-center justify-between gap-2">
-              <div className="flex items-center gap-1">
-              </div>
+              <AIContextNodes
+                contextNodes={contextNodes}
+                onRemoveNode={removeContextNode}
+              />
+
+              <div className="flex items-center gap-1"></div>
               <div className="flex items-center gap-1">
                 {isLoading && (
                   <Button onClick={stop} variant="ghost" size="sm">

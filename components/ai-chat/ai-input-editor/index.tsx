@@ -227,7 +227,6 @@ export const AIInputEditor = ({
           } as any)
         }
 
-        // 转换附件 URL 为 data URI
         const processedAttachments = await Promise.all(
           attachments.map(async (attachment) => {
             try {
@@ -281,6 +280,13 @@ export const AIInputEditor = ({
     setContextNodes?.([...nodeInfoMap.values()])
   }
 
+  const handleNodeDelete = (nodeId: string) => {
+    // Remove the deleted node from the nodeInfoMap
+    nodeInfoMap.delete(nodeId)
+    // Update the context nodes to reflect the current state
+    setContextNodes?.([...nodeInfoMap.values()])
+  }
+
   return (
     <LexicalComposer initialConfig={initialConfig}>
       <div className="relative max-h-[200px] overflow-y-auto bg-gray-100 outline-none dark:bg-gray-800">
@@ -305,6 +311,7 @@ export const AIInputEditor = ({
         <NewMentionsPlugin
           onOptionSelectCallback={handleNodeInsert}
           placement="top-start"
+          onDeleteCallback={handleNodeDelete}
         />
         <SwitchPromptPlugin />
         <HistoryPlugin />
