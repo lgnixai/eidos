@@ -3,6 +3,11 @@ import Prism from "prismjs"
 import ReactMarkdown, { type Components } from "react-markdown"
 import rehypeRaw from "rehype-raw"
 import remarkGfm from "remark-gfm"
+import remarkInternalLinks from "./remark-internal-links"
+import { Badge } from "@/components/ui/badge"
+import { useNavigate } from "react-router-dom"
+import { useCurrentPathInfo } from "@/hooks/use-current-pathinfo"
+import { isDayPageId } from "@/lib/utils"
 
 import "prismjs/themes/prism-tomorrow.css"
 import "./prism-custom.css"
@@ -10,7 +15,7 @@ import "prismjs/components/prism-typescript"
 import "prismjs/components/prism-javascript"
 import "prismjs/components/prism-jsx"
 import "prismjs/components/prism-tsx"
-import { ChevronDownIcon, ChevronUpIcon } from "lucide-react"
+import { ChevronDownIcon, ChevronUpIcon, LinkIcon } from "lucide-react"
 
 declare global {
   namespace JSX {
@@ -25,9 +30,20 @@ declare global {
 }
 
 const NonMemoizedMarkdown = ({ children }: { children: string }) => {
+  const navigate = useNavigate()
+  const { space } = useCurrentPathInfo()
+  
   useEffect(() => {
     Prism.highlightAll()
   }, [children])
+
+  const handleInternalLinkClick = (id: string) => {
+    if (isDayPageId(id)) {
+      navigate(`/${space}/everyday/${id}`)
+    } else {
+      navigate(`/${space}/${id}`)
+    }
+  }
 
   const components: Partial<Components> = {
     code: ({ node, inline, className, children, ...props }: any) => {
@@ -93,6 +109,21 @@ const NonMemoizedMarkdown = ({ children }: { children: string }) => {
         >
           <code className={`language-${language}`}>{children}</code>
         </pre>
+      )
+    },
+    "internal-link": ({ node, "data-id": dataId, "data-title": dataTitle, ...props }: any) => {
+      return (
+        <Badge
+          className="inline-flex items-center gap-1 px-1.5 py-0.5 cursor-pointer hover:opacity-80 transition-opacity"
+          title={`ID: ${dataId}`}
+          onClick={() => {
+            handleInternalLinkClick(dataId)
+          }}
+          {...props}
+        >
+          <LinkIcon className="w-3 h-3" />
+          <span className="min-w-0 flex-1">{dataTitle}</span>
+        </Badge>
       )
     },
     "llm-response": ({
@@ -205,7 +236,7 @@ const NonMemoizedMarkdown = ({ children }: { children: string }) => {
 
   return (
     <ReactMarkdown
-      remarkPlugins={[remarkGfm]}
+      remarkPlugins={[remarkGfm, remarkInternalLinks]}
       rehypePlugins={[rehypeRaw]}
       components={components}
     >
