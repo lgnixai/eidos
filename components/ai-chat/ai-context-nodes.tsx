@@ -33,12 +33,12 @@ export const AIContextNodes = ({
   }
 
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex flex-wrap gap-1">
       {contextNodes.map((node) => (
         <Badge
           key={node.id}
           variant="secondary"
-          className="flex items-center gap-2 px-2 py-1 max-w-[200px]"
+          className="flex items-center gap-1 px-1.5 py-0.5 max-w-[150px]"
         >
           <div
             className="flex items-center gap-1 min-w-0 flex-1 cursor-pointer hover:opacity-80 transition-opacity"
@@ -54,9 +54,9 @@ export const AIContextNodes = ({
               e.stopPropagation()
               onRemoveNode(node.id)
             }}
-            className="h-4 w-4 p-0 hover:bg-transparent hover:text-muted-foreground/70"
+            className="h-3 w-3 p-0 hover:bg-transparent hover:text-muted-foreground/70"
           >
-            <XIcon size={12} />
+            <XIcon size={10} />
           </Button>
         </Badge>
       ))}

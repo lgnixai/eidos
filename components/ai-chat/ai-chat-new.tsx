@@ -1,3 +1,4 @@
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { IEmbedding } from "@/worker/web-worker/meta-table/embedding"
 import { useChat } from "ai/react"
 import {
@@ -6,19 +7,18 @@ import {
   PauseIcon,
   RefreshCcwIcon,
 } from "lucide-react"
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useTranslation } from "react-i18next"
 import { useWindowSize } from "usehooks-ts"
 
-import { useAIConfigStore } from "@/apps/web-app/settings/ai/store"
-import { useExperimentConfigStore } from "@/apps/web-app/settings/experiment/store"
-import { Button } from "@/components/ui/button"
-import { toast } from "@/components/ui/use-toast"
-import { useAiConfig } from "@/hooks/use-ai-config"
-import { useAIFunctions } from "@/hooks/use-ai-functions"
 import { ITreeNode } from "@/lib/store/ITreeNode"
 import { useAppStore } from "@/lib/store/app-store"
+import { useAiConfig } from "@/hooks/use-ai-config"
+import { useAIFunctions } from "@/hooks/use-ai-functions"
+import { Button } from "@/components/ui/button"
+import { toast } from "@/components/ui/use-toast"
+import { useAIConfigStore } from "@/apps/web-app/settings/ai/store"
+import { useExperimentConfigStore } from "@/apps/web-app/settings/experiment/store"
 
-import { useTranslation } from "react-i18next"
 import { Label } from "../ui/label"
 import { Switch } from "../ui/switch"
 import { AIContextNodes } from "./ai-context-nodes"
@@ -30,6 +30,7 @@ import {
   useUserPrompts,
 } from "./hooks"
 import "./index.css"
+import { useCurrentNode } from "@/hooks/use-current-node"
 
 import { UIBlock } from "../remix-chat/components/block"
 import {
@@ -50,6 +51,7 @@ export default function Chat() {
   const loadingRef = useRef<HTMLDivElement>(null)
   const chatContainerRef = useRef<HTMLDivElement>(null)
 
+  const currentNode = useCurrentNode()
   const { prompts } = useUserPrompts()
   const { experiment } = useExperimentConfigStore()
 
@@ -66,6 +68,7 @@ export default function Chat() {
 
   const [contextNodes, setContextNodes] = useState<ITreeNode[]>([])
   const [contextEmbeddings, setContextEmbeddings] = useState<IEmbedding[]>([])
+  const [hasRemovedCurrentNode, setHasRemovedCurrentNode] = useState(false) // 跟踪是否主动删除过 currentNode
   const { systemPrompt } = useSystemPrompt(
     currentSysPrompt,
     contextNodes,
@@ -88,6 +91,12 @@ export default function Chat() {
       model && setAIModel(model)
     }
   }, [currentSysPrompt, prompts, setAIModel, systemPrompt])
+
+  useEffect(() => {
+    if (currentNode) {
+      setContextNodes([currentNode])
+    }
+  }, [])
 
   const { getConfigByModel } = useAiConfig()
   const config = useMemo(() => {
@@ -161,6 +170,7 @@ export default function Chat() {
     setContextNodes([])
     setContextEmbeddings([])
     setAttachments([])
+    setHasRemovedCurrentNode(false) // 清理消息时重置删除状态
   }, [setMessages])
 
   const appendHiddenMessage = useCallback(
@@ -203,6 +213,9 @@ export default function Chat() {
 
   const removeContextNode = (nodeId: string) => {
     setContextNodes((prev) => prev.filter((node) => node.id !== nodeId))
+    if (currentNode && nodeId === currentNode.id) {
+      setHasRemovedCurrentNode(true)
+    }
   }
 
   return (

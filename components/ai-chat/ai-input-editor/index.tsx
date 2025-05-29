@@ -40,6 +40,7 @@ import { useAIConfigStore } from "@/apps/web-app/settings/ai/store"
 import { AIModelSelect } from "../ai-chat-model-select"
 import { AIChatPromptSelect } from "../ai-chat-prompt-select"
 import { AutoEditable } from "./plugins/auto-editable"
+import { DragDropPlugin } from "./plugins/drag-drop"
 import { SwitchPromptPlugin } from "./plugins/switch-prompt"
 
 const theme = {
@@ -287,9 +288,17 @@ export const AIInputEditor = ({
     setContextNodes?.([...nodeInfoMap.values()])
   }
 
+  const handleNodeDrop = (node: ITreeNode) => {
+    setContextNodes?.([...nodeInfoMap.values()])
+  }
+
   return (
     <LexicalComposer initialConfig={initialConfig}>
-      <div className="relative max-h-[200px] overflow-y-auto bg-gray-100 outline-none dark:bg-gray-800">
+      <div
+        className="relative max-h-[200px] overflow-y-auto bg-gray-100 outline-none dark:bg-gray-800 transition-colors duration-200 hover:bg-gray-50 dark:hover:bg-gray-700"
+        data-drop-zone="ai-editor"
+        data-testid="ai-input-editor"
+      >
         <RichTextPlugin
           contentEditable={
             <ContentEditable
@@ -298,11 +307,16 @@ export const AIInputEditor = ({
             />
           }
           placeholder={
-            <div className="pointer-events-none absolute left-3 top-2 text-xs opacity-60">
+            <div className="pointer-events-none absolute left-3 top-2 text-xs text-secondary-foreground opacity-50">
               {t("aiChat.inputEditor.typeYourMessageHere")}
               <br />
               {t("aiChat.inputEditor.pressSlashToSwitchPrompt")}
               {t("aiChat.inputEditor.pressAtToMentionResource")}
+              <br />
+              {t(
+                "aiChat.inputEditor.dragDropToMention",
+                "Drag & drop tree nodes here to mention"
+              )}
             </div>
           }
           ErrorBoundary={LexicalErrorBoundary}
@@ -313,6 +327,7 @@ export const AIInputEditor = ({
           placement="top-start"
           onDeleteCallback={handleNodeDelete}
         />
+        <DragDropPlugin onNodeInsert={handleNodeDrop} />
         <SwitchPromptPlugin />
         <HistoryPlugin />
         <AutoFocusPlugin />

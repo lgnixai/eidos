@@ -181,12 +181,35 @@ export const Card: FC<CardProps> = ({
     }),
     end: (item, monitor) => {
       const didDrop = monitor.didDrop()
-      if (didDrop) {
+      const dropResult = monitor.getDropResult()
+      
+      // Only call onDrop if the drop was within the react-dnd context
+      // If dropped outside (like on AI editor), react-dnd will consider it as not dropped
+      if (didDrop && dropResult) {
         onDrop(item)
       }
+      // If dropped outside react-dnd context, we don't need to do anything
+      // as the native drag-drop will handle it
     },
     canDrag: !isInkServiceMode,
   })
+
+  // Add native HTML5 drag functionality for AI input editor
+  const handleDragStart = (event: React.DragEvent) => {
+    // Only pass the node ID, keep it simple
+    event.dataTransfer.setData("text/plain", node.id)
+    event.dataTransfer.effectAllowed = "copy"
+    
+    console.log("Native drag started for node:", node.name, node.id)
+    
+    // Don't prevent default to allow both native and react-dnd to work
+  }
+
+  const handleDragEnd = (event: React.DragEvent) => {
+    // This ensures proper cleanup after native drag operations
+    console.log("Native drag ended for node:", node.name)
+    event.dataTransfer.clearData()
+  }
 
   // const opacity = isDragging ? 0 : 1
   useEffect(() => {
@@ -211,6 +234,9 @@ export const Card: FC<CardProps> = ({
         ref={ref}
         data-handler-id={handlerId}
         className={cn("flex flex-col gap-1")}
+        draggable={true}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
       >
         <div className={cn("group flex w-full", className)}>
           <NodeItem
