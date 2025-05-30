@@ -59,11 +59,11 @@ export const useScript = () => {
   }
 }
 
-export const useScriptById = (id: string) => {
+export const useScriptById = (id?: string) => {
   const { sqlite } = useSqlite()
   const [script, setScript] = useState<IScript | null>(null)
   useEffect(() => {
-    if (!sqlite) return
+    if (!sqlite || !id) return
     const fetchScript = async () => {
       const script = await sqlite.script.get(id)
       setScript(script)

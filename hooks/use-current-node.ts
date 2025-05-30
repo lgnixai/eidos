@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom"
 import { ITreeNode } from "@/lib/store/ITreeNode"
 import { getWeek, isDayPageId, isWeekNodeId } from "@/lib/utils"
 
+import { useScriptById } from "@/apps/web-app/[database]/scripts/hooks/use-script"
 import { useSqliteStore } from "./use-sqlite"
 
 export const useNodeMap = () => {
@@ -24,6 +25,12 @@ export const useCurrentNode = () => {
     }
   }
   return nodeId ? allNodesMap[nodeId] : null
+}
+
+export const useCurrentExtension = () => {
+  const { scriptId: extensionId } = useParams()
+  const extension = useScriptById(extensionId)
+  return extension
 }
 
 export type INodePath = ITreeNode & { path?: string }

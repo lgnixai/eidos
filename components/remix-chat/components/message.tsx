@@ -1,12 +1,11 @@
 "use client"
 
-import type { Dispatch, SetStateAction } from "react"
+import { useState, type Dispatch, type SetStateAction } from "react"
 import type { Message } from "ai"
 import cx from "classnames"
 import { motion } from "framer-motion"
 import { BookOpenTextIcon } from "lucide-react"
 import { Link } from "react-router-dom"
-import { useState } from "react"
 
 import type { Vote } from "../interface"
 import type { UIBlock } from "./block"
@@ -38,8 +37,8 @@ export const PreviewMessage = ({
   onRegenerate?: () => void
   isLastMessage?: boolean
 }) => {
-  const [isReasoningExpanded, setIsReasoningExpanded] = useState(false);
-  
+  const [isReasoningExpanded, setIsReasoningExpanded] = useState(false)
+
   return (
     <motion.div
       className="w-full mx-auto max-w-3xl px-4 group/message"
@@ -71,7 +70,7 @@ export const PreviewMessage = ({
 
         <div className="flex flex-col gap-2 w-full min-w-0">
           {message.reasoning && (
-            <div 
+            <div
               className="text-sm text-muted-foreground bg-muted/50 rounded-lg p-3 border border-border/50 cursor-pointer"
               onClick={() => setIsReasoningExpanded(!isReasoningExpanded)}
             >
@@ -79,17 +78,17 @@ export const PreviewMessage = ({
                 <motion.div
                   animate={{
                     scale: [1, 1.2, 1],
-                    transition: { duration: 2, repeat: Infinity }
+                    transition: { duration: 2, repeat: Infinity },
                   }}
                 >
                   💭
                 </motion.div>
                 Thought Process
                 <span className="ml-auto text-xs">
-                  {isReasoningExpanded ? '▼' : '▶'}
+                  {isReasoningExpanded ? "▼" : "▶"}
                 </span>
               </div>
-              <div 
+              <div
                 className={cx(
                   "leading-relaxed whitespace-pre-wrap overflow-hidden transition-all duration-200",
                   isReasoningExpanded ? "max-h-[1000px]" : "max-h-0"
@@ -157,7 +156,17 @@ export const PreviewMessage = ({
                           setBlock={setBlock}
                         />
                       ) : (
-                        <pre>{JSON.stringify(result, null, 2)}</pre>
+                        <div className="flex flex-col gap-2">
+                          <div className="text-sm text-muted-foreground bg-muted/50 rounded-lg p-3 border border-border/50">
+                            {toolName}
+                            <div className="text-xs text-muted-foreground">
+                              {JSON.stringify(args, null, 2)}
+                            </div>
+                            <div className="text-xs text-muted-foreground whitespace-pre-wrap break-words overflow-wrap-anywhere">
+                              {JSON.stringify(result, null, 2)}
+                            </div>
+                          </div>
+                        </div>
                       )}
                     </div>
                   )

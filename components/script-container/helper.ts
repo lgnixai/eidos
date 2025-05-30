@@ -107,7 +107,7 @@ export const callPythonScript = (props: IPythonScriptCallProps): Promise<any> =>
     })
 }
 
-export const callScriptById = async (id: string, input: Record<string, any>, sqlite: DataSpace, scriptContainerRef: any) => {
+export const callScriptById = async (id: string, input: Record<string, any>, sqlite: DataSpace, scriptContainerRef: any, cmd?: string) => {
     const script = await sqlite.getScript(id)
     if (!script) {
         throw new Error("Script not found")
@@ -121,7 +121,7 @@ export const callScriptById = async (id: string, input: Record<string, any>, sql
                 tables: script.tables,
                 env: {},
             },
-            command: 'main',
+            command: cmd ?? 'main',
             dependencies: script.dependencies,
         })
     } else if (script.type === "script") {
@@ -133,7 +133,7 @@ export const callScriptById = async (id: string, input: Record<string, any>, sql
                 tables: script.tables,
                 env: {},
             },
-            command: 'default',
+            command: cmd ?? 'default',
         }, scriptContainerRef)
     }
 }

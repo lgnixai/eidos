@@ -7,10 +7,10 @@ import { useCurrentPathInfo } from "./use-current-pathinfo"
 export const useScriptCall = () => {
     const { scriptContainerRef, setRunningCommand } = useAppRuntimeStore()
     const { space } = useCurrentPathInfo()
-    const callScript = async (id: string, input: Record<string, any>) => {
+    const callScript = async (id: string, input: Record<string, any>, cmd?: string) => {
         setRunningCommand(id)
         try {
-            const result = await callScriptById(id, input, getSqliteProxy(space, ""), scriptContainerRef)
+            const result = await callScriptById(id, input, getSqliteProxy(space, ""), scriptContainerRef, cmd)
             setRunningCommand(null)
             return result
         } catch (error) {

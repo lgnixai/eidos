@@ -9,11 +9,16 @@ import { useCurrentPathInfo } from "./use-current-pathinfo"
 import { useEidosFileSystemManager } from "./use-fs"
 import { useSqlite } from "./use-sqlite"
 import { useTableOperation } from "./use-table"
+import { useAllTools } from "@/apps/web-app/[database]/scripts/hooks/use-all-tools"
+import { useScriptCall } from "./use-script-call"
 
 const autoRunScope = ["SQL.SELECT"]
 
 export const useAIFunctions = () => {
   const { space: database, tableName: table } = useCurrentPathInfo()
+  const tools = useAllTools()
+  const { callScript } = useScriptCall()
+
   const { handleSql, sqlite } = useSqlite(database)
   // FIXME: now ai-chat is global, maybe not in table page
   const { runQuery } = useTableOperation(table ?? "", database)
@@ -102,6 +107,13 @@ export const useAIFunctions = () => {
     parameters: any,
     isAuto: boolean = true
   ) => {
+
+    const functionId = (tools[name] as any)?.id
+    if (functionId) {
+      const [scriptId, commandName] = functionId.split(".")
+      const res = await callScript(scriptId, parameters, commandName)
+      return res
+    }
     switch (name) {
       case "sqlQuery":
         const { sql } = parameters
