@@ -22,6 +22,7 @@ export interface IAction {
   nodes: IFunction[]
 }
 
+// @deprecated
 export class ActionTable extends BaseTableImpl implements BaseTable<IAction> {
   name = ActionTableName
   createTableSql = `

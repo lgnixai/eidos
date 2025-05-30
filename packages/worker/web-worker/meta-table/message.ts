@@ -1,5 +1,6 @@
 import { BaseTable, BaseTableImpl } from "./base"
 import { ChatTableName, MessageTableName } from "@/lib/sqlite/const"
+import { createTriggersForFields } from "@/lib/sqlite/sql-meta-table-trigger"
 
 
 export type ChatMessage = {
@@ -22,20 +23,9 @@ export class MessageTable extends BaseTableImpl<ChatMessage> implements BaseTabl
     FOREIGN KEY(chat_id) REFERENCES ${ChatTableName}(id)
   );
 
-  CREATE TEMP TRIGGER IF NOT EXISTS ${MessageTableName}_insert_trigger
-  AFTER INSERT ON ${MessageTableName}
-  BEGIN
-    SELECT eidos_meta_table_event_insert(
-      '${MessageTableName}',
-      json_object(
-        'id', new.id,
-        'chat_id', new.chat_id,
-        'role', new.role,
-        'content', new.content,
-        'created_at', new.created_at
-      )
-    );
-  END;
+  ${createTriggersForFields(MessageTableName, [
+    'id', 'chat_id', 'role', 'content', 'created_at'
+  ])}
   `
 
   async deleteMessagesByChatId(chatId: string) {

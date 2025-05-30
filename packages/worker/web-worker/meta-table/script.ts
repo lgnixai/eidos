@@ -1,6 +1,7 @@
 import { JsonSchema7ObjectType } from "zod-to-json-schema"
 
 import { ScriptTableName } from "@/lib/sqlite/const"
+import { createUpdateTriggerForFields } from "@/lib/sqlite/sql-meta-table-trigger"
 
 import { BaseTable, BaseTableImpl } from "./base"
 
@@ -12,6 +13,7 @@ export interface ICommand {
   inputJSONSchema?: JsonSchema7ObjectType
   outputJSONSchema?: JsonSchema7ObjectType
   asTableAction?: boolean
+  asTool?: boolean
 }
 
 export interface IPromptConfig {
@@ -104,23 +106,9 @@ export class ScriptTable
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
 
-    CREATE TEMP TRIGGER IF NOT EXISTS ${this.name}_after_update
-    AFTER UPDATE ON ${this.name}
-    BEGIN
-      SELECT eidos_meta_table_event_update('${this.name}', json_object(
-        'id', NEW.id,
-        'type', NEW.type,
-        'name', NEW.name,
-        'code', NEW.code,
-        'enabled', NEW.enabled
-      ), json_object(
-        'id', OLD.id,
-        'type', OLD.type,
-        'name', OLD.name,
-        'code', OLD.code,
-        'enabled', OLD.enabled
-      ));
-    END;
+    ${createUpdateTriggerForFields(this.name, [
+      'id', 'type', 'name', 'code', 'enabled'
+    ])}
 
 `
 

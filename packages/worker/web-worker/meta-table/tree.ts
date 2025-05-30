@@ -1,6 +1,7 @@
 import { TreeTableName } from "@/lib/sqlite/const"
 import { ITreeNode } from "@/lib/store/ITreeNode"
 import { extractIdFromShortId, getRawTableNameById } from "@/lib/utils"
+import { createTriggersForFields } from "@/lib/sqlite/sql-meta-table-trigger"
 
 import { BaseTable, BaseTableImpl } from "./base"
 
@@ -24,29 +25,12 @@ export class TreeTable extends BaseTableImpl implements BaseTable<ITreeNode> {
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   );
   
-  CREATE TEMP TRIGGER IF NOT EXISTS ${TreeTableName}_insert_trigger
-  AFTER INSERT ON ${TreeTableName}
-  BEGIN
-    SELECT eidos_meta_table_event_insert(
-      '${TreeTableName}',
-      json_object(
-        'id', new.id,
-        'name', new.name,
-        'type', new.type,
-        'parent_id', new.parent_id,
-        'is_pinned', new.is_pinned,
-        'is_full_width', new.is_full_width,
-        'is_locked', new.is_locked,
-        'icon', new.icon,
-        'cover', new.cover,
-        'is_deleted', new.is_deleted,
-        'hide_properties', new.hide_properties,
-        'position', new.position,
-        'created_at', new.created_at,
-        'updated_at', new.updated_at
-      )
-    );
-  END;
+  ${createTriggersForFields(TreeTableName, [
+    'id', 'name', 'type', 'parent_id', 'is_pinned',
+    'is_full_width', 'is_locked', 'icon', 'cover',
+    'is_deleted', 'hide_properties', 'position',
+    'created_at', 'updated_at'
+  ])}
   `
 
   getNextRowId = async () => {
