@@ -2,6 +2,8 @@ import { Plugin, UserConfig } from "vite"
 import react from "@vitejs/plugin-react"
 import path from "path"
 import fs from "fs"
+import wasm from "vite-plugin-wasm"
+import topLevelAwait from "vite-plugin-top-level-await"
 
 // enable visualizer if you want to see the size of the package
 // import { visualizer } from "rollup-plugin-visualizer"
@@ -48,6 +50,8 @@ export const sharedConfig: UserConfig = {
   base: '/',
   plugins: [
     react(),
+    wasm(),
+    topLevelAwait(),
     // enable visualizer if you want to see the size of the package
     // visualizer({
     //   gzipSize: true,
@@ -61,10 +65,14 @@ export const sharedConfig: UserConfig = {
     alias: sharedAlias
   },
   optimizeDeps: {
-    exclude: ["@sqlite.org/sqlite-wasm", "whisper-webgpu", "pyodide"],
+    exclude: ["@sqlite.org/sqlite-wasm", "whisper-webgpu", "pyodide", "@huacnlee/autocorrect"],
   },
   worker: {
     format: 'es',
+    plugins: () => [
+      wasm(),
+      topLevelAwait()
+    ]
   },
 }
 

@@ -27,6 +27,7 @@ import { ShortcutPlugin } from "./ShortcutPlugin"
 import TableCellResizer from "./TableCellResizer"
 import TableHoverActionsPlugin from "./TableHoverActionsPlugin"
 import { allTransformers } from "./const"
+import { PrettierPlugin } from "./PrettierPlugin"
 
 export const AllPlugins = ({
   disableExtPlugins = false,
@@ -56,6 +57,7 @@ export const AllPlugins = ({
       <ListPlugin />
       <TablePlugin />
       <TableCellResizer />
+      <PrettierPlugin />
       {/* TabIndentationPlugin let you type `Tab` to indent a list item, ListMaxIndentLevelPlugin let you control the max indent level */}
       <TabIndentationPlugin />
       {/* don't be a dick, don't nest lists too deep */}
