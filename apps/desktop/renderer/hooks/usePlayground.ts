@@ -31,7 +31,7 @@ export const usePlayground = ({ onChange }: PlaygroundOptions) => {
                 window.eidos.off('playground-file-changed', listenerId);
             }
         };
-    }, []);
+    }, [onChange]);
 
     return {
         initializePlayground

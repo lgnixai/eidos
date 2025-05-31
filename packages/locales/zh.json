@@ -60,6 +60,7 @@
     "common.nodes": "节点",
     "common.notFound": "Not found",
     "common.open": "打开",
+    "common.openInCursor": "在 Cursor 中打开",
     "common.or": "或",
     "common.paste": "粘贴",
     "common.pinned": "置顶",

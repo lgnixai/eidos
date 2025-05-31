@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useCallback, useState } from "react"
 import {
   CogIcon,
   CommandIcon,
@@ -22,10 +22,12 @@ import { BGEM3 } from "@/lib/ai/llm_vendors/bge"
 import { DOMAINS } from "@/lib/const"
 import { EIDOS_VERSION, isDesktopMode } from "@/lib/env"
 import { useAppRuntimeStore } from "@/lib/store/runtime-store"
+import { isDayPageId } from "@/lib/utils"
 import { useCurrentNode } from "@/hooks/use-current-node"
 import { useCurrentPathInfo } from "@/hooks/use-current-pathinfo"
 import { useEmbedding } from "@/hooks/use-embedding"
 import { useHnsw } from "@/hooks/use-hnsw"
+import { useOpenInPlayground } from "@/hooks/use-open-in-playground"
 import { useSqlite } from "@/hooks/use-sqlite"
 import { useVCardEmail } from "@/hooks/use-vcard-email"
 import { Button } from "@/components/ui/button"
@@ -56,11 +58,11 @@ import { useExperimentConfigStore } from "@/apps/web-app/settings/experiment/sto
 import { CopyShowHide } from "../copy-show-hide"
 import { NodeMoveInto } from "../node-menu/move-into"
 import { NodeExport } from "../node-menu/node-export"
+import { NodeOpenInCursor } from "../node-menu/open-in-cursor"
 import { Switch } from "../ui/switch"
 import { useToast } from "../ui/use-toast"
 import { VCardQrCode } from "../vcard-qr-code"
 import { UpdateStatusComponent } from "./update-status"
-import { isDayPageId } from "@/lib/utils"
 
 export function NavDropdownMenu() {
   const { t } = useTranslation()
@@ -85,6 +87,46 @@ export function NavDropdownMenu() {
   const { createEmbedding } = useHnsw()
   const { experiment } = useExperimentConfigStore()
   const { space } = useCurrentPathInfo()
+  const { sqlite } = useSqlite()
+
+  const onPlaygroundChange = useCallback(
+    async (
+      filename: string,
+      content: string,
+      spaceName: string,
+      blockId: string
+    ) => {
+      if (spaceName !== space || !node || blockId !== node.id) {
+        return
+      }
+      const res = await sqlite?.doc.createOrUpdate({
+        id: node.id,
+        text: content,
+        type: "markdown",
+        mode: "replace",
+      })
+      console.log("res", res)
+      if (res?.success) {
+        toast({
+          title: res.msg,
+        })
+        console.log(`Document ${filename} changed in playground`)
+
+        // Trigger custom event to refresh the editor
+        window.dispatchEvent(
+          new CustomEvent("eidos-doc-refresh", {
+            detail: { docId: node.id },
+          })
+        )
+      }
+    },
+    [node, space, sqlite, toast]
+  )
+
+  const { openInPlayground } = useOpenInPlayground({
+    onPlaygroundChange,
+  })
+
   const toggleCMDK = () => {
     setCmdkOpen(!isCmdkOpen)
   }
@@ -96,23 +138,6 @@ export function NavDropdownMenu() {
     if (node) {
       deleteNode(node)
       router(`/${space}`)
-    }
-  }
-
-  const handleCreateDocEmbedding = async () => {
-    if (node) {
-      toast({
-        title: t("nav.dropdown.menu.creatingEmbedding", { name: node.name }),
-      })
-      await createEmbedding({
-        id: node.id,
-        type: "doc",
-        model: "bge-m3",
-        provider: new BGEM3(embeddingTexts),
-      })
-      toast({
-        title: t("nav.dropdown.menu.embeddingCreated"),
-      })
     }
   }
 
@@ -235,6 +260,10 @@ export function NavDropdownMenu() {
                 )}
                 <DropdownMenuSeparator />
                 <NodeExport node={node} />
+                <NodeOpenInCursor
+                  node={node}
+                  openInPlayground={openInPlayground}
+                />
                 {node.type === "doc" && !isDayPageId(node.id) && (
                   <>
                     <DropdownMenuSub>
@@ -245,7 +274,7 @@ export function NavDropdownMenu() {
                       <DropdownMenuSubContent className="w-48">
                         <NodeMoveInto node={node} />
                       </DropdownMenuSubContent>
-                      {experiment.enableRAG && (
+                      {/* {experiment.enableRAG && (
                         <DropdownMenuItem
                           onClick={handleCreateDocEmbedding}
                           disabled={!hasEmbeddingModel}
@@ -257,18 +286,16 @@ export function NavDropdownMenu() {
                             </div>
                           </div>
                         </DropdownMenuItem>
-                      )}
+                      )} */}
                     </DropdownMenuSub>
                   </>
                 )}
-                {
-                  !isDayPageId(node.id) && (
-                    <DropdownMenuItem onClick={deleteCurrentNode}>
-                      <Trash2Icon className="mr-2 h-4 w-4"></Trash2Icon>
-                      <span>{t("common.delete")}</span>
-                    </DropdownMenuItem>
-                  )
-                }
+                {!isDayPageId(node.id) && (
+                  <DropdownMenuItem onClick={deleteCurrentNode}>
+                    <Trash2Icon className="mr-2 h-4 w-4"></Trash2Icon>
+                    <span>{t("common.delete")}</span>
+                  </DropdownMenuItem>
+                )}
                 <NodeUpdateTime />
               </>
             )}

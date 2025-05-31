@@ -5,7 +5,7 @@ import electronLog from 'electron-log';
 import path from 'path';
 import { getConfigManager } from './config';
 import { closeDataSpace, getDataSpace, getOrSetDataSpace, reloadDataSpace } from './data-space';
-import { initializePlayground } from './file-system/playground';
+import { cleanupPlaygroundWatchers, initializePlayground } from './file-system/playground';
 import { getResourcePath } from './helper';
 import { ProtocolHandler } from './protocol-handler';
 import { getApiAgentStatus, initApiAgent } from './server/api-agent';
@@ -197,6 +197,7 @@ ipcMain.handle('reload-app', () => {
 });
 
 app.on('window-all-closed', () => {
+    cleanupPlaygroundWatchers();
     WorkerManager.getInstance().shutdown();
     getDataSpace()?.close()
     win = null
@@ -220,6 +221,7 @@ ipcMain.handle('initialize-playground', (event, space, blockId, files) => {
 
 
 app.on('before-quit', () => {
+    cleanupPlaygroundWatchers();
     forceQuit = true;
 });
 
@@ -301,6 +303,7 @@ app.whenReady().then(() => {
                 event.preventDefault();
                 win?.hide();
             } else {
+                cleanupPlaygroundWatchers();
                 forceQuit = true;
                 destroyTray();
                 app.quit();
@@ -323,6 +326,7 @@ app.on('activate', () => {
 });
 
 ipcMain.handle('quit-app', () => {
+    cleanupPlaygroundWatchers();
     forceQuit = true;
     destroyTray();
     getDataSpace()?.close();

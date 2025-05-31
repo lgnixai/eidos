@@ -116,41 +116,41 @@ export function EidosAutoLoadSaveFocusPlugin(props: AutoSavePluginProps) {
     }
   }, [editor, isEditable])
 
-  useEffect(() => {
-    const loadInitialContent = async () => {
-      lock.current = true
-      const initContent = await getDoc(docId)
+  const loadInitialContent = useCallback(async () => {
+    lock.current = true
+    const initContent = await getDoc(docId)
 
-      let state = JSON.stringify(DefaultState)
-      if (initContent) {
-        try {
-          state = initContent
-        } catch (error) {
-          console.error("Error parsing content:", error)
-        }
+    let state = JSON.stringify(DefaultState)
+    if (initContent) {
+      try {
+        state = initContent
+      } catch (error) {
+        console.error("Error parsing content:", error)
       }
-
-      editor.update(() => {
-        const parsedState = editor.parseEditorState(state)
-        editor.setEditorState(parsedState)
-        editor.setEditable(Boolean(isEditable))
-
-        if (editor.isEditable()) {
-          if (editor._config.namespace === "eidos-notes-home-page") {
-            // disable auto focus for home page's editor
-            return
-          }
-          setTimeout(
-            () => editor.focus(undefined, { defaultSelection: "rootStart" }),
-            0
-          )
-        }
-        lock.current = false
-      })
     }
 
-    loadInitialContent()
+    editor.update(() => {
+      const parsedState = editor.parseEditorState(state)
+      editor.setEditorState(parsedState)
+      editor.setEditable(Boolean(isEditable))
+
+      if (editor.isEditable()) {
+        if (editor._config.namespace === "eidos-notes-home-page") {
+          // disable auto focus for home page's editor
+          return
+        }
+        setTimeout(
+          () => editor.focus(undefined, { defaultSelection: "rootStart" }),
+          0
+        )
+      }
+      lock.current = false
+    })
   }, [editor, docId, getDoc, isEditable])
+
+  useEffect(() => {
+    loadInitialContent()
+  }, [loadInitialContent])
 
   const { run: debounceSave } = useDebounceFn(updateDoc, { wait: 500 })
 
@@ -191,9 +191,27 @@ export function EidosAutoLoadSaveFocusPlugin(props: AutoSavePluginProps) {
     window.addEventListener("eidos-editor-focus", handleCustomFocus)
 
     return () => {
-      window.addEventListener("eidos-editor-focus", handleCustomFocus)
+      window.removeEventListener("eidos-editor-focus", handleCustomFocus)
     }
   }, [handleFocusRootStart])
+
+  // Add event listener for document refresh from playground
+  useEffect(() => {
+    const handleDocumentRefresh = (event: CustomEvent) => {
+      const { docId: eventDocId } = event.detail || {}
+      // Only refresh if this is the same document
+      if (eventDocId && eventDocId === docId) {
+        console.log(`Refreshing document ${docId} from playground changes`)
+        loadInitialContent()
+      }
+    }
+
+    window.addEventListener("eidos-doc-refresh", handleDocumentRefresh as EventListener)
+
+    return () => {
+      window.removeEventListener("eidos-doc-refresh", handleDocumentRefresh as EventListener)
+    }
+  }, [docId, loadInitialContent])
 
   // Update the keydown effect to use the new function
   useEffect(() => {

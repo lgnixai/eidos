@@ -60,6 +60,7 @@
     "common.nodes": "Nodes",
     "common.notFound": "Not found",
     "common.open": "Open",
+    "common.openInCursor": "Open in Cursor",
     "common.or": "or",
     "common.paste": "Paste",
     "common.pinned": "Pinned",

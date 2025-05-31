@@ -5,16 +5,16 @@ import { Outlet } from "react-router-dom"
 import { useAppStoreBase } from "@/lib/store/app-store"
 import { useWorker } from "@/hooks/use-worker"
 import { SidebarProvider } from "@/components/ui/sidebar"
-import { Toaster } from "@/components/toaster"
 import { BlockUIDialog } from "@/components/block-ui-dialog"
 import { CommandDialogDemo } from "@/components/cmdk"
 import { ShortCuts } from "@/components/keyboard-shortcuts/shortcuts"
 import { TailwindIndicator } from "@/components/tailwind-indicator"
 import { ThemeProvider } from "@/components/theme-provider"
 import { ThemeUpdater } from "@/components/theme-updater"
+import { Toaster } from "@/components/toaster"
+import { WindowControls } from "@/components/window-controls"
 
 import { useProtocolUrl } from "./hooks/useProtocolUrl"
-import { WindowControls } from '@/components/window-controls'
 
 export default function RootLayout() {
   const { isInitialized, initWorker } = useWorker()

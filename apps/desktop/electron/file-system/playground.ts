@@ -50,7 +50,6 @@ export function watchPlayground(
     return watcher;
 }
 
-// 添加一个 Map 来存储每个 playground 的 watcher
 const watcherMap = new Map<string, ReturnType<typeof watch>>();
 
 export async function initializePlayground(
@@ -61,7 +60,6 @@ export async function initializePlayground(
     const userDataPath = getConfigManager().get('dataFolder')
     const playgroundPath = path.join(userDataPath, "playground", `${space}-${blockId}`)
 
-    // 清理旧的 watcher
     const watcherId = `${space}-${blockId}`;
     if (watcherMap.has(watcherId)) {
         watcherMap.get(watcherId)?.close();
@@ -82,11 +80,9 @@ export async function initializePlayground(
         );
     }
 
-    // 保存新的 watcher
     const watcher = watchPlayground(playgroundPath, {
         onChange: (filename, content) => {
-            console.log(`文件 ${filename} 发生变化`);
-            console.log('新的内容:', content);
+            console.log(`file ${filename} changed`);
             win?.webContents.send('playground-file-changed', {
                 filename,
                 content,
@@ -100,7 +96,6 @@ export async function initializePlayground(
     return playgroundPath
 }
 
-// 添加清理函数
 export function cleanupPlaygroundWatchers() {
     for (const watcher of watcherMap.values()) {
         watcher.close();

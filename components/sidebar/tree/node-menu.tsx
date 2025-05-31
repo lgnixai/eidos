@@ -40,6 +40,7 @@ import {
 
 import { NodeMoveInto } from "../../node-menu/move-into"
 import { NodeExportContextMenu } from "../../node-menu/node-export"
+// import { NodeOpenInCursorContextMenu } from "../../node-menu/open-in-cursor"
 import { Input } from "../../ui/input"
 import { useTreeOperations } from "./hooks"
 import { useFolderStore } from "./store"
@@ -236,6 +237,7 @@ export function NodeItem({
           </>
         )}
         {node.type !== "folder" && <NodeExportContextMenu node={node} />}
+        {/* <NodeOpenInCursorContextMenu node={node} /> */}
       </ContextMenuContent>
     </ContextMenu>
   )
