@@ -1,88 +1,70 @@
-import { useMemo, useState } from "react"
 import { IScript } from "@/worker/web-worker/meta-table/script"
 import useUrlState from "@ahooksjs/use-url-state"
 import { useMount } from "ahooks"
 import {
-  AppWindowIcon,
-  FilterIcon,
+  FolderIcon,
   FunctionSquareIcon,
   PencilRulerIcon,
-  ShapesIcon,
   SparkleIcon,
   SquareCodeIcon,
-  ToyBrickIcon,
+  ToyBrickIcon
 } from "lucide-react"
+import { useMemo } from "react"
 import { useLoaderData, useRevalidator } from "react-router-dom"
 
-import { EIDOS_SPACE_BASE_URL } from "@/lib/const"
-import { getExtensionUrl } from "@/lib/utils"
-import { useCurrentPathInfo } from "@/hooks/use-current-pathinfo"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
 import { Switch } from "@/components/ui/switch"
 import { useToast } from "@/components/ui/use-toast"
+import { useCurrentPathInfo } from "@/hooks/use-current-pathinfo"
+import { EIDOS_SPACE_BASE_URL } from "@/lib/const"
+import { cn, getExtensionUrl } from "@/lib/utils"
 
 import { useAppsStore, useSpaceAppStore } from "../store"
 import { NewExtensionButton } from "./components/NewExtensionButton"
-import { ScriptCard } from "./components/ScriptCard"
+import { ScriptListItem } from "./components/ScriptListItem"
 import { useAllApps } from "./hooks/use-all-apps"
 import { useAllBlocks } from "./hooks/use-all-blocks"
 import { useDirHandleStore, useLocalScript } from "./hooks/use-local-script"
 import { useScript } from "./hooks/use-script"
-import { InstallScript } from "./install"
 
 const extensionTypes = [
-  // {
-  //   id: "app",
-  //   name: "App",
-  //   icon: AppWindowIcon,
-  //   isGlobal: true,
-  // },
-  // {
-  //   id: "block",
-  //   name: "Block",
-  //   icon: ShapesIcon,
-  //   isGlobal: true,
-  // },
+  {
+    id: "all",
+    name: "All Extensions",
+    icon: FolderIcon,
+  },
   {
     id: "script",
-    name: "Script",
+    name: "Scripts",
     icon: SquareCodeIcon,
   },
   {
     id: "py_script",
-    name: "Script(Python)",
+    name: "Python Scripts",
     icon: SquareCodeIcon,
   },
   {
     id: "udf",
-    name: "UDF",
+    name: "UDFs",
     icon: FunctionSquareIcon,
   },
   {
     id: "prompt",
-    name: "Prompt",
+    name: "Prompts",
     icon: SparkleIcon,
   },
   {
     id: "m_block",
-    name: "Micro Block",
+    name: "Micro Blocks",
     icon: ToyBrickIcon,
   },
   {
     id: "doc_plugin",
-    name: "Doc Plugin",
+    name: "Doc Plugins",
     icon: PencilRulerIcon,
   },
 ]
@@ -96,7 +78,7 @@ export const ScriptPage = () => {
   const { space } = useCurrentPathInfo()
   const [state, setState] = useUrlState(
     {
-      filter: "All",
+      filter: "all",
       searchTerm: "",
       showEnabledOnly: false,
     },
@@ -156,7 +138,7 @@ export const ScriptPage = () => {
     let filtered = _scripts
 
     // Apply type filter
-    if (filter !== "All") {
+    if (filter !== "all") {
       filtered = filtered.filter(
         (script) => script.type.toLowerCase() === filter.toLowerCase()
       )
@@ -199,7 +181,7 @@ export const ScriptPage = () => {
   const handleAddToSidebar = (blockId: string) => {
     const app = `block://${blockId}@${space}`
     const { apps } = useAppsStore.getState()
-    
+
     // Check if app already exists in sidebar
     if (apps.includes(app)) {
       toast({
@@ -209,7 +191,7 @@ export const ScriptPage = () => {
       })
       return
     }
-    
+
     addApp(app)
     setCurrentApp(app)
     toast({
@@ -273,87 +255,99 @@ export const ScriptPage = () => {
     })
   }
   return (
-    <ScrollArea className="h-full w-full p-2 pt-0">
-      <div className="flex w-full justify-between p-2 pt-1">
-        <NewExtensionButton />
+    <div className="flex h-full">
+      {/* Left Sidebar */}
+      <div className="w-64 border-r p-4">
+        <ScrollArea className="h-full">
+          {extensionTypes.map((type) => {
+            const Icon = type.icon
+            const isActive = filter === type.id
+            const count =
+              type.id === "all"
+                ? _scripts.length
+                : _scripts.filter((s) => s.type === type.id).length
 
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-2">
-            <Label
-              className="text-sm text-muted-foreground"
-              htmlFor="enabled-only"
-            >
-              Enabled Only
-            </Label>
-            <Switch
-              id="enabled-only"
-              checked={showEnabledOnly}
-              onCheckedChange={setShowEnabledOnly}
-            />
+            return (
+              <button
+                key={type.id}
+                className={cn(
+                  "flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors",
+                  isActive
+                    ? "bg-primary text-primary-foreground"
+                    : "hover:bg-muted"
+                )}
+                onClick={() => setFilter(type.id)}
+              >
+                <Icon size={18} />
+                <span className="flex-1 text-left">{type.name}</span>
+                <span className="text-xs opacity-60">{count}</span>
+              </button>
+            )
+          })}
+        </ScrollArea>
+      </div>
+
+      {/* Right Content Area */}
+      <div className="flex-1">
+        <div className="flex items-center justify-between p-4">
+          <div className="text-lg font-semibold">
+            {extensionTypes.find((t) => t.id === filter)?.name ||
+              "All Extensions"}
           </div>
-          <Input
-            className="h-[28px] w-[200px]"
-            placeholder="Search extension..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          <Select
-            onValueChange={(value) => {
-              setFilter(value as string)
-            }}
-            defaultValue="All"
-          >
-            <SelectTrigger className="h-[28px] w-[180px]">
-              <SelectValue placeholder="" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem key={"All"} value={"All"}>
-                <div className="flex items-center gap-2">
-                  <FilterIcon size={18} className=" opacity-60" />
-                  All
-                </div>
-              </SelectItem>
-              {extensionTypes.map((type) => {
-                const Icon = IconMap[type.id as keyof typeof IconMap]
-                return (
-                  <SelectItem key={type.id} value={type.id}>
-                    <div className="flex items-center gap-2">
-                      <Icon size={18} className=" opacity-60" />
-                      {type.name}{" "}
-                      {/* {type.isGlobal && (
-                        <Badge variant="secondary">Global</Badge>
-                      )} */}
-                    </div>
-                  </SelectItem>
-                )
-              })}
-            </SelectContent>
-          </Select>
-          <Button
-            variant="outline"
-            size="xs"
-            onClick={() => window.open(storeURL, "_blank")}
-          >
-            Install
-          </Button>
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2">
+              <Label
+                className="text-sm text-muted-foreground"
+                htmlFor="enabled-only"
+              >
+                Enabled Only
+              </Label>
+              <Switch
+                id="enabled-only"
+                checked={showEnabledOnly}
+                onCheckedChange={setShowEnabledOnly}
+              />
+            </div>
+            <Input
+              className="h-[32px] w-[200px]"
+              placeholder="Search extension..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => window.open(storeURL, "_blank")}
+            >
+              Install
+            </Button>
+            <NewExtensionButton />
+          </div>
         </div>
+        <Separator />
+        <ScrollArea className="h-[calc(100vh-120px)]">
+          <div className="divide-y">
+            {filterExts.map((script) => (
+              <ScriptListItem
+                key={script.id}
+                script={script}
+                space={space}
+                onDelete={handleDelete}
+                onToggleEnabled={handleToggleEnabled}
+                onAddToSidebar={handleAddToSidebar}
+                onOpenStandalone={handleOpenStandalone}
+                showReload={Boolean(dirHandle) && scriptId === script.id}
+                onReload={handleReload}
+              />
+            ))}
+            {filterExts.length === 0 && (
+              <div className="flex h-32 items-center justify-center text-sm text-muted-foreground">
+                No extensions found
+              </div>
+            )}
+          </div>
+        </ScrollArea>
       </div>
-      <Separator />
-      <div className="grid w-full grid-cols-1 gap-4 p-4 md:grid-cols-2 xl:grid-cols-3">
-        {filterExts.map((script) => (
-          <ScriptCard
-            key={script.id}
-            script={script}
-            space={space}
-            onDelete={handleDelete}
-            onToggleEnabled={handleToggleEnabled}
-            onAddToSidebar={handleAddToSidebar}
-            onOpenStandalone={handleOpenStandalone}
-            showReload={Boolean(dirHandle) && scriptId === script.id}
-            onReload={handleReload}
-          />
-        ))}
-      </div>
-    </ScrollArea>
+    </div>
   )
 }
