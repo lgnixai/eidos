@@ -3,6 +3,7 @@ import { useClickAway } from "ahooks"
 import {
   ClipboardPasteIcon,
   CopyIcon,
+  FileIcon,
   FilePlus2Icon,
   FileSpreadsheetIcon,
   FolderPlusIcon,
@@ -18,6 +19,7 @@ import { useNavigate } from "react-router-dom"
 
 import { isInkServiceMode } from "@/lib/env"
 import { ITreeNode } from "@/lib/store/ITreeNode"
+import { useAllExtNodes } from "@/hooks/use-all-ext-nodes"
 import { useCurrentPathInfo } from "@/hooks/use-current-pathinfo"
 import { useGoto } from "@/hooks/use-goto"
 import { useNodeTree } from "@/hooks/use-node-tree"
@@ -66,6 +68,7 @@ export function NodeItem({
     deleteNode,
     renameNode,
     sqlite,
+    createExtNode,
     createFolder,
   } = useSqlite(databaseName)
   const { setNode, pin, unpin } = useNodeTree()
@@ -76,6 +79,8 @@ export function NodeItem({
   const renameInputRef = useRef<HTMLInputElement>(null)
   const { space } = useCurrentPathInfo()
   const goto = useGoto()
+
+  const { extNodes } = useAllExtNodes()
 
   const handleCreateDoc = async () => {
     const docId = await createDoc("", node.id)
@@ -88,6 +93,15 @@ export function NodeItem({
   }
   const handleCreateFolder = () => {
     createFolder(node.id)
+  }
+
+  const handleCreateExtNode = async (type: ITreeNode["type"]) => {
+    const extNode = extNodes.find((node) => node.ext_node_type === type)
+    if (!extNode) return
+    console.log("creating ", extNode)
+    const extNodeId = await createExtNode(extNode.ext_node_type, node.id)
+    if (!extNodeId) return
+    goto(space, extNodeId)
   }
 
   useClickAway(() => {
@@ -210,6 +224,16 @@ export function NodeItem({
               <FolderPlusIcon className="pr-2" />
               {t("node.menu.newNestedFolder")}
             </ContextMenuItem>
+            {extNodes.length > 0 && <ContextMenuSeparator />}
+            {extNodes.map((extNode) => (
+              <ContextMenuItem
+                key={extNode.ext_node_type}
+                onClick={() => handleCreateExtNode(extNode.ext_node_type)}
+              >
+                <FileIcon className="pr-2" />
+                {extNode.name}
+              </ContextMenuItem>
+            ))}
           </>
         )}
         {node.type === "table" && (

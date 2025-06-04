@@ -12,12 +12,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-import { useNewScript } from "../hooks/use-new-script"
+import { useNewExtension } from "../hooks/use-new-extension"
 
 const ExtensionTooltip = ({ children }: { children: React.ReactNode }) => {
   return (
     <div
-      className="ring invisible group-hover:visible absolute right-full top-0 mr-2 w-64 rounded-md border bg-popover p-3 text-sm before:absolute before:-right-4 before:top-0 before:h-full before:w-4"
+      className="ring ring-primary invisible group-hover:visible absolute right-full top-0 mr-2 w-64 rounded-md border text-popover-foreground bg-popover p-3 text-sm before:absolute before:-right-4 before:top-0 before:h-full before:w-4"
       onClick={(e) => e.stopPropagation()}
     >
       {children}
@@ -26,7 +26,7 @@ const ExtensionTooltip = ({ children }: { children: React.ReactNode }) => {
 }
 
 export const NewExtensionButton = () => {
-  const { handleCreateNewScript } = useNewScript()
+  const { handleCreateNewExtension } = useNewExtension()
   const { t } = useTranslation()
 
   return (
@@ -41,21 +41,37 @@ export const NewExtensionButton = () => {
         <DropdownMenuSeparator />
         <DropdownMenuItem
           className="group relative"
-          onClick={() => handleCreateNewScript("m_block")}
+          onClick={() => handleCreateNewExtension("m_block")}
         >
           {t("extension.microBlock")}{" "}
-          <ExtensionTooltip>{t("extension.microBlockDescription")}</ExtensionTooltip>
+          <ExtensionTooltip>
+            {t("extension.microBlockDescription")}
+          </ExtensionTooltip>
         </DropdownMenuItem>
         <DropdownMenuItem
           className="group relative"
-          onClick={() => handleCreateNewScript()}
+          onClick={() => handleCreateNewExtension()}
         >
           {t("extension.script")}
-          <ExtensionTooltip>{t("extension.scriptDescription")}</ExtensionTooltip>
+          <ExtensionTooltip>
+            {t("extension.scriptDescription")}
+          </ExtensionTooltip>
         </DropdownMenuItem>
         <DropdownMenuItem
           className="group relative"
-          onClick={() => handleCreateNewScript("udf")}
+          onClick={() => handleCreateNewExtension("ext_node")}
+        >
+          {t("extension.extNode")}
+          <Badge variant="default" className="bg-primary">
+            {t("common.badge.new")}
+          </Badge>
+          <ExtensionTooltip>
+            {t("extension.extNodeDescription")}
+          </ExtensionTooltip>
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          className="group relative"
+          onClick={() => handleCreateNewExtension("udf")}
         >
           {t("extension.udf")}{" "}
           <Badge variant="secondary">{t("common.badge.alpha")}</Badge>
@@ -67,22 +83,26 @@ export const NewExtensionButton = () => {
         </DropdownMenuItem>
         <DropdownMenuItem
           className="group relative"
-          onClick={() => handleCreateNewScript("prompt")}
+          onClick={() => handleCreateNewExtension("prompt")}
         >
           {t("extension.prompt")}
-          <ExtensionTooltip>{t("extension.promptDescription")}</ExtensionTooltip>
+          <ExtensionTooltip>
+            {t("extension.promptDescription")}
+          </ExtensionTooltip>
         </DropdownMenuItem>
         <DropdownMenuItem
           className="group relative"
-          onClick={() => handleCreateNewScript("doc_plugin")}
+          onClick={() => handleCreateNewExtension("doc_plugin")}
         >
           {t("extension.docPlugin")}
           <Badge variant="secondary">{t("common.badge.alpha")}</Badge>
-          <ExtensionTooltip>{t("extension.docPluginDescription")}</ExtensionTooltip>
+          <ExtensionTooltip>
+            {t("extension.docPluginDescription")}
+          </ExtensionTooltip>
         </DropdownMenuItem>
         <DropdownMenuItem
           className="group relative"
-          onClick={() => handleCreateNewScript("py_script")}
+          onClick={() => handleCreateNewExtension("py_script")}
         >
           {t("extension.pythonScript")}{" "}
           <Badge variant="secondary">{t("common.badge.alpha")}</Badge>

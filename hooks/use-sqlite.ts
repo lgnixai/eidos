@@ -332,6 +332,14 @@ export const useSqlite = (dbName?: string) => {
     node && addNode(node)
     return folderId
   }
+
+  const createExtNode = async (ext_node_type: string, parent_id?: string) => {
+    if (!sqlWorker) return
+    const node = await sqlWorker.createExtNode(ext_node_type, parent_id)
+    node && addNode(node)
+    return node?.id
+  }
+
   // create table with default template
   const createTable = async (tableName: string, parent_id?: string) => {
     if (!sqlWorker) return
@@ -619,6 +627,7 @@ export const useSqlite = (dbName?: string) => {
     createTable,
     deleteTable,
     createFolder,
+    createExtNode,
     duplicateTable,
     queryAllTables: queryAllNodes,
     updateNodeList,

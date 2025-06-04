@@ -8,13 +8,13 @@ import { useExtension } from "../../../../../hooks/use-extension"
 import mblockTemplate from "./template/new-micro-block?raw"
 import docPluginTemplate from "./template/new-doc-plugin?raw"
 import pythonScriptTemplate from "./template/new-python-script.py?raw"
-export const useNewScript = () => {
+export const useNewExtension = () => {
   const { addExtension } = useExtension()
   const router = useNavigate()
   const { space } = useCurrentPathInfo()
 
-  const handleCreateNewScript = async (
-    template: "script" | "udf" | "m_block" | "prompt" | "doc_plugin" | "py_script" = "script"
+  const handleCreateNewExtension = async (
+    template: "script" | "udf" | "m_block" | "prompt" | "doc_plugin" | "py_script" | "ext_node" = "script"
   ) => {
     const newScriptId = generateId()
     const newScript: IExtension = {
@@ -94,6 +94,16 @@ export const useNewScript = () => {
       code: pythonScriptTemplate,
     }
 
+    const extNode: IExtension = {
+      id: newScriptId,
+      name: `New Ext Node - ${newScriptId}`,
+      commands: [],
+      type: "ext_node",
+      description: "Ext Node Description",
+      version: "0.0.1",
+      code: ``,
+    }
+
     const templateMap = {
       script: newScript,
       udf: newUDFScript,
@@ -101,6 +111,7 @@ export const useNewScript = () => {
       m_block: mBlockScript,
       doc_plugin: docPluginScript,
       py_script: pythonScript,
+      ext_node: extNode,
     }
 
     const script = templateMap[template]
@@ -109,6 +120,6 @@ export const useNewScript = () => {
   }
 
   return {
-    handleCreateNewScript,
+    handleCreateNewExtension,
   }
 }

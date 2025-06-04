@@ -10,14 +10,14 @@ import { useEffect, useState, useSyncExternalStore } from 'react'
 import { z } from 'zod'
 
 // Base type that all reactive data must extend
-interface BaseReactiveData {
+type BaseReactiveData = {
     id: string
-}
+} & Record<string, any>
 
-type CommonData = BaseReactiveData & Record<string, any>
+type CommonData = BaseReactiveData
 interface ReactiveDataConfig<T extends BaseReactiveData> {
     modeName: string;
-    schema: z.ZodType<T>
+    // schema: z.ZodType<T>
     get?: (sqlite: DataSpace, id: string) => Promise<T>
     set?: (sqlite: DataSpace, data: T) => Promise<void>
     del?: (sqlite: DataSpace, data: T) => Promise<void>
@@ -29,13 +29,6 @@ interface ReactiveDataState<T extends BaseReactiveData> {
     items: Record<string, T>
     itemsList: T[]
 }
-
-interface PaginationParams {
-    page: number
-    pageSize: number
-}
-
-
 
 
 export function createReactiveData<T extends BaseReactiveData>(config: ReactiveDataConfig<T>) {

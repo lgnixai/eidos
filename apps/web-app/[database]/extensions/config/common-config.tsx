@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next"
 import { useLoaderData, useNavigate, useRevalidator } from "react-router-dom"
 
 import { useCurrentPathInfo } from "@/hooks/use-current-pathinfo"
+import { useExtension } from "@/hooks/use-extension"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -26,8 +27,8 @@ import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/components/ui/use-toast"
 
-import { useExtension } from "../../../../../hooks/use-extension"
 import { BlockConfig } from "./block-config"
+import { ExtNodeConfig } from "./ext-node-config"
 import { PromptConfig } from "./prompt-config"
 import { ScriptConfig } from "./script-config"
 
@@ -281,6 +282,7 @@ export const ExtensionConfig = () => {
         <ScriptConfig />
       )}
       {script.type === "m_block" && <BlockConfig />}
+      {script.type === "ext_node" && <ExtNodeConfig />}
 
       <Card className="border-destructive">
         <CardHeader>
@@ -293,7 +295,9 @@ export const ExtensionConfig = () => {
         </CardHeader>
         <CardContent className="flex items-center justify-between">
           <div className="flex flex-col">
-            <p className="font-medium">{t("extension.config.deleteExtension")}</p>
+            <p className="font-medium">
+              {t("extension.config.deleteExtension")}
+            </p>
             <p className="text-sm text-muted-foreground">
               {t("extension.config.deleteExtensionDescription")}
             </p>

@@ -18,13 +18,13 @@ export const useAllNodes = (opts?: {
   if (isDeleted) {
     return nodeIds
       .map((id) => nodeMap[id])
-      .filter((node) => node.is_deleted && types.includes(node.type))
+      .filter((node) => node.is_deleted && (types.includes(node.type) || node.type.startsWith('ext__')))
   }
   return nodeIds
     .map((id) => nodeMap[id])
     .filter(
       (node) =>
-        types.includes(node.type) &&
+        (types.includes(node.type) || node.type.startsWith('ext__')) &&
         !node.is_deleted &&
         (parent_id ? node.parent_id === parent_id : true)
     )

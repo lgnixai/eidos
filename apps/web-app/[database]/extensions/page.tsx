@@ -3,6 +3,7 @@ import { IExtension } from "@/worker/web-worker/meta-table/extension"
 import useUrlState from "@ahooksjs/use-url-state"
 import { useMount } from "ahooks"
 import {
+  FileIcon,
   FolderIcon,
   FunctionSquareIcon,
   PencilRulerIcon,
@@ -25,11 +26,11 @@ import { Switch } from "@/components/ui/switch"
 import { useToast } from "@/components/ui/use-toast"
 
 import { useAppsStore, useSpaceAppStore } from "../store"
-import { NewExtensionButton } from "./components/new-extension-button"
 import { ExtensionListItem } from "./components/extension-list-item"
+import { NewExtensionButton } from "./components/new-extension-button"
 import { useDirHandleStore, useLocalScript } from "./hooks/use-local-script"
 
-const extensionTypes = [
+export const extensionTypes = [
   {
     id: "all",
     name: "All Extensions",
@@ -44,6 +45,11 @@ const extensionTypes = [
     id: "script",
     name: "Scripts",
     icon: SquareCodeIcon,
+  },
+  {
+    id: "ext_node",
+    name: "Ext Nodes",
+    icon: FileIcon,
   },
   {
     id: "udf",
@@ -126,8 +132,13 @@ export const ScriptPage = () => {
     return filtered
   }, [filter, _scripts, searchTerm, showEnabledOnly])
 
-  const { deleteExtension, enableExtension, disableExtension, updateExtension, addExtension } =
-    useExtension()
+  const {
+    deleteExtension,
+    enableExtension,
+    disableExtension,
+    updateExtension,
+    addExtension,
+  } = useExtension()
   const revalidator = useRevalidator()
 
   // Add sidebar functionality

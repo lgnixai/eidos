@@ -7,6 +7,7 @@ import { getWeek, isDayPageId, isWeekNodeId } from "@/lib/utils"
 import { useExtensionById } from "@/hooks/use-extension"
 import { useSqliteStore } from "./use-sqlite"
 import { EIDOS_CHAT_PROJECT_ID } from "@/lib/const"
+import { useAllExtNodes } from "./use-all-ext-nodes"
 
 export const useNodeMap = () => {
   const {
@@ -32,6 +33,17 @@ export const useCurrentExtension = () => {
   const { scriptId: extensionId } = useParams()
   const extension = useExtensionById(extensionId!)
   return extension
+}
+
+
+export const useCurrentExtNodeHandleBlockId = () => {
+  const node = useCurrentNode()
+  const { extNodes } = useAllExtNodes()
+  if (!node) return null
+  if (!node.type.startsWith("ext__")) return null
+  const extNode = extNodes.find((extNode) => extNode.ext_node_type === node.type.split('ext__')[1])
+  if (!extNode) return null
+  return extNode.ext_node_handle_block_id
 }
 
 /**

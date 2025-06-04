@@ -171,6 +171,8 @@
     "extension.details": "详情",
     "extension.docPlugin": "文档插件",
     "extension.docPluginDescription": "自定义文档内容和行为",
+    "extension.extNode": "自定义节点",
+    "extension.extNodeDescription": "创建自定义节点类型。支持自定义渲染和交互。",
     "extension.microBlock": "微组件",
     "extension.microBlockDescription": "用于自定义数据显示和交互的 UI 组件。可以在文档、封面和右侧面板中引用",
     "extension.prompt": "提示词",

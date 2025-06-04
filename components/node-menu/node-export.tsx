@@ -1,4 +1,5 @@
 import { DownloadIcon } from "lucide-react"
+import { useTranslation } from "react-i18next"
 
 import { ITreeNode } from "@/lib/store/ITreeNode"
 import { downloadFile } from "@/lib/web/file"
@@ -16,7 +17,6 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
 } from "@/components/ui/dropdown-menu"
-import { useTranslation } from "react-i18next"
 
 export const NodeExportContextMenu = ({ node }: { node: ITreeNode }) => {
   const { sqlite } = useSqlite()
@@ -59,25 +59,28 @@ export const NodeExportContextMenu = ({ node }: { node: ITreeNode }) => {
       </ContextMenuSub>
     )
   }
-  return (
-    <ContextMenuSub>
-      <ContextMenuSubTrigger>
-        <DownloadIcon className="pr-2" />
-        {t("common.export")}
-      </ContextMenuSubTrigger>
-      <ContextMenuSubContent>
-        <ContextMenuContent>
-          <ContextMenuItem
-            onClick={() => {
-              exportDoc(node.id)
-            }}
-          >
-            Markdown(.md)
-          </ContextMenuItem>
-        </ContextMenuContent>
-      </ContextMenuSubContent>
-    </ContextMenuSub>
-  )
+  if (node.type === "doc") {
+    return (
+      <ContextMenuSub>
+        <ContextMenuSubTrigger>
+          <DownloadIcon className="pr-2" />
+          {t("common.export")}
+        </ContextMenuSubTrigger>
+        <ContextMenuSubContent>
+          <ContextMenuContent>
+            <ContextMenuItem
+              onClick={() => {
+                exportDoc(node.id)
+              }}
+            >
+              Markdown(.md)
+            </ContextMenuItem>
+          </ContextMenuContent>
+        </ContextMenuSubContent>
+      </ContextMenuSub>
+    )
+  }
+  return null
 }
 
 export const NodeExport = ({ node }: { node: ITreeNode }) => {

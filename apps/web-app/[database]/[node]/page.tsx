@@ -10,7 +10,11 @@ import {
   EidosDataEventChannelName,
 } from "@/lib/const"
 import { isInkServiceMode } from "@/lib/env"
-import { useCurrentNode, useNodeMap } from "@/hooks/use-current-node"
+import {
+  useCurrentExtNodeHandleBlockId,
+  useCurrentNode,
+  useNodeMap,
+} from "@/hooks/use-current-node"
 import { useCurrentPathInfo } from "@/hooks/use-current-pathinfo"
 import { useEmoji } from "@/hooks/use-emoji"
 import { useNode } from "@/hooks/use-nodes"
@@ -18,6 +22,8 @@ import { useSqlite } from "@/hooks/use-sqlite"
 import { useUiColumns } from "@/hooks/use-ui-columns"
 import { Button } from "@/components/ui/button"
 import { toast } from "@/components/ui/use-toast"
+import { BlockApp } from "@/components/block-renderer/block-app"
+import { ExtNodeBlockApp } from "@/components/block-renderer/ext-node-block-app"
 import { DocProperty } from "@/components/doc-property"
 import { Editor } from "@/components/doc/editor"
 import { FolderTree } from "@/components/folder"
@@ -43,6 +49,8 @@ export const NodeComponent = ({
   const nodeMap = useNodeMap()
   const { updateUiColumns } = useUiColumns(tableName)
 
+  const handleBlockId = useCurrentExtNodeHandleBlockId()
+  const { space } = useCurrentPathInfo()
   const { getEmoji } = useEmoji()
   const { updateIcon, updateCover, updateHideProperties } = useNode()
   const { generateTitle, isLoading: isTitleGenerating } = useGenerateTitle()
@@ -121,6 +129,15 @@ export const NodeComponent = ({
   return (
     <>
       <NodeRestore node={node} />
+      {node?.type.startsWith("ext__") && handleBlockId && (
+        <div className="flex h-full w-full">
+          <ExtNodeBlockApp
+            space={space}
+            blockId={handleBlockId}
+            nodeId={nodeId}
+          />
+        </div>
+      )}
       {node?.type === "table" && (
         <Table
           tableName={params.tableName!}

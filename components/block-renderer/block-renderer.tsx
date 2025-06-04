@@ -31,6 +31,7 @@ interface BlockRendererProps {
   width?: string | number
   height?: string | number
   defaultProps?: Record<string, any>
+  rerenderOnDefaultPropsChange?: boolean
 }
 
 export const BlockRenderer = React.forwardRef<
@@ -47,6 +48,7 @@ export const BlockRenderer = React.forwardRef<
       height,
       defaultProps = {},
       bindings = {},
+      rerenderOnDefaultPropsChange,
     },
     ref
   ) => {
@@ -59,6 +61,12 @@ export const BlockRenderer = React.forwardRef<
 
     const webviewRef = useRef<HTMLWebViewElement | null>(null)
     const [importMap, setImportMap] = useState<string>("")
+    const [extUrl, setExtUrl] = useState<string>(
+      serializePropsToUrl(
+        defaultProps,
+        `http://${blockId}.ext.${space}.eidos.localhost:13127/`
+      )
+    )
 
     const defaultPropsString = JSON.stringify(defaultProps)
 
@@ -334,14 +342,29 @@ export const BlockRenderer = React.forwardRef<
       []
     )
 
-    const extUrl = useMemo(() => {
-      return serializePropsToUrl(
+    useEffect(() => {
+      const url = serializePropsToUrl(
         defaultProps,
         `http://${blockId}.ext.${space}.eidos.localhost:13127/`
       )
+      if (url !== extUrl) {
+        setExtUrl(url)
+      }
       // do not listen to defaultProps changes, avoid webview repeating props-change messages
       // the message mechanism can ensure subsequent changes are passed
     }, [blockId, space])
+
+    useEffect(() => {
+      if (rerenderOnDefaultPropsChange) {
+        const url = serializePropsToUrl(
+          defaultProps,
+          `http://${blockId}.ext.${space}.eidos.localhost:13127/`
+        )
+        if (url !== extUrl) {
+          setExtUrl(url)
+        }
+      }
+    }, [blockId, space, extUrl, defaultProps, rerenderOnDefaultPropsChange])
 
     const style = {
       border: "none",

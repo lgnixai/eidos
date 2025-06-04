@@ -5,16 +5,23 @@ import { z } from 'zod'
 import { createReactiveData } from "./use-reactive-data"
 
 // Define the schema for mblocks
-const mblockSchema = z.object({
-    id: z.string(),
-    name: z.string(),
-    icon: z.string().optional(),
-    type: z.literal("m_block"),
-    code: z.string(),
-})
+// const mblockSchema = z.object({
+//     id: z.string(),
+//     name: z.string(),
+//     icon: z.string().optional(),
+//     type: z.literal("m_block"),
+//     code: z.string(),
+// })
 
-type Mblock = z.infer<typeof mblockSchema>
+// export type Mblock = z.infer<typeof mblockSchema>
 
+export interface Mblock {
+    id: string
+    name: string
+    icon?: string
+    type: "m_block"
+    code: string
+}
 // Create the reactive data store
 const {
     useItemsList,
@@ -22,7 +29,7 @@ const {
     useReload
 } = createReactiveData<Mblock>({
     modeName: ScriptTableName,
-    schema: mblockSchema,
+    // schema: mblockSchema,
     list: async (sqlite: DataSpace) => {
         const blocks = await sqlite.extension.list({
             type: "m_block",

@@ -8,16 +8,17 @@ import {
 } from "lucide-react"
 import { Link } from "react-router-dom"
 
-import { IconMap } from "../page"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Switch } from "@/components/ui/switch"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Badge } from "@/components/ui/badge"
+import { Switch } from "@/components/ui/switch"
+
+import { IconMap } from "../page"
 
 interface ExtensionListItemProps {
   script: IExtension
@@ -45,7 +46,7 @@ export const ExtensionListItem = ({
 
   return (
     <div className="flex items-center justify-between border-b px-4 py-3 hover:bg-muted/50">
-      <Link 
+      <Link
         to={`/${space}/extensions/${script.id}`}
         className="flex flex-1 items-center gap-3"
       >
@@ -64,11 +65,9 @@ export const ExtensionListItem = ({
             <Badge variant="outline" className="text-xs">
               v{script.version}
             </Badge>
-            {script.type === "m_block" && (
-              <Badge variant="secondary" className="text-xs">
-                Micro Block
-              </Badge>
-            )}
+            <Badge variant="secondary" className="text-xs">
+              {script.type}
+            </Badge>
           </div>
           <div className="text-sm text-muted-foreground">
             {script.description || "No description"}
@@ -76,7 +75,10 @@ export const ExtensionListItem = ({
         </div>
       </Link>
 
-      <div className="flex items-center gap-2" onClick={(e) => e.preventDefault()}>
+      <div
+        className="flex items-center gap-2"
+        onClick={(e) => e.preventDefault()}
+      >
         {showReload && (
           <Button
             variant="ghost"
@@ -122,4 +124,4 @@ export const ExtensionListItem = ({
       </div>
     </div>
   )
-} 
+}

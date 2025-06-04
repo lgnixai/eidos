@@ -1,4 +1,3 @@
-
 import { MsgType } from "@/lib/const"
 import { FieldType } from "@/lib/fields/const"
 import { ColumnTableName } from "@/lib/sqlite/const"
@@ -19,6 +18,7 @@ import {
   getRawTableNameById,
   getTableIdByRawTableName,
   isDayPageId,
+  uuidv7,
 } from "@/lib/utils"
 
 import { BaseServerDatabase } from "@/lib/sqlite/interface"
@@ -48,6 +48,7 @@ import { RowsManager } from "./sdk/rows"
 import { TableManager } from "./sdk/table"
 import { withSqlite3AllUDF } from "./udf"
 import { TableSemanticSearch } from "./data-pipeline/TableSemanticSearch"
+import { ExtNodeTable } from "./meta-table/extnode"
 // import { QueueTable } from "./meta-table/queue"
 
 export type EidosTable =
@@ -84,6 +85,7 @@ export class DataSpace {
   chat: ChatTable
   message: MessageTable
   file: FileTable
+  extNode: ExtNodeTable
   dataChangeTrigger: DataChangeTrigger
   linkRelationUpdater: LinkRelationUpdater
   allTables: BaseTable<any>[] = []
@@ -178,6 +180,7 @@ export class DataSpace {
     this.reference = new ReferenceTable(this)
     this.chat = new ChatTable(this)
     this.message = new MessageTable(this)
+    this.extNode = new ExtNodeTable(this)
     // this.queue = new QueueTable(this)
     //
     this.allTables = [
@@ -192,6 +195,7 @@ export class DataSpace {
       this.reference,
       this.chat,
       this.message,
+      this.extNode,
       // this.queue
     ]
     this.initMetaTable()
@@ -697,6 +701,24 @@ export class DataSpace {
     const tableName = getRawTableNameById(tableId)
     await this.tableFullTextSearch.rebuildFTS(tableName)
     this.blockUIMsg(null)
+  }
+
+  public async createExtNode(ext_node_type: string, parent_id?: string): Promise<ITreeNode | null> {
+    const extNodeId = uuidv7().split("-").join("")
+    let extNode: ITreeNode | null = null
+    await this.db.transaction(async (db) => {
+      extNode = await this.addTreeNode({
+        id: extNodeId,
+        name: '',
+        type: `ext__${ext_node_type}`,
+        parent_id,
+      })
+      await this.extNode.addExtNode({
+        id: extNodeId,
+        type: ext_node_type,
+      })
+    })
+    return extNode
   }
 
   @timeit(100)

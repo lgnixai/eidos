@@ -1,5 +1,6 @@
 /// <reference types="react" resolution-mode="require"/>
 /// <reference types="node" />
+/// <reference types="node" />
 declare module "packages/lib/env" {
     export const logger: Console;
     export const EIDOS_VERSION = "0.19.0";
@@ -247,6 +248,7 @@ declare module "packages/lib/const" {
         UpdateColumn = "eidos-update-column"
     }
     export const EIDOS_SPACE_BASE_URL: string;
+    export const EIDOS_CHAT_PROJECT_ID = "EIDOS_CHAT";
 }
 declare module "packages/lib/fields/const" {
     export enum FieldType {
@@ -396,6 +398,7 @@ declare module "packages/lib/sqlite/const" {
     export const ChatTableName = "eidos__chats";
     export const MessageTableName = "eidos__messages";
     export const QueueTableName = "eidos__queue";
+    export const ExtNodeTableName = "eidos__extnodes";
 }
 declare module "packages/lib/store/ITreeNode" {
     export interface ITreeNode {
@@ -522,6 +525,7 @@ declare module "packages/lib/utils" {
     export function sanitizeUIMessages(messages: Array<Message>): Array<Message>;
     export function getMessageIdFromAnnotations(message: Message): any;
     export const isUuidv4: (id: string) => boolean;
+    export const isUuid: (id: string) => boolean;
     export function nonNullable<T>(value: T): value is NonNullable<T>;
     export const hashText: (text: string) => number;
     export const checkIsInWorker: () => boolean;
@@ -577,8 +581,23 @@ declare module "packages/lib/utils" {
     export const getBlockIdFromUrl: (url: string) => string;
     export const getBlockUrlWithParams: (id: string, params: Record<string, any>) => string;
     export const isStandaloneBlocksPath: (pathname: string) => boolean;
+    export const isExtensionURL: (url: string) => boolean;
+    /**
+     *
+     * @param url http://287c3686-f1e1-4b10-965e-2daa35a422fc.ext.25-w19.eidos.localhost:13127
+     * return {
+     *  id: '287c3686-f1e1-4b10-965e-2daa35a422fc',
+     *  space: '25-w19',
+     * }
+     */
+    export const getInfoFromExtensionUrl: (url: string) => {
+        id: string;
+        space: string;
+    };
+    export const getExtensionUrl: (id: string, space: string, searchParams?: Record<string, string>) => string;
     export const isFilesPath: (pathname: string) => boolean;
     export const fetcher: (url: string) => Promise<any>;
+    export const serializePropsToUrl: (props: Record<string, any>, url: string) => string;
 }
 declare module "packages/lib/sqlite/sql-formula-parser" {
     import { IField } from "packages/lib/store/interface";
@@ -963,61 +982,95 @@ declare module "packages/worker/web-worker/meta-table/file" {
         }>;
     }
 }
-declare module "packages/lib/store/runtime-store" {
+declare module "packages/lib/sqlite/sql-meta-table-trigger" {
     /**
-     * state store for runtime, for cross component communication
+     * SQL Meta Table Trigger Generator
+     *
+     * Provides utility functions to generate standardized triggers for meta tables
+     * that emit events for INSERT and UPDATE operations.
      */
-    import { IFile } from "packages/worker/web-worker/meta-table/file";
-    interface AppRuntimeState {
-        isCmdkOpen: boolean;
-        setCmdkOpen: (isCmdkOpen: boolean) => void;
-        isKeyboardShortcutsOpen: boolean;
-        setKeyboardShortcutsOpen: (isKeyboardShortcutsOpen: boolean) => void;
-        isShareMode: boolean;
-        setShareMode: (isShareMode: boolean) => void;
-        isEmbeddingModeLoaded: boolean;
-        setEmbeddingModeLoaded: (isEmbeddingModeLoaded: boolean) => void;
-        currentPreviewFile: IFile | null;
-        setCurrentPreviewFile: (currentPreviewFile: IFile) => void;
-        isWebsocketConnected: boolean;
-        setWebsocketConnected: (isWebsocketConnected: boolean) => void;
-        disableDocAIComplete: boolean;
-        setDisableDocAIComplete: (disableDocAIComplete: boolean) => void;
-        isCompleteLoading: boolean;
-        setCompleteLoading: (isCompleteLoading: boolean) => void;
-        scriptContainerRef: React.RefObject<any> | null;
-        setScriptContainerRef: (scriptContainerRef: React.RefObject<any>) => void;
-        blockUIMsg: string | null;
-        blockUIData?: Record<string, any>;
-        setBlockUIMsg: (blockUIMsg: string | null) => void;
-        setBlockUIData: (blockUIData: Record<string, any>) => void;
-        runningCommand: string | null;
-        setRunningCommand: (runningCommand: string | null) => void;
+    export interface TriggerField {
+        name: string;
+        type?: 'TEXT' | 'INTEGER' | 'REAL' | 'BOOLEAN' | 'TIMESTAMP';
     }
-    export const useAppRuntimeStore: import("zustand").UseBoundStore<import("zustand").StoreApi<AppRuntimeState>>;
+    export type TriggerOperation = 'insert' | 'update' | 'both';
+    export interface TriggerOptions {
+        tableName: string;
+        fields: TriggerField[];
+        /**
+         * Which operations to generate triggers for (default: 'both')
+         */
+        operations?: TriggerOperation;
+        /**
+         * Custom trigger name suffix, defaults to standard naming
+         */
+        triggerSuffix?: {
+            insert?: string;
+            update?: string;
+        };
+        /**
+         * Whether to create temporary triggers (default: true)
+         */
+        temporary?: boolean;
+        /**
+         * Custom event function names
+         */
+        eventFunctions?: {
+            insert?: string;
+            update?: string;
+        };
+    }
+    /**
+     * Generate INSERT trigger SQL
+     */
+    export function generateInsertTrigger(options: TriggerOptions): string;
+    /**
+     * Generate UPDATE trigger SQL
+     */
+    export function generateUpdateTrigger(options: TriggerOptions): string;
+    /**
+     * Generate both INSERT and UPDATE triggers
+     */
+    export function generateMetaTableTriggers(options: TriggerOptions): string;
+    /**
+     * Convenience function to create triggers with field names only
+     */
+    export function createTriggersForFields(tableName: string, fieldNames: string[], operations?: TriggerOperation): string;
+    /**
+     * Convenience function to create only INSERT trigger
+     */
+    export function createInsertTriggerForFields(tableName: string, fieldNames: string[]): string;
+    /**
+     * Convenience function to create only UPDATE trigger
+     */
+    export function createUpdateTriggerForFields(tableName: string, fieldNames: string[]): string;
 }
-declare module "packages/worker/web-worker/meta-table/script" {
+declare module "packages/worker/web-worker/meta-table/extension" {
     import { JsonSchema7ObjectType } from "zod-to-json-schema";
     import { BaseTable, BaseTableImpl } from "packages/worker/web-worker/meta-table/base";
-    export type ScriptStatus = "all" | "enabled" | "disabled";
+    export type ExtensionStatus = "all" | "enabled" | "disabled";
     export interface ICommand {
         name: string;
         description: string;
         inputJSONSchema?: JsonSchema7ObjectType;
         outputJSONSchema?: JsonSchema7ObjectType;
         asTableAction?: boolean;
+        asTool?: boolean;
     }
     export interface IPromptConfig {
         model?: string;
         actions?: string[];
     }
-    export interface IScript {
+    export interface IExtension {
         id: string;
         name: string;
-        type: "script" | "udf" | "prompt" | "block" | "app" | "m_block" | "doc_plugin" | "py_script";
+        type: "script" | "udf" | "prompt" | "block" | "app" | "m_block" | "doc_plugin" | "py_script" | "ext_node";
+        ext_node_type?: string;
+        ext_node_handle_block_id?: string;
         description: string;
         version: string;
         code: string;
+        icon?: string;
         marketplace_id?: string;
         ts_code?: string;
         enabled?: boolean;
@@ -1054,7 +1107,7 @@ declare module "packages/worker/web-worker/meta-table/script" {
         }>;
         dependencies?: string[];
     }
-    export class ScriptTable extends BaseTableImpl<IScript> implements BaseTable<IScript> {
+    export class ExtensionTable extends BaseTableImpl<IExtension> implements BaseTable<IExtension> {
         name: string;
         createTableSql: string;
         JSONFields: string[];
@@ -1065,6 +1118,39 @@ declare module "packages/worker/web-worker/meta-table/script" {
             [key: string]: string;
         }): Promise<boolean>;
     }
+}
+declare module "packages/lib/store/runtime-store" {
+    /**
+     * state store for runtime, for cross component communication
+     */
+    import { IFile } from "packages/worker/web-worker/meta-table/file";
+    interface AppRuntimeState {
+        isCmdkOpen: boolean;
+        setCmdkOpen: (isCmdkOpen: boolean) => void;
+        isKeyboardShortcutsOpen: boolean;
+        setKeyboardShortcutsOpen: (isKeyboardShortcutsOpen: boolean) => void;
+        isShareMode: boolean;
+        setShareMode: (isShareMode: boolean) => void;
+        isEmbeddingModeLoaded: boolean;
+        setEmbeddingModeLoaded: (isEmbeddingModeLoaded: boolean) => void;
+        currentPreviewFile: IFile | null;
+        setCurrentPreviewFile: (currentPreviewFile: IFile) => void;
+        isWebsocketConnected: boolean;
+        setWebsocketConnected: (isWebsocketConnected: boolean) => void;
+        disableDocAIComplete: boolean;
+        setDisableDocAIComplete: (disableDocAIComplete: boolean) => void;
+        isCompleteLoading: boolean;
+        setCompleteLoading: (isCompleteLoading: boolean) => void;
+        scriptContainerRef: React.RefObject<any> | null;
+        setScriptContainerRef: (scriptContainerRef: React.RefObject<any>) => void;
+        blockUIMsg: string | null;
+        blockUIData?: Record<string, any>;
+        setBlockUIMsg: (blockUIMsg: string | null) => void;
+        setBlockUIData: (blockUIData: Record<string, any>) => void;
+        runningCommand: string | null;
+        setRunningCommand: (runningCommand: string | null) => void;
+    }
+    export const useAppRuntimeStore: import("zustand").UseBoundStore<import("zustand").StoreApi<AppRuntimeState>>;
 }
 declare module "packages/lib/v3/cache" {
     function generateCacheKey(code: string): string;
@@ -1099,6 +1185,114 @@ declare module "packages/lib/v3/compiler" {
 }
 declare module "packages/lib/python/worker" {
     export const getPythonWorker: () => Worker;
+}
+declare module "packages/lib/store/theme-store" {
+    export interface CustomTheme {
+        name: string;
+        css: string;
+    }
+    interface ThemeState {
+        currentThemeName: string;
+        customThemes: CustomTheme[];
+        setCurrentThemeName: (name: string) => void;
+        addCustomTheme: (theme: CustomTheme) => void;
+        removeCustomTheme: (name: string) => void;
+        getCustomTheme: (name: string) => CustomTheme | undefined;
+    }
+    export const useThemeStore: import("zustand").UseBoundStore<Omit<import("zustand").StoreApi<ThemeState>, "persist"> & {
+        persist: {
+            setOptions: (options: Partial<import("zustand/middleware").PersistOptions<ThemeState, ThemeState>>) => void;
+            clearStorage: () => void;
+            rehydrate: () => void | Promise<void>;
+            hasHydrated: () => boolean;
+            onHydrate: (fn: (state: ThemeState) => void) => () => void;
+            onFinishHydration: (fn: (state: ThemeState) => void) => () => void;
+            getOptions: () => Partial<import("zustand/middleware").PersistOptions<ThemeState, ThemeState>>;
+        };
+    }>;
+}
+declare module "packages/lib/web/theme" {
+    export type ThemeVariables = {
+        background: string;
+        foreground: string;
+        muted: string;
+        'muted-foreground': string;
+        popover: string;
+        'popover-foreground': string;
+        border: string;
+        input: string;
+        card: string;
+        'card-foreground': string;
+        primary: string;
+        'primary-foreground': string;
+        secondary: string;
+        'secondary-foreground': string;
+        accent: string;
+        'accent-foreground': string;
+        destructive: string;
+        'destructive-foreground': string;
+        ring: string;
+        radius: string;
+        [key: string]: string;
+    };
+    export type ExtendedThemeVariables = ThemeVariables & {
+        'chart-1': string;
+        'chart-2': string;
+        'chart-3': string;
+        'chart-4': string;
+        'chart-5': string;
+        'sidebar': string;
+        'sidebar-foreground': string;
+        'sidebar-primary': string;
+        'sidebar-primary-foreground': string;
+        'sidebar-accent': string;
+        'sidebar-accent-foreground': string;
+        'sidebar-border': string;
+        'sidebar-ring': string;
+        'font-sans': string;
+        'font-serif': string;
+        'font-mono': string;
+        'shadow-2xs': string;
+        'shadow-xs': string;
+        'shadow-sm': string;
+        'shadow': string;
+        'shadow-md': string;
+        'shadow-lg': string;
+        'shadow-xl': string;
+        'shadow-2xl': string;
+        'tracking-normal': string;
+    };
+    /**
+     * Set a single CSS variable in :root
+     * @param name CSS variable name (without -- prefix)
+     * @param value CSS variable value
+     */
+    export function setCSSVariable(name: string, value: string): void;
+    /**
+     * Set multiple CSS variables at once
+     * @param variables Object containing variable names and values
+     */
+    export function setThemeVariables(variables: Partial<ThemeVariables>): void;
+    /**
+     * Get the current value of a CSS variable
+     * @param name CSS variable name (without -- prefix)
+     * @returns The current value of the CSS variable
+     */
+    export function getCSSVariable(name: string): string;
+    /**
+     * Get all current theme variables
+     * @returns Object containing all theme variables and their values
+     */
+    export function getAllThemeVariables(): ThemeVariables;
+    export const defaultTheme: ThemeVariables;
+    /**
+     * Parse and set CSS variables from a theme configuration
+     * @param theme Theme configuration object
+     * @param selector CSS selector to apply the theme to (default: ':root')
+     */
+    export function setThemeConfig(theme: Partial<ExtendedThemeVariables>, selector?: string): void;
+    export function parseCSSVariables(css: string): Record<string, string>;
+    export const getThemeVariables: (rawCss: string, isDarkMode: boolean) => Record<string, string>;
 }
 declare module "packages/lib/types/aggregate-item" {
     export interface AggregateItem {
@@ -1283,146 +1477,17 @@ declare module "packages/lib/ai/vec_search" {
 declare module "packages/lib/web/file" {
     export const downloadFile: (file: Blob, name: string) => void;
 }
-declare module "packages/lib/ai/functions/create-doc" {
-    import { z } from "zod";
-    const createDoc: {
-        name: string;
-        description: string;
-        schema: z.ZodObject<{
-            title: z.ZodString;
-            markdown: z.ZodString;
-        }, "strip", z.ZodTypeAny, {
-            title?: string;
-            markdown?: string;
-        }, {
-            title?: string;
-            markdown?: string;
-        }>;
-    };
-    export default createDoc;
-}
-declare module "packages/lib/ai/functions/create-table" {
-    import { z } from "zod";
-    import { FieldType } from "packages/lib/fields/const";
-    const createTable: {
-        name: string;
-        description: string;
-        schema: z.ZodObject<{
-            name: z.ZodString;
-            fields: z.ZodArray<z.ZodObject<{
-                name: z.ZodString;
-                type: z.ZodEnum<[FieldType.Number, FieldType.Text, FieldType.Title, FieldType.Checkbox, FieldType.Date, FieldType.File, FieldType.MultiSelect, FieldType.Rating, FieldType.Select, FieldType.URL, FieldType.Formula, FieldType.Link, FieldType.Lookup, FieldType.CreatedTime, FieldType.CreatedBy, FieldType.LastEditedTime, FieldType.LastEditedBy]>;
-            }, "strip", z.ZodTypeAny, {
-                name?: string;
-                type?: FieldType;
-            }, {
-                name?: string;
-                type?: FieldType;
-            }>, "many">;
-        }, "strip", z.ZodTypeAny, {
-            name?: string;
-            fields?: {
-                name?: string;
-                type?: FieldType;
-            }[];
-        }, {
-            name?: string;
-            fields?: {
-                name?: string;
-                type?: FieldType;
-            }[];
-        }>;
-    };
-    export default createTable;
-}
-declare module "packages/lib/ai/functions/recorder" {
-    import { z } from "zod";
-    const startRecorder: {
-        name: string;
-        description: string;
-        schema: z.ZodObject<{}, "strip", z.ZodTypeAny, {}, {}>;
-    };
-    const stopRecorder: {
-        name: string;
-        description: string;
-        schema: z.ZodObject<{
-            id: z.ZodString;
-        }, "strip", z.ZodTypeAny, {
-            id?: string;
-        }, {
-            id?: string;
-        }>;
-    };
-    export { startRecorder, stopRecorder };
-}
-declare module "packages/lib/ai/functions/save-file" {
-    import { z } from "zod";
-    const saveFile2EFS: {
-        name: string;
-        description: string;
-        schema: z.ZodObject<{
-            url: z.ZodString;
-            subPath: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
-            filename: z.ZodOptional<z.ZodString>;
-        }, "strip", z.ZodTypeAny, {
-            url?: string;
-            filename?: string;
-            subPath?: string[];
-        }, {
-            url?: string;
-            filename?: string;
-            subPath?: string[];
-        }>;
-    };
-    export default saveFile2EFS;
-}
-declare module "packages/lib/ai/functions/sql-query" {
-    import { z } from "zod";
-    const sqlQuery: {
-        name: string;
-        description: string;
-        schema: z.ZodObject<{
-            sql: z.ZodString;
-        }, "strip", z.ZodTypeAny, {
-            sql?: string;
-        }, {
-            sql?: string;
-        }>;
-    };
-    export default sqlQuery;
-}
-declare module "packages/lib/ai/functions/index" {
-    import { z } from "zod";
-    export const allFunctions: {
-        name: string;
-        description: string;
-        schema: z.ZodObject<{}, "strip", z.ZodTypeAny, {}, {}>;
-    }[];
-    export const functions: {
-        name: string;
-        description: string;
-        parameters: import("zod-to-json-schema").JsonSchema7Type;
-    }[];
-    type FunctionParamsSchemaMap = {
-        [funName: string]: z.ZodSchema<any>;
-    };
-    export const functionParamsSchemaMap: FunctionParamsSchemaMap;
-}
-declare module "packages/lib/ai/openai" {
-    import OpenAI from "openai";
-    import { IField } from "packages/lib/store/interface";
-    export const getOpenAI: (token: string) => OpenAI;
-    export const getPrompt: (baseSysPrompt: string, context: {
-        uiColumns?: IField[];
-        databaseName: string;
-        tableName?: string;
-        currentDocMarkdown?: string;
-    }, useBlankPrompt?: boolean) => string;
-    type IGetFunctionCallHandler = (handleFunctionCall: any) => any;
-    export const getFunctionCallHandler: IGetFunctionCallHandler;
-}
 declare module "packages/lib/markdown" {
     export const getAllCodeBlocks: (markdown: string) => {
+        code: string;
+        lang: string;
+    }[];
+    /**
+     * get all code blocks from llm-response tags
+     * @param markdown
+     * @returns
+     */
+    export const getAllLLMResponseCodeBlocks: (markdown: string) => {
         code: string;
         lang: string;
     }[];
@@ -1613,6 +1678,73 @@ declare module "packages/lib/fields/link" {
         };
     }
 }
+declare module "packages/lib/sqlite/sql-alter-column-type" {
+    /**
+     * 1. add new column with new type
+     * 2. copy data from old column to new column
+     * 3. rename old column to old column + "_old"
+     * 4. rename new column to old column
+     * 5. drop old column
+     * @param tableName
+     * @param columnName
+     * @param newType
+     */
+    export const alterColumnType: (tableName: string, columnName: string, newType: "TEXT" | "REAL" | "INT") => string;
+}
+declare module "packages/worker/web-worker/meta-table/column" {
+    import { FieldType } from "packages/lib/fields/const";
+    import { IField } from "packages/lib/store/interface";
+    import { BaseServerDatabase } from "packages/lib/sqlite/interface";
+    import { BaseTable, BaseTableImpl } from "packages/worker/web-worker/meta-table/base";
+    /**
+     * define
+     * 1. column: a real column in table
+     * 2. field: a wrapper of column, with some additional properties which control the UI behavior
+     *
+     * this table is used to manage the mapping between column and field
+     */
+    export class ColumnTable extends BaseTableImpl implements BaseTable<IField> {
+        name: string;
+        createTableSql: string;
+        JSONFields: string[];
+        static getColumnTypeByFieldType(type: FieldType): any;
+        add(data: IField): Promise<IField>;
+        addField(data: IField): Promise<IField>;
+        getColumn<T = any>(tableName: string, tableColumnName: string): Promise<IField<T> | null>;
+        set(id: string, data: Partial<IField>): Promise<boolean>;
+        del(id: string): Promise<boolean>;
+        deleteField(tableName: string, tableColumnName: string): Promise<string[]>;
+        /**
+         * @param tableName tb_<uuid>
+         */
+        deleteByRawTableName(tableName: string, db?: BaseServerDatabase): Promise<void>;
+        /**
+         * Update formula column and handle dependencies
+         * @param tableName Table name
+         * @param tableColumnName Column name
+         * @param property New property
+         * @param fields All fields
+         * @param db Database connection
+         */
+        private updateFormulaColumn;
+        updateProperty(data: {
+            tableName: string;
+            tableColumnName: string;
+            property: any;
+            type: FieldType;
+        }): Promise<void>;
+        list(q: {
+            table_name: string;
+        }): Promise<IField[]>;
+        static isColumnTypeChanged(oldType: FieldType, newType: FieldType): boolean;
+        changeType(tableName: string, tableColumnName: string, newType: FieldType): Promise<void>;
+    }
+}
+declare module "packages/lib/fields/helper" {
+    import { FieldType } from "packages/lib/fields/const";
+    export const isComputedField: (columnType: FieldType) => boolean;
+    export const isAutoGeneratedField: (columnType: FieldType) => boolean;
+}
 declare module "packages/lib/fields/lookup" {
     import { IField } from "packages/lib/store/interface";
     import { BaseField } from "packages/lib/fields/base";
@@ -1774,77 +1906,6 @@ declare module "packages/lib/web/crypto" {
      * return checksum
      */
     export function fileChecksum(file: File): Promise<string>;
-}
-declare module "packages/lib/auth-client" {
-    import { createAuthClient } from "better-auth/react";
-    export const authClient: ReturnType<typeof createAuthClient>;
-}
-declare module "packages/lib/sqlite/sql-alter-column-type" {
-    /**
-     * 1. add new column with new type
-     * 2. copy data from old column to new column
-     * 3. rename old column to old column + "_old"
-     * 4. rename new column to old column
-     * 5. drop old column
-     * @param tableName
-     * @param columnName
-     * @param newType
-     */
-    export const alterColumnType: (tableName: string, columnName: string, newType: "TEXT" | "REAL" | "INT") => string;
-}
-declare module "packages/worker/web-worker/meta-table/column" {
-    import { FieldType } from "packages/lib/fields/const";
-    import { IField } from "packages/lib/store/interface";
-    import { BaseServerDatabase } from "packages/lib/sqlite/interface";
-    import { BaseTable, BaseTableImpl } from "packages/worker/web-worker/meta-table/base";
-    /**
-     * define
-     * 1. column: a real column in table
-     * 2. field: a wrapper of column, with some additional properties which control the UI behavior
-     *
-     * this table is used to manage the mapping between column and field
-     */
-    export class ColumnTable extends BaseTableImpl implements BaseTable<IField> {
-        name: string;
-        createTableSql: string;
-        JSONFields: string[];
-        static getColumnTypeByFieldType(type: FieldType): any;
-        add(data: IField): Promise<IField>;
-        addField(data: IField): Promise<IField>;
-        getColumn<T = any>(tableName: string, tableColumnName: string): Promise<IField<T> | null>;
-        set(id: string, data: Partial<IField>): Promise<boolean>;
-        del(id: string): Promise<boolean>;
-        deleteField(tableName: string, tableColumnName: string): Promise<string[]>;
-        /**
-         * @param tableName tb_<uuid>
-         */
-        deleteByRawTableName(tableName: string, db?: BaseServerDatabase): Promise<void>;
-        /**
-         * Update formula column and handle dependencies
-         * @param tableName Table name
-         * @param tableColumnName Column name
-         * @param property New property
-         * @param fields All fields
-         * @param db Database connection
-         */
-        private updateFormulaColumn;
-        updateProperty(data: {
-            tableName: string;
-            tableColumnName: string;
-            property: any;
-            type: FieldType;
-        }): Promise<void>;
-        list(q: {
-            table_name: string;
-        }): Promise<IField[]>;
-        static isColumnTypeChanged(oldType: FieldType, newType: FieldType): boolean;
-        changeType(tableName: string, tableColumnName: string, newType: FieldType): Promise<void>;
-    }
-}
-declare module "packages/lib/fields/helper" {
-    import { FieldType } from "packages/lib/fields/const";
-    export const isComputedField: (columnType: FieldType) => boolean;
-    export const isAutoGeneratedField: (columnType: FieldType) => boolean;
 }
 declare module "packages/lib/fields/multi-select" {
     import { MultiSelectCell } from "components/table/views/grid/cells/multi-select-cell";
@@ -2974,6 +3035,37 @@ declare module "packages/worker/web-worker/data-pipeline/TableSemanticSearch" {
         }>;
     }
 }
+declare module "packages/worker/web-worker/meta-table/extnode" {
+    import { BaseTable, BaseTableImpl } from "packages/worker/web-worker/meta-table/base";
+    import { DataSpace } from "packages/worker/web-worker/DataSpace";
+    export interface IExtNode {
+        id: string;
+        blob?: Buffer;
+        text?: string;
+        path?: string;
+        type: string;
+        created_at?: string;
+        updated_at?: string;
+    }
+    export class ExtNodeTable extends BaseTableImpl<IExtNode> implements BaseTable<IExtNode> {
+        protected dataSpace: DataSpace;
+        name: string;
+        createTableSql: string;
+        constructor(dataSpace: DataSpace);
+        addExtNode(data: Omit<IExtNode, "created_at" | "updated_at">): Promise<IExtNode>;
+        updateExtNode(id: string, data: Partial<Omit<IExtNode, "id" | "created_at" | "updated_at">>): Promise<boolean>;
+        getExtNodesByType(type: string): Promise<IExtNode[]>;
+        getExtNode(id: string): Promise<IExtNode | null>;
+        getBlob(id: string): Promise<Buffer | null>;
+        getText(id: string): Promise<string | null>;
+        getPath(id: string): Promise<string | null>;
+        setBlob(id: string, blob: Buffer): Promise<boolean>;
+        setPath(id: string, path: string): Promise<boolean>;
+        setType(id: string, type: string): Promise<boolean>;
+        setText(id: string, text: string): Promise<boolean>;
+        deleteExtNode(id: string): Promise<boolean>;
+    }
+}
 declare module "packages/worker/web-worker/DataSpace" {
     import { FieldType } from "packages/lib/fields/const";
     import { EidosFileSystemManager, FileSystemType } from "packages/lib/storage/eidos-file-system";
@@ -2996,12 +3088,13 @@ declare module "packages/worker/web-worker/DataSpace" {
     import { FileTable, IFile } from "packages/worker/web-worker/meta-table/file";
     import { MessageTable } from "packages/worker/web-worker/meta-table/message";
     import { ReferenceTable } from "packages/worker/web-worker/meta-table/reference";
-    import { IScript, ScriptStatus, ScriptTable } from "packages/worker/web-worker/meta-table/script";
+    import { IExtension, ExtensionStatus, ExtensionTable } from "packages/worker/web-worker/meta-table/extension";
     import { TreeTable } from "packages/worker/web-worker/meta-table/tree";
     import { ViewTable } from "packages/worker/web-worker/meta-table/view";
     import { TableManager } from "packages/worker/web-worker/sdk/table";
     import { TableSemanticSearch } from "packages/worker/web-worker/data-pipeline/TableSemanticSearch";
-    export type EidosTable = DocTable | ActionTable | ScriptTable | TreeTable | ViewTable | ColumnTable | EmbeddingTable | FileTable;
+    import { ExtNodeTable } from "packages/worker/web-worker/meta-table/extnode";
+    export type EidosTable = DocTable | ActionTable | ExtensionTable | TreeTable | ViewTable | ColumnTable | EmbeddingTable | FileTable;
     export type EidosDatabase = BaseServerDatabase;
     export class DataSpace {
         db: EidosDatabase;
@@ -3011,7 +3104,8 @@ declare module "packages/worker/web-worker/DataSpace" {
         dbName: string;
         doc: DocTable;
         action: ActionTable;
-        script: ScriptTable;
+        script: ExtensionTable;
+        extension: ExtensionTable;
         tree: TreeTable;
         view: ViewTable;
         column: ColumnTable;
@@ -3020,6 +3114,7 @@ declare module "packages/worker/web-worker/DataSpace" {
         chat: ChatTable;
         message: MessageTable;
         file: FileTable;
+        extNode: ExtNodeTable;
         dataChangeTrigger: DataChangeTrigger;
         linkRelationUpdater: LinkRelationUpdater;
         allTables: BaseTable<any>[];
@@ -3178,15 +3273,16 @@ declare module "packages/worker/web-worker/DataSpace" {
         }): Promise<Record<string, any>>;
         addAction(data: any): Promise<void>;
         listActions(): Promise<any[]>;
-        addExtension(data: IScript): Promise<void>;
-        listScripts(status?: ScriptStatus): Promise<IScript[]>;
-        getScript(id: string): Promise<IScript>;
+        addExtension(data: IExtension): Promise<void>;
+        listScripts(status?: ExtensionStatus): Promise<IExtension[]>;
+        getScript(id: string): Promise<IExtension>;
         deleteExtension(id: string): Promise<void>;
-        updateExtension(data: IScript): Promise<void>;
+        updateExtension(data: IExtension): Promise<void>;
         enableExtension(id: string): Promise<void>;
         disableExtension(id: string): Promise<void>;
         rebuildIndex(refillNullMarkdown?: boolean): Promise<void>;
         rebuildFTS(tableId: string): Promise<void>;
+        createExtNode(ext_node_type: string, parent_id?: string): Promise<ITreeNode | null>;
         addDoc(docId: string, content: string, markdown: string, isDayPage?: boolean): Promise<void>;
         getDocBaseInfo(id: string): Promise<Partial<import("@/worker/web-worker/meta-table/doc").IDoc>>;
         updateDoc(docId: string, content: string, markdown: string, _isDayPage?: boolean): Promise<void>;

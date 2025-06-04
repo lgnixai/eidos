@@ -1,28 +1,28 @@
+import { Suspense, lazy, useCallback, useEffect, useRef, useState } from "react"
 import { IExtension } from "@/worker/web-worker/meta-table/extension"
 import { useLocalStorageState, useMount, useSize } from "ahooks"
+import { CodeIcon, EyeIcon, SettingsIcon } from "lucide-react"
 import { useTheme } from "next-themes"
-import { Suspense, lazy, useCallback, useEffect, useRef, useState } from "react"
 import {
   useLoaderData,
   useRevalidator,
   useSearchParams,
 } from "react-router-dom"
 
-import { Skeleton } from "@/components/ui/skeleton"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useToast } from "@/components/ui/use-toast"
 import { compileCode } from "@/lib/v3/compiler"
 import { compileLexicalCode } from "@/lib/v3/lexical-compiler"
 import { getCompileMethod } from "@/lib/v3/script-compiler"
+import { useExtension } from "@/hooks/use-extension"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useToast } from "@/components/ui/use-toast"
 
-import { ExtensionToolbar } from "./components/extension-toolbar"
 import { ExtensionPreview } from "./components/extension-preview"
+import { ExtensionToolbar } from "./components/extension-toolbar"
 import { ExtensionConfig } from "./config/common-config"
 import { ScriptSandbox } from "./editor/script-sandbox"
 import { getDescriptionFromCode, getEditorLanguage } from "./helper"
-import { useExtension } from "../../../../hooks/use-extension"
 import { useEditorStore } from "./stores/editor-store"
-import { CodeIcon, EyeIcon, SettingsIcon } from "lucide-react"
 
 const CodeEditor = lazy(() => import("./editor/code-editor"))
 
@@ -55,6 +55,8 @@ export const ExtensionDetailPage = () => {
     script.type === "doc_plugin" ||
     script.type === "m_block" ||
     script.type === "prompt"
+
+  const shouldShowCode = script.type !== "ext_node"
 
   useEffect(() => {
     if (currentDraftCode) {
@@ -167,7 +169,8 @@ export const ExtensionDetailPage = () => {
   }
 
   const [searchParams, setSearchParams] = useSearchParams()
-  const activeTab = searchParams.get("tab") || "code"
+  const activeTab =
+    searchParams.get("tab") || (shouldShowCode ? "code" : "settings")
 
   return (
     <Tabs
@@ -179,17 +182,22 @@ export const ExtensionDetailPage = () => {
     >
       <TabsList className="flex w-full border-b justify-between">
         <div className="flex items-center gap-1">
-          <TabsTrigger value="code" className="flex gap-1">
-            <CodeIcon className="w-4 h-4" />
-            Code</TabsTrigger>
+          {shouldShowCode && (
+            <TabsTrigger value="code" className="flex gap-1">
+              <CodeIcon className="w-4 h-4" />
+              Code
+            </TabsTrigger>
+          )}
           {shouldShowPreview && (
             <TabsTrigger value="preview" className="flex gap-1">
               <EyeIcon className="w-4 h-4" />
-              Preview</TabsTrigger>
+              Preview
+            </TabsTrigger>
           )}
           <TabsTrigger value="settings" className="flex gap-1">
             <SettingsIcon className="w-4 h-4" />
-            Settings</TabsTrigger>
+            Settings
+          </TabsTrigger>
         </div>
         <ExtensionToolbar />
       </TabsList>

@@ -2,6 +2,7 @@ import { Plus } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { ITreeNode } from "@/lib/store/ITreeNode"
+import { useAllExtNodes } from "@/hooks/use-all-ext-nodes"
 import { useCurrentPathInfo } from "@/hooks/use-current-pathinfo"
 import { useGoto } from "@/hooks/use-goto"
 import { useSqlite } from "@/hooks/use-sqlite"
@@ -10,6 +11,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
@@ -17,7 +19,10 @@ export const CreateNodeTrigger = ({ parent_id }: { parent_id?: string }) => {
   const { space } = useCurrentPathInfo()
   const { t } = useTranslation()
 
-  const { createDoc, createTable, createFolder } = useSqlite(space)
+  const { extNodes } = useAllExtNodes()
+
+  const { createDoc, createTable, createFolder, createExtNode } =
+    useSqlite(space)
   const goto = useGoto()
 
   const handleCreateDoc = async () => {
@@ -35,6 +40,15 @@ export const CreateNodeTrigger = ({ parent_id }: { parent_id?: string }) => {
     console.log("create folder")
   }
 
+  const handleCreateExtNode = async (type: ITreeNode["type"]) => {
+    const extNode = extNodes.find((node) => node.ext_node_type === type)
+    if (!extNode) return
+    console.log("creating ", extNode)
+    const extNodeId = await createExtNode(extNode.ext_node_type, parent_id)
+    if (!extNodeId) return
+    goto(space, extNodeId)
+  }
+
   const handleCreateNode = (type: ITreeNode["type"]) => {
     switch (type) {
       case "table":
@@ -45,6 +59,9 @@ export const CreateNodeTrigger = ({ parent_id }: { parent_id?: string }) => {
         break
       case "folder":
         handlerCreateFolder()
+        break
+      default:
+        handleCreateExtNode(type)
         break
     }
   }
@@ -77,6 +94,17 @@ export const CreateNodeTrigger = ({ parent_id }: { parent_id?: string }) => {
         >
           {t("node.menu.newFolder")}
         </DropdownMenuItem>
+        {extNodes.length > 0 && <DropdownMenuSeparator />}
+        {extNodes.map((node) => (
+          <DropdownMenuItem
+            key={node.id}
+            onClick={() => {
+              handleCreateNode(node.ext_node_type)
+            }}
+          >
+            {t("node.menu.newExtNode", { name: node.name })}
+          </DropdownMenuItem>
+        ))}
       </DropdownMenuContent>
     </DropdownMenu>
   )

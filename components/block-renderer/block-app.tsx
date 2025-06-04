@@ -1,7 +1,6 @@
 import { forwardRef, useMemo } from "react"
 import { useTranslation } from "react-i18next"
 
-import { isDesktopMode } from "@/lib/env"
 import { getBlockIdFromUrl } from "@/lib/utils"
 import { useCurrentNode } from "@/hooks/use-current-node"
 import { useCurrentPathInfo } from "@/hooks/use-current-pathinfo"
@@ -11,8 +10,13 @@ import { BlockRenderer, type BlockRendererRef } from "./block-renderer"
 
 export const BlockApp = forwardRef<
   BlockRendererRef,
-  { url: string; height?: number }
->(({ url, height }, ref) => {
+  {
+    url: string
+    height?: number | string
+    width?: number | string
+    rerenderOnDefaultPropsChange?: boolean
+  }
+>(({ url, height, width, rerenderOnDefaultPropsChange }, ref) => {
   const currentNode = useCurrentNode()
   const { t } = useTranslation()
   const { space } = useCurrentPathInfo()
@@ -65,7 +69,9 @@ export const BlockApp = forwardRef<
       env={block?.env_map}
       bindings={block?.bindings}
       defaultProps={props}
+      rerenderOnDefaultPropsChange={rerenderOnDefaultPropsChange}
       height={height}
+      width={width}
     />
   )
 })

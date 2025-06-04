@@ -28,7 +28,11 @@ export interface IExtension {
   name: string
   // block is static code stored in local file system
   // m_block is mini or macro block, just a piece of code snippet stored in database
-  type: "script" | "udf" | "prompt" | "block" | "app" | "m_block" | "doc_plugin" | "py_script"
+  type: "script" | "udf" | "prompt" | "block" | "app" | "m_block" | "doc_plugin" | "py_script" | "ext_node"
+  // ext_node_type is the type of the ext_node
+  ext_node_type?: string
+  // block used to handle the ext_node
+  ext_node_handle_block_id?: string
   description: string
   version: string
   code: string
@@ -87,6 +91,8 @@ export class ExtensionTable
         name TEXT,
         description TEXT,
         type TEXT DEFAULT 'script',
+        ext_node_type TEXT,
+        ext_node_handle_block_id TEXT,
         version TEXT,
         code TEXT,
         ts_code TEXT,
@@ -107,7 +113,7 @@ export class ExtensionTable
     );
 
     ${createUpdateTriggerForFields(this.name, [
-    'id', 'type', 'name', 'code', 'enabled'
+    'id', 'type', 'name', 'code', 'enabled', 'ext_node_type', 'ext_node_handle_block_id', 'icon'
   ])}
 
 `
