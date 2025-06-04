@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 
 import { cn, getBlockIdFromUrl } from "@/lib/utils"
+import { useAllMblocks } from "@/hooks/use-all-mblocks"
 import { useCurrentPathInfo } from "@/hooks/use-current-pathinfo"
 import { Button } from "@/components/ui/button"
 import {
@@ -33,8 +34,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { AIChatHeader } from "@/components/ai-chat/ai-chat-header"
-import { useAIChatHistory } from "@/components/ai-chat/hooks/use-ai-chat-history"
-import { useAllMblocks } from "@/apps/web-app/[database]/scripts/hooks/use-all-mblocks"
+import { useAIChatData } from "@/components/ai-chat/hooks/use-ai-chat-history"
 
 import {
   useAppsStore,
@@ -67,14 +67,6 @@ export const RightPanelNav = () => {
   const { apps, addApp, deleteApp } = useAppsStore()
   const { space } = useCurrentPathInfo()
   const { t } = useTranslation()
-  const {
-    chatId,
-    sortedChats,
-    createNewChat,
-    switchChat,
-    deleteChat,
-    setChatHistory,
-  } = useAIChatHistory()
 
   const handleAppChange = (app: string) => {
     setCurrentApp(app)
@@ -113,7 +105,6 @@ export const RightPanelNav = () => {
           title: t("common.tips.blockNotInCurrentSpace", {
             space: blockSpace,
           }),
-          description: "",
           shortcut: undefined,
           available: false,
         }
@@ -123,7 +114,6 @@ export const RightPanelNav = () => {
         return {
           icon: ToyBrickIcon,
           title: t("common.tips.notFoundBlock"),
-          description: "",
           shortcut: undefined,
           available: false,
         }
@@ -135,7 +125,6 @@ export const RightPanelNav = () => {
       return {
         icon,
         title: block?.name,
-        description: block?.description,
         shortcut: undefined,
         available: true,
       }
@@ -168,7 +157,7 @@ export const RightPanelNav = () => {
   }, [])
 
   const cleanMessages = () => {
-    setChatHistory([])
+    // setChatHistory([])
   }
 
   return (
@@ -176,12 +165,7 @@ export const RightPanelNav = () => {
       <div className="flex gap-2 overflow-hidden">
         {displayApps.slice(0, visibleCount).map((app, index) => {
           const appInfo = getAppInfo(app)
-          const {
-            icon: IconOrUri,
-            title,
-            description,
-            shortcut,
-          } = appInfo ?? {}
+          const { icon: IconOrUri, title, shortcut } = appInfo ?? {}
           const isCurrentApp = app === currentApp
           const isBlock = app.startsWith("block://")
           return (
@@ -341,16 +325,7 @@ export const RightPanelNav = () => {
         </DropdownMenu>
       </div>
       <div className="drag-region grow"></div>
-      {currentApp === "chat" && (
-        <AIChatHeader
-          chatId={chatId}
-          sortedChats={sortedChats}
-          createNewChat={createNewChat}
-          switchChat={switchChat}
-          deleteChat={deleteChat}
-          onClearMessages={cleanMessages}
-        />
-      )}
+      {currentApp === "chat" && <AIChatHeader />}
       <Button
         size="xs"
         variant="ghost"

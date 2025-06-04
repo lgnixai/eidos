@@ -5,14 +5,17 @@ import { Paintbrush, PaperclipIcon, PauseIcon } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useWindowSize } from "usehooks-ts"
 
+import { EIDOS_CHAT_PROJECT_ID } from "@/lib/const"
 import { ITreeNode } from "@/lib/store/ITreeNode"
 import { useAppStore } from "@/lib/store/app-store"
 import { useAiConfig } from "@/hooks/use-ai-config"
 import { useAIFunctions } from "@/hooks/use-ai-functions"
-import { useCurrentNode } from "@/hooks/use-current-node"
+import { useAllPrompts } from "@/hooks/use-all-prompts"
+import { useAllTools } from "@/hooks/use-all-tools"
+import { useCurrentExtension, useCurrentNode } from "@/hooks/use-current-node"
+import { useCurrentPathInfo } from "@/hooks/use-current-pathinfo"
 import { Button } from "@/components/ui/button"
 import { toast } from "@/components/ui/use-toast"
-import { useAIConfigStore } from "@/apps/web-app/settings/ai/store"
 import { useExperimentConfigStore } from "@/apps/web-app/settings/experiment/store"
 
 import { UIBlock } from "../remix-chat/components/block"
@@ -28,24 +31,12 @@ import { AIModelSelect } from "./ai-chat-model-select"
 import { AIChatPromptSelect } from "./ai-chat-prompt-select"
 import { AIContextNodes } from "./ai-context-nodes"
 import { AIInputEditor, AIInputEditorRef } from "./ai-input-editor"
-import {
-  sysPrompts,
-  useAIChatStore,
-  useSystemPrompt,
-  useUserPrompts,
-} from "./hooks"
-import {
-  EIDOS_CHAT_PROJECT_ID,
-  useAIChatHistory,
-} from "./hooks/use-ai-chat-history"
+import { useAIChatData } from "./hooks/use-ai-chat-history"
 import { useAttachments } from "./hooks/use-attachments"
-import "./index.css"
-import { useCurrentPathInfo } from "@/hooks/use-current-pathinfo"
-
+import { useSystemPrompt } from "./hooks/use-system-prompt"
 import { useAIChatSettingsStore } from "./settings/ai-chat-settings-store"
+import { useAIChatStore } from "./store"
 import { useSpeak } from "./webspeech/hooks"
-
-const promptKeys = Object.keys(sysPrompts).slice(0, 1)
 
 export default function Chat() {
   const { t } = useTranslation()
@@ -55,7 +46,7 @@ export default function Chat() {
   const aiInputEditorRef = useRef<AIInputEditorRef>(null)
 
   const currentNode = useCurrentNode()
-  const { prompts } = useUserPrompts()
+  const { prompts } = useAllPrompts()
   const { experiment } = useExperimentConfigStore()
 
   const [withSpaceData, setWithSpaceData] = useState(experiment.enableRAG)
@@ -64,23 +55,21 @@ export default function Chat() {
   const { autoSpeak } = useAIChatSettingsStore()
   const divRef = useRef<HTMLDivElement>(null)
   const { currentSysPrompt, setCurrentSysPrompt } = useAIChatStore()
-  const { aiConfig } = useAIConfigStore()
   // const { progress } = useLoadingStore()
 
   const { handleToolsCall, handleRunCode } = useAIFunctions()
 
   const [contextNodes, setContextNodes] = useState<ITreeNode[]>([])
   const [contextEmbeddings, setContextEmbeddings] = useState<IEmbedding[]>([])
-  const { systemPrompt } = useSystemPrompt(
-    currentSysPrompt,
-    contextNodes,
-    contextEmbeddings
+  const systemPrompt = useSystemPrompt(
+    contextNodes
+    // contextEmbeddings
   )
 
-  const { chatId, chatHistory, setChatHistory, addMessage } = useAIChatHistory()
+  const { chatId, chatMessages, clearChatMessages, deleteMessage } =
+    useAIChatData()
 
   const { aiModel, setAIModel } = useAppStore()
-  const { speak } = useSpeak()
   const { space } = useCurrentPathInfo()
 
   const disableInput = useMemo(
@@ -112,18 +101,19 @@ export default function Chat() {
     }
   }, [aiModel, getConfigByModel])
 
+  const tools = useAllTools()
+
   const { messages, setMessages, reload, append, isLoading, stop } = useChat({
-    initialMessages: chatHistory,
-    onToolCall: async ({ toolCall }) => {
+    initialMessages: chatMessages,
+    onToolCall: async (thisCall) => {
+      const { toolCall } = thisCall
+      console.log("thisCall", thisCall)
+      console.log("toolCall", toolCall)
       const res = await handleToolsCall(toolCall.toolName, toolCall.args)
       console.log("toolCall", toolCall, res)
       return res
     },
-    onFinish(message) {
-      autoSpeak && speak(message.content, message.id)
-      scrollToBottom()
-      addMessage(message)
-    },
+    // onFinish(message) {},
     onError(error) {
       console.log("error:", error)
       toast({
@@ -135,7 +125,7 @@ export default function Chat() {
       ...config,
       systemPrompt,
       model: aiModel,
-
+      tools: tools,
       useTools: enableTools,
       id: chatId,
       projectId: EIDOS_CHAT_PROJECT_ID,
@@ -144,19 +134,13 @@ export default function Chat() {
     },
   })
 
-  useEffect(() => {
-    setMessages(chatHistory)
-  }, [chatHistory, setMessages])
+  const handleReload = async () => {
+    await reload()
+  }
 
   useEffect(() => {
-    const lastMessage = messages[messages.length - 1]
-    if (lastMessage && lastMessage.role === "user") {
-      const messageExists = chatHistory.some((msg) => msg.id === lastMessage.id)
-      if (!messageExists) {
-        addMessage(lastMessage)
-      }
-    }
-  }, [messages, chatHistory, addMessage])
+    setMessages(chatMessages)
+  }, [chatMessages, setMessages])
 
   const scrollToBottom = () => {
     if (chatContainerRef.current) {
@@ -170,34 +154,16 @@ export default function Chat() {
     }
   }, [isLoading])
 
-  const handleManualRun = async (data: any) => {
-    const res = await handleRunCode(data)
-    append({
-      id: crypto.randomUUID(),
-      role: "user",
-      content: JSON.stringify(res),
-      hidden: true,
-    } as any)
-  }
-
-  const setSpeechText = (text: string) => {
-    append({
-      id: crypto.randomUUID(),
-      role: "user",
-      content: text,
-    } as any)
-  }
-
   const [messagesContainerRef, messagesEndRef] =
     useScrollToBottom<HTMLDivElement>()
 
   const cleanMessages = useCallback(async () => {
+    clearChatMessages(chatId)
     setMessages([])
-    setChatHistory([])
     setContextNodes([])
     setContextEmbeddings([])
     setAttachments([])
-  }, [setMessages, setChatHistory])
+  }, [setMessages, chatId])
 
   const appendHiddenMessage = useCallback(
     (message: any) => {
@@ -236,6 +202,7 @@ export default function Chat() {
     fileInputRef,
     handleFileChange,
   } = useAttachments()
+  const extension = useCurrentExtension()
 
   const removeContextNode = (nodeId: string) => {
     setContextNodes((prev) => prev.filter((node) => node.id !== nodeId))
@@ -254,14 +221,14 @@ export default function Chat() {
         {messages.map((message, index) => (
           <PreviewMessage
             key={message.id}
-            chatId={chatId}
-            projectId={EIDOS_CHAT_PROJECT_ID}
+            chatId={chatId || ""}
+            projectId={extension?.id || EIDOS_CHAT_PROJECT_ID}
             message={message}
             block={block}
             setBlock={setBlock}
             isLoading={isLoading && messages.length - 1 === index}
             vote={undefined}
-            onRegenerate={reload}
+            onRegenerate={handleReload}
             isLastMessage={index === messages.length - 1}
           />
         ))}
@@ -345,12 +312,12 @@ export default function Chat() {
             setAttachments={setAttachments}
             uploadQueue={uploadQueue}
           />
-          <div className="flex items-center gap-1  bg-gray-100 dark:bg-gray-800 rounded-sm justify-between">
+          <div className="flex items-center gap-1  bg-secondary rounded-b-sm justify-between">
             <div className="flex items-center gap-1">
               <AIChatPromptSelect
                 value={currentSysPrompt}
                 onValueChange={setCurrentSysPrompt}
-                promptKeys={promptKeys}
+                promptKeys={["base"]}
                 prompts={prompts}
               />
               <AIModelSelect

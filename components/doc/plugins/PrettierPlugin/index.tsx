@@ -38,24 +38,23 @@ export function PrettierPlugin() {
 
   const formatMarkdown = useCallback(async (markdown: string) => {
     try {
-      const prettierFormatted = await prettier.format(markdown, {
-        parser: 'markdown',
-        plugins: [prettierMarkdown],
-        printWidth: 80,
-        tabWidth: 2,
-        useTabs: false,
-        semi: false,
-        singleQuote: true,
-        quoteProps: 'as-needed',
-        trailingComma: 'es5',
-        bracketSpacing: true,
-        arrowParens: 'avoid',
-        proseWrap: 'preserve',
-        htmlWhitespaceSensitivity: 'ignore',
-        embeddedLanguageFormatting: 'off',
-      })
-      
-      const result = autocorrect.formatFor(prettierFormatted, 'markdown')
+      // const prettierFormatted = await prettier.format(markdown, {
+      //   parser: 'markdown',
+      //   plugins: [prettierMarkdown],
+      //   printWidth: 80,
+      //   tabWidth: 2,
+      //   useTabs: false,
+      //   semi: false,
+      //   singleQuote: true,
+      //   quoteProps: 'as-needed',
+      //   trailingComma: 'es5',
+      //   bracketSpacing: true,
+      //   arrowParens: 'avoid',
+      //   proseWrap: 'preserve',
+      //   htmlWhitespaceSensitivity: 'ignore',
+      //   embeddedLanguageFormatting: 'off',
+      // })
+      const result = autocorrect.formatFor(markdown, 'markdown')
       return result.out
     } catch (error) {
       throw error

@@ -1,10 +1,10 @@
 import { ReactNode, createContext, useContext, useState } from "react"
-import { IScript } from "@/worker/web-worker/meta-table/script"
+import { IExtension } from "@/worker/web-worker/meta-table/extension"
 
-import { useAllMblocks } from "@/apps/web-app/[database]/scripts/hooks/use-all-mblocks"
+import { useAllMblocks } from "@/hooks/use-all-mblocks"
 
 interface EditorInstanceContextType {
-  mblocks: IScript[]
+  mblocks: IExtension[]
   isSelecting: boolean
   setIsSelecting: (value: boolean) => void
   selectedKeys: Set<string>

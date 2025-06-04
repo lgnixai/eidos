@@ -151,7 +151,7 @@ export const _convertMarkdown2State = async (
 
     editor.update(
       () => {
-        $convertFromMarkdownString(markdown, allTransformers)
+        $convertFromMarkdownString(markdown, allTransformers, undefined, true)
         markdownLinkInfoMap.clear()
         // after calling $convertFromMarkdownString()
         for (const code of $nodesOfType(CodeNode)) {

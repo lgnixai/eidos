@@ -9,7 +9,7 @@
     "cmdk.notFound": "Not found \"{{input}}\"",
     "cmdk.rebuildFTS": "Rebuild current table full-text search index",
     "cmdk.suggestions": "Suggestions",
-    "cmdk.switchTheme": "Switch Theme",
+    "cmdk.switchTheme": "Switch Dark/Light Mode",
     "cmdk.table": "Table",
     "common.add": "Add",
     "common.ai": "AI",

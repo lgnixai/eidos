@@ -30,6 +30,45 @@ export async function saveMessages(messages: { messages: ChatMessage[] }, datasp
     await dataspace.message.add(messages.messages[0])
 }
 
+export async function updateMessage(message: ChatMessage, dataspace: DataSpace) {
+    await dataspace.message.set(message.id, message)
+}
+
+export async function getChatMessages(id: string, dataspace: DataSpace) {
+    const messages = await dataspace.message.list({ chat_id: id }, {
+        orderBy: "created_at",
+        order: "ASC"
+    })
+    return messages
+}
+
+export async function getLastAssistantMessage(chatId: string, dataspace: DataSpace) {
+    const messages = await dataspace.message.list({ chat_id: chatId, role: "assistant" }, {
+        orderBy: "created_at",
+        order: "DESC"
+    })
+    return messages[0]
+}
+
+/**
+ * Check if the current request is a reload scenario
+ * A reload scenario is when the frontend sends the original conversation but removes the last assistant message
+ */
+export async function isReloadScenario(messages: ChatMessage[], dataspace: DataSpace, chatId: string): Promise<boolean> {
+    const dbMessages = await getChatMessages(chatId, dataspace);
+    if (dbMessages.length === 0) return false;
+
+    const lastDbMessage = dbMessages[dbMessages.length - 1];
+    // If last message in DB is not an assistant message, not a reload case
+    if (lastDbMessage.role !== 'assistant') return false;
+
+    const hasLastAssistantMessage = messages.some(msg =>
+        msg.role === 'assistant' && msg.content === lastDbMessage.content
+    );
+    // It's a reload if the last assistant message is missing
+    return !hasLastAssistantMessage;
+}
+
 export async function generateTitleFromUserMessage({
     message,
     model,

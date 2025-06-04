@@ -8,7 +8,7 @@ import { useCopyToClipboard } from "usehooks-ts"
 import { getCodeFromMarkdown } from "@/lib/markdown"
 import { Button } from "@/components/ui/button"
 import { TooltipProvider } from "@/components/ui/tooltip"
-import { useEditorStore } from "@/apps/web-app/[database]/scripts/stores/editor-store"
+import { useEditorStore } from "@/apps/web-app/[database]/extensions/stores/editor-store"
 
 import type { Vote } from "../interface"
 import { CopyIcon } from "./icons"

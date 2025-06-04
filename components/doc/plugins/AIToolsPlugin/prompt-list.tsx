@@ -22,9 +22,9 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { toast } from "@/components/ui/use-toast"
-import { useUserPrompts } from "@/components/ai-chat/hooks"
 
 import { useBuiltInPrompts } from "./hooks/use-builtIn-prompts"
+import { useAllPrompts } from "@/hooks/use-all-prompts"
 
 interface PromptListProps {
   onPromptSelect: (prompt: string, model?: string, isCustom?: boolean) => void
@@ -38,7 +38,7 @@ export function PromptList({
   onGenerateChart,
 }: PromptListProps) {
   const { findFirstAvailableModel, findAvailableModel } = useAiConfig()
-  const { prompts } = useUserPrompts()
+  const { prompts } = useAllPrompts()
   const builtInPrompts = useBuiltInPrompts()
   const { t } = useTranslation()
   const [customPrompt, setCustomPrompt] = useState<string>("")

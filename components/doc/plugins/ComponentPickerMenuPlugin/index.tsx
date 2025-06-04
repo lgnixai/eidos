@@ -64,7 +64,7 @@ import { useBasicTypeaheadTriggerMatch } from "./hook"
 import "./index.css"
 import { useKeyPress } from "ahooks"
 
-import { useAllMblocks } from "@/apps/web-app/[database]/scripts/hooks/use-all-mblocks"
+import { useAllMblocks } from "@/hooks/use-all-mblocks"
 
 import { INSERT_CUSTOM_BLOCK_COMMAND } from "../../blocks/custom/plugin"
 import { useEditorInstance } from "../../hooks/editor-instance-context"

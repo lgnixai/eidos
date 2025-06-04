@@ -93,3 +93,5 @@ export enum CustomEventType {
 }
 
 export const EIDOS_SPACE_BASE_URL = process.env.NODE_ENV === "production" ? "https://preview.eidos.space" : "http://localhost:4321";
+
+export const EIDOS_CHAT_PROJECT_ID = "EIDOS_CHAT"

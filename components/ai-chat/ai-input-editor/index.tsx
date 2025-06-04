@@ -38,8 +38,6 @@ import NewMentionsPlugin, {
 import { allTransformers } from "@/components/doc/plugins/const"
 import { useAIConfigStore } from "@/apps/web-app/settings/ai/store"
 
-import { AIModelSelect } from "../ai-chat-model-select"
-import { AIChatPromptSelect } from "../ai-chat-prompt-select"
 import { AutoEditable } from "./plugins/auto-editable"
 import { DragDropPlugin } from "./plugins/drag-drop"
 import { SwitchPromptPlugin } from "./plugins/switch-prompt"
@@ -314,13 +312,13 @@ export const AIInputEditor = React.forwardRef<
       <LexicalComposer initialConfig={initialConfig}>
         <div data-testid="ai-input-editor">
           <div
-            className="relative max-h-[200px] overflow-y-auto bg-gray-100 outline-none dark:bg-gray-800 transition-colors duration-200 hover:bg-gray-50 dark:hover:bg-gray-700"
+            className="relative max-h-[200px] overflow-y-auto bg-secondary outline-none  transition-colors duration-200"
             data-drop-zone="ai-editor"
           >
             <RichTextPlugin
               contentEditable={
                 <ContentEditable
-                  className="h-auto min-h-[100px] rounded-sm border-none bg-gray-100 p-2 outline-none dark:bg-gray-800"
+                  className="h-auto min-h-[100px] rounded-t-sm border-none bg-secondary p-2 outline-none "
                   onKeyDownCapture={handleEnterPress}
                 />
               }

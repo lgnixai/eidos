@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { IScript } from "@/worker/web-worker/meta-table/script"
+import { IExtension } from "@/worker/web-worker/meta-table/extension"
 import {
   FloatingPortal,
   flip,
@@ -15,17 +15,18 @@ import {
 } from "@lexical/react/LexicalTypeaheadMenuPlugin"
 import { TextNode } from "lexical"
 
-import { useAIChatStore, useUserPrompts } from "../../hooks"
+import { useAIChatStore, } from "../../store"
+import { useAllPrompts } from "@/hooks/use-all-prompts"
 
 // At most, 5 suggestions are shown in the popup.
 const SUGGESTION_LIST_LENGTH_LIMIT = 7
 
 function useMentionLookupService(mentionString: string | null) {
-  const [results, setResults] = useState<Array<IScript>>([])
-  const { prompts } = useUserPrompts()
+  const [results, setResults] = useState<Array<IExtension>>([])
+  const { prompts } = useAllPrompts()
 
   const _prompts = useMemo(() => {
-    return [{ name: "base", id: "base" } as IScript, ...prompts]
+    return [{ name: "base", id: "base" } as IExtension, ...prompts]
   }, [prompts])
 
   useEffect(() => {
@@ -45,13 +46,13 @@ class MentionTypeaheadOption extends MenuOption {
   name: string
   id: string
   picture: JSX.Element
-  rawData?: IScript
+  rawData?: IExtension
 
   constructor(
     name: string,
     id: string,
     picture: JSX.Element,
-    rawData?: IScript
+    rawData?: IExtension
   ) {
     super(name)
     this.name = name

@@ -1,206 +1,194 @@
-import { useEffect, useMemo } from "react"
-import { Message } from "ai"
-import { create } from "zustand"
-import { uuidv7 } from "@/lib/utils"
+import { useCurrentChatProjectId } from "@/hooks/use-current-node"
+import { createReactiveData } from "@/hooks/use-reactive-data"
 import { useSqlite } from "@/hooks/use-sqlite"
+import { uuidv7 } from "@/lib/utils"
+import type { DataSpace } from "@/worker/web-worker/DataSpace"
+import { Message } from "ai"
+import { useEffect, useMemo } from "react"
+import { z } from 'zod'
+import { create } from "zustand"
 
-export const EIDOS_CHAT_PROJECT_ID = "EIDOS_CHAT"
+// Define schemas for our data types
+const messageSchema = z.object({
+    id: z.string(),
+    content: z.string(),
+    role: z.enum(['user', 'assistant', 'system', 'data']),
+    createdAt: z.date(),
+    chat_id: z.string()
+})
 
-interface AIChatHistoryState {
-    chatId: string
-    chatHistory: Message[]
-    chatHistoryMap: Map<string, Message[]>
+const chatSchema = z.object({
+    id: z.string(),
+    project_id: z.string(),
+    title: z.string().optional(),
+    created_at: z.string(),
+})
 
-    // Actions
-    setChatId: (chatId: string) => void
-    setChatHistory: (messages: Message[]) => void
-    setChatHistoryMap: (map: Map<string, Message[]>) => void
-    addMessage: (message: Message) => void
-    clearChatHistory: () => void
-}
+type ChatMessage = z.infer<typeof messageSchema>
+type Chat = z.infer<typeof chatSchema>
 
-export const useAIChatHistoryStore = create<AIChatHistoryState>((set, get) => ({
-    chatId: "",
-    chatHistory: [],
-    chatHistoryMap: new Map(),
+// Create reactive data stores for both chats and messages
+const {
+    useItemsList: useChatsListInternal,
+    useReactiveOperations: useChatOperations,
+    useSyncWithBroadcast: useSyncChatsInternal,
+    useReload: useReloadChatsInternal,
+} = createReactiveData<Chat>({
+    modeName: 'chat',
+    schema: chatSchema,
+    list: async (sqlite: DataSpace, params?: Record<string, any>, options?: Record<string, any>) => {
+        const chats = await sqlite.chat.list(params, options)
+        return chats.map(chat => ({
+            ...chat,
+            created_at: chat.created_at + 'Z'
+        }))
+    }
+})
 
-    setChatId: (chatId: string) => set({ chatId }),
+const {
+    useItemsList: useMessagesListInternal,
+    useSyncWithBroadcast: useSyncMessagesInternal,
+    useReload: useReloadMessagesInternal,
+    useReactiveOperations: useMessageOperations,
+} = createReactiveData<ChatMessage>({
+    modeName: 'message',
+    schema: messageSchema,
+    list: async (sqlite: DataSpace, params?: Record<string, any>, options?: Record<string, any>) => {
+        // Since we need to list all messages for the current project,
+        // we'll filter them by chat_id later in the component
+        const messages = await sqlite.message.list(params, options || {
+            orderBy: "created_at",
+            order: "ASC"
+        })
+        return messages.map(m => ({
+            id: m.id,
+            content: m.content,
+            role: m.role as Message["role"],
+            createdAt: new Date(m.created_at + 'Z'),
+            chat_id: m.chat_id
+        }))
+    }
+})
 
-    setChatHistory: (messages: Message[]) => {
-        const { chatId, chatHistoryMap } = get()
-        set({ chatHistory: messages })
 
-        if (chatId) {
-            const newMap = new Map(chatHistoryMap)
-            newMap.set(chatId, messages)
-            set({ chatHistoryMap: newMap })
-        }
-    },
 
-    setChatHistoryMap: (map: Map<string, Message[]>) => set({ chatHistoryMap: map }),
-
-    addMessage: (message: Message) => {
-        const { chatHistory } = get()
-        const newHistory = [...chatHistory, message]
-        get().setChatHistory(newHistory)
-    },
-
-    clearChatHistory: () => set({
-        chatId: "",
-        chatHistory: [],
-        chatHistoryMap: new Map()
-    }),
+const useCurrentChatId = create<{
+    currentChatId: string
+    setCurrentChatId: (id: string) => void
+}>((set) => ({
+    currentChatId: "",
+    setCurrentChatId: (id) => set({ currentChatId: id })
 }))
 
-interface UseAIChatHistoryReturn {
-    chatId: string
-    chatHistory: Message[]
-    chatHistoryMap: Map<string, Message[]>
-    sortedChats: Array<{
-        id: string
-        messages: Message[]
-        updatedAt: Date
-    }>
-    createNewChat: () => Promise<void>
-    switchChat: (id: string) => void
-    deleteChat: (id: string) => Promise<void>
-    setChatHistory: (messages: Message[]) => void
-    addMessage: (message: Message) => void
-}
-
-const getChatIds = async (sqlite: any) => {
-    const chats = await sqlite?.chat.list({ project_id: EIDOS_CHAT_PROJECT_ID })
-    if (!chats || chats.length === 0) return []
-    return chats.map((chat: any) => ({
-        id: chat.id,
-        title: chat.title || 'Untitled Chat',
-        created_at: chat.created_at
-    }))
-}
-
-const listChatHistory = async (sqlite: any, chatId: string): Promise<Message[]> => {
-    if (!chatId) return []
-    const messages = await sqlite?.message.list({ chat_id: chatId })
-    return messages.map((m: any) => ({
-        id: m.id,
-        content: m.content,
-        createdAt: new Date(m.created_at!.replace(' ', 'T') + 'Z'),
-        role: m.role as Message["role"],
-    }))
-}
-
-export function useAIChatHistory(): UseAIChatHistoryReturn {
+export function useAIChatData() {
     const { sqlite } = useSqlite()
-    const {
-        chatId,
-        chatHistory,
-        chatHistoryMap,
-        setChatId,
-        setChatHistory,
-        setChatHistoryMap,
-        addMessage
-    } = useAIChatHistoryStore()
+    const chatProjectId = useCurrentChatProjectId()
 
-    const sortedChats = useMemo(() => {
-        return Array.from(chatHistoryMap.entries())
-            .map(([id, messages]) => ({
-                id,
-                messages,
-                updatedAt:
-                    messages.length > 0
-                        ? messages[messages.length - 1]?.createdAt ?? new Date(0)
-                        : new Date(0),
-            }))
-            .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
-    }, [chatHistoryMap])
+    // Set up sync for both chats and messages
+    useSyncChatsInternal(sqlite)
+    useSyncMessagesInternal(sqlite)
+
+    // Get chat operations
+    const chatOps = useChatOperations(sqlite)
+
+    // Get all chats for the current project
+    const { data: chats, loading: loadingChats } = useChatsListInternal(sqlite, {
+        project_id: chatProjectId
+    }, {
+        orderBy: "created_at",
+        order: "DESC"
+    })
+
+    const reloadChats = useReloadChatsInternal(sqlite)
 
     useEffect(() => {
-        async function fetchChatHistories() {
-            if (sqlite) {
-                const chats = await getChatIds(sqlite)
-                if (chats.length > 0) {
-                    const firstChatId = chats[0].id
-                    setChatId(firstChatId)
-
-                    const historyMap = new Map()
-                    await Promise.all(
-                        chats.map(async ({ id }: { id: string }) => {
-                            const history = await listChatHistory(sqlite, id)
-                            historyMap.set(id, history)
-                        })
-                    )
-                    setChatHistoryMap(historyMap)
-
-                    const currentHistory = historyMap.get(firstChatId) || []
-                    setChatHistory(currentHistory)
-                } else {
-                    // 如果没有聊天记录，创建一个新的
-                    const newChatId = uuidv7()
-                    await sqlite.chat.add({
-                        id: newChatId,
-                        project_id: EIDOS_CHAT_PROJECT_ID,
-                    })
-
-                    const newMap = new Map()
-                    newMap.set(newChatId, [])
-                    setChatHistoryMap(newMap)
-                    setChatId(newChatId)
-                    setChatHistory([])
-                }
-            }
-        }
-        fetchChatHistories()
-    }, [sqlite, setChatId, setChatHistory, setChatHistoryMap])
-
-    const createNewChat = async () => {
-        if (!sqlite) return
-
-        const newChatId = uuidv7()
-        await sqlite.chat.add({
-            id: newChatId,
-            project_id: EIDOS_CHAT_PROJECT_ID,
+        reloadChats({
+            project_id: chatProjectId
+        }, {
+            orderBy: "created_at",
+            order: "DESC"
         })
+    }, [chatProjectId])
 
-        const newMap = new Map(chatHistoryMap)
-        newMap.set(newChatId, [])
-        setChatHistoryMap(newMap)
-        setChatId(newChatId)
-        setChatHistory([])
+
+    const clearChatMessages = async (chatId: string) => {
+        await sqlite?.message.clearMessages(chatId)
     }
 
+    const createNewChat = async () => {
+        const newChatId = uuidv7()
+        setCurrentChatId(newChatId)
+        await chatOps.insert({
+            id: newChatId,
+            project_id: chatProjectId,
+            title: undefined
+        })
+        reloadChats({
+            project_id: chatProjectId
+        }, {
+            orderBy: "created_at",
+            order: "DESC"
+        })
+        return newChatId
+    }
+
+    const { currentChatId, setCurrentChatId } = useCurrentChatId()
+    useEffect(() => {
+        if (loadingChats) return
+        if (chats.length > 0) {
+            setCurrentChatId(chats[0].id)
+        }
+    }, [chats, loadingChats])
+
+    const { data: messages, loading: loadingMessages } = useMessagesListInternal(sqlite, {
+        chat_id: currentChatId
+    }, {
+        orderBy: "created_at",
+        order: "ASC"
+    })
+
+    const reloadMessages = useReloadMessagesInternal(sqlite)
+
+    useEffect(() => {
+        reloadMessages({
+            chat_id: currentChatId
+        })
+    }, [currentChatId])
+
+
+
     const switchChat = (id: string) => {
-        setChatId(id)
-        const history = chatHistoryMap.get(id) || []
-        setChatHistory(history)
+        setCurrentChatId(id)
     }
 
     const deleteChat = async (id: string) => {
-        if (!sqlite) return
-        await sqlite.chat.delete(id)
-        const newMap = new Map(chatHistoryMap)
-        newMap.delete(id)
-        setChatHistoryMap(newMap)
+        await chatOps.delete(id)
+        setCurrentChatId(chats[0]?.id || "")
+    }
+    // Transform the data into the expected format
+    const sortedChats = useMemo(() => {
+        return chats.map(chat => ({
+            id: chat.id,
+            title: chat.title,
+            messages: messages,
+            createdAt: new Date(chat.created_at)
+        }))
+    }, [chats, messages])
 
-        if (id === chatId) {
-            const remainingIds = Array.from(newMap.keys())
-            if (remainingIds.length > 0) {
-                switchChat(remainingIds[0])
-            } else {
-                setChatId("")
-                setChatHistory([])
-            }
-        }
+    const deleteMessage = async (messageId: string) => {
+        await sqlite?.message.del(messageId)
     }
 
     return {
-        chatId,
-        chatHistory,
-        chatHistoryMap,
+        chatId: currentChatId,
+        setCurrentChatId,
+        chatMessages: messages,
         sortedChats,
         createNewChat,
         switchChat,
         deleteChat,
-        setChatHistory,
-        addMessage,
+        loading: loadingChats,
+        clearChatMessages,
+        deleteMessage
     }
 } 

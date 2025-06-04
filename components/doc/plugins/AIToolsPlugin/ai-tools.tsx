@@ -23,8 +23,8 @@ import { toast } from "@/components/ui/use-toast"
 import { BlockRenderer } from "@/components/block-renderer/block-renderer"
 import { Chart, ChartConfig } from "@/components/chart"
 import { Thinking } from "@/components/thinking"
-import { useAllMblocks } from "@/apps/web-app/[database]/scripts/hooks/use-all-mblocks"
-import { useScript } from "@/apps/web-app/[database]/scripts/hooks/use-script"
+import { useAllMblocks } from "@/hooks/use-all-mblocks"
+import { useExtension } from "@/hooks/use-extension"
 
 import { $createChartNode } from "../../blocks/chart/node"
 import { $createCustomBlockNode } from "../../blocks/custom/node"
@@ -131,7 +131,7 @@ export function AITools({
     resetPlaceholderHeight()
   }
 
-  const { addScript } = useScript()
+  const { addExtension } = useExtension()
   const config = useMemo(() => {
     try {
       return getConfigByModel(currentModel)
@@ -197,7 +197,7 @@ export function AITools({
           let scriptId = ""
           if (isMakeItRealRef.current && generatedCode) {
             scriptId = generateId()
-            await addScript({
+            await addExtension({
               id: scriptId,
               name: content,
               type: "m_block",

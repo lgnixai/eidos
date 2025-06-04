@@ -28,7 +28,7 @@ i18n
     resources,
     lng: getUserLanguage(),
     fallbackLng: 'en',
-    debug: true,
+    // debug: true,
     interpolation: {
       escapeValue: false,
     },

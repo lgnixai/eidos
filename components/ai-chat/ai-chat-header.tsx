@@ -1,3 +1,4 @@
+import { Message } from "ai"
 import { formatDistanceToNow } from "date-fns"
 import { History, MessageSquare, Plus, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
@@ -11,30 +12,19 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-interface AIChatHeaderProps {
-  chatId: string
-  sortedChats: Array<{
-    id: string
-    updatedAt: Date
-  }>
-  createNewChat: () => Promise<void>
-  switchChat: (id: string) => void
-  deleteChat: (id: string) => Promise<void>
-  onClearMessages: () => void
-}
+import { useAIChatData } from "./hooks/use-ai-chat-history"
 
-export function AIChatHeader({
-  chatId,
-  sortedChats,
-  createNewChat,
-  switchChat,
-  deleteChat,
-  onClearMessages,
-}: AIChatHeaderProps) {
+export function AIChatHeader() {
   const { t } = useTranslation()
 
-  const getChatTitle = (id: string, index: number) => {
-    return `Chat ${index + 1}`
+  const { chatId, sortedChats, createNewChat, switchChat, deleteChat } =
+    useAIChatData()
+
+  const getChatTitle = (
+    chat: { id: string; title?: string },
+    index: number
+  ) => {
+    return chat.title || `Untitled Chat`
   }
 
   return (
@@ -54,7 +44,7 @@ export function AIChatHeader({
               {t("aiChat.noChats", "No chat history")}
             </div>
           ) : (
-            sortedChats.map(({ id, updatedAt }, index) => (
+            sortedChats.map(({ id, createdAt }, index) => (
               <DropdownMenuItem
                 key={id}
                 className={cn(
@@ -68,10 +58,12 @@ export function AIChatHeader({
                 >
                   <MessageSquare className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                   <div className="min-w-0 flex-1">
-                    <div className="truncate">{getChatTitle(id, index)}</div>
-                    {updatedAt.getTime() > 0 && (
+                    <div className="truncate">
+                      {getChatTitle(sortedChats[index], index)}
+                    </div>
+                    {createdAt.getTime() > 0 && (
                       <div className="text-xs text-muted-foreground truncate">
-                        {formatDistanceToNow(new Date(updatedAt), {
+                        {formatDistanceToNow(createdAt, {
                           addSuffix: true,
                         })}
                       </div>

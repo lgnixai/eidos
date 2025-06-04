@@ -13,7 +13,7 @@ import { useEngine } from "./use-engine"
 import { useSqliteStore } from "./use-sqlite"
 
 export const useSqliteMetaTableSubscribe = () => {
-  const { addNode } = useSqliteStore()
+  const { addNode, setNode } = useSqliteStore()
 
   const { reload } = useEngine()
   useEffect(() => {
@@ -26,6 +26,11 @@ export const useSqliteMetaTableSubscribe = () => {
           case DataUpdateSignalType.Insert:
             if (table === TreeTableName) {
               addNode(_new as any as ITreeNode)
+            }
+            break
+          case DataUpdateSignalType.Update:
+            if (table === TreeTableName) {
+              setNode(_new as any as ITreeNode)
             }
             break
           default:

@@ -1,4 +1,4 @@
-import { IScript } from "@/worker/web-worker/meta-table/script"
+import { IExtension } from "@/worker/web-worker/meta-table/extension"
 import { useEffect, useState } from "react"
 
 import { useCurrentPathInfo } from "@/hooks/use-current-pathinfo"
@@ -18,7 +18,7 @@ export const useExtBlocks = () => {
 
 export const useEnabledExtBlocks = () => {
   const { space } = useCurrentPathInfo()
-  const [scripts, setScripts] = useState<IScript[]>([])
+  const [scripts, setScripts] = useState<IExtension[]>([])
   const [loading, setLoading] = useState(true)
   const { sqlite } = useSqlite()
   useEffect(() => {

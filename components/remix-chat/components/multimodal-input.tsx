@@ -10,7 +10,7 @@ import {
   type Dispatch,
   type SetStateAction,
 } from "react"
-import { IScript } from "@/worker/web-worker/meta-table/script"
+import { IExtension } from "@/worker/web-worker/meta-table/extension"
 import type { Attachment, ChatRequestOptions, CreateMessage, Message } from "ai"
 import cx from "classnames"
 import { motion } from "framer-motion"
@@ -22,7 +22,7 @@ import { useSqlite } from "@/hooks/use-sqlite"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { AIModelSelect } from "@/components/ai-chat/ai-chat-model-select"
-import { getSuggestedActions } from "@/apps/web-app/[database]/scripts/helper"
+import { getSuggestedActions } from "@/apps/web-app/[database]/extensions/helper"
 
 import { ArrowUpIcon, PaperclipIcon, StopIcon } from "./icons"
 import { PreviewAttachment } from "./preview-attachment"
@@ -75,10 +75,10 @@ export function MultimodalInput({
     chatRequestOptions?: ChatRequestOptions
   ) => void
   className?: string
-  type?: IScript["type"]
+  type?: IExtension["type"]
   aiModel: string
   setAIModel: (value: string) => void
-  prompts?: IScript[]
+  prompts?: IExtension[]
   selectedCustomPromptId?: string | null
   setSelectedCustomPromptId?: (value: string | null) => void
 }) {

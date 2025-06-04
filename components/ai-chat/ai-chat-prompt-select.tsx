@@ -1,5 +1,5 @@
 import * as React from "react"
-import { IScript } from "@/worker/web-worker/meta-table/script"
+import { IExtension } from "@/worker/web-worker/meta-table/extension"
 import { Check, ChevronsUpDown } from "lucide-react"
 import { Link } from "react-router-dom"
 
@@ -29,7 +29,7 @@ import { ScrollArea } from "../ui/scroll-area"
 
 export const AIChatPromptSelect = (props: {
   promptKeys: string[]
-  prompts: IScript[]
+  prompts: IExtension[]
   value: string
   className?: string
   onValueChange: (value: string) => void

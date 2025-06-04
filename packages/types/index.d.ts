@@ -3178,13 +3178,13 @@ declare module "packages/worker/web-worker/DataSpace" {
         }): Promise<Record<string, any>>;
         addAction(data: any): Promise<void>;
         listActions(): Promise<any[]>;
-        addScript(data: IScript): Promise<void>;
+        addExtension(data: IScript): Promise<void>;
         listScripts(status?: ScriptStatus): Promise<IScript[]>;
         getScript(id: string): Promise<IScript>;
-        deleteScript(id: string): Promise<void>;
-        updateScript(data: IScript): Promise<void>;
-        enableScript(id: string): Promise<void>;
-        disableScript(id: string): Promise<void>;
+        deleteExtension(id: string): Promise<void>;
+        updateExtension(data: IScript): Promise<void>;
+        enableExtension(id: string): Promise<void>;
+        disableExtension(id: string): Promise<void>;
         rebuildIndex(refillNullMarkdown?: boolean): Promise<void>;
         rebuildFTS(tableId: string): Promise<void>;
         addDoc(docId: string, content: string, markdown: string, isDayPage?: boolean): Promise<void>;

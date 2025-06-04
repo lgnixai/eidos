@@ -7,8 +7,10 @@ import { isDesktopMode } from "@/lib/env";
 import { uuidv7 } from "@/lib/utils";
 import { DataSpace } from "@/worker/web-worker/DataSpace";
 import { ChatMessage } from "@/worker/web-worker/meta-table/message";
-import { generateTitleFromUserMessage, getChatById, getMostRecentUserMessage, saveChat, saveMessages, updateChatTitle } from "./helper";
+import { generateTitleFromUserMessage, getChatById, getChatMessages, getLastAssistantMessage, getMostRecentUserMessage, isReloadScenario, saveChat, saveMessages, updateChatTitle, updateMessage } from "./helper";
 import { IData } from "./interface";
+
+
 
 
 /**
@@ -84,6 +86,8 @@ export async function handleChatApi(
   })(textModel.modelId.split("@")[0]) as LanguageModelV1
 
   const llmodel = provider(model ?? "gpt-3.5-turbo-0125") as LanguageModelV1
+  let isReload = false
+  let lastAssistantMessageId = ""
   if (dataspace) {
     const chat = await getChatById(id, dataspace);
     const getTitle = () => {
@@ -112,11 +116,17 @@ export async function handleChatApi(
       await updateChatTitle(id, title, dataspace);
     }
 
-    await saveMessages({
-      messages: [
-        { ...userMessage, id: uuidv7(), chat_id: id } as ChatMessage,
-      ],
-    }, dataspace);
+    // Check if this is a reload scenario
+    isReload = await isReloadScenario(messages as ChatMessage[], dataspace, id);
+    console.log('Is reload scenario:', isReload);
+    // Only save user message if it's not a reload
+    if (!isReload) {
+      await saveMessages({
+        messages: [
+          { ...userMessage, id: uuidv7(), chat_id: id } as ChatMessage,
+        ],
+      }, dataspace);
+    }
   }
 
 
@@ -137,14 +147,25 @@ export async function handleChatApi(
         onFinish: async ({ text }) => {
           try {
             if (dataspace) {
-              await saveMessages({
-                messages: [{
-                  id: uuidv7(),
+              if (isReload) {
+                const lastAssistantMessage = await getLastAssistantMessage(id, dataspace)
+                await updateMessage({
+                  id: lastAssistantMessage.id,
                   chat_id: id,
                   role: "assistant",
                   content: text,
-                }],
-              }, dataspace);
+                }, dataspace);
+              } else {
+                await saveMessages({
+                  messages: [{
+                    id: uuidv7(),
+                    chat_id: id,
+                    role: "assistant",
+                    content: text,
+                  }],
+                }, dataspace);
+              }
+
             }
           } catch (error) {
             console.error('Failed to save chat');

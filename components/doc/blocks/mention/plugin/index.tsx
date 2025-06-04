@@ -7,6 +7,7 @@
  * fork from lexical, but change a lot
  */
 
+import { useCallback, useEffect, useMemo, useState } from "react"
 import {
   FloatingPortal,
   Placement,
@@ -20,17 +21,11 @@ import {
   LexicalTypeaheadMenuPlugin,
   useBasicTypeaheadTriggerMatch,
 } from "@lexical/react/LexicalTypeaheadMenuPlugin"
-import {
-  $getSelection,
-  $insertNodes,
-  RangeSelection,
-  TextNode
-} from "lexical"
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { $getSelection, $insertNodes, RangeSelection, TextNode } from "lexical"
 
-import { useEditorInstance } from "@/components/doc/hooks/editor-instance-context"
-import { useSqlite } from "@/hooks/use-sqlite"
 import { shortenId, uuidv7 } from "@/lib/utils"
+import { useSqlite } from "@/hooks/use-sqlite"
+import { useEditorInstance } from "@/components/doc/hooks/editor-instance-context"
 
 import { $createSyncBlockNode } from "../../sync/node"
 import { $createMentionNode, MentionNode } from "../node"
@@ -97,7 +92,7 @@ export default function NewMentionsPlugin(
           }
         }
       },
-      { skipInitialization: true }
+      { skipInitialization: false }
     )
 
     return removeMutationListener

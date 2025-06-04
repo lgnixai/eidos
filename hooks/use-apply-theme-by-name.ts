@@ -57,7 +57,6 @@ export const useApplyThemeByName = () => {
 
     const applyTheme = useCallback((theme: string, themeName: string) => {
         const currentThemeName = allThemes.find(t => t.name === themeName)
-        console.log('theme', theme)
         if (currentThemeName) {
             handleApplyTheme(currentThemeName.css, theme === "dark")
         }

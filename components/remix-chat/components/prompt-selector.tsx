@@ -1,4 +1,4 @@
-import { IScript } from "@/worker/web-worker/meta-table/script"
+import { IExtension } from "@/worker/web-worker/meta-table/extension"
 
 import {
   Select,
@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/select"
 
 interface PromptSelectorProps {
-  prompts: IScript[]
+  prompts: IExtension[]
   selectedCustomPromptId: string | null
   onSelectedCustomPromptIdChange: (value: string | null) => void
   className?: string

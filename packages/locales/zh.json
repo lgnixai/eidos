@@ -9,7 +9,7 @@
     "cmdk.notFound": "未找到 \"{{input}}\"",
     "cmdk.rebuildFTS": "重建当前表全文搜索索引",
     "cmdk.suggestions": "建议",
-    "cmdk.switchTheme": "切换主题",
+    "cmdk.switchTheme": "切换暗/亮模式",
     "cmdk.table": "表格",
     "common.add": "添加",
     "common.ai": "AI",
