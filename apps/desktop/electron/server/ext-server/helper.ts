@@ -63,15 +63,22 @@ export const compileCode = async (
 };
 
 export function getImportsFromCode(code: string) {
-    const importRegex = /import\s+[\s\S]*?\s+from\s+['"](.*?)['"];?/g;
-    const imports = [];
-    let match;
+    const imports = new Set<string>();
 
-    while ((match = importRegex.exec(code)) !== null) {
-        imports.push(match[1]);
+    // Regex for imports like: import ... from "module";
+    const fromImportRegex = /import\s+[\s\S]*?\s+from\s+['"](.*?)['"];?/g;
+    let match;
+    while ((match = fromImportRegex.exec(code)) !== null) {
+        imports.add(match[1]);
     }
 
-    return Array.from(new Set(imports));
+    // Regex for side-effect imports like: import "module";
+    const sideEffectImportRegex = /import\s+['"](.*?)['"];?/g;
+    while ((match = sideEffectImportRegex.exec(code)) !== null) {
+        imports.add(match[1]);
+    }
+
+    return Array.from(imports);
 }
 
 
@@ -84,6 +91,7 @@ const HOST_URL = ''
 export async function generateImportMap(
     thirdPartyLibs: string[],
     uiLibs: string[],
+    cssFiles: string[] = [],
 ) {
     const REACT_VERSION = '18.3.1';
 
@@ -100,7 +108,6 @@ export async function generateImportMap(
     thirdPartyLibs.forEach((dep) => {
         if (dep === "react" || dep === "react-dom") return;
 
-        // Check if the dependency matches any pattern in uiLibDeps
         const shouldExternalizeReact = Array.from(uiLibDeps).some(pattern => {
             if (pattern.endsWith('*')) {
                 const prefix = pattern.slice(0, -1);
@@ -131,15 +138,23 @@ export async function generateImportMap(
   </script>
   `;
 
-    // console.debug('Import Map:', JSON.stringify({
-    //     thirdPartyLibs,
-    //     uiLibs,
-    //     imports,
-    //     importMapScript
-    // }, null, 2));
+    const linkCreationStatements = cssFiles.map(cssFile => {
+        let cssUrl = '';
+        if (cssFile.startsWith('@/')) {
+            cssUrl = `${HOST_URL}${cssFile.replace('@', '')}`;
+        } else {
+            cssUrl = `https://esm.sh/${cssFile}`;
+        }
+        return `
+        <link rel="stylesheet" href="${cssUrl}" crossorigin="anonymous"/>
+    `;
+    }).join('\n    ');
+
+    const cssLoaderScript = cssFiles.length > 0 ? linkCreationStatements : '';
 
     return {
-        importMap: importMapScript,
+        importMapScript,
+        cssLoaderScript,
         cleanup: () => {
         },
     };
@@ -149,27 +164,59 @@ export function getAllLibs(code: string, processedComponents = new Set<string>()
     if (!code) return {
         thirdPartyLibs: [],
         uiLibs: [],
-    }
+        cssLibs: [],
+    };
 
     const dependencies = getImportsFromCode(code);
-    const thirdPartyLibs =
-        dependencies?.filter((dep) => !dep.startsWith("@/")) ?? [];
-    const uiLibs =
-        dependencies
-            ?.filter((dep) => dep.startsWith("@/components/ui"))
-            .map((dep) => dep.replace("@/components/ui/", "")) ?? [];
+    const thirdPartyLibsMasterSet = new Set<string>();
+    const initialUiLibNames = new Set<string>();
+    const cssLibsSet = new Set<string>();
 
-    for (const component of uiLibs) {
-        if (processedComponents.has(component)) continue;
-        processedComponents.add(component);
-        const { thirdPartyLibs: _thirdPartyLibs, uiLibs: _uiLibs } = uiComponentsDependencies[component as keyof typeof uiComponentsDependencies];
-        thirdPartyLibs.push(..._thirdPartyLibs);
-        uiLibs.push(..._uiLibs);
+    // Phase 1: Categorize direct imports from the input code
+    for (const dep of dependencies) {
+        if (dep.endsWith(".css")) {
+            cssLibsSet.add(dep);
+        } else if (dep.startsWith("@/components/ui/")) {
+            initialUiLibNames.add(dep.replace("@/components/ui/", ""));
+        } else if (dep.startsWith("@/hooks/")) { // Handle hooks as potential UI libs
+            initialUiLibNames.add(dep.replace("@/hooks/", ""));
+        } else if (!dep.startsWith("@/")) {
+            thirdPartyLibsMasterSet.add(dep);
+        }
+    }
+
+    const allFoundUiLibNames = new Set<string>(initialUiLibNames);
+    const queue = Array.from(initialUiLibNames);
+
+    // Phase 2: Process transitive dependencies for UI libraries
+    while (queue.length > 0) {
+        const uiLibName = queue.shift();
+
+        if (!uiLibName || processedComponents.has(uiLibName)) {
+            continue;
+        }
+        processedComponents.add(uiLibName);
+
+        const componentDeps = uiComponentsDependencies[uiLibName as keyof typeof uiComponentsDependencies];
+        if (componentDeps) {
+            if (componentDeps.thirdPartyLibs) {
+                componentDeps.thirdPartyLibs.forEach(lib => thirdPartyLibsMasterSet.add(lib));
+            }
+            if (componentDeps.uiLibs) {
+                componentDeps.uiLibs.forEach(transitiveUiLibName => {
+                    if (!allFoundUiLibNames.has(transitiveUiLibName)) {
+                        allFoundUiLibNames.add(transitiveUiLibName);
+                        queue.push(transitiveUiLibName);
+                    }
+                });
+            }
+        }
     }
 
     return {
-        thirdPartyLibs: Array.from(new Set(thirdPartyLibs)),
-        uiLibs: Array.from(new Set(uiLibs)),
+        thirdPartyLibs: Array.from(thirdPartyLibsMasterSet),
+        uiLibs: Array.from(allFoundUiLibNames),
+        cssLibs: Array.from(cssLibsSet),
     };
 }
 

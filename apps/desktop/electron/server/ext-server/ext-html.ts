@@ -1,15 +1,17 @@
 import type { Config } from "tailwindcss"
 import themeRawCode from "./theme-raw.css?raw"
 
-export const getIndexHtml = (props: {
-  theme: string, importMap: string, sdkInjectScriptContent: string, envString: string, twConfig: Partial<Config>, compiledCode: string, defaultPropsString: string
-}) => {
-  const { theme, importMap, sdkInjectScriptContent, envString, twConfig, compiledCode, defaultPropsString } = props
-  return `<html class="${theme}">
+export const
+  getIndexHtml = (props: {
+    theme: string, importMap: string, cssLoaderScript: string, sdkInjectScriptContent: string, envString: string, twConfig: Partial<Config>, compiledCode: string, defaultPropsString: string
+  }) => {
+    const { theme, importMap, cssLoaderScript, sdkInjectScriptContent, envString, twConfig, compiledCode, defaultPropsString } = props
+    return `<html class="${theme}">
       <head>
         ${importMap}
         <script src="/tailwind-raw.js"></script>
         ${sdkInjectScriptContent}
+        ${cssLoaderScript}
         <script>
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('/sw.js')
@@ -94,4 +96,4 @@ export const getIndexHtml = (props: {
       </body>
     </html>
     `
-}
+  }

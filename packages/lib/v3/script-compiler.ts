@@ -1,4 +1,4 @@
-import { IScript } from "@/worker/web-worker/meta-table/script";
+import { IExtension } from "@/worker/web-worker/meta-table/extension";
 import { compileCode } from "./compiler";
 import { compileLexicalCode } from "./lexical-compiler";
 import { transform } from "./esbuild";
@@ -47,7 +47,7 @@ async function lexicalCodeCompile(ts_code: string): Promise<string> {
 }
 
 export async function compileScript(
-    script: Pick<IScript, "type" | "ts_code" | "code">
+    script: Pick<IExtension, "type" | "ts_code" | "code">
 ): Promise<string> {
     const ts_code = script.ts_code;
     const code = script.code;
@@ -59,7 +59,7 @@ export async function compileScript(
     return compileMethod(ts_code || code || "")
 }
 
-export function getCompileMethod(script: Pick<IScript, "type">) {
+export function getCompileMethod(script: Pick<IExtension, "type">) {
     return getCompileMethodByScriptType(script.type)
 }
 

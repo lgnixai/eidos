@@ -25,7 +25,11 @@ export const compileCode = async (
 
     const reactBanner = hasReactImport ? "" : `import React from 'react';\n`;
 
-    const jsxResult = await transform(sourceCode, {
+    // Remove CSS imports
+    const sanitizedSourceCode = sourceCode.replace(/import\s+(['"])[^'"]*?\.css\1;?\n?/g, '');
+
+    console.log('sanitizedSourceCode', sanitizedSourceCode);
+    const jsxResult = await transform(sanitizedSourceCode, {
       loader: "tsx",
       target: "es2020",
       jsxFactory: "React.createElement",
@@ -35,6 +39,8 @@ export const compileCode = async (
       keepNames: true,
       charset: "utf8",
     });
+
+    console.log('jsxResult', jsxResult.code);
 
     return {
       code: jsxResult.code,
