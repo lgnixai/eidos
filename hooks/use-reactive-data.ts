@@ -176,23 +176,20 @@ export function createReactiveData<T extends BaseReactiveData>(config: ReactiveD
 
     const useItemById = (sqlite: DataSpace | null, id: string) => {
         const [loading, setLoading] = useState(false)
-        const [item, setItem] = useState<T | null>(null)
         const store = useStore()
         const cachedItem = store.items[id]
 
         useEffect(() => {
             if (cachedItem) {
-                setItem(cachedItem)
                 return
             }
 
-            if (sqlite) {
+            if (sqlite && id) {
                 setLoading(true);
                 get(sqlite, id)
                     .then(fetchedItem => {
                         if (fetchedItem) {
                             const typedItem = fetchedItem as T
-                            setItem(typedItem)
                             addItem(typedItem)
                         }
                     })
@@ -200,10 +197,10 @@ export function createReactiveData<T extends BaseReactiveData>(config: ReactiveD
                         setLoading(false)
                     })
             }
-        }, [id, cachedItem])
+        }, [id, sqlite, cachedItem])
 
         return {
-            data: item || cachedItem || null,
+            data: cachedItem || null,
             loading,
         }
     }
@@ -211,6 +208,9 @@ export function createReactiveData<T extends BaseReactiveData>(config: ReactiveD
     const useItemsList = (sqlite: DataSpace | null, params?: Record<string, any>, options?: Record<string, any>) => {
         const store = useStore()
         const [loading, setLoading] = useState(true)
+
+        const paramsKey = JSON.stringify(params)
+        const optionsKey = JSON.stringify(options)
 
         useEffect(() => {
             if (!sqlite) {
@@ -232,7 +232,8 @@ export function createReactiveData<T extends BaseReactiveData>(config: ReactiveD
                 setLoading(false)
                 setState({ items: {}, itemsList: [] })
             })
-        }, [sqlite])
+            // eslint-disable-next-line react-hooks/exhaustive-deps
+        }, [sqlite, paramsKey, optionsKey])
 
         return {
             data: store.itemsList,

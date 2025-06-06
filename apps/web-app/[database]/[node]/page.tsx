@@ -129,7 +129,7 @@ export const NodeComponent = ({
   return (
     <>
       <NodeRestore node={node} />
-      {node?.type.startsWith("ext__") && handleBlockId && (
+      {node?.type.startsWith("ext__") && (
         <div className="flex h-full w-full">
           <ExtNodeBlockApp
             space={space}

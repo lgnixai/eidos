@@ -19,6 +19,7 @@
     "common.badge.beta": "Beta",
     "common.badge.new": "New",
     "common.badge.pro": "Pro",
+    "common.tips.extNodeNeedHandleBlock": "ExtNode need an enabled handle block to work.",
     "common.button.add": "Add",
     "common.cancel": "Cancel",
     "common.collapse": "Collapse",
