@@ -312,7 +312,7 @@ export default function Chat() {
             setAttachments={setAttachments}
             uploadQueue={uploadQueue}
           />
-          <div className="flex items-center gap-1  bg-secondary rounded-b-sm justify-between">
+          <div className="flex items-center gap-1  bg-card rounded-b-sm justify-between border border-t-0">
             <div className="flex items-center gap-1">
               <AIChatPromptSelect
                 value={currentSysPrompt}

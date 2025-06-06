@@ -312,18 +312,18 @@ export const AIInputEditor = React.forwardRef<
       <LexicalComposer initialConfig={initialConfig}>
         <div data-testid="ai-input-editor">
           <div
-            className="relative max-h-[200px] overflow-y-auto bg-secondary outline-none  transition-colors duration-200"
+            className="relative max-h-[200px] overflow-y-auto bg-card outline-none  transition-colors duration-200 border border-b-0"
             data-drop-zone="ai-editor"
           >
             <RichTextPlugin
               contentEditable={
                 <ContentEditable
-                  className="h-auto min-h-[100px] rounded-t-sm border-none bg-secondary p-2 outline-none "
+                  className="h-auto min-h-[100px] rounded-t-sm border-none bg-card p-2 outline-none "
                   onKeyDownCapture={handleEnterPress}
                 />
               }
               placeholder={
-                <div className="pointer-events-none absolute left-3 top-2 text-xs text-secondary-foreground opacity-50">
+                <div className="pointer-events-none absolute left-3 top-2 text-xs text-muted-foreground opacity-50">
                   {t("aiChat.inputEditor.typeYourMessageHere")}
                   <br />
                   {t("aiChat.inputEditor.pressSlashToSwitchPrompt")}

@@ -113,7 +113,7 @@ code::before {
 }
 
 .eidos_editor_theme__code {
-  background-color: hsl(var(--sidebar));
+  background-color: hsl(var(--card));
   font-family: Menlo, Consolas, Monaco, monospace;
   display: block;
   padding: 8px 8px 8px 24px;
