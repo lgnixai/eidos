@@ -2,10 +2,10 @@
 
 import { LucideIcon } from "lucide-react"
 import { useTranslation } from "react-i18next"
-import { Link, useLocation } from "react-router-dom"
+import { Link } from "react-router-dom"
 
-import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 
 interface SidebarNavProps extends React.HTMLAttributes<HTMLElement> {
   items: {
@@ -18,9 +18,6 @@ interface SidebarNavProps extends React.HTMLAttributes<HTMLElement> {
 }
 
 export function SidebarNav({ className, items, ...props }: SidebarNavProps) {
-  const location = useLocation()
-  const pathname = location.pathname
-
   const { t } = useTranslation()
   return (
     <nav
@@ -36,9 +33,6 @@ export function SidebarNav({ className, items, ...props }: SidebarNavProps) {
           to={item.href}
           className={cn(
             buttonVariants({ variant: "ghost" }),
-            pathname === item.href
-              ? "bg-muted hover:bg-muted"
-              : "hover:bg-transparent",
             "justify-start whitespace-nowrap",
             {
               "cursor-not-allowed": item.disabled,
