@@ -8,8 +8,11 @@ import React, {
 import { useTheme } from "next-themes"
 
 import { isDesktopMode } from "@/lib/env"
+import { useThemeStore } from "@/lib/store/theme-store"
 import { serializePropsToUrl } from "@/lib/utils"
 import { generateImportMap, getAllLibs } from "@/lib/v3/compiler"
+import { getThemeVariables } from "@/lib/web/theme"
+import { useAllThemes } from "@/hooks/use-all-themes"
 import { useCurrentPathInfo } from "@/hooks/use-current-pathinfo"
 
 import { LogoLoading } from "../loading"
@@ -58,6 +61,16 @@ export const BlockRenderer = React.forwardRef<
     const [isLoading, setIsLoading] = useState(!isDesktopMode)
     const { space } = useCurrentPathInfo()
     const { theme } = useTheme()
+    const { currentThemeName } = useThemeStore()
+    const allThemes = useAllThemes()
+
+    const themeVariables = useMemo(() => {
+      const currentThemeDef = allThemes.find((t) => t.name === currentThemeName)
+      if (currentThemeDef) {
+        return getThemeVariables(currentThemeDef.css, theme === "dark")
+      }
+      return {}
+    }, [allThemes, currentThemeName, theme])
 
     const webviewRef = useRef<HTMLWebViewElement | null>(null)
     const [importMap, setImportMap] = useState<string>("")
@@ -287,10 +300,10 @@ export const BlockRenderer = React.forwardRef<
     useEffect(() => {
       if (!iframeRef.current) return
       iframeRef.current.contentWindow?.postMessage(
-        { type: "theme-change", theme },
+        { type: "theme-change", theme, variables: themeVariables },
         "*"
       )
-    }, [theme])
+    }, [theme, themeVariables])
 
     useEffect(() => {
       if (!iframeRef.current) return
@@ -312,10 +325,10 @@ export const BlockRenderer = React.forwardRef<
     useEffect(() => {
       if (!webviewRef.current) return
       webviewRef.current.contentWindow?.postMessage(
-        { type: "theme-change", theme },
+        { type: "theme-change", theme, variables: themeVariables },
         "*"
       )
-    }, [theme])
+    }, [theme, themeVariables])
 
     useEffect(() => {
       if (!webviewRef.current) return

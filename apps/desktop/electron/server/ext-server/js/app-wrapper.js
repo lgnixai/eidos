@@ -68,6 +68,17 @@ window.addEventListener("message", (event) => {
     console.log("props-change", event.data.props)
     window.updateAppProps(event.data.props)
   }
+  if (event.data.type === "theme-change") {
+    document.documentElement.className = event.data.theme
+    const { variables } = event.data
+    if (variables) {
+      Object.entries(variables).forEach(([name, value]) => {
+        if (typeof value === "string") {
+          document.documentElement.style.setProperty(`--${name}`, value)
+        }
+      })
+    }
+  }
 })
 
 const executeCode = async (initialProps = {}) => {

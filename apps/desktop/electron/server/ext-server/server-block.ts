@@ -6,6 +6,11 @@ import { IExtension } from "@/packages/core/meta-table/extension";
 import { DataSpace } from '@/packages/core/DataSpace';
 import vm from 'vm';
 import { extractFunction } from "@/lib/v3/extract-function";
+import defaultThemeCss from "@/styles/themes/default.css?raw"
+import retroArcadeCss from "@/styles/themes/retro-arcade.css?raw"
+
+
+import { ConfigManager, getConfigManager } from "@/apps/desktop/electron/config";
 
 
 export const runServerAction = async (code: string, dataSpace: DataSpace, url: string) => {
@@ -27,8 +32,10 @@ export const runServerAction = async (code: string, dataSpace: DataSpace, url: s
 }
 
 export class ServerBlock {
+    private configManager: ConfigManager
     constructor(
     ) {
+        this.configManager = getConfigManager()
     }
 
     async handleServerAction(code: string, dataSpace: DataSpace, url: string) {
@@ -72,6 +79,7 @@ export class ServerBlock {
         const defaultPropsString = JSON.stringify({})
         const { importMapScript, cssLoaderScript } = await generateImportMap(thirdPartyLibs, uiLibs, cssLibs)
         // // Placeholder for BlockRenderer server-side logic
+        const themeRawCode = this.configManager.get('theme').currentThemeName === 'Default' ? defaultThemeCss : retroArcadeCss
         const html = getIndexHtml({
             theme,
             importMap: importMapScript,
@@ -81,7 +89,8 @@ export class ServerBlock {
             twConfig,
             compiledCode,
             defaultPropsString,
-            serverSideProps: res?.props || {}
+            serverSideProps: res?.props || {},
+            rawThemeCss: themeRawCode
         })
         const end = performance.now()
         console.log(`ServerBlock took ${end - start}ms`)

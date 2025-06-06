@@ -1,5 +1,4 @@
 import type { Config } from "tailwindcss"
-import themeRawCode from "./theme-raw.css?raw"
 
 export const getIndexHtml = (props: {
   theme: string,
@@ -10,9 +9,10 @@ export const getIndexHtml = (props: {
   twConfig: Partial<Config>,
   compiledCode: string,
   defaultPropsString: string,
-  serverSideProps: any
+  serverSideProps: any,
+  rawThemeCss: string;
 }) => {
-  const { theme, importMap, cssLoaderScript, sdkInjectScriptContent, envString, twConfig, compiledCode, defaultPropsString, serverSideProps } = props
+  const { theme, importMap, cssLoaderScript, sdkInjectScriptContent, envString, twConfig, compiledCode, defaultPropsString, serverSideProps, rawThemeCss } = props
 
   return `<html class="${theme}">
       <head>
@@ -52,7 +52,7 @@ export const getIndexHtml = (props: {
           });
         </script>
         <style>
-          ${themeRawCode}
+          ${rawThemeCss}
           * {
             border-color: hsl(var(--border));
           }
