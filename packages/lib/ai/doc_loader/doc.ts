@@ -1,4 +1,4 @@
-import { DataSpace } from "@/worker/web-worker/DataSpace"
+import { DataSpace } from "@/packages/core/DataSpace"
 import chunk from "lodash/chunk"
 
 import { BaseLoader } from "./base"

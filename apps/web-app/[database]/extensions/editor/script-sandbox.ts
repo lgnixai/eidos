@@ -1,4 +1,4 @@
-import { ICommand } from "@/worker/web-worker/meta-table/extension";
+import { ICommand } from "@/packages/core/meta-table/extension";
 
 declare global {
   interface Window {

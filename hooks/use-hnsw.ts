@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react"
-import { DataSpace } from "@/worker/web-worker/DataSpace"
-import { IEmbedding } from "@/worker/web-worker/meta-table/embedding"
+import { DataSpace } from "@/packages/core/DataSpace"
+import { IEmbedding } from "@/packages/core/meta-table/embedding"
 import chunk from "lodash/chunk"
 import zip from "lodash/zip"
 

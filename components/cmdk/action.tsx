@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { IAction } from "@/worker/web-worker/meta-table/action"
+import { IAction } from "@/packages/core/meta-table/action"
 
 import { ActionExecutor } from "@/lib/action/action"
 import { useAppRuntimeStore } from "@/lib/store/runtime-store"

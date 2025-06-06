@@ -1,4 +1,4 @@
-import { IExtension } from "@/worker/web-worker/meta-table/extension"
+import { IExtension } from "@/packages/core/meta-table/extension"
 import { ExternalLinkIcon } from "lucide-react"
 import { useMemo } from "react"
 import { Link, useLoaderData, useRevalidator } from "react-router-dom"

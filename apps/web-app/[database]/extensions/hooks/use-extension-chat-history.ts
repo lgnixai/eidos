@@ -1,7 +1,7 @@
 import { useSqlite } from "@/hooks/use-sqlite"
 import { useEditorStore } from "../stores/editor-store"
 import { useEffect } from "react"
-import { DataSpace } from "@/worker/web-worker/DataSpace"
+import { DataSpace } from "@/packages/core/DataSpace"
 import { Message } from "ai"
 import { uuidv7 } from "@/lib/utils"
 

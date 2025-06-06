@@ -1,4 +1,4 @@
-import { DataSpace, EidosTable } from "@/worker/web-worker/DataSpace"
+import { DataSpace, EidosTable } from "@/packages/core/DataSpace"
 import { DataConnection } from "peerjs"
 
 import { MsgType } from "../../const"

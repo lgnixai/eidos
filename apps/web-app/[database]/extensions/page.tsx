@@ -1,5 +1,5 @@
 import { useMemo } from "react"
-import { IExtension } from "@/worker/web-worker/meta-table/extension"
+import { IExtension } from "@/packages/core/meta-table/extension"
 import useUrlState from "@ahooksjs/use-url-state"
 import { useMount } from "ahooks"
 import {

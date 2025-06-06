@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { IAction } from "@/worker/web-worker/meta-table/action"
+import { IAction } from "@/packages/core/meta-table/action"
 
 import { useSqlite } from "./use-sqlite"
 

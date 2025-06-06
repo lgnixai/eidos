@@ -1,5 +1,5 @@
 import { Suspense, lazy, useCallback, useEffect, useRef, useState } from "react"
-import { IExtension } from "@/worker/web-worker/meta-table/extension"
+import { IExtension } from "@/packages/core/meta-table/extension"
 import { useLocalStorageState, useMount, useSize } from "ahooks"
 import { CodeIcon, EyeIcon, SettingsIcon } from "lucide-react"
 import { useTheme } from "next-themes"

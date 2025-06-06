@@ -2,7 +2,7 @@ import { useCurrentChatProjectId } from "@/hooks/use-current-node"
 import { createReactiveData } from "@/hooks/use-reactive-data"
 import { useSqlite } from "@/hooks/use-sqlite"
 import { uuidv7 } from "@/lib/utils"
-import type { DataSpace } from "@/worker/web-worker/DataSpace"
+import type { DataSpace } from "@/packages/core/DataSpace"
 import { Message } from "ai"
 import { useEffect, useMemo } from "react"
 import { z } from 'zod'

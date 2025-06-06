@@ -1,5 +1,5 @@
 import * as React from "react"
-import { DataSpace } from "@/worker/web-worker/DataSpace"
+import { DataSpace } from "@/packages/core/DataSpace"
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
 import { $getNodeByKey } from "lexical"
 

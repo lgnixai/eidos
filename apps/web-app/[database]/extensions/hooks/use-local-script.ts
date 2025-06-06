@@ -1,4 +1,4 @@
-import { IExtension } from "@/worker/web-worker/meta-table/extension"
+import { IExtension } from "@/packages/core/meta-table/extension"
 import { create } from "zustand"
 
 import { EidosFileSystemManager } from "@/lib/storage/eidos-file-system"

@@ -1,4 +1,4 @@
-import { IFile } from "@/worker/web-worker/meta-table/file"
+import { IFile } from "@/packages/core/meta-table/file"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { create } from "zustand"
 

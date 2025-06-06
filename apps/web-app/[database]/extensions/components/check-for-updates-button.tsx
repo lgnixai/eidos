@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from "react"
-import { IExtension } from "@/worker/web-worker/meta-table/extension"
+import { IExtension } from "@/packages/core/meta-table/extension"
 import { RefreshCw } from "lucide-react"
 import { useTranslation } from "react-i18next"
 

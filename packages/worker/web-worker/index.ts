@@ -3,7 +3,7 @@ import { MsgType } from "@/lib/const"
 import { EIDOS_VERSION, logger } from "@/lib/env"
 import { getConfig } from "@/lib/storage/indexeddb"
 
-import { DataSpace } from "./DataSpace"
+import { DataSpace } from "../../core/DataSpace"
 import { initWs } from "./api-agent/ws"
 import { SqliteServer } from "./sqlite-wasm-server"
 import { workerStore } from "./store"

@@ -2,7 +2,7 @@ import { useCallback, useEffect } from "react"
 import { useSqlite } from "@/hooks/use-sqlite"
 
 import { create } from 'zustand'
-import { IExtension } from "@/worker/web-worker/meta-table/extension"
+import { IExtension } from "@/packages/core/meta-table/extension"
 
 interface PromptsState {
     prompts: IExtension[]

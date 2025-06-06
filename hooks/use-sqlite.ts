@@ -1,7 +1,7 @@
 "use client"
 
 import { useCallback } from "react"
-import type { DataSpace } from "@/worker/web-worker/DataSpace"
+import type { DataSpace } from "@/packages/core/DataSpace"
 import orderBy from "lodash/orderBy"
 import { create } from "zustand"
 

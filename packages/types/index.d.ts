@@ -3284,7 +3284,7 @@ declare module "packages/worker/web-worker/DataSpace" {
         rebuildFTS(tableId: string): Promise<void>;
         createExtNode(ext_node_type: string, parent_id?: string): Promise<ITreeNode | null>;
         addDoc(docId: string, content: string, markdown: string, isDayPage?: boolean): Promise<void>;
-        getDocBaseInfo(id: string): Promise<Partial<import("@/worker/web-worker/meta-table/doc").IDoc>>;
+        getDocBaseInfo(id: string): Promise<Partial<import("@/packages/core/meta-table/doc").IDoc>>;
         updateDoc(docId: string, content: string, markdown: string, _isDayPage?: boolean): Promise<void>;
         getDoc(docId: string): Promise<string>;
         getDocMarkdown(docId: string, { withTitle, }?: {

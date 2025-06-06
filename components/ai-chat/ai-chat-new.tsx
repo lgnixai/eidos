@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { IEmbedding } from "@/worker/web-worker/meta-table/embedding"
+import { IEmbedding } from "@/packages/core/meta-table/embedding"
 import { useChat } from "ai/react"
 import { Paintbrush, PaperclipIcon, PauseIcon } from "lucide-react"
 import { useTranslation } from "react-i18next"

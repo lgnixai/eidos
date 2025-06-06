@@ -8,7 +8,7 @@ import {
   useRef,
   useState,
 } from "react"
-import { IExtension } from "@/worker/web-worker/meta-table/extension"
+import { IExtension } from "@/packages/core/meta-table/extension"
 import Editor, { DiffEditor, loader, useMonaco } from "@monaco-editor/react"
 import { useSize } from "ahooks"
 import debounce from "lodash/debounce"

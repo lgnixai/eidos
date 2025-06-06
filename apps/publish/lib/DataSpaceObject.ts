@@ -1,4 +1,4 @@
-import { DataSpace } from "@/worker/web-worker/DataSpace";
+import { DataSpace } from "@/packages/core/DataSpace";
 import { DurableObjectNamespace, DurableObjectState, ExportedHandler, KVNamespace, Request } from "@cloudflare/workers-types";
 import { IHttpSendData } from "./handleFunctionCall";
 import { EidosSQLiteServerDatabase, EidosSQLiteServerDomainDbInfo } from "./sqlite-provider/eidos-sqlite-server";

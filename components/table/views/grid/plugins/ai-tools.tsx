@@ -1,5 +1,5 @@
 import { useCallback, useContext, useState } from "react"
-import { IExtension } from "@/worker/web-worker/meta-table/extension"
+import { IExtension } from "@/packages/core/meta-table/extension"
 import { DataEditorProps, GridSelection } from "@glideapps/glide-data-grid"
 
 import { generateText } from "@/lib/ai/generate"

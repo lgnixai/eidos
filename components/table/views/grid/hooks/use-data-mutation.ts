@@ -1,5 +1,5 @@
 import { MutableRefObject, useCallback, useContext } from "react"
-import { DataChangeEventHandler } from "@/worker/web-worker/data-pipeline/DataChangeEventHandler"
+import { DataChangeEventHandler } from "@/packages/core/data-pipeline/DataChangeEventHandler"
 import {
   DataEditorRef,
   EditableGridCell,

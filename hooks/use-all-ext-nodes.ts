@@ -1,6 +1,6 @@
 import { useSqlite } from "@/hooks/use-sqlite"
 import { ScriptTableName } from "@/lib/sqlite/const"
-import { DataSpace } from '@/worker/web-worker/DataSpace'
+import { DataSpace } from '@/packages/core/DataSpace'
 import { z } from 'zod'
 import { createReactiveData } from "./use-reactive-data"
 

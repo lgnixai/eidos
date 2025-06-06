@@ -5,7 +5,7 @@ import { logger } from "@/lib/env"
 
 import { EidosDataEventChannelName } from "@/lib/const"
 import { BaseServerDatabase } from "@/lib/sqlite/interface"
-import { DataSpace } from "./DataSpace"
+import { DataSpace } from "../../core/DataSpace"
 
 const log = logger.info
 const error = logger.error

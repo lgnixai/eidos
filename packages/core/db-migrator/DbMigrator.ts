@@ -124,7 +124,7 @@ export class DbMigrator {
           const createTableSqlRes = this.db.syncExec2(
             `SELECT sql FROM sqlite_master WHERE type='table' AND name='${tableName}'`
           )
-          const createTableSql = createTableSqlRes[0].sql
+          const createTableSql = (await createTableSqlRes)[0].sql
           // error when add a column with non-constraint default value
           const newSql = generateMergeTableWithNewColumnsSql(
             createTableSql,

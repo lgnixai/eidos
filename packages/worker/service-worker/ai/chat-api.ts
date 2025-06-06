@@ -5,8 +5,8 @@ import { CoreUserMessage, LanguageModelV1, Tool, convertToCoreMessages, createDa
 // import { queryEmbedding } from "../routes/lib"
 import { isDesktopMode } from "@/lib/env";
 import { uuidv7 } from "@/lib/utils";
-import { DataSpace } from "@/worker/web-worker/DataSpace";
-import { ChatMessage } from "@/worker/web-worker/meta-table/message";
+import { DataSpace } from "@/packages/core/DataSpace";
+import { ChatMessage } from "@/packages/core/meta-table/message";
 import { generateTitleFromUserMessage, getChatById, getChatMessages, getLastAssistantMessage, getMostRecentUserMessage, isReloadScenario, saveChat, saveMessages, updateChatTitle, updateMessage } from "./helper";
 import { IData } from "./interface";
 

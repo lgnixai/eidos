@@ -1,4 +1,4 @@
-import { IExtension } from "@/worker/web-worker/meta-table/extension"
+import { IExtension } from "@/packages/core/meta-table/extension"
 import { useNavigate } from "react-router-dom"
 
 import { generateId } from "@/lib/utils"

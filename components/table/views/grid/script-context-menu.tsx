@@ -1,5 +1,5 @@
-import { ICommand, IExtension } from "@/worker/web-worker/meta-table/extension"
-import { RowsManager } from "@/worker/web-worker/sdk/rows"
+import { ICommand, IExtension } from "@/packages/core/meta-table/extension"
+import { RowsManager } from "@/packages/core/sdk/rows"
 
 import { useCurrentPathInfo } from "@/hooks/use-current-pathinfo"
 import { useAllExtensions } from "@/hooks/use-all-extensions"

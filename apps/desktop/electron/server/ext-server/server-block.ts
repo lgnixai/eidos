@@ -2,8 +2,8 @@ import { getOrSetDataSpace } from "../../data-space";
 import { getIndexHtml } from "./ext-html";
 import { generateImportMap, getAllLibs, makeSdkInjectScript, twConfig } from "./helper";
 // import { generateImportMap, getAllLibs, makeSdkInjectScript, twConfig } from "./helper";
-import { IExtension } from "@/worker/web-worker/meta-table/extension";
-import { DataSpace } from '@/worker/web-worker/DataSpace';
+import { IExtension } from "@/packages/core/meta-table/extension";
+import { DataSpace } from '@/packages/core/DataSpace';
 import vm from 'vm';
 import { extractFunction } from "@/lib/v3/extract-function";
 

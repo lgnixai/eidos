@@ -1,5 +1,5 @@
 import { useCallback, useEffect } from "react"
-import { ColumnTable } from "@/worker/web-worker/meta-table/column"
+import { ColumnTable } from "@/packages/core/meta-table/column"
 
 import {
   DataUpdateSignalType,

@@ -1,4 +1,4 @@
-import { IAction } from "@/worker/web-worker/meta-table/action"
+import { IAction } from "@/packages/core/meta-table/action"
 
 import { ActionExecutor } from "./action"
 

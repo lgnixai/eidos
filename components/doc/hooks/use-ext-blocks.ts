@@ -1,4 +1,4 @@
-import { IExtension } from "@/worker/web-worker/meta-table/extension"
+import { IExtension } from "@/packages/core/meta-table/extension"
 import { useEffect, useState } from "react"
 
 import { useCurrentPathInfo } from "@/hooks/use-current-pathinfo"

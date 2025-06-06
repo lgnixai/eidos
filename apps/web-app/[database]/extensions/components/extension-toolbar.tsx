@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useRef } from "react"
-import { IExtension } from "@/worker/web-worker/meta-table/extension"
+import { IExtension } from "@/packages/core/meta-table/extension"
 import { useMount } from "ahooks"
 import { Copy, ExternalLink, Play } from "lucide-react"
 import { useTranslation } from "react-i18next"

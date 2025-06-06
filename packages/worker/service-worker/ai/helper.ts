@@ -5,8 +5,8 @@ import { CoreMessage } from "ai";
 
 
 // import { queryEmbedding } from "../routes/lib"
-import { DataSpace } from "@/worker/web-worker/DataSpace";
-import { ChatMessage } from '@/worker/web-worker/meta-table/message';
+import { DataSpace } from "@/packages/core/DataSpace";
+import { ChatMessage } from '@/packages/core/meta-table/message';
 
 
 export function getMostRecentUserMessage(messages: Array<CoreMessage>) {

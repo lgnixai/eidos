@@ -1,5 +1,5 @@
 import React, { useEffect, useImperativeHandle, useRef } from "react"
-import { IEmbedding } from "@/worker/web-worker/meta-table/embedding"
+import { IEmbedding } from "@/packages/core/meta-table/embedding"
 import { LinkNode } from "@lexical/link"
 import { ListItemNode, ListNode } from "@lexical/list"
 import { MarkNode } from "@lexical/mark"

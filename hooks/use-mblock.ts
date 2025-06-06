@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 
 import { useSqlite } from "./use-sqlite"
-import { IExtension } from "@/worker/web-worker/meta-table/extension"
+import { IExtension } from "@/packages/core/meta-table/extension"
 
 export const useMblock = (id?: string) => {
     const [block, setBlock] = useState<IExtension | null>(null)

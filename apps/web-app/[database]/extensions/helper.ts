@@ -1,7 +1,7 @@
 import z from "zod"
 
 import { toast } from "@/components/ui/use-toast"
-import { IExtension } from "@/worker/web-worker/meta-table/extension"
+import { IExtension } from "@/packages/core/meta-table/extension"
 import { generateId, proxyURL } from "@/lib/utils"
 // @ts-ignore
 import eidosTypes from "@eidos.space/types/index.d.ts?raw"
