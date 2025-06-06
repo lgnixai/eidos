@@ -31,7 +31,7 @@ try {
     }
 
     currentProps = {
-      ...(JSON.parse(window.__serverSideProps) || {}),
+      ...(window.__serverSideProps || {}),
       ...deserializePropsFromUrl(new URL(window.location.href)),
     }
   }
