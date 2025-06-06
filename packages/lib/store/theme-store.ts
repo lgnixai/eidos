@@ -1,5 +1,7 @@
 import { create } from "zustand"
-import { persist } from "zustand/middleware"
+import { createJSONStorage, persist } from "zustand/middleware"
+
+import { createBackendSyncStorage } from "../storage/backend-sync"
 
 export interface CustomTheme {
   name: string
@@ -15,11 +17,21 @@ interface ThemeState {
   getCustomTheme: (name: string) => CustomTheme | undefined
 }
 
+const defaultThemeState = {
+  currentThemeName: 'Default',
+  customThemes: [],
+}
+
+const themeStorage = createBackendSyncStorage<ThemeState>({
+  backendConfigKey: "theme",
+  getBackendState: (state: ThemeState) => state,
+  defaultBackendState: defaultThemeState,
+})
+
 export const useThemeStore = create<ThemeState>()(
   persist(
     (set, get) => ({
-      currentThemeName: 'Default',
-      customThemes: [],
+      ...defaultThemeState,
       setCurrentThemeName: (name: string) => {
         set({ currentThemeName: name })
       },
@@ -48,7 +60,7 @@ export const useThemeStore = create<ThemeState>()(
     }),
     {
       name: "theme-storage",
-      getStorage: () => localStorage,
+      storage: createJSONStorage(() => themeStorage),
     }
   )
 ) 
