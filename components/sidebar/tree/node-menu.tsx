@@ -99,7 +99,7 @@ export function NodeItem({
     const extNode = extNodes.find((node) => node.ext_node_type === type)
     if (!extNode) return
     console.log("creating ", extNode)
-    const extNodeId = await createExtNode(extNode.ext_node_type, node.id)
+    const extNodeId = await createExtNode(extNode.ext_node_type!, node.id)
     if (!extNodeId) return
     goto(space, extNodeId)
   }
@@ -228,7 +228,7 @@ export function NodeItem({
             {extNodes.map((extNode) => (
               <ContextMenuItem
                 key={extNode.ext_node_type}
-                onClick={() => handleCreateExtNode(extNode.ext_node_type)}
+                onClick={() => handleCreateExtNode(extNode.ext_node_type!)}
               >
                 <FileIcon className="pr-2" />
                 {extNode.name}

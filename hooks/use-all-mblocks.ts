@@ -1,51 +1,117 @@
 import { useSqlite } from "@/hooks/use-sqlite"
+import { DataUpdateSignalType, EidosDataEventChannelMsg, EidosDataEventChannelMsgType, EidosDataEventChannelName } from "@/lib/const"
 import { ScriptTableName } from "@/lib/sqlite/const"
-import { DataSpace } from '@/packages/core/DataSpace'
-import { createReactiveData } from "./use-reactive-data"
+import { IExtension } from "@/packages/core/meta-table/extension"
+import { useCallback, useEffect } from "react"
+import { create } from "zustand"
 
-// Define the schema for mblocks
-// const mblockSchema = z.object({
-//     id: z.string(),
-//     name: z.string(),
-//     icon: z.string().optional(),
-//     type: z.literal("m_block"),
-//     code: z.string(),
-// })
 
-// export type Mblock = z.infer<typeof mblockSchema>
 
-export interface Mblock {
-    id: string
-    name: string
-    icon?: string
-    type: "m_block"
-    code: string
-}
-// Create the reactive data store
-const {
-    useItemsList,
-    useSyncWithBroadcast,
-    useReload
-} = createReactiveData<Mblock>({
-    modeName: ScriptTableName,
-    // schema: mblockSchema,
-    list: async (sqlite: DataSpace) => {
-        const blocks = await sqlite.extension.list({
+const useMblockStore = create<{
+    mblocks: IExtension[]
+    loading: boolean
+    setMblocks: (mblocks: IExtension[]) => void
+    setLoading: (loading: boolean) => void
+}>((set) => ({
+    mblocks: [],
+    loading: false,
+    setMblocks: (mblocks: IExtension[]) => set({ mblocks }),
+    setLoading: (loading: boolean) => set({ loading }),
+}))
+
+export const useSyncMblocks = () => {
+    const { sqlite } = useSqlite()
+    const { mblocks, setMblocks, setLoading } = useMblockStore()
+
+    const reload = useCallback(async () => {
+        setLoading(true)
+        if (!sqlite) return
+        const mblocks = await sqlite.extension.list({
             type: "m_block",
             enabled: true,
+        }, {
+            fields: ["id", "name", "icon", "type", "enabled", "created_at", "updated_at"]
         })
-        return blocks as Mblock[]
-    }
-})
+        setMblocks(mblocks)
+        setLoading(false)
+    }, [sqlite])
+
+
+    // const removeItem = useCallback((id: string) => {
+    //     setMblocks(mblocks.filter(mblock => mblock.id !== id))
+    // }, [])
+
+    // const addItem = useCallback((mblock: IExtension) => {
+    //     setMblocks([...mblocks, mblock])
+    // }, [])
+
+    // const updateItem = useCallback((_mblock: IExtension) => {
+    //     setMblocks(mblocks.map(mblock => mblock.id === _mblock.id ? _mblock : mblock))
+    // }, [])
+
+    useEffect(() => {
+
+        reload()
+
+        const bc = new BroadcastChannel(EidosDataEventChannelName)
+
+        const handler = async (ev: MessageEvent<EidosDataEventChannelMsg>) => {
+            const { type, payload } = ev.data
+            if (type === EidosDataEventChannelMsgType.MetaTableUpdateSignalType) {
+                const { table, _new, _old, type: updateType } = payload
+                if (table !== ScriptTableName && _old.type !== "m_block") return
+
+                // when data is updated, we need to reload the data from the database. it's simple but not efficient.
+                // we should use a more efficient way to update the data.
+                switch (updateType) {
+                    case DataUpdateSignalType.Insert:
+                        reload()
+                        break
+
+                    case DataUpdateSignalType.Update:
+                        reload()
+                        break
+
+                    case DataUpdateSignalType.Delete:
+                        reload()
+                        break
+                    default:
+                        break
+                }
+            }
+        }
+
+        bc.addEventListener("message", handler)
+        return () => {
+            bc.removeEventListener("message", handler)
+            bc.close()
+        }
+    }, [sqlite, reload])
+
+}
 
 export const useAllMblocks = () => {
     const { sqlite } = useSqlite()
-    const { data: mblocks, loading } = useItemsList(sqlite)
-    useSyncWithBroadcast(sqlite)
-    const reload = useReload(sqlite)
+
+    const { mblocks, loading, setMblocks, setLoading } = useMblockStore()
+
+    const reload = useCallback(async () => {
+        setLoading(true)
+        if (!sqlite) return
+        const mblocks = await sqlite.extension.list({
+            type: "m_block",
+            enabled: true,
+        }, {
+            fields: ["id", "name", "icon", "type", "enabled", "created_at", "updated_at"]
+        })
+        setMblocks(mblocks)
+        setLoading(false)
+    }, [sqlite])
+
+
     return {
         mblocks,
-        reload,
-        loading
+        loading,
+        reload
     }
 }

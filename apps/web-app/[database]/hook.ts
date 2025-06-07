@@ -24,6 +24,8 @@ import { uuidv7 } from "@/lib/utils"
 import { isDesktopMode, isInkServiceMode } from "@/lib/env"
 import { useAIConfigStore } from "../settings/ai/store"
 import { useReadSqliteStore } from "@/hooks/use-readonly-sqlite"
+import { useSyncExtNodes } from "@/hooks/use-all-ext-nodes"
+import { useSyncMblocks } from "@/hooks/use-all-mblocks"
 
 const mainServiceWorkerChannel = new BroadcastChannel(EidosSharedEnvChannelName)
 export const useCurrentDomain = () => {
@@ -76,6 +78,9 @@ export const useLayoutInit = () => {
   const { lastOpenedDatabase, setLastOpenedDatabase } = useLastOpened()
 
   const { initPeer } = usePeer()
+
+  useSyncExtNodes()
+  useSyncMblocks()
 
   useKeyPress(["ctrl.backslash", "meta.backslash"], () => {
     setSidebarOpen(!isSidebarOpen)

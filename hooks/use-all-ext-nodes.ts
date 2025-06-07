@@ -1,51 +1,97 @@
 import { useSqlite } from "@/hooks/use-sqlite"
+import { DataUpdateSignalType, EidosDataEventChannelMsg, EidosDataEventChannelMsgType, EidosDataEventChannelName } from "@/lib/const"
 import { ScriptTableName } from "@/lib/sqlite/const"
-import { DataSpace } from '@/packages/core/DataSpace'
-import { z } from 'zod'
-import { createReactiveData } from "./use-reactive-data"
+import { IExtension } from "@/packages/core/meta-table/extension"
+import { useCallback, useEffect } from "react"
+import { create } from "zustand"
 
-// Define the schema for external nodes
-const extNodeSchema = z.object({
-    id: z.string(),
-    name: z.string(),
-    icon: z.string().optional(),
-    type: z.literal("ext_node"),
-    ext_node_type: z.string(),
-    ext_node_handle_block_id: z.string(),
-})
 
-// Define the ExtNode type that explicitly extends BaseReactiveData
-interface ExtNode {
-    id: string
-    name: string
-    icon?: string
-    type: "ext_node"
-    ext_node_type: string
-    ext_node_handle_block_id: string
+
+const useExtNodeStore = create<{
+    extNodes: IExtension[]
+    loading: boolean
+    setExtNodes: (nodes: IExtension[]) => void
+    setLoading: (loading: boolean) => void
+}>((set) => ({
+    extNodes: [],
+    loading: false,
+    setExtNodes: (nodes) => set({ extNodes: nodes }),
+    setLoading: (loading) => set({ loading }),
+}))
+
+export const useSyncExtNodes = () => {
+    const { sqlite } = useSqlite()
+    const { setExtNodes, setLoading } = useExtNodeStore()
+
+    const reload = useCallback(async () => {
+        setLoading(true)
+        if (!sqlite) return
+        const nodes = await sqlite.extension.list({
+            type: "ext_node",
+            enabled: true,
+        }, {
+            fields: ["id", "name", "icon", "ext_node_type", "ext_node_handle_block_id", "enabled", "created_at", "updated_at"]
+        })
+        setExtNodes(nodes)
+        setLoading(false)
+    }, [sqlite, setExtNodes, setLoading])
+
+
+    useEffect(() => {
+        reload()
+    }, [reload])
+
+    useEffect(() => {
+        const bc = new BroadcastChannel(EidosDataEventChannelName)
+
+        const handler = async (ev: MessageEvent<EidosDataEventChannelMsg>) => {
+            const { type, payload } = ev.data
+            if (type === EidosDataEventChannelMsgType.MetaTableUpdateSignalType) {
+                const { table, _new, _old, type: updateType } = payload
+                if (table !== ScriptTableName || _old.type !== "ext_node") return
+
+                switch (updateType) {
+                    case DataUpdateSignalType.Insert:
+                        reload()
+                        break
+
+                    case DataUpdateSignalType.Update:
+                        reload()
+                        break
+
+                    case DataUpdateSignalType.Delete:
+                        reload()
+                        break
+                    default:
+                        break
+                }
+            }
+        }
+
+        bc.addEventListener("message", handler)
+        return () => {
+            bc.removeEventListener("message", handler)
+            bc.close()
+        }
+    }, [reload])
+
 }
 
-// Create the reactive data store
-const {
-    useItemsList,
-    useSyncWithBroadcast,
-    useReload
-} = createReactiveData<ExtNode>({
-    modeName: ScriptTableName,
-    // schema: extNodeSchema,
-    list: async (sqlite: DataSpace) => {
+export const useAllExtNodes = () => {
+    const { sqlite } = useSqlite()
+    const { extNodes, loading, setExtNodes, setLoading } = useExtNodeStore()
+
+    const reload = useCallback(async () => {
+        setLoading(true)
+        if (!sqlite) return
         const nodes = await sqlite.extension.list({
             type: "ext_node",
             enabled: true,
         })
-        return nodes as ExtNode[]
-    }
-})
+        setExtNodes(nodes)
+        setLoading(false)
+    }, [sqlite, setExtNodes, setLoading])
 
-export const useAllExtNodes = () => {
-    const { sqlite } = useSqlite()
-    const { data: extNodes, loading } = useItemsList(sqlite)
-    useSyncWithBroadcast(sqlite)
-    const reload = useReload(sqlite)
     return {
         extNodes,
         reload,

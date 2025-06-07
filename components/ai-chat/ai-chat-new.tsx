@@ -1,22 +1,22 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { IEmbedding } from "@/packages/core/meta-table/embedding"
 import { useChat } from "ai/react"
 import { Paintbrush, PaperclipIcon, PauseIcon } from "lucide-react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useWindowSize } from "usehooks-ts"
 
-import { EIDOS_CHAT_PROJECT_ID } from "@/lib/const"
-import { ITreeNode } from "@/lib/store/ITreeNode"
-import { useAppStore } from "@/lib/store/app-store"
+import { useExperimentConfigStore } from "@/apps/web-app/settings/experiment/store"
+import { Button } from "@/components/ui/button"
+import { toast } from "@/components/ui/use-toast"
 import { useAiConfig } from "@/hooks/use-ai-config"
 import { useAIFunctions } from "@/hooks/use-ai-functions"
 import { useAllPrompts } from "@/hooks/use-all-prompts"
 import { useAllTools } from "@/hooks/use-all-tools"
 import { useCurrentExtension, useCurrentNode } from "@/hooks/use-current-node"
 import { useCurrentPathInfo } from "@/hooks/use-current-pathinfo"
-import { Button } from "@/components/ui/button"
-import { toast } from "@/components/ui/use-toast"
-import { useExperimentConfigStore } from "@/apps/web-app/settings/experiment/store"
+import { EIDOS_CHAT_PROJECT_ID } from "@/lib/const"
+import { ITreeNode } from "@/lib/store/ITreeNode"
+import { useAppStore } from "@/lib/store/app-store"
 
 import { UIBlock } from "../remix-chat/components/block"
 import {
@@ -34,9 +34,7 @@ import { AIInputEditor, AIInputEditorRef } from "./ai-input-editor"
 import { useAIChatData } from "./hooks/use-ai-chat-history"
 import { useAttachments } from "./hooks/use-attachments"
 import { useSystemPrompt } from "./hooks/use-system-prompt"
-import { useAIChatSettingsStore } from "./settings/ai-chat-settings-store"
 import { useAIChatStore } from "./store"
-import { useSpeak } from "./webspeech/hooks"
 
 export default function Chat() {
   const { t } = useTranslation()
@@ -52,7 +50,6 @@ export default function Chat() {
   const [withSpaceData, setWithSpaceData] = useState(experiment.enableRAG)
   const [enableTools, setEnableTools] = useState(true) // 添加 enableTools 状态
 
-  const { autoSpeak } = useAIChatSettingsStore()
   const divRef = useRef<HTMLDivElement>(null)
   const { currentSysPrompt, setCurrentSysPrompt } = useAIChatStore()
   // const { progress } = useLoadingStore()

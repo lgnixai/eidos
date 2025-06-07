@@ -35,7 +35,7 @@ const {
     useReload: useReloadChatsInternal,
 } = createReactiveData<Chat>({
     modeName: 'chat',
-    schema: chatSchema,
+    // schema: chatSchema,
     list: async (sqlite: DataSpace, params?: Record<string, any>, options?: Record<string, any>) => {
         const chats = await sqlite.chat.list(params, options)
         return chats.map(chat => ({
@@ -52,7 +52,7 @@ const {
     useReactiveOperations: useMessageOperations,
 } = createReactiveData<ChatMessage>({
     modeName: 'message',
-    schema: messageSchema,
+    // schema: messageSchema,
     list: async (sqlite: DataSpace, params?: Record<string, any>, options?: Record<string, any>) => {
         // Since we need to list all messages for the current project,
         // we'll filter them by chat_id later in the component
@@ -137,6 +137,8 @@ export function useAIChatData() {
         if (loadingChats) return
         if (chats.length > 0) {
             setCurrentChatId(chats[0].id)
+        } else {
+            setCurrentChatId('')
         }
     }, [chats, loadingChats])
 
