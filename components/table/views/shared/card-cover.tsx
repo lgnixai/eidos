@@ -71,21 +71,6 @@ export const GalleryCardCover = ({
     }
   }, [item._id, coverPreview])
 
-  console.log("GalleryCardCover", { isView, coverPreview })
-  if (isView || coverPreview?.startsWith("cl_")) {
-    const coverUrl = getCoverUrl(item, coverField)
-    return (
-      <img
-        src={coverUrl}
-        alt=""
-        className={cn(
-          "h-[200px] w-full",
-          fitContent ? "object-contain" : "object-cover"
-        )}
-      />
-    )
-  }
-
   if (showBlock) {
     return <BlockApp url={blockUrl} />
   }
@@ -110,6 +95,20 @@ export const GalleryCardCover = ({
           className="prose-sm ml-0 !h-[200px] bg-gray-50 p-2 dark:bg-gray-700"
         />
       </div>
+    )
+  }
+
+  if (isView || coverPreview?.startsWith("cl_")) {
+    const coverUrl = getCoverUrl(item, coverField)
+    return (
+      <img
+        src={coverUrl}
+        alt=""
+        className={cn(
+          "h-[200px] w-full",
+          fitContent ? "object-contain" : "object-cover"
+        )}
+      />
     )
   }
 

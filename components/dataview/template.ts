@@ -88,5 +88,33 @@ WHERE
   AND j.type = 'object'
   AND json_extract(j.value, '$.type') = 'listitem'
         `
+  },
+  {
+    name: "queryAllMermaidDiagramsInDocs",
+    i18nKey: "dataview.template.queryAllMermaidDiagramsInDocs",
+    descriptionKey: "dataview.template.queryAllMermaidDiagramsInDocs.description",
+    tags: ["doc", "mermaid"],
+    sql: `
+WITH
+  valid_docs AS (
+    SELECT
+      id,
+      content
+    FROM
+      eidos__docs
+    WHERE
+      json_valid(content) = 1
+  )
+SELECT
+  json_extract(j.value, '$.text') as text,
+  d.id as doc_id,
+  j.value as raw_node
+FROM
+  valid_docs d,
+  json_tree(d.content, '$.root.children') AS j
+WHERE
+  j.type = 'object'
+  AND json_extract(j.value, '$.type') = 'mermaid'
+    `
   }
 ]

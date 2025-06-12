@@ -104,6 +104,8 @@
     "dataview.template.queryAllFiles.description": "Retrieve all files in the current space with their metadata including name, type, size and creation time.",
     "dataview.template.queryAllImages": "Query all images in space",
     "dataview.template.queryAllImages.description": "Retrieve all image files in the current space with their metadata including name, type, size and creation time.",
+    "dataview.template.queryAllMermaidDiagramsInDocs": "Query all Mermaid diagrams in documents",
+    "dataview.template.queryAllMermaidDiagramsInDocs.description": "Retrieve all Mermaid diagrams from documents with their diagram text and metadata.",
     "doc.addCover": "Add Cover",
     "doc.addIcon": "Add Icon",
     "doc.changeCover": "Change cover",
