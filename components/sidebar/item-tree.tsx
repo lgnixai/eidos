@@ -6,6 +6,7 @@ import {
   FileSpreadsheet,
   Folder,
   FolderOpenIcon,
+  ViewIcon,
 } from "lucide-react"
 import { DndProvider } from "react-dnd"
 import { HTML5Backend } from "react-dnd-html5-backend"
@@ -79,6 +80,8 @@ export const ItemIcon = ({
       return <FileSpreadsheet className={_className} />
     case "doc":
       return <File className={_className} />
+    case "view":
+      return <ViewIcon className={_className} />
     case "folder":
       return <Folder className={_className} />
     case "folder-open":

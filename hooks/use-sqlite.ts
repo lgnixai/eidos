@@ -343,7 +343,7 @@ export const useSqlite = (dbName?: string) => {
     const viewId = uuidv7().split("-").join("")
     const node = await sqlWorker.addTreeNode({
       id: viewId,
-      name: "New View",
+      name: "",
       type: "view",
       parent_id,
     })
@@ -531,6 +531,12 @@ export const useSqlite = (dbName?: string) => {
     delNode(docId)
   }
 
+  const deleteView = async (viewId: string) => {
+    if (!sqlWorker) return
+    await sqlWorker.dataView.delete(viewId)
+    delNode(viewId)
+  }
+
   const restoreNode = async (node: ITreeNode) => {
     if (!sqlWorker) return
     sqlWorker.restoreNode(node.id)
@@ -579,6 +585,9 @@ export const useSqlite = (dbName?: string) => {
         break
       case "doc":
         await deleteDoc(node.id)
+        break
+      case "view":
+        await deleteView(node.id)
         break
       default:
         if (node.type.startsWith("ext__")) {

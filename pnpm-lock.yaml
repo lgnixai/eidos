@@ -410,12 +410,6 @@ importers:
       postal-mime:
         specifier: ^2.2.5
         version: 2.2.5
-      prism-code-editor:
-        specifier: ^4.0.0
-        version: 4.0.0
-      prism-react-editor:
-        specifier: ^2.0.0
-        version: 2.0.0(react-dom@18.2.0)(react@18.2.0)
       prismjs:
         specifier: ^1.29.0
         version: 1.29.0
@@ -621,9 +615,6 @@ importers:
       '@types/path-browserify':
         specifier: ^1.0.2
         version: 1.0.2
-      '@types/prettier':
-        specifier: ^3.0.0
-        version: 3.0.0
       '@types/prismjs':
         specifier: ^1.26.0
         version: 1.26.0
@@ -9369,13 +9360,6 @@ packages:
     dev: true
     optional: true
 
-  /@types/prettier@3.0.0:
-    resolution: {integrity: sha512-mFMBfMOz8QxhYVbuINtswBp9VL2b4Y0QqYHwqLz3YbgtfAcat2Dl6Y1o4e22S/OVE6Ebl9m7wWiMT2lSbAs1wA==}
-    deprecated: This is a stub types definition. prettier provides its own type definitions, so you do not need this installed.
-    dependencies:
-      prettier: 3.5.3
-    dev: true
-
   /@types/prismjs@1.26.0:
     resolution: {integrity: sha512-ZTaqn/qSqUuAq1YwvOFQfVW1AR/oQJlLSZVustdjwI+GZ8kr0MSHBj0tsXPW1EqHubx50gtBEjbPGsdZwQwCjQ==}
     dev: true
@@ -17658,20 +17642,6 @@ packages:
   /printable-characters@1.0.42:
     resolution: {integrity: sha512-dKp+C4iXWK4vVYZmYSd0KBH5F/h1HoZRsbJ82AVKRO3PEo8L4lBS/vLwhVtpwwuYcoIsVY+1JYKR268yn480uQ==}
     dev: true
-
-  /prism-code-editor@4.0.0:
-    resolution: {integrity: sha512-N2dU1p18CLbPJu+7a4gdc4KC3Y2JUf6+W42wYfiGjZa7ozgnqtzVuroVXuRnpVaI2CytV6dW0YfhRfCtMUyomA==}
-    dev: false
-
-  /prism-react-editor@2.0.0(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-cGev4EWTyjQfYdkEuTBsttwyjHjrZrhfSWhSBqeffYwG3XNuRGkvGws+fLOgZnxgSSB2lxFMArFgaMvEXHZsHw==}
-    peerDependencies:
-      react: '>=16.8.0'
-      react-dom: '>=16.8.0'
-    dependencies:
-      react: 18.2.0
-      react-dom: 18.2.0(react@18.2.0)
-    dev: false
 
   /prismjs@1.27.0:
     resolution: {integrity: sha512-t13BGPUlFDR7wRB5kQDG4jjl7XeuH6jbJGt11JHPL96qwsEHNX2+68tFXqc1/k+/jALsbSWJKUOT/hcYAZ5LkA==}

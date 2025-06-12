@@ -8,6 +8,24 @@ export class SqlDataView {
     constructor(private dataSpace: DataSpace) {
     }
 
+
+    async delete(id: string) {
+        const viewName = `vw_${id}`
+        await this.dataSpace.db.prepare('BEGIN TRANSACTION;').run()
+        try {
+            await this.dataSpace.db.prepare(`DROP VIEW IF EXISTS ${viewName};`).run()
+            await this.dataSpace.view.deleteByTableId(id)
+            await this.dataSpace.column.deleteByRawTableName(viewName)
+            await this.dataSpace.tree.del(id)
+        } catch (error) {
+            await this.dataSpace.db.prepare('ROLLBACK;').run()
+            console.error('Error in delete view transaction:', error)
+            throw error
+        } finally {
+            await this.dataSpace.db.prepare('COMMIT;').run()
+        }
+    }
+
     async isDataViewExist(id: string) {
         const viewName = `vw_${id}`
         const view = await this.dataSpace.db.exec({
