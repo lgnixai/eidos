@@ -1,4 +1,4 @@
-import { ITreeNode } from "@/lib/store/ITreeNode"
+import { ITreeNode, TreeNodeType } from "@/lib/store/ITreeNode"
 
 import { useSqlite, useSqliteStore } from "./use-sqlite"
 
@@ -13,7 +13,7 @@ export const useAllNodes = (opts?: {
     ? Array.isArray(type)
       ? type
       : [type]
-    : ["table", "doc", "folder", "view"]
+    : [TreeNodeType.Table, TreeNodeType.Doc, TreeNodeType.Folder, TreeNodeType.Dataview]
 
   if (isDeleted) {
     return nodeIds

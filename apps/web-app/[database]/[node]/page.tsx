@@ -10,6 +10,7 @@ import {
   EidosDataEventChannelName,
 } from "@/lib/const"
 import { isInkServiceMode } from "@/lib/env"
+import { TreeNodeType } from "@/lib/store/ITreeNode"
 import {
   useCurrentExtNodeHandleBlockId,
   useCurrentNode,
@@ -131,7 +132,7 @@ export const NodeComponent = ({
   return (
     <>
       <NodeRestore node={node} />
-      {node?.type === "view" && <DataView nodeId={nodeId} />}
+      {node?.type === TreeNodeType.Dataview && <DataView nodeId={nodeId} />}
       {node?.type.startsWith("ext__") && (
         <div className="flex h-full w-full">
           <ExtNodeBlockApp

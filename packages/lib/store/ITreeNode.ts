@@ -1,7 +1,14 @@
+export enum TreeNodeType {
+  Table = "table",
+  Doc = "doc",
+  Folder = "folder",
+  Dataview = "dataview",
+}
+
 export interface ITreeNode {
   id: string
   name: string
-  type: "table" | "doc" | "folder" | "view" | string
+  type: TreeNodeType | `ext__${string}`
   position?: number
   parent_id?: string
   is_pinned?: boolean

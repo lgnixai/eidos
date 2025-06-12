@@ -4,6 +4,7 @@ import { getRawTableNameById } from "@/lib/utils"
 
 import { useCurrentNode } from "./use-current-node"
 import { isInkServiceMode } from "@/lib/env"
+import { TreeNodeType } from "@/lib/store/ITreeNode"
 
 export const useCurrentPathInfo = () => {
   let { database, table } = useParams()
@@ -15,7 +16,7 @@ export const useCurrentPathInfo = () => {
   }
 
   switch (currentNode?.type) {
-    case "view":
+    case TreeNodeType.Dataview:
       return {
         database,
         space: database!,
@@ -29,7 +30,7 @@ export const useCurrentPathInfo = () => {
         space: database!,
         // space = database
         // rawTableName stored in sqlite
-        tableName: table ?  getRawTableNameById(table) : "",
+        tableName: table ? getRawTableNameById(table) : "",
         // tableId = table
         tableId: table,
         viewId,

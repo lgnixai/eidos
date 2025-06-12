@@ -6,7 +6,7 @@ import orderBy from "lodash/orderBy"
 import { create } from "zustand"
 
 import { TreeTableName } from "@/lib/sqlite/const"
-import { ITreeNode } from "@/lib/store/ITreeNode"
+import { ITreeNode, TreeNodeType } from "@/lib/store/ITreeNode"
 import { IView } from "@/lib/store/IView"
 import { useAppRuntimeStore } from "@/lib/store/runtime-store"
 import { getRawTableNameById, uuidv7 } from "@/lib/utils"
@@ -331,7 +331,7 @@ export const useSqlite = (dbName?: string) => {
     const node = await sqlWorker.addTreeNode({
       id: folderId,
       name: "New Folder",
-      type: "folder",
+      type: TreeNodeType.Folder,
       parent_id,
     })
     node && addNode(node)
@@ -344,7 +344,7 @@ export const useSqlite = (dbName?: string) => {
     const node = await sqlWorker.addTreeNode({
       id: viewId,
       name: "",
-      type: "view",
+      type: TreeNodeType.Dataview,
       parent_id,
     })
     node && addNode(node)
@@ -391,7 +391,7 @@ export const useSqlite = (dbName?: string) => {
     const node = await sqlWorker.addTreeNode({
       id: docId,
       name: docName,
-      type: "doc",
+      type: TreeNodeType.Doc,
       parent_id: parent_id,
     })
     await sqlWorker.addDoc(docId, JSON.stringify(DefaultState), "")
@@ -412,7 +412,7 @@ export const useSqlite = (dbName?: string) => {
       const treeNode = await sqlWorker.addTreeNode({
         id: docId,
         name: title,
-        type: "doc",
+        type: TreeNodeType.Doc,
         parent_id: tableId,
       })
       addNode2List(treeNode)
@@ -487,7 +487,7 @@ export const useSqlite = (dbName?: string) => {
     addNode({
       id: tableId,
       name: tableName,
-      type: "table",
+      type: TreeNodeType.Table,
     })
     if (insertSql) {
       for (let index = 0; index < insertSql.length; index++) {
@@ -586,7 +586,7 @@ export const useSqlite = (dbName?: string) => {
       case "doc":
         await deleteDoc(node.id)
         break
-      case "view":
+      case TreeNodeType.Dataview:
         await deleteView(node.id)
         break
       default:

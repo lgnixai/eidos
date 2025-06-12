@@ -11,7 +11,7 @@ import {
 import { DndProvider } from "react-dnd"
 import { HTML5Backend } from "react-dnd-html5-backend"
 
-import { ITreeNode } from "@/lib/store/ITreeNode"
+import { ITreeNode, TreeNodeType } from "@/lib/store/ITreeNode"
 import { cn } from "@/lib/utils"
 
 import { Button } from "../ui/button"
@@ -76,11 +76,11 @@ export const ItemIcon = ({
 }) => {
   const _className = cn("opacity-60", className)
   switch (type) {
-    case "table":
+    case TreeNodeType.Table:
       return <FileSpreadsheet className={_className} />
-    case "doc":
+    case TreeNodeType.Doc:
       return <File className={_className} />
-    case "view":
+    case TreeNodeType.Dataview:
       return <ViewIcon className={_className} />
     case "folder":
       return <Folder className={_className} />

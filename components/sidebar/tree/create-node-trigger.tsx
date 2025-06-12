@@ -1,7 +1,7 @@
 import { Plus } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
-import { ITreeNode } from "@/lib/store/ITreeNode"
+import { ITreeNode, TreeNodeType } from "@/lib/store/ITreeNode"
 import { useAllExtNodes } from "@/hooks/use-all-ext-nodes"
 import { useCurrentPathInfo } from "@/hooks/use-current-pathinfo"
 import { useGoto } from "@/hooks/use-goto"
@@ -58,16 +58,16 @@ export const CreateNodeTrigger = ({ parent_id }: { parent_id?: string }) => {
 
   const handleCreateNode = (type: ITreeNode["type"]) => {
     switch (type) {
-      case "table":
+      case TreeNodeType.Table:
         handleCreateTable()
         break
-      case "doc":
+      case TreeNodeType.Doc:
         handleCreateDoc()
         break
-      case "folder":
+      case TreeNodeType.Folder:
         handlerCreateFolder()
         break
-      case "view":
+      case TreeNodeType.Dataview:
         handleCreateView()
         break
       default:
@@ -85,28 +85,28 @@ export const CreateNodeTrigger = ({ parent_id }: { parent_id?: string }) => {
       <DropdownMenuContent>
         <DropdownMenuItem
           onClick={() => {
-            handleCreateNode("doc")
+            handleCreateNode(TreeNodeType.Doc)
           }}
         >
           {t("node.menu.newDoc")}
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => {
-            handleCreateNode("table")
+            handleCreateNode(TreeNodeType.Table)
           }}
         >
           {t("node.menu.newTable")}
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => {
-            handleCreateNode("view")
+            handleCreateNode(TreeNodeType.Dataview)
           }}
         >
           {t("node.menu.newDataView")}
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => {
-            handleCreateNode("folder")
+            handleCreateNode(TreeNodeType.Folder)
           }}
         >
           {t("node.menu.newFolder")}
@@ -116,7 +116,7 @@ export const CreateNodeTrigger = ({ parent_id }: { parent_id?: string }) => {
           <DropdownMenuItem
             key={node.id}
             onClick={() => {
-              handleCreateNode(node.ext_node_type!)
+              handleCreateNode(node.ext_node_type! as `ext__${string}`)
             }}
           >
             {t("node.menu.newExtNode", { name: node.name })}
