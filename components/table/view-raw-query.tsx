@@ -1,0 +1,41 @@
+import { Settings } from "lucide-react"
+import { useContext, useEffect, useState } from "react"
+import { format } from "sql-formatter"
+
+import { Button } from "@/components/ui/button"
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
+import { useSqlite } from "@/hooks/use-sqlite"
+
+import { SQLQueryDisplay } from "../sql-query-display"
+import { TableContext } from "./hooks"
+
+export const ViewRawQuery = () => {
+  const [rawQuery, setRawQuery] = useState("")
+  const { space, tableName } = useContext(TableContext)
+  const { sqlite } = useSqlite()
+
+  useEffect(() => {
+    const fetchRawQuery = async () => {
+      if (!sqlite) return
+      const rawQuery = await sqlite.dataView.getViewRawQuery(tableName)
+      const formattedQuery = format(rawQuery, { language: "sqlite" })
+      setRawQuery(formattedQuery)
+    }
+    fetchRawQuery()
+  }, [sqlite, tableName])
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button size="xs" variant="ghost">
+          <Settings className="h-4 w-4 opacity-60"></Settings>
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="p-0 md:max-w-[756px] m-0">
+        <div className="flex-1 overflow-y-auto">
+          <SQLQueryDisplay query={rawQuery} />
+        </div>
+      </DialogContent>
+    </Dialog>
+  )
+}

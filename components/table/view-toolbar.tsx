@@ -53,6 +53,7 @@ import { useTableSearchStore } from "./hooks/use-table-search-store"
 import { ViewField } from "./view-field/view-field"
 import { ViewFilter } from "./view-filter"
 import { ViewIconMap, ViewItem } from "./view-item"
+import { ViewRawQuery } from "./view-raw-query"
 import { ViewSearch } from "./view-search"
 import { ViewSort } from "./view-sort"
 
@@ -376,6 +377,7 @@ export const ViewToolbar = (props: {
             <ViewFilter view={currentView} />
             <ViewSort view={currentView} />
             <ViewField view={currentView} />
+            {isView && <ViewRawQuery />}
           </div>
 
           {!props.isReadOnly && !isView && (

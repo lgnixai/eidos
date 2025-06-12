@@ -17,6 +17,14 @@ export class SqlDataView {
         return view.length > 0
     }
 
+    async getViewRawQuery(tableName: string) {
+        const view = await this.dataSpace.db.exec({
+            sql: `SELECT sql FROM sqlite_master WHERE type='view' and name = ?;`,
+            bind: [tableName]
+        })
+        return view[0].sql
+    }
+
     async getViewColumns(id: string) {
         const viewName = `vw_${id}`
         const columns = await this.dataSpace.db.prepare(`PRAGMA table_info(${viewName});`).all()

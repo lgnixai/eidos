@@ -21,6 +21,7 @@ export const SQLQueryDisplay: React.FC<SQLQueryDisplayProps> = ({
   const { t } = useTranslation()
   const [showOriginal, setShowOriginal] = useState(false)
 
+  const hasMapping = Object.keys(fieldMappings).length > 0
   const transformQuery = (originalQuery: string): string => {
     if (showOriginal) {
       return originalQuery
@@ -39,19 +40,21 @@ export const SQLQueryDisplay: React.FC<SQLQueryDisplayProps> = ({
 
   return (
     <div className="sql-query-display relative flex-1">
-      <div className="absolute top-2 right-2 flex items-center gap-2 z-10">
-        <Label
-          htmlFor="show-original"
-          className="text-sm text-muted-foreground"
-        >
-          {showOriginal ? "Original Column Names" : "Display Field Names"}
-        </Label>
-        <Switch
-          id="show-original"
-          checked={showOriginal}
-          onCheckedChange={setShowOriginal}
-        />
-      </div>
+      {hasMapping && (
+        <div className="absolute top-2 right-2 flex items-center gap-2 z-10">
+          <Label
+            htmlFor="show-original"
+            className="text-sm text-muted-foreground"
+          >
+            {showOriginal ? "Original Column Names" : "Display Field Names"}
+          </Label>
+          <Switch
+            id="show-original"
+            checked={showOriginal}
+            onCheckedChange={setShowOriginal}
+          />
+        </div>
+      )}
       <SyntaxHighlighter
         language="sql"
         style={monokai}
