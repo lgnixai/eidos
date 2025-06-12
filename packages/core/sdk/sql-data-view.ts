@@ -3,6 +3,7 @@ import { DataSpace } from "../DataSpace"
 import { shortenId, uuidv7 } from "@/lib/utils"
 import { IField } from "@/lib/store/interface"
 import { FieldType } from "@/lib/fields/const"
+import { allFieldTypesMap } from "@/lib/fields"
 
 export class SqlDataView {
     constructor(private dataSpace: DataSpace) {
@@ -80,12 +81,16 @@ export class SqlDataView {
         property: any
     }) {
 
+        const defaultFieldProperty =
+            allFieldTypesMap[type].getDefaultFieldProperty()
+
+        const isEmptyProperty = Object.keys(property).length === 0
         const updateData = {
             name: tableColumnName,
             type,
             table_name: tableName,
             table_column_name: tableColumnName,
-            property: property,
+            property: isEmptyProperty ? defaultFieldProperty : property,
         }
         const column = await this.dataSpace.column.getColumn(tableName, tableColumnName)
         if (!column) {
