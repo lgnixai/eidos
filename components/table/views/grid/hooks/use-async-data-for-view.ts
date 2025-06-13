@@ -173,7 +173,7 @@ export function useAsyncDataForView<TRowType>(data: {
       const startIndex = page * _pageSize
       let sql = rewriteQueryWithOffsetAndLimit(qs || "", startIndex, _pageSize)
       const d = await sqlite.sql4mainThread2(sql)
-      setRows(tableId, d, startIndex)
+      setRows(tableId, d, startIndex, true)
       const vr = visiblePagesRef.current
       rowIdsRef.current = isView ? Array.from({ length: d.length }, (_, i) => i + '') : d.map((r: any) => r._id)
       const data = dataRef.current
@@ -247,7 +247,7 @@ export function useAsyncDataForView<TRowType>(data: {
         .join(",")})`
       sql = rewriteQueryWithSortedQuery(sql, qs)
       const d = await sqlite?.sql4mainThread2(sql)
-      setRows(tableId, d, startIndex)
+      setRows(tableId, d, startIndex, true)
       const rowIds = isView ? Array.from({ length: d.length }, (_, i) => i + '') : d.map((r: any) => r._id)
       const vr = visiblePagesRef.current
       const damageList: { cell: [number, number] }[] = []
@@ -273,7 +273,7 @@ export function useAsyncDataForView<TRowType>(data: {
       let sql = rewriteQueryWithOffsetAndLimit(qs, startIndex, _pageSize)
       const d = await sqlite?.sql4mainThread2(sql)
       console.log("loadDataWithOffsetAndLimit", { d, isView, sql })
-      setRows(tableId, d, startIndex)
+      setRows(tableId, d, startIndex, true)
       const rowIds = isView ? Array.from({ length: d.length }, (_, i) => i + '') : d.map((r: any) => r._id)
       const vr = visiblePagesRef.current
       const damageList: { cell: [number, number] }[] = []

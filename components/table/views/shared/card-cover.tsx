@@ -13,6 +13,7 @@ import { useSqlite } from "@/hooks/use-sqlite"
 import { BlockApp } from "@/components/block-renderer/block-app"
 import { InnerEditor } from "@/components/doc/editor"
 import { getFirstImageUrl } from "@/components/doc/utils/helper"
+import { FilePreview } from "@/components/table/views/grid/cells/file/file-preview"
 
 import { TableContext } from "../../hooks"
 
@@ -42,6 +43,7 @@ export const GalleryCardCover = ({
   const showContent = coverPreview == undefined || coverPreview === "content"
   const showBlock = coverPreview?.startsWith("block://")
   const [imageUrl, setImageUrl] = useState<string | null>(null)
+  const [showPreview, setShowPreview] = useState(false)
   const { getDoc } = useSqlite()
 
   const itemJSON = Object.fromEntries(
@@ -77,9 +79,24 @@ export const GalleryCardCover = ({
 
   if (imageUrl) {
     return (
-      <img src={imageUrl} alt="" className="h-[200px] w-full object-cover" />
+      <>
+        <img 
+          src={imageUrl} 
+          alt="" 
+          className="h-[200px] w-full object-cover cursor-pointer" 
+          onClick={() => setShowPreview(true)}
+        />
+        {showPreview && (
+          <FilePreview
+            url={imageUrl}
+            type="image"
+            onClose={() => setShowPreview(false)}
+          />
+        )}
+      </>
     )
   }
+
   if (showContent) {
     return (
       <div className="h-[200px] w-full overflow-hidden object-cover">
@@ -100,15 +117,26 @@ export const GalleryCardCover = ({
 
   if (isView || coverPreview?.startsWith("cl_")) {
     const coverUrl = getCoverUrl(item, coverField)
+    if (!coverUrl) return null
     return (
-      <img
-        src={coverUrl}
-        alt=""
-        className={cn(
-          "h-[200px] w-full",
-          fitContent ? "object-contain" : "object-cover"
+      <>
+        <img
+          src={coverUrl}
+          alt=""
+          className={cn(
+            "h-[200px] w-full cursor-pointer",
+            fitContent ? "object-contain" : "object-cover"
+          )}
+          onClick={() => setShowPreview(true)}
+        />
+        {showPreview && (
+          <FilePreview
+            url={coverUrl}
+            type="image"
+            onClose={() => setShowPreview(false)}
+          />
         )}
-      />
+      </>
     )
   }
 

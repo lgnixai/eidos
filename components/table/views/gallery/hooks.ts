@@ -40,10 +40,15 @@ export const useGalleryViewData = (view: IView) => {
       console.log("useGalleryViewData", { sql, nameRawIdMap })
       sqlite.sql2`${sql}`.then((data: any[]) => {
         console.log("useGalleryViewData", { data, tableId })
-        setRows(tableId, data)
-        setData(
-          isView ? Array.from({ length: data.length }, (_, i) => i + '') : data.map((d: any) => d._id)
-        )
+        if (isView) {
+          setRows(tableId, data, 0, true)
+          setData(Array.from({ length: data.length }, (_, i) => i + ''))
+        } else {
+          setRows(tableId, data)
+          setData(
+            data.map((d: any) => d._id)
+          )
+        }
         setList(data as any[])
         setLoading(false)
       })

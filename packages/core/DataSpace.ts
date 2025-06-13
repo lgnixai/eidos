@@ -10,7 +10,7 @@ import {
   EidosFileSystemManager,
   FileSystemType,
 } from "@/lib/storage/eidos-file-system"
-import { ITreeNode } from "@/lib/store/ITreeNode"
+import { ITreeNode, TreeNodeType } from "@/lib/store/ITreeNode"
 import { IView, ViewTypeEnum } from "@/lib/store/IView"
 import { IField } from "@/lib/store/interface"
 import {
@@ -27,6 +27,7 @@ import { DataChangeEventHandler } from "./data-pipeline/DataChangeEventHandler"
 import { DataChangeTrigger } from "./data-pipeline/DataChangeTrigger"
 import { LinkRelationUpdater } from "./data-pipeline/LinkRelationUpdater"
 import { TableFullTextSearch } from "./data-pipeline/TableFullTextSearch"
+import { TableSemanticSearch } from "./data-pipeline/TableSemanticSearch"
 import { SQLiteUndoRedo } from "./data-pipeline/UndoRedo"
 import { DbMigrator } from "./db-migrator/DbMigrator"
 import { timeit } from "./helper"
@@ -38,19 +39,18 @@ import { ChatTable } from "./meta-table/chat"
 import { ColumnTable } from "./meta-table/column"
 import { DocTable } from "./meta-table/doc"
 import { EmbeddingTable, IEmbedding } from "./meta-table/embedding"
+import { ExtensionStatus, ExtensionTable, IExtension } from "./meta-table/extension"
+import { ExtNodeTable } from "./meta-table/extnode"
 import { FileTable, IFile } from "./meta-table/file"
 import { MessageTable } from "./meta-table/message"
 import { ReferenceTable } from "./meta-table/reference"
-import { IExtension, ExtensionStatus, ExtensionTable } from "./meta-table/extension"
 import { TreeTable } from "./meta-table/tree"
 import { ViewTable } from "./meta-table/view"
 import { RowsManager } from "./sdk/rows"
-import { TableManager } from "./sdk/table"
-import { withSqlite3AllUDF } from "./udf"
-import { TableSemanticSearch } from "./data-pipeline/TableSemanticSearch"
-import { ExtNodeTable } from "./meta-table/extnode"
-import { ThemeManager } from "./sdk/theme-manager"
 import { SqlDataView } from "./sdk/sql-data-view"
+import { TableManager } from "./sdk/table"
+import { ThemeManager } from "./sdk/theme-manager"
+import { withSqlite3AllUDF } from "./udf"
 // import { QueueTable } from "./meta-table/queue"
 
 export type EidosTable =
@@ -848,7 +848,7 @@ export class DataSpace {
           id: data.docId,
           name: data.title || data.docId,
           parent_id: data.parent_id,
-          type: "doc",
+          type: TreeNodeType.Doc,
         })
         return await this.doc.createOrUpdate({
           id: data.docId,
@@ -896,7 +896,7 @@ export class DataSpace {
   ) {
     // FIXME: should use db transaction to execute multiple sql
     this.db.transaction(async (db) => {
-      await this.addTreeNode({ id, name, type: "table", parent_id })
+      await this.addTreeNode({ id, name, type: TreeNodeType.Table, parent_id })
       db.exec(tableSchema)
       // create view for table
       await this.createDefaultView(getRawTableNameById(id))

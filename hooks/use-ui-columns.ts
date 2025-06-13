@@ -28,11 +28,12 @@ export const useUiColumns = (
     async (_tableName = tableName) => {
       if (!sqlite || !_tableName) return
       const res = await sqlite.listUiColumns(_tableName)
-      console.log("res", { res, _tableName })
       // order by created_at
-      res.sort((a, b) => {
-        return (a.created_at || 0) > (b.created_at || 0) ? 1 : -1
-      })
+      if (!tableName?.startsWith('vw_')) {
+        res.sort((a, b) => {
+          return (a.created_at || 0) > (b.created_at || 0) ? 1 : -1
+        })
+      }
       setUiColumns(getTableIdByRawTableName(_tableName || ""), res)
     },
     [setUiColumns, sqlite, tableName]

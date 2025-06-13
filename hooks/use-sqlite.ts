@@ -35,7 +35,7 @@ interface SqliteState {
 
   setViews: (tableId: string, views: IView[]) => void
   setFields: (tableId: string, fields: IField[]) => void
-  setRows: (tableId: string, rows: Record<string, any>[], offset?: number) => void
+  setRows: (tableId: string, rows: Record<string, any>[], offset?: number, isView?: boolean) => void
   delRows: (tableId: string, rowIds: string[]) => void
   getRowById: (tableId: string, rowId: string) => Record<string, any> | null
   getRowIds: (tableId: string) => string[]
@@ -140,7 +140,7 @@ export const useSqliteStore = create<SqliteState>()((set, get) => ({
     })
   },
 
-  setRows: (tableId: string, rows: Record<string, any>[], offset?: number) => {
+  setRows: (tableId: string, rows: Record<string, any>[], offset?: number, isView?: boolean) => {
     set((state) => {
       const { tableMap } = state.dataStore
       if (!tableMap[tableId]) {
@@ -152,9 +152,8 @@ export const useSqliteStore = create<SqliteState>()((set, get) => ({
         }
       }
       const newRowMap = rows.reduce((acc, cur, index) => {
-        const hasId = cur._id
-        if (hasId) {
-          acc[hasId] = cur
+        if (!isView) {
+          acc[cur._id] = cur
         } else {
           acc[index + (offset || 0)] = cur
         }
