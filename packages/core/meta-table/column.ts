@@ -218,7 +218,7 @@ export class ColumnTable extends BaseTableImpl implements BaseTable<IField> {
       this.dataSpace.notify({
         title: "Error",
         description:
-          "Failed to delete column, because it is referenced by other fields",
+          `Failed to delete column, ${error}`,
       })
     }
     return effectTables
