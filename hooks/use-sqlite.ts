@@ -564,11 +564,15 @@ export const useSqlite = (dbName?: string) => {
   }
   const deleteNode = async (node: ITreeNode) => {
     if (!sqlWorker) return
-    sqlWorker.deleteNode(node.id)
-    setNode({
-      id: node.id,
-      is_deleted: true,
-    })
+    if (node.type === TreeNodeType.Dataview) {
+      await deleteView(node.id)
+    } else {
+      sqlWorker.deleteNode(node.id)
+      setNode({
+        id: node.id,
+        is_deleted: true,
+      })
+    }
   }
 
   const deleteExtNode = async (nodeId: string) => {
