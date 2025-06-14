@@ -39,6 +39,7 @@ import {
   TagsTrigger,
   TagsValue,
 } from "@/components/ui/kibo-ui/tags"
+import { Switch } from "@/components/ui/switch"
 import { useToast } from "@/components/ui/use-toast"
 import {
   Form,
@@ -69,6 +70,8 @@ export const LLMProviderForm = ({
   const [availableModels, setAvailableModels] = useState<AvailableModel[]>([])
   const [isFetchingModels, setIsFetchingModels] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+  const [isManualMode, setIsManualMode] = useState(false)
+  const [manualModelInput, setManualModelInput] = useState("")
 
   const navigate = useNavigate()
 
@@ -134,6 +137,30 @@ export const LLMProviderForm = ({
       shouldValidate: true,
       shouldDirty: true,
     })
+  }
+
+  const handleManualModelAdd = () => {
+    const trimmedInput = manualModelInput.trim()
+    if (!trimmedInput || selectedModelIds.includes(trimmedInput)) {
+      setManualModelInput("")
+      return
+    }
+
+    const newSelectedIds = [...selectedModelIds, trimmedInput]
+    form.setValue("models", newSelectedIds.join(","), {
+      shouldValidate: true,
+      shouldDirty: true,
+    })
+    setManualModelInput("")
+  }
+
+  const handleManualInputKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>
+  ) => {
+    if (e.key === "Enter") {
+      e.preventDefault()
+      handleManualModelAdd()
+    }
   }
 
   function onSubmit(data: LLMProvider) {
@@ -302,68 +329,118 @@ export const LLMProviderForm = ({
             <FormItem>
               <div className="flex items-center justify-between">
                 <FormLabel>{t("settings.ai.models")}</FormLabel>
-                {(form.watch("type") === "openai-compatible" ||
-                  form.watch("type") === "ollama") && (
-                  <Button
-                    size="xs"
-                    variant="outline"
-                    onClick={getModelList}
-                    disabled={
-                      isFetchingModels ||
-                      (!form.watch("apiKey") && form.watch("type") !== "ollama")
-                    }
-                  >
-                    {isFetchingModels ? (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    ) : null}
-                    {t("common.fetch")}
-                  </Button>
-                )}
+                <div className="flex items-center space-x-2">
+                  {(form.watch("type") === "openai-compatible" ||
+                    form.watch("type") === "ollama") && (
+                    <>
+                      <span className="text-xs text-muted-foreground">
+                        {isManualMode
+                          ? t("settings.ai.manualEntry")
+                          : t("settings.ai.autoFetch")}
+                      </span>
+                      <Switch
+                        checked={isManualMode}
+                        onCheckedChange={setIsManualMode}
+                      />
+                      {!isManualMode && (
+                        <Button
+                          size="xs"
+                          variant="outline"
+                          onClick={getModelList}
+                          disabled={
+                            isFetchingModels ||
+                            (!form.watch("apiKey") &&
+                              form.watch("type") !== "ollama")
+                          }
+                        >
+                          {isFetchingModels ? (
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          ) : null}
+                          {t("common.fetch")}
+                        </Button>
+                      )}
+                    </>
+                  )}
+                </div>
               </div>
               <FormControl>
-                <Tags className="w-full">
-                  <TagsTrigger className="min-h-[40px] items-start">
-                    {selectedModelIds.map((modelId) => (
-                      <TagsValue
-                        key={modelId}
-                        onRemove={() => handleModelRemove(modelId)}
+                {isManualMode ? (
+                  <div className="space-y-2">
+                    <div className="flex flex-wrap gap-1 mb-2">
+                      {selectedModelIds.map((modelId) => (
+                        <TagsValue
+                          key={modelId}
+                          onRemove={() => handleModelRemove(modelId)}
+                        >
+                          {modelId}
+                        </TagsValue>
+                      ))}
+                    </div>
+                    <div className="flex space-x-2">
+                      <Input
+                        placeholder={t("settings.ai.enterModelName")}
+                        value={manualModelInput}
+                        onChange={(e) => setManualModelInput(e.target.value)}
+                        onKeyDown={handleManualInputKeyDown}
+                        className="flex-1"
+                      />
+                      <Button
+                        type="button"
+                        size="sm"
+                        onClick={handleManualModelAdd}
+                        disabled={!manualModelInput.trim()}
                       >
-                        {availableModels.find((m) => m.id === modelId)?.label ||
-                          modelId}
-                      </TagsValue>
-                    ))}
-                  </TagsTrigger>
-                  <TagsContent>
-                    <TagsInput placeholder={t("settings.ai.searchModels")} />
-                    <TagsList>
-                      <TagsEmpty>{t("settings.ai.noModelsFound")}</TagsEmpty>
-                      <TagsGroup>
-                        {availableModels
-                          .filter(
-                            (model) => !selectedModelIds.includes(model.id)
-                          )
-                          .map((model) => (
-                            <TagsItem
-                              key={model.id}
-                              value={model.id}
-                              onSelect={() => handleModelSelect(model.id)}
-                            >
-                              {model.label}
-                            </TagsItem>
-                          ))}
-                      </TagsGroup>
-                      {isFetchingModels && (
-                        <div className="p-2 text-center text-sm text-muted-foreground">
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin inline-block" />
-                          {t("common.loading")}...
-                        </div>
-                      )}
-                    </TagsList>
-                  </TagsContent>
-                </Tags>
+                        {t("common.add")}
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <Tags className="w-full">
+                    <TagsTrigger className="min-h-[40px] items-start">
+                      {selectedModelIds.map((modelId) => (
+                        <TagsValue
+                          key={modelId}
+                          onRemove={() => handleModelRemove(modelId)}
+                        >
+                          {availableModels.find((m) => m.id === modelId)
+                            ?.label || modelId}
+                        </TagsValue>
+                      ))}
+                    </TagsTrigger>
+                    <TagsContent>
+                      <TagsInput placeholder={t("settings.ai.searchModels")} />
+                      <TagsList>
+                        <TagsEmpty>{t("settings.ai.noModelsFound")}</TagsEmpty>
+                        <TagsGroup>
+                          {availableModels
+                            .filter(
+                              (model) => !selectedModelIds.includes(model.id)
+                            )
+                            .map((model) => (
+                              <TagsItem
+                                key={model.id}
+                                value={model.id}
+                                onSelect={() => handleModelSelect(model.id)}
+                              >
+                                {model.label}
+                              </TagsItem>
+                            ))}
+                        </TagsGroup>
+                        {isFetchingModels && (
+                          <div className="p-2 text-center text-sm text-muted-foreground">
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin inline-block" />
+                            {t("common.loading")}...
+                          </div>
+                        )}
+                      </TagsList>
+                    </TagsContent>
+                  </Tags>
+                )}
               </FormControl>
               <FormDescription>
-                {t("settings.ai.modelsDescription")}
+                {isManualMode
+                  ? t("settings.ai.modelsDescriptionManual")
+                  : t("settings.ai.modelsDescription")}
               </FormDescription>
               <FormMessage />
             </FormItem>
