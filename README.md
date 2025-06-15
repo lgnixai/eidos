@@ -30,75 +30,34 @@
 - Out-of-the-box Notion-like documents and databases
 - Offline Support: Everything runs inside your local machine. Access your data without an internet connection. Data is stored locally for blazing-fast performance.
 - AI Features: Deeply integrated with LLM for AI-powered capabilities. Translate, summarize, and interact with your data within Eidos.
-- Extensible: Customize Eidos to suit your needs. Write extension code manually or use AI to generate extension code
+- Extensible: Simple and powerful extension system, make Eidos a malleable software, write extension code manually or use AI to generate extension code.
 
-  - Micro block: UI components for customized data display and interaction. Can be referenced in documents, covers, and right panels
-  - Doc Plugin: Customize document editor behavior
+  - Micro block: UI components for customized data display and interaction.
   - Script: Create powerful data processing logic with TypeScript/JavaScript/Python.
   - UDF: Use JavaScript to create custom calculation functions for use in table Formula fields.
 
-- Developer Friendly:
-
-  - API & SDK
-  - Sqlite Standardization: Every table in Eidos is a SQLite table.
+- Open Format: You get the raw data, everything in sqlite is open.
 
 ## How to use
 
-> [!WARNING]
-> Web app is deprecated, use desktop app instead.
-
-There are two versions of Eidos:
-
-- Web app[tech preview]: Accessible via browser, it's a pure PWA with no web server. But it has some limitations, see [web-vs-desktop](./docs/web-vs-desktop.md)
-- Desktop app[recommended]: Offline support, full features.
-
-Get the app from: https://eidos.space/download
+Get the app from: https://preview.eidos.space/download
 
 ## How to develop
-
-### desktop app
 
 1. Clone the repository `git clone https://github.com/mayneyao/eidos.git`
 2. Run `pnpm install` to install dependencies
 3. Run `pnpm download-libsimple` to download libsimple (only for the first time)
-4. Run `pnpm dev:desktop`
+4. Run `pnpm dev:desktop` (or `pnpm dev` for web app(PWA))
 
-### web app
+## How Eidos works
 
-1. Clone the repository `git clone https://github.com/mayneyao/eidos.git`
-2. Run `pnpm install` to install dependencies
-3. Run `pnpm dev`
-4. You can now access the app in your browser at http://localhost:5173
-
-## Roadmap
-
-Eidos is built around several core modules that are iteratively developed. Document, Table, File, Extension, and AI form the foundation of Eidos.
-
-- Short-term goals
-  - [ ] [Upcoming changes before the end of Q1](https://github.com/mayneyao/eidos/issues/208)
-- Long-term goals
-  - [ ] Publish Service: Publish your data to the web.
-  - [ ] P2p sync based on CRDT: local-first, not local-only. Sync your data across devices.
-
-Check [changelogs](./docs/changelogs/index.md) for more details.
+For more details, visit https://docs.eidos.space/
 
 ## Contributors
 
 <a href="https://github.com/mayneyao/eidos/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=mayneyao/eidos" />
 </a>
-
-## Credits
-
-Eidos based on the following open-source projects:
-
-- [sqlite-wasm](https://github.com/sqlite/sqlite-wasm) - Run SQLite in the browser
-- [shadcn-ui](https://github.com/shadcn-ui/ui) - UI components
-- [glide-data-grid](https://github.com/glideapps/glide-data-grid) - High performance table
-- [lexical](https://github.com/facebook/lexical) - Document editor
-- [teable](https://github.com/teableio/teable) & [apitable](https://github.com/apitable/apitable) - Teach me how to build an Airtable-like table.
-- [electron](https://github.com/electron/electron) - Build cross-platform desktop apps
-- [libsimple](https://github.com/wangfenjin/simple) - a sqlite extension for full-text search for CJK languages
 
 ## License
 
