@@ -1,12 +1,14 @@
-import { useState } from "react"
+import { useEffect, useMemo, useState } from "react"
+import { SQLNamespace } from "@codemirror/lang-sql"
 import { useTranslation } from "react-i18next"
 
 import { formatSql } from "@/lib/sqlite/helper"
 import { shortenId } from "@/lib/utils"
 import { useDataView } from "@/hooks/use-data-view"
+import { useSqlite } from "@/hooks/use-sqlite"
 import { Button } from "@/components/ui/button"
-
 import SqlEditor from "@/components/sql-editor"
+
 import { templates } from "./template"
 
 export const DataViewPlaceholder = ({
@@ -17,8 +19,41 @@ export const DataViewPlaceholder = ({
   onCreated: () => void
 }) => {
   const [sql, setSql] = useState("")
+  const [schema, setSchema] = useState<SQLNamespace>({})
   const { createDataView } = useDataView()
+  const { sqlite } = useSqlite()
   const { t } = useTranslation()
+
+  useEffect(() => {
+    const buildSchema = async () => {
+      if (!sqlite) return
+
+      try {
+        const tables = await sqlite.sqlQuery2(`
+          SELECT name FROM sqlite_master 
+          WHERE type='table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE 'fts_%'
+        `)
+
+        const schemaResult: SQLNamespace = {}
+
+        for (const table of tables) {
+          const tableName = table.name
+
+          const columns = await sqlite.sqlQuery2(
+            `PRAGMA table_info(${tableName})`
+          )
+
+          schemaResult[tableName] = columns.map((col: any) => col.name)
+        }
+
+        setSchema(schemaResult)
+      } catch (error) {
+        console.error("Error building schema:", error)
+      }
+    }
+
+    buildSchema()
+  }, [sqlite])
 
   const handleCreate = () => {
     createDataView(shortenId(nodeId), sql).then(onCreated)
@@ -74,7 +109,7 @@ export const DataViewPlaceholder = ({
           </Button>
         </div>
         <div className="flex-1 min-h-0 mb-4">
-          <SqlEditor value={sql} onChange={setSql} />
+          <SqlEditor value={sql} onChange={setSql} schema={schema} />
         </div>
       </div>
     </div>

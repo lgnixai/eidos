@@ -1229,6 +1229,10 @@ export class DataSpace {
   // just for type check
   public sql2 = this.sql
 
+
+  public async sqlQuery2(sql: string, bind: any[] = []) {
+    return this.sql4mainThread(sql, bind, "object")
+  }
   // rename for public rpc
   public sqlQuery = this.sql4mainThread
   /**
