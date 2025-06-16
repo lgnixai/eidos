@@ -5,7 +5,7 @@ import { IExtension } from "@/packages/core/meta-table/extension";
 import vm from 'vm';
 import { getOrSetDataSpace } from "../../data-space";
 import { getIndexHtml } from "./ext-html";
-import { makeSdkInjectScript, twConfig } from "./helper";
+import { makeSdkInjectScript, presetThemes, twConfig } from "./helper";
 
 
 import { ConfigManager, getConfigManager } from "@/apps/desktop/electron/config";
@@ -51,9 +51,17 @@ export class ServerBlock {
         return null
     }
 
-    getThemeRawCss(themeName: string) {
-        const allThemes = this.configManager.get('theme').customThemes
-        const theme = allThemes.find((theme) => theme.name === themeName)
+    getThemeRawCss(themeName?: string) {
+        const customThemes = this.configManager.get('theme').customThemes
+        const currentThemeName = this.configManager.get('theme').currentThemeName
+        const allThemes = [...presetThemes, ...(customThemes || [])]
+        if (themeName) {
+            const theme = allThemes.find((theme) => theme.name === themeName)
+            if (theme) {
+                return theme.css
+            }
+        }
+        const theme = allThemes.find((theme) => theme.name === currentThemeName)
         if (theme) {
             return theme.css
         }
@@ -61,8 +69,6 @@ export class ServerBlock {
     }
 
     async run(spaceId: string, extension: IExtension | null, url: string) {
-        //     log('Successfully got dataSpace for:', spaceId, 'DB Name:', dataSpace.dbName);
-        const theme = 'light'
         const dataSpace = await getOrSetDataSpace(spaceId);
         const start = performance.now()
         const sdkInjectScriptContent = makeSdkInjectScript({
@@ -87,9 +93,9 @@ export class ServerBlock {
         const defaultPropsString = JSON.stringify({})
         const { importMapScript, cssLoaderScript } = await generateImportMap(thirdPartyLibs, uiLibs, cssLibs)
         // // Placeholder for BlockRenderer server-side logic
-        const themeRawCode = this.getThemeRawCss(theme)
+        const themeRawCode = this.getThemeRawCss()
         const html = getIndexHtml({
-            theme,
+            theme: 'light',
             importMap: importMapScript,
             cssLoaderScript,
             sdkInjectScriptContent,

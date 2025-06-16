@@ -3,6 +3,21 @@ import sdkInjectScript from "./sdk-inject-script.html?raw";
 
 import type { Config } from "tailwindcss";
 
+import retroArcade from "@/styles/themes/retro-arcade.css?raw"
+import defaultTheme from "@/styles/themes/default.css?raw"
+
+export const presetThemes = [
+    {
+        name: "Default",
+        css: defaultTheme,
+    },
+    {
+        name: "Retro Arcade",
+        css: retroArcade,
+    },
+]
+
+
 
 export const makeSdkInjectScript = ({
     bindings,
