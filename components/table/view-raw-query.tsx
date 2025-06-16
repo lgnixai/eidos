@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { useSqlite } from "@/hooks/use-sqlite"
 
-import { SQLQueryDisplay } from "../sql-query-display"
+import SqlEditor from "../sql-editor"
 import { TableContext } from "./hooks"
 
 export const ViewRawQuery = () => {
@@ -32,9 +32,7 @@ export const ViewRawQuery = () => {
         </Button>
       </DialogTrigger>
       <DialogContent className="p-0 md:max-w-[756px] m-0">
-        <div className="flex-1 overflow-y-auto">
-          <SQLQueryDisplay query={rawQuery} />
-        </div>
+        <SqlEditor value={rawQuery} readOnly />
       </DialogContent>
     </Dialog>
   )
