@@ -1,14 +1,14 @@
-import { useState } from "react"
 import type { Message } from "ai"
-import { EyeIcon, EyeOffIcon, PlayIcon, RefreshCwIcon } from "lucide-react"
+import { PlayIcon, RefreshCwIcon } from "lucide-react"
+import { useMemo, useState } from "react"
 import { toast } from "sonner"
 import { useSWRConfig } from "swr"
 import { useCopyToClipboard } from "usehooks-ts"
 
-import { getCodeFromMarkdown } from "@/lib/markdown"
+import { useEditorStore } from "@/apps/web-app/[database]/extensions/stores/editor-store"
 import { Button } from "@/components/ui/button"
 import { TooltipProvider } from "@/components/ui/tooltip"
-import { useEditorStore } from "@/apps/web-app/[database]/extensions/stores/editor-store"
+import { getCodeFromMarkdown } from "@/lib/markdown"
 
 import type { Vote } from "../interface"
 import { CopyIcon } from "./icons"
@@ -36,11 +36,19 @@ export function MessageActions({
   const [_, copyToClipboard] = useCopyToClipboard()
   const { setScriptCodeMap, setLayoutMode } = useEditorStore()
   const [isPreviewEnabled, setIsPreviewEnabled] = useState(false)
+  const content = useMemo(
+    () =>
+      message.parts
+        ?.filter((part) => part.type === "text")
+        .map((part: any) => part.text)
+        .join(""),
+    [message.parts]
+  )
 
   if (isLoading) return null
   if (message.role === "user") return null
-  if (message.toolInvocations && message.toolInvocations.length > 0) return null
-  const codeBlocks = getCodeFromMarkdown(message.content as string)
+
+  const codeBlocks = getCodeFromMarkdown(content || message.content)
 
   const handleApply = () => {
     const indexJsxCode = codeBlocks.find(
@@ -106,7 +114,7 @@ export function MessageActions({
             >
               <PlayIcon className="w-4 h-4" />
             </Button>
-            <Button
+            {/* <Button
               className="py-1 px-2 h-fit text-muted-foreground"
               variant="outline"
               onClick={handleTogglePreview}
@@ -117,7 +125,7 @@ export function MessageActions({
               ) : (
                 <EyeIcon className="w-4 h-4" />
               )}
-            </Button>
+            </Button> */}
           </>
         )}
       </div>
