@@ -9,7 +9,7 @@
    An extensible framework for Personal Data Management.
 </h3>
 <div align="center">
-  <a target="_blank" href="https://eidos.space/download"><img src="https://img.shields.io/badge/download-eidos-cyan.svg?style=flat-square&sanitize=true" /></a>
+  <a target="_blank" href="https://preview.eidos.space/download"><img src="https://img.shields.io/badge/download-eidos-cyan.svg?style=flat-square&sanitize=true" /></a>
   <a target="_blank" href="https://discord.gg/cGQqjeFpZq"><img src="https://img.shields.io/badge/chat-on%20discord-7289da.svg?style=flat-square&sanitize=true" /></a>
   <a aria-label="Top language of Eidos" href="https://github.com/mayneyao/eidos/search?l=typescript">
     <img alt="Top language of Eidos" src="https://img.shields.io/github/languages/top/mayneyao/eidos?style=flat-square&labelColor=000&color=blue">
@@ -23,7 +23,7 @@
 ![eidos](/static/assets/images/table-and-doc.webp)
 
 > [!IMPORTANT]
-> Eidos sets a big goal in mind, but it is still in its early stages, and there is a lot of work to be done. You can give it a try, but I do not recommend using it for production purposes. If you're interested in this project, I recommend staying updated on its development. If you have an Early Access key, you'll receive an email notification when Eidos is officially released.
+> Eidos is under active development. While you can try it out, it's not recommended for production use. Stay tuned for updates on the official release.
 
 ## Features
 
