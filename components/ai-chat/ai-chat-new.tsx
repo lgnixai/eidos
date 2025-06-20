@@ -139,7 +139,6 @@ export default function Chat() {
     generateId: uuidv7,
   })
 
-  console.log("messages", messages)
   const handleReload = async () => {
     await reload()
   }

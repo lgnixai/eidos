@@ -1,10 +1,7 @@
-import { useMemo } from "react"
 import { WrenchIcon } from "lucide-react"
+import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 
-import { useAllTools } from "@/hooks/use-all-tools"
-import { useCurrentPathInfo } from "@/hooks/use-current-pathinfo"
-import { useExtensionNavigateById } from "@/hooks/use-extension-navigate"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -15,6 +12,9 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { Switch } from "@/components/ui/switch"
+import { useAllTools } from "@/hooks/use-all-tools"
+import { useCurrentPathInfo } from "@/hooks/use-current-pathinfo"
+import { useExtensionNavigateById } from "@/hooks/use-extension-navigate"
 
 import { useAIChatStore } from "./store"
 
@@ -38,11 +38,12 @@ export function AIToolsConfig({
     getMaxSteps,
     setMaxSteps,
     maxSteps: storeMaxSteps,
+    enabledTools: storeEnabledTools,
   } = useAIChatStore()
 
   const enabledTools = useMemo(() => {
-    const storeEnabledTools = getEnabledTools(space)
-    if (Object.keys(storeEnabledTools).length === 0) {
+    const currentEnabledTools = storeEnabledTools[space] || {}
+    if (Object.keys(currentEnabledTools).length === 0) {
       const initialState: Record<string, boolean> = {}
       Object.keys(tools).forEach((toolName) => {
         initialState[toolName] = true
@@ -50,8 +51,8 @@ export function AIToolsConfig({
       setEnabledTools(space, initialState)
       return initialState
     }
-    return storeEnabledTools
-  }, [tools, space, getEnabledTools, setEnabledTools])
+    return currentEnabledTools
+  }, [tools, space, setEnabledTools, storeEnabledTools])
 
   const maxSteps = useMemo(
     () => getMaxSteps(space),
@@ -180,10 +181,10 @@ export function AIToolsConfig({
 export function useFilteredTools() {
   const { space } = useCurrentPathInfo()
   const tools = useAllTools()
-  const { getEnabledTools } = useAIChatStore()
+  const { enabledTools: storeEnabledTools } = useAIChatStore()
 
   return useMemo(() => {
-    const enabledTools = getEnabledTools(space)
+    const enabledTools = storeEnabledTools[space] || {}
     const filtered: Record<string, any> = {}
 
     Object.entries(tools).forEach(([key, tool]) => {
@@ -195,7 +196,7 @@ export function useFilteredTools() {
     })
 
     return filtered
-  }, [tools, space, getEnabledTools])
+  }, [tools, space, storeEnabledTools])
 }
 
 // Hook to get max steps for external use
