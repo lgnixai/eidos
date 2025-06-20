@@ -326,7 +326,7 @@ export const AIInputEditor = React.forwardRef<
                 <div className="pointer-events-none absolute left-3 top-2 text-xs text-muted-foreground opacity-50">
                   {t("aiChat.inputEditor.typeYourMessageHere")}
                   <br />
-                  {t("aiChat.inputEditor.pressSlashToSwitchPrompt")}
+                  {/* {t("aiChat.inputEditor.pressSlashToSwitchPrompt")} */}
                   {t("aiChat.inputEditor.pressAtToMentionResource")}
                   <br />
                   {t(
@@ -344,7 +344,7 @@ export const AIInputEditor = React.forwardRef<
               onDeleteCallback={handleNodeDelete}
             />
             <DragDropPlugin onNodeInsert={handleNodeDrop} />
-            <SwitchPromptPlugin />
+            {/* <SwitchPromptPlugin /> */}
             <HistoryPlugin />
             <AutoFocusPlugin />
             <AIInputEditorDataPlugin ref={dataPluginRef} />

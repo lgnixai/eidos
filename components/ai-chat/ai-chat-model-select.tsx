@@ -104,7 +104,7 @@ export function AIModelSelect({
           <ScrollArea className="w-[350px]">
             <div className="max-h-[500px]">
               {!onlyLocal && (
-                <CommandGroup heading="Service via API">
+                <CommandGroup>
                   {models.map((model) => (
                     <CommandItem
                       key={model}
