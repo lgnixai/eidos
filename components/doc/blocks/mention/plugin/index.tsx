@@ -133,7 +133,7 @@ export default function NewMentionsPlugin(
         }
         const selection = $getSelection()
         const selectedNode = (selection as RangeSelection).anchor.getNode()
-        const mentionNode = $createMentionNode(nodeId)
+        const mentionNode = $createMentionNode(nodeId, selectedOption.name)
         $insertNodes([mentionNode])
         selectedNode.insertAfter(mentionNode)
         nodeToReplace?.remove()

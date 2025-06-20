@@ -2,8 +2,6 @@ import { ReactNode } from "react"
 import { BlockWithAlignableContents } from "@lexical/react/LexicalBlockWithAlignableContents"
 import { DecoratorNode, EditorConfig, LexicalEditor, NodeKey } from "lexical"
 
-import { nodeInfoMap } from "@/components/ai-chat/ai-input-editor"
-
 import { MentionComponent } from "./component"
 
 export class MentionNode extends DecoratorNode<ReactNode> {
@@ -25,8 +23,7 @@ export class MentionNode extends DecoratorNode<ReactNode> {
   }
 
   getTextContent(): string {
-    const title = nodeInfoMap.get(this.__id)?.name ?? "Untitled"
-    return `[[ ${this.__id} | ${title} ]]`
+    return `[[ ${this.__id} | ${this.__title || "Untitled"} ]]`
   }
 
   createDOM(): HTMLElement {
@@ -50,7 +47,7 @@ export class MentionNode extends DecoratorNode<ReactNode> {
     return (
       <div className="inline-block">
         <BlockWithAlignableContents className={className} nodeKey={nodeKey}>
-          <MentionComponent id={this.__id} />
+          <MentionComponent id={this.__id} title={this.__title} />
         </BlockWithAlignableContents>
       </div>
     )
