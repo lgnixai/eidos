@@ -7,7 +7,7 @@ export default mergeConfig(viteConfig, defineConfig({
     globals: true,
     environment: "jsdom",
     environmentMatchGlobs: [
-      ["lib/v3/*.test.ts", "node"],
+      ["packages/lib/v3/*.test.ts", "node"],
     ],
   },
 }))
