@@ -1,9 +1,7 @@
-import { Message } from "ai"
 import { formatDistanceToNow } from "date-fns"
 import { History, MessageSquare, Plus, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
-import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -11,14 +9,27 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { useCurrentNode } from "@/hooks/use-current-node"
+import { cn } from "@/lib/utils"
 
 import { useAIChatData } from "./hooks/use-ai-chat-data"
+import { useContextNodes } from "./hooks/use-context-nodes"
 
 export function AIChatHeader() {
   const { t } = useTranslation()
 
   const { chatId, chats, createNewChat, switchChat, deleteChat } =
     useAIChatData()
+
+  const currentNode = useCurrentNode()
+  const { addNode } = useContextNodes()
+
+  const handleCreateNewChat = async () => {
+    const newChatId = await createNewChat()
+    if (currentNode) {
+      addNode(currentNode)
+    }
+  }
 
   const getChatTitle = (
     chat: { id: string; title?: string },
@@ -91,7 +102,7 @@ export function AIChatHeader() {
       <Button
         variant="ghost"
         size="xs"
-        onClick={createNewChat}
+        onClick={handleCreateNewChat}
         className="hover:bg-accent"
         title={t("aiChat.newChat", "New Chat")}
       >

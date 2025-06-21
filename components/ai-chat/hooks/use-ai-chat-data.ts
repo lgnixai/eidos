@@ -1,4 +1,4 @@
-import { useCurrentChatProjectId } from "@/hooks/use-current-node"
+import { useCurrentChatProjectId, useCurrentNode } from "@/hooks/use-current-node"
 import { useSqlite } from "@/hooks/use-sqlite"
 import { Chat } from "@/packages/core/meta-table/chat"
 import { ChatMessage } from "@/packages/core/meta-table/message"

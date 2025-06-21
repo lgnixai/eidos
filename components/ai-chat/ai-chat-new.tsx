@@ -6,13 +6,12 @@ import { useTranslation } from "react-i18next"
 import { useWindowSize } from "usehooks-ts"
 
 import { EIDOS_CHAT_PROJECT_ID } from "@/lib/const"
-import { ITreeNode } from "@/lib/store/ITreeNode"
 import { useAppStore } from "@/lib/store/app-store"
 import { cn, uuidv7 } from "@/lib/utils"
 import { useAiConfig } from "@/hooks/use-ai-config"
 import { useAIFunctions } from "@/hooks/use-ai-functions"
 import { useAllPrompts } from "@/hooks/use-all-prompts"
-import { useCurrentExtension, useCurrentNode } from "@/hooks/use-current-node"
+import { useCurrentExtension } from "@/hooks/use-current-node"
 import { useCurrentPathInfo } from "@/hooks/use-current-pathinfo"
 import { Button } from "@/components/ui/button"
 import { toast } from "@/components/ui/use-toast"
@@ -31,7 +30,6 @@ import { AIModelSelect } from "./ai-chat-model-select"
 import { AIContextNodes } from "./ai-context-nodes"
 import { AIInputEditor, AIInputEditorRef } from "./ai-input-editor"
 import { AIToolsConfig, useFilteredTools, useMaxSteps } from "./ai-tools-config"
-import { ContextNodesDebug } from "./context-nodes-debug"
 import { useAIChatData } from "./hooks/use-ai-chat-data"
 import { useAttachments } from "./hooks/use-attachments"
 import { useContextNodes } from "./hooks/use-context-nodes"
@@ -46,12 +44,10 @@ export default function Chat() {
   const aiInputEditorRef = useRef<AIInputEditorRef>(null)
   const currentExtension = useCurrentExtension()
 
-  const currentNode = useCurrentNode()
   const { prompts } = useAllPrompts()
   const { experiment } = useExperimentConfigStore()
 
   const [withSpaceData, setWithSpaceData] = useState(experiment.enableRAG)
-  const [enableTools, setEnableTools] = useState(true)
 
   const divRef = useRef<HTMLDivElement>(null)
   const { currentSysPrompt, setCurrentSysPrompt } = useAIChatStore()
@@ -65,12 +61,6 @@ export default function Chat() {
     contextNodes
     // contextEmbeddings
   )
-
-  useEffect(() => {
-    if (currentNode) {
-      addNode(currentNode as ITreeNode)
-    }
-  }, [currentNode, addNode])
 
   const { chatId, chatMessages, clearChatMessages } = useAIChatData()
 
@@ -119,7 +109,6 @@ export default function Chat() {
       systemPrompt,
       model: aiModel,
       tools: filteredTools,
-      useTools: enableTools,
       id: chatId,
       projectId: EIDOS_CHAT_PROJECT_ID,
       space,
@@ -279,19 +268,6 @@ export default function Chat() {
               </Label>
             </div>
           )}
-
-          <div className="flex w-full flex-col">
-            {/* <div className="flex min-w-[200px] items-center justify-end gap-2">
-              <Label htmlFor="ai-chat-use-tools" className="text-sm opacity-80">
-                {t("aiChat.inputEditor.useTools")}
-              </Label>
-              <Switch
-                id="ai-chat-use-tools"
-                checked={enableTools}
-                onCheckedChange={setEnableTools}
-              ></Switch>
-            </div> */}
-          </div>
         </div>
         <div
           id="circle"
