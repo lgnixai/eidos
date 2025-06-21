@@ -52,6 +52,7 @@ export const useDynamicTheme = (theme: string) => {
       borderColor: `hsl(${getCSSVariable("border")})`,
       drilldownBorder: `hsl(${getCSSVariable("border")})`,
       linkColor: `hsl(${getCSSVariable("primary")})`,
+      name: theme,
     }
-  }, [currentThemeName, getCSSVariable])
+  }, [currentThemeName, getCSSVariable, theme])
 }
