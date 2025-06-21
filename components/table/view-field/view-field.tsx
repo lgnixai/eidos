@@ -2,14 +2,14 @@ import { useCallback, useContext, useEffect, useMemo, useState } from "react"
 import { PlusIcon } from "@radix-ui/react-icons"
 import update from "immutability-helper"
 import sortBy from "lodash/sortBy"
-import { ArrowDownUpIcon, SlidersHorizontalIcon } from "lucide-react"
+import { SlidersHorizontalIcon } from "lucide-react"
 import { DndProvider } from "react-dnd"
 import { HTML5Backend } from "react-dnd-html5-backend"
 import { useTranslation } from "react-i18next"
 
 import { IView } from "@/lib/store/IView"
 import { IField } from "@/lib/store/interface"
-import { useCurrentUiColumns, useUiColumns } from "@/hooks/use-ui-columns"
+import { useUiColumns } from "@/hooks/use-ui-columns"
 import { Button } from "@/components/ui/button"
 import {
   Popover,
@@ -19,7 +19,7 @@ import {
 import { CommonMenuItem } from "@/components/common-menu-item"
 import { useTableAppStore } from "@/components/table/views/grid/store"
 
-import { TableContext, useViewOperation } from "../hooks"
+import { TableContext, useTableContext, useViewOperation } from "../hooks"
 import { FieldItemCard } from "./view-field-item"
 
 export interface ContainerState {
@@ -28,6 +28,8 @@ export interface ContainerState {
 
 export const ViewField = (props: { view?: IView }) => {
   const { t } = useTranslation()
+  const { isView } = useTableContext()
+
   const [open, setOpen] = useState(false)
   const orderMap = useMemo(
     () => props.view?.order_map || {},
@@ -161,11 +163,15 @@ export const ViewField = (props: { view?: IView }) => {
             {cards.map((card, i) => renderCard(card, i))}
           </div>
         </DndProvider>
-        <hr className="my-1" />
-        <CommonMenuItem className="pl-4" onClick={handleAddFieldClick}>
-          <PlusIcon className="mr-2 h-4 w-4" />
-          {t("table.view.field.addField")}
-        </CommonMenuItem>
+        {!isView && (
+          <>
+            <hr className="my-1" />
+            <CommonMenuItem className="pl-4" onClick={handleAddFieldClick}>
+              <PlusIcon className="mr-2 h-4 w-4" />
+              {t("table.view.field.addField")}
+            </CommonMenuItem>
+          </>
+        )}
       </PopoverContent>
     </Popover>
   )

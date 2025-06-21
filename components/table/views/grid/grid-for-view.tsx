@@ -306,31 +306,9 @@ export function GridViewForView(props: IGridProps) {
           onColumnMoved={onColumnMoved}
           getCellContent={getCellContent}
           maxColumnWidth={2000}
-          fillHandle={true}
+          // fillHandle={true}
           columns={columns ?? []}
           rows={viewCount}
-          rightElement={
-            !isReadOnly && (
-              <Button
-                size="sm"
-                variant="ghost"
-                className={cn(
-                  "flex w-full justify-start rounded-none",
-                  `h-[${defaultConfig.headerHeight}px]`
-                )}
-                onClick={() => {
-                  setIsAddFieldEditorOpen(true)
-                }}
-              >
-                <Plus size={16} />
-              </Button>
-            )
-          }
-          rightElementProps={{
-            fill: true,
-          }}
-          // onCellEdited={onCellEdited}
-          // onCellsEdited={onCellsEdited}
         />
       </div>
     </div>

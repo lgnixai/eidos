@@ -45,6 +45,9 @@ export const TableContext = createContext<TableContextType>({
   udfs: [],
 })
 
+export const useTableContext = () => {
+  return useContext(TableContext)
+}
 
 export const useUDFs = () => {
   const [udfs, setUdfs] = useState<{
