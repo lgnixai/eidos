@@ -1,6 +1,7 @@
-import { useCallback } from "react"
+import { useCallback, useEffect } from "react"
 import { ITreeNode } from "@/lib/store/ITreeNode"
 import { useAIChatStore } from "../store"
+import { useCurrentPathInfo } from "@/hooks/use-current-pathinfo"
 
 export interface ContextNodeEditorRef {
   deleteMentionNode: (id: string) => void
@@ -18,6 +19,7 @@ export const useContextNodes = () => {
     removeContextNode,
     clearContextNodes,
   } = useAIChatStore()
+  const { space } = useCurrentPathInfo()
 
   /**
    * Add a node to context, handles duplicates automatically
@@ -31,7 +33,7 @@ export const useContextNodes = () => {
    * Remove a node from context and also remove it from the editor
    */
   const removeNode = useCallback((
-    nodeId: string, 
+    nodeId: string,
     editorRef?: React.RefObject<ContextNodeEditorRef>
   ) => {
     console.log("Removing context node:", nodeId)
@@ -47,6 +49,11 @@ export const useContextNodes = () => {
     console.log("Clearing all context nodes")
     clearContextNodes()
   }, [clearContextNodes])
+
+  // Clear context nodes when space changes
+  useEffect(() => {
+    clearNodes()
+  }, [space])
 
   /**
    * Check if a node exists in context
