@@ -7,6 +7,47 @@ import { DocTableName } from "@/lib/sqlite/const"
 import { BaseTable, BaseTableImpl } from "./base"
 import { _convertMarkdown2State } from "@/hooks/use-doc-editor"
 
+/**
+ * Utility function to escape FTS queries safely
+ * @param query Raw user input query
+ * @param allowAdvanced Whether to allow advanced FTS syntax
+ * @returns Escaped query safe for FTS
+ */
+export function escapeFTSQuery(query: string, allowAdvanced: boolean = false): string {
+  if (!query || typeof query !== 'string') {
+    return '';
+  }
+  
+  const trimmedQuery = query.trim();
+  
+  // Check if query looks like it contains intentional FTS syntax
+  const looksAdvanced = /^["'].*["']$/.test(trimmedQuery) || // Quoted phrases
+                       /\b(AND|OR|NOT|NEAR)\b/i.test(trimmedQuery) || // Boolean operators
+                       /\*/.test(trimmedQuery) || // Wildcards
+                       /^\+/.test(trimmedQuery); // Prefix search
+  
+  // If advanced syntax is allowed and query looks intentional
+  if (allowAdvanced && looksAdvanced) {
+    // Only escape unmatched quotes and basic cleanup
+    return trimmedQuery
+      .replace(/"/g, (match, offset, string) => {
+        // Count quotes before this position
+        const beforeQuotes = (string.substring(0, offset).match(/"/g) || []).length;
+        // If odd number of quotes before, this might be unmatched
+        return beforeQuotes % 2 === 0 ? '"' : '';
+      })
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+  
+  // For regular user input, wrap in quotes for exact phrase matching
+  // This allows searching for special characters like brackets safely
+  // Escape any existing quotes in the content first
+  const escaped = trimmedQuery.replace(/"/g, '""');
+  
+  // Wrap the entire query in quotes for exact phrase matching
+  return `"${escaped}"`;
+}
 
 export interface IDoc {
   id: string
@@ -160,14 +201,88 @@ export class DocTable extends BaseTableImpl<IDoc> implements BaseTable<IDoc> {
     return res[0]
   }
 
-  async search(query: string): Promise<{ id: string; result: string }[]> {
-    const res = await this.dataSpace.exec2(
-      `SELECT id, snippet(fts_docs, 1, '<b>', '</b>','...',127) as result FROM fts_docs(?);`,
-      [query]
-    )
-    // it seems that the result is in reverse order, user care about the latest result.
-    // TODO: we should use updated_at to sort
-    return res.reverse()
+  /**
+   * Search documents using full-text search with safe query escaping
+   * 
+   * @param query The search query string
+   * @param options Optional search configuration
+   * @param options.allowAdvanced Whether to allow advanced FTS syntax like quotes, wildcards, boolean operators
+   * @returns Array of search results with document ID and highlighted snippets
+   * 
+   * @example
+   * // Basic search (automatically escaped)
+   * const results = await docTable.search('hello world');
+   * 
+   * // Advanced search (allows FTS syntax)
+   * const results = await docTable.search('"exact phrase" AND keyword*', { allowAdvanced: true });
+   */
+  async search(query: string, options?: { allowAdvanced?: boolean }): Promise<{ id: string; result: string }[]> {
+    if (!query || typeof query !== 'string') {
+      return [];
+    }
+
+    // First try: Use our safe escaping (exact phrase match)
+    const escapedQuery = escapeFTSQuery(query, options?.allowAdvanced);
+    if (!escapedQuery) {
+      return [];
+    }
+
+    try {
+      const res = await this.dataSpace.exec2(
+        `SELECT id, snippet(fts_docs, 1, '<b>', '</b>','...',127) as result FROM fts_docs WHERE fts_docs MATCH ?;`,
+        [escapedQuery]
+      );
+      
+      // If we found results with exact match, return them
+      if (res.length > 0) {
+        return res.reverse();
+      }
+    } catch (error) {
+      console.error('FTS exact search error:', error, 'Query:', query, 'Escaped:', escapedQuery);
+    }
+
+    // Second try: If exact match found no results and query contains special chars,
+    // try a more permissive search by tokenizing the query
+    if (/[\[\]\(\)\-\+\*\&\|\!\@\#\$\%\^\~]/.test(query)) {
+      try {
+        // Remove special characters and search for individual words
+        const cleanQuery = query
+          .replace(/[\[\]\(\)\-\+\*\&\|\!\@\#\$\%\^\~]/g, ' ')
+          .replace(/\s+/g, ' ')
+          .trim();
+        
+        if (cleanQuery) {
+          console.log('Trying permissive search with:', cleanQuery);
+          const fallbackRes = await this.dataSpace.exec2(
+            `SELECT id, snippet(fts_docs, 1, '<b>', '</b>','...',127) as result FROM fts_docs WHERE fts_docs MATCH ?;`,
+            [cleanQuery]
+          );
+          return fallbackRes.reverse();
+        }
+      } catch (fallbackError) {
+        console.error('Fallback search also failed:', fallbackError);
+      }
+    }
+
+    // If advanced query was attempted and failed, try with safe escaping as final fallback
+    if (options?.allowAdvanced) {
+      console.log('Advanced search failed, trying with safe escaping...');
+      const safeQuery = escapeFTSQuery(query, false);
+      if (safeQuery && safeQuery !== escapedQuery) {
+        try {
+          const finalRes = await this.dataSpace.exec2(
+            `SELECT id, snippet(fts_docs, 1, '<b>', '</b>','...',127) as result FROM fts_docs WHERE fts_docs MATCH ?;`,
+            [safeQuery]
+          );
+          return finalRes.reverse();
+        } catch (finalError) {
+          console.error('Final fallback search also failed:', finalError);
+        }
+      }
+    }
+    
+    // If all searches fail, return empty results instead of throwing
+    return [];
   }
 
   async createOrUpdateWithMarkdown(id: string, mdStr: string) {
