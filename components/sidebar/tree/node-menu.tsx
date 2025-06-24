@@ -40,12 +40,11 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import { useContextNodes } from "@/components/ai-chat/hooks/use-context-nodes"
 import { useSpaceAppStore } from "@/apps/web-app/[database]/store"
-import { useAIChatStore } from "@/components/ai-chat/store"
 
 import { NodeMoveInto } from "../../node-menu/move-into"
 import { NodeExportContextMenu } from "../../node-menu/node-export"
-// import { NodeOpenInCursorContextMenu } from "../../node-menu/open-in-cursor"
 import { Input } from "../../ui/input"
 import { useTreeOperations } from "./hooks"
 import { useFolderStore } from "./store"
@@ -79,7 +78,8 @@ export function NodeItem({
   const { handleCut, handlePaste } = useTreeOperations()
   const { currentCut } = useFolderStore()
   const { setIsRightPanelOpen, setCurrentApp } = useSpaceAppStore()
-  const { addContextNode } = useAIChatStore()
+  const { addNode } = useContextNodes()
+
   const [renameOpen, setRenameOpen] = useState(false)
   const [newName, setNewName] = useState(node.name)
   const renameInputRef = useRef<HTMLInputElement>(null)
@@ -120,9 +120,11 @@ export function NodeItem({
     setIsRightPanelOpen(true)
     // Set current app to chat
     setCurrentApp("chat")
-    
+
     // Add the node to chat context (duplicates are handled in the store)
-    addContextNode(node)
+    setTimeout(() => {
+      addNode(node)
+    }, 100)
   }
 
   useClickAway(() => {
