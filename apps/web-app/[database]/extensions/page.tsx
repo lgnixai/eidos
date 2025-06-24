@@ -232,7 +232,7 @@ export const ScriptPage = () => {
   return (
     <div className="flex h-full overflow-hidden">
       {/* Left Sidebar */}
-      <div className="w-64 border-r p-4">
+      <div className="w-64 flex-shrink-0 border-r p-4">
         <ScrollArea className="h-full">
           {extensionTypes.map((type) => {
             const Icon = type.icon

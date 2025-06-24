@@ -219,7 +219,7 @@ export const useShowColumns = (uiColumns: IField[], view: IView) => {
     return getShowColumns(uiColumns, {
       orderMap: view?.order_map,
       hiddenFields: view?.hidden_fields,
-    }).filter((field) => field.table_column_name !== "title")
+    })
   }, [uiColumns, view?.hidden_fields, view?.order_map])
 }
 

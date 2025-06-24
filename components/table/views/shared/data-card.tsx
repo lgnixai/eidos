@@ -1,4 +1,4 @@
-import { useContext } from "react"
+import { useMemo } from "react"
 
 import { IField } from "@/lib/store/interface"
 import { cn } from "@/lib/utils"
@@ -11,7 +11,7 @@ import {
   TooltipTrigger,
 } from "../../../ui/tooltip"
 import { CellEditor } from "../../cell-editor"
-import { TableContext } from "../../hooks"
+import { useTableContext } from "../../hooks"
 import { IGalleryViewProperties } from "../gallery/properties"
 import { GalleryCardCover } from "./card-cover"
 import { DataCardMenu } from "./data-card-menu"
@@ -21,7 +21,6 @@ interface DataCardProps {
   coverField?: IField
   rawIdNameMap: Map<string, string>
   style?: React.CSSProperties
-  hiddenFields?: string[]
   properties?: IGalleryViewProperties
   showFields: IField[]
   tableId: string
@@ -38,7 +37,6 @@ export const DataCard = ({
   coverField,
   rawIdNameMap,
   style,
-  hiddenFields,
   properties,
   showFields,
   tableId,
@@ -51,7 +49,7 @@ export const DataCard = ({
 }: DataCardProps) => {
   const { setProperty } = useRowDataOperation()
 
-  const { isView } = useContext(TableContext)
+  const { isView } = useTableContext()
   if (!item) {
     return <div style={style}></div>
   }
@@ -61,11 +59,17 @@ export const DataCard = ({
     })
   }
 
-  const fieldKeys = showFields
-    .filter(
-      (k) => k.table_column_name != "_id" && k.table_column_name != "title"
-    )
-    .map((k) => k.table_column_name)
+  const fieldKeys = useMemo(() => {
+    if (isView) {
+      return showFields.map((k) => k.table_column_name)
+    }
+    return showFields
+      .filter(
+        (k) => k.table_column_name != "_id" && k.table_column_name != "title"
+      )
+      .map((k) => k.table_column_name)
+  }, [isView, showFields])
+
   return (
     <DataCardMenu item={item} tableId={tableId} space={space} isView={isView}>
       <div
@@ -97,46 +101,44 @@ export const DataCard = ({
                 <span className=" opacity-70">Untitled</span>
               )}
             </div>
-            {fieldKeys
-              .filter((k) => !hiddenFields?.includes(k))
-              .map((k) => {
-                const fieldName = rawIdNameMap.get(k)!
-                const uiColumn = uiColumnMap.get(fieldName) as IField
-                if (!uiColumn) {
-                  return null
-                }
-                const value = item[k]
-                if (!value && properties?.hideEmptyFields) return null
-                return (
-                  <TooltipProvider key={`${item._id}:${k}`}>
-                    <Tooltip delayDuration={200}>
-                      <TooltipTrigger asChild>
-                        <div
-                          key={`${item._id}:${k}`}
-                          className="flex w-full items-center gap-2"
-                          onPointerDown={(e) => e.stopPropagation()}
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <CellEditor
-                            field={uiColumn}
-                            value={value}
-                            onChange={(_value) => {
-                              if (value != _value) {
-                                handleChange(uiColumn.table_column_name, _value)
-                              }
-                            }}
-                            className="flex h-8 w-full min-w-[100px] cursor-pointer items-center rounded-sm px-1 hover:bg-none"
-                            disableTextBaseEditor
-                          />
-                        </div>
-                      </TooltipTrigger>
-                      <TooltipContent side="left" sideOffset={8} className="">
-                        {uiColumn.name}
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                )
-              })}
+            {fieldKeys.map((k) => {
+              const fieldName = rawIdNameMap.get(k)!
+              const uiColumn = uiColumnMap.get(fieldName) as IField
+              if (!uiColumn) {
+                return null
+              }
+              const value = item[k]
+              if (!value && properties?.hideEmptyFields) return null
+              return (
+                <TooltipProvider key={`${item._id}:${k}`}>
+                  <Tooltip delayDuration={200}>
+                    <TooltipTrigger asChild>
+                      <div
+                        key={`${item._id}:${k}`}
+                        className="flex w-full items-center gap-2"
+                        onPointerDown={(e) => e.stopPropagation()}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <CellEditor
+                          field={uiColumn}
+                          value={value}
+                          onChange={(_value) => {
+                            if (value != _value) {
+                              handleChange(uiColumn.table_column_name, _value)
+                            }
+                          }}
+                          className="flex h-8 w-full min-w-[100px] cursor-pointer items-center rounded-sm px-1 hover:bg-none"
+                          disableTextBaseEditor
+                        />
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent side="left" sideOffset={8} className="">
+                      {uiColumn.name}
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              )
+            })}
           </div>
         </div>
       </div>

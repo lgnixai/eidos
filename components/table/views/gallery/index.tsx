@@ -34,7 +34,6 @@ export default function GalleryView({
   )
   const { isView } = useContext(TableContext)
   const showFields = useShowColumns(uiColumns, view)
-  console.log("GalleryView", { showFields, uiColumns })
 
   const titleField = showFields?.[0]?.table_column_name || "title"
 
@@ -67,7 +66,7 @@ export default function GalleryView({
         }).length
       })
     const maxShowFieldCount = Math.max(...thisRowCardShowFieldCounts)
-    const cardHeight = computeCardHeight(maxShowFieldCount, isView)
+    const cardHeight = computeCardHeight(maxShowFieldCount)
     return cardHeight
   }
 
@@ -93,7 +92,6 @@ export default function GalleryView({
             tableId,
             space,
             hiddenFieldIcon: true,
-            hiddenFields: view.hidden_fields,
             isView,
             titleField,
           }}

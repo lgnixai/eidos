@@ -1,7 +1,6 @@
-
-import { DataCard } from "@/components/table/views/shared/data-card"
-import { useSqliteStore } from "@/hooks/use-sqlite"
 import { IField } from "@/lib/store/interface"
+import { useSqliteStore } from "@/hooks/use-sqlite"
+import { DataCard } from "@/components/table/views/shared/data-card"
 
 import { IGalleryViewProperties } from "./properties"
 
@@ -23,8 +22,6 @@ export interface IGalleryCardProps {
   tableId: string
   space: string
   hiddenFieldIcon?: boolean
-  hiddenField?: boolean
-  hiddenFields?: string[]
   isView?: boolean
   titleField: string
 }
@@ -44,7 +41,6 @@ export const GalleryCard = ({
     rawIdNameMap,
     tableId,
     space,
-    hiddenFields,
     properties,
     isView,
     titleField,
@@ -73,7 +69,6 @@ export const GalleryCard = ({
       titleField={titleField}
       rawIdNameMap={rawIdNameMap}
       style={style}
-      hiddenFields={hiddenFields}
       properties={properties}
       showFields={showFields}
       tableId={tableId}
