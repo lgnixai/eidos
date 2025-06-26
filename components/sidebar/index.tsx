@@ -91,7 +91,7 @@ export const SideBar = ({ className }: any) => {
         {!isDesktopMode && isFileManagerOpen ? (
           <FileManager />
         ) : (
-          <div className={cn("flex h-full flex-col gap-2 p-2", className)}>
+          <div className={cn("flex h-full flex-col p-2", className)}>
             <div className="flex items-center justify-between">
               {isShareMode ? (
                 t("common.shareMode")
