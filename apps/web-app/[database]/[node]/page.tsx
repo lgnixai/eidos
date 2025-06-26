@@ -32,6 +32,7 @@ import { FolderTree } from "@/components/folder"
 import { Table } from "@/components/table"
 
 import { DefaultColors } from "../../../../components/file-selector"
+import { EverydayPageContent } from "../everyday/[day]/page"
 import { useGenerateTitle } from "./hooks/use-generate-title"
 import { NodeCover } from "./node-cover"
 import { NodeIconEditor } from "./node-icon"
@@ -214,13 +215,10 @@ export default function TablePage() {
   const node = useCurrentNode()
   const { table: nodeId } = useParams()
   const isDayPage = isDayPageId(nodeId)
-  const navigate = useNavigate()
   const { space } = useCurrentPathInfo()
-  useEffect(() => {
-    if (isDayPage) {
-      navigate(`/${space}/everyday/${nodeId}`)
-    }
-  }, [isDayPage, space, navigate, nodeId])
 
+  if (isDayPage) {
+    return <EverydayPageContent day={nodeId} database={space} />
+  }
   return <NodeComponent nodeId={node?.id} isRootPage={nodeId === "~"} />
 }

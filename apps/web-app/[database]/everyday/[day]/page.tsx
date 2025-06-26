@@ -17,9 +17,14 @@ import { useDays } from "../hooks"
 
 // import Timeline from "../timeline"
 
-export default function EverydayPage() {
+export function EverydayPageContent({
+  day,
+  database,
+}: {
+  day: string | undefined
+  database: string | undefined
+}) {
   const [open, setOpen] = useState(false)
-  const { day, database } = useParams()
   const isWeekPage = isWeekNodeId(day)
   const [month, setMonth] = useState<Date>(new Date(day as string))
   const router = useNavigate()
@@ -112,4 +117,9 @@ export default function EverydayPage() {
       /> */}
     </div>
   )
+}
+
+export default function EverydayPage() {
+  const { day, database } = useParams()
+  return <EverydayPageContent day={day} database={database} />
 }
