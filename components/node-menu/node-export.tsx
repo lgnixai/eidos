@@ -1,11 +1,10 @@
-import { DownloadIcon } from "lucide-react"
+import { CopyIcon, DownloadIcon } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { ITreeNode } from "@/lib/store/ITreeNode"
 import { downloadFile } from "@/lib/web/file"
 import { useSqlite } from "@/hooks/use-sqlite"
 import {
-  ContextMenuContent,
   ContextMenuItem,
   ContextMenuSub,
   ContextMenuSubContent,
@@ -17,19 +16,30 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
 } from "@/components/ui/dropdown-menu"
+import { useToast } from "@/components/ui/use-toast"
+
+const useCopyDocAsMarkdown = () => {
+  const { sqlite } = useSqlite()
+  const { t } = useTranslation()
+  const { toast } = useToast()
+  const copyDocAsMarkdown = async (docId: string) => {
+    const md = await sqlite?.getDocMarkdown(docId, { withTitle: true })
+    if (md) {
+      await navigator.clipboard.writeText(md)
+      toast({
+        title: t("common.copied"),
+        description: "Markdown content copied to clipboard",
+      })
+    }
+  }
+  return { copyDocAsMarkdown }
+}
 
 export const NodeExportContextMenu = ({ node }: { node: ITreeNode }) => {
   const { sqlite } = useSqlite()
   const { t } = useTranslation()
 
-  const exportDoc = async (docId: string) => {
-    const file = await sqlite?.exportMarkdown(docId)
-    file &&
-      downloadFile(
-        new Blob([file], { type: "text/markdown" }),
-        `${node.name || "Untitled"}.md`
-      )
-  }
+  const { copyDocAsMarkdown } = useCopyDocAsMarkdown()
 
   const exportTable = async (tableId: string) => {
     const file = await sqlite?.exportCsv(tableId)
@@ -61,23 +71,14 @@ export const NodeExportContextMenu = ({ node }: { node: ITreeNode }) => {
   }
   if (node.type === "doc") {
     return (
-      <ContextMenuSub>
-        <ContextMenuSubTrigger>
-          <DownloadIcon className="pr-2" />
-          {t("common.export")}
-        </ContextMenuSubTrigger>
-        <ContextMenuSubContent>
-          <ContextMenuContent>
-            <ContextMenuItem
-              onClick={() => {
-                exportDoc(node.id)
-              }}
-            >
-              Markdown(.md)
-            </ContextMenuItem>
-          </ContextMenuContent>
-        </ContextMenuSubContent>
-      </ContextMenuSub>
+      <ContextMenuItem
+        onClick={() => {
+          copyDocAsMarkdown(node.id)
+        }}
+      >
+        <CopyIcon className="pr-2" />
+        Copy as Markdown
+      </ContextMenuItem>
     )
   }
   return null
@@ -86,15 +87,7 @@ export const NodeExportContextMenu = ({ node }: { node: ITreeNode }) => {
 export const NodeExport = ({ node }: { node: ITreeNode }) => {
   const { sqlite } = useSqlite()
   const { t } = useTranslation()
-
-  const exportDoc = async (docId: string) => {
-    const md = await sqlite?.exportMarkdown(docId)
-    md &&
-      downloadFile(
-        new Blob([md], { type: "text/markdown" }),
-        `${node.name || "Untitled"}.md`
-      )
-  }
+  const { copyDocAsMarkdown } = useCopyDocAsMarkdown()
 
   const exportTable = async (tableId: string) => {
     const file = await sqlite?.exportCsv(tableId)
@@ -127,20 +120,13 @@ export const NodeExport = ({ node }: { node: ITreeNode }) => {
   }
 
   return (
-    <DropdownMenuSub>
-      <DropdownMenuSubTrigger>
-        <DownloadIcon className="mr-2 h-4 w-4" />
-        {t("common.export")}
-      </DropdownMenuSubTrigger>
-      <DropdownMenuSubContent className="w-48">
-        <DropdownMenuItem
-          onClick={() => {
-            exportDoc(node.id)
-          }}
-        >
-          Markdown(.md)
-        </DropdownMenuItem>
-      </DropdownMenuSubContent>
-    </DropdownMenuSub>
+    <DropdownMenuItem
+      onClick={() => {
+        copyDocAsMarkdown(node.id)
+      }}
+    >
+      <CopyIcon className="mr-2 h-4 w-4" />
+      Copy as Markdown
+    </DropdownMenuItem>
   )
 }
