@@ -55,10 +55,12 @@ export default {
 				throw new Error(`GitHub API responded with ${response.status} ${response.statusText}`)
 			}
 
-			const releases = await response.json() as Array<{ assets: Array<any> }>
-			const latestRelease = releases[0]
+			const releases = await response.json() as Array<{ assets: Array<any>, prerelease: boolean }>
+			// Filter out pre-release versions
+			const stableReleases = releases.filter(release => !release.prerelease)
+			const latestRelease = stableReleases[0]
 			if (!latestRelease) {
-				return new Response('No release found', { status: 404 })
+				return new Response('No stable release found', { status: 404 })
 			}
 			const extMap = {
 				mac: '.dmg',
