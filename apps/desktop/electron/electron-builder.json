@@ -63,8 +63,8 @@
         "icon": "dist/logo.icns",
         "hardenedRuntime": true,
         "gatekeeperAssess": false,
-        "entitlements": "apps/desktop/electron/build/entitlements.mac.plist",
-        "entitlementsInherit": "apps/desktop/electron/build/entitlements.mac.plist",
+        "entitlements": "electron/build/entitlements.mac.plist",
+        "entitlementsInherit": "electron/build/entitlements.mac.plist",
         "notarize": false
     },
     "linux": {
