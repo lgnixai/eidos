@@ -2,21 +2,24 @@ import { useAIConfigStore } from "@/apps/web-app/pages/settings/ai/store";
 import { getProvider } from "@/packages/ai/helper";
 import { embed, embedMany } from 'ai';
 import { useAiConfig } from "./use-ai-config";
+import { useCallback } from "react";
 
 export const useEmbedding = (): {
     embedding: (text: string) => Promise<number[] | undefined>;
-    hasEmbeddingModel: boolean;
+    hasEmbeddingModel: () => boolean;
     embeddingTexts: (text: string[]) => Promise<number[][] | undefined>;
 } => {
     const { getConfigByModel } = useAiConfig()
 
     const { aiConfig: { embeddingModel } } = useAIConfigStore()
-    const model = embeddingModel && getConfigByModel(embeddingModel)
 
-    const hasEmbeddingModel = !!model
+    const hasEmbeddingModel = useCallback(() => {
+        const model = embeddingModel && getConfigByModel(embeddingModel)
+        return !!model
+    }, [embeddingModel, getConfigByModel])
 
     const embedding = async (text: string) => {
-        if (!model) return
+        if (!embeddingModel) return
         const config = getConfigByModel(embeddingModel)
         const modelProvider = getProvider({
             apiKey: config.apiKey,
@@ -31,7 +34,7 @@ export const useEmbedding = (): {
     }
 
     const embeddingTexts = async (text: string[]) => {
-        if (!model) return []
+        if (!embeddingModel) return []
 
         const config = getConfigByModel(embeddingModel)
         const modelProvider = getProvider({

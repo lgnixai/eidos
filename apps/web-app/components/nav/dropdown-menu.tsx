@@ -1,3 +1,4 @@
+import { useCallback, useState } from "react"
 import {
   CogIcon,
   CommandIcon,
@@ -11,15 +12,15 @@ import {
   MoreHorizontal,
   MoveHorizontal,
   PackageIcon,
-  Trash2Icon
+  Trash2Icon,
 } from "lucide-react"
-import { useCallback, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Link, useNavigate } from "react-router-dom"
 
-import { useExperimentConfigStore } from "@/apps/web-app/pages/settings/experiment/store"
-import { DiscordIcon } from "@/components/icons/discord"
-import { NodeUpdateTime } from "@/components/nav/node-update-time"
+import { DOMAINS } from "@/lib/const"
+import { EIDOS_VERSION, isDesktopMode } from "@/lib/env"
+import { useAppRuntimeStore } from "@/lib/store/runtime-store"
+import { isDayPageId } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -41,6 +42,8 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { DiscordIcon } from "@/components/icons/discord"
+import { NodeUpdateTime } from "@/components/nav/node-update-time"
 import { useCurrentNode } from "@/apps/web-app/hooks/use-current-node"
 import { useCurrentPathInfo } from "@/apps/web-app/hooks/use-current-pathinfo"
 import { useEmbedding } from "@/apps/web-app/hooks/use-embedding"
@@ -48,10 +51,7 @@ import { useHnsw } from "@/apps/web-app/hooks/use-hnsw"
 import { useOpenInPlayground } from "@/apps/web-app/hooks/use-open-in-playground"
 import { useSqlite } from "@/apps/web-app/hooks/use-sqlite"
 import { useVCardEmail } from "@/apps/web-app/hooks/use-vcard-email"
-import { DOMAINS } from "@/lib/const"
-import { EIDOS_VERSION, isDesktopMode } from "@/lib/env"
-import { useAppRuntimeStore } from "@/lib/store/runtime-store"
-import { isDayPageId } from "@/lib/utils"
+import { useExperimentConfigStore } from "@/apps/web-app/pages/settings/experiment/store"
 
 import { CopyShowHide } from "../copy-show-hide"
 import { NodeMoveInto } from "../node-menu/move-into"
@@ -66,7 +66,6 @@ export function NavDropdownMenu() {
   const { t } = useTranslation()
   const router = useNavigate()
   const [open, setOpen] = useState(false)
-  const { hasEmbeddingModel, embeddingTexts } = useEmbedding()
 
   const { deleteNode, toggleNodeFullWidth, toggleNodeLock } = useSqlite()
   const { isKeyboardShortcutsOpen, setKeyboardShortcutsOpen } =
@@ -272,19 +271,6 @@ export function NavDropdownMenu() {
                       <DropdownMenuSubContent className="w-48">
                         <NodeMoveInto node={node} />
                       </DropdownMenuSubContent>
-                      {/* {experiment.enableRAG && (
-                        <DropdownMenuItem
-                          onClick={handleCreateDocEmbedding}
-                          disabled={!hasEmbeddingModel}
-                        >
-                          <div className="flex w-full items-center justify-between pr-1">
-                            <div className="flex items-center">
-                              <ScanTextIcon className="mr-2 h-4 w-4"></ScanTextIcon>
-                              {t("nav.dropdown.menu.embedding")}
-                            </div>
-                          </div>
-                        </DropdownMenuItem>
-                      )} */}
                     </DropdownMenuSub>
                   </>
                 )}

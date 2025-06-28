@@ -28,14 +28,14 @@ import {
 import { useTranslation } from "react-i18next"
 
 import { ITreeNode } from "@/lib/store/ITreeNode"
-import { useEmbedding } from "@/apps/web-app/hooks/use-embedding"
-import { useHnsw } from "@/apps/web-app/hooks/use-hnsw"
 import { useToast } from "@/components/ui/use-toast"
 import { MentionNode } from "@/components/doc/blocks/mention/node"
 import NewMentionsPlugin, {
   MentionPluginProps,
 } from "@/components/doc/blocks/mention/plugin"
 import { allTransformers } from "@/components/doc/plugins/const"
+import { useEmbedding } from "@/apps/web-app/hooks/use-embedding"
+import { useHnsw } from "@/apps/web-app/hooks/use-hnsw"
 import { useAIConfigStore } from "@/apps/web-app/pages/settings/ai/store"
 
 import { useContextNodes } from "../hooks/use-context-nodes"
@@ -147,7 +147,7 @@ export const AIInputEditor = React.forwardRef<
   ) => {
     const { t } = useTranslation()
     const { addNode, removeNode, clearNodes } = useContextNodes()
-    
+
     const initialConfig: InitialConfigType = {
       namespace: "AI-Chat-Input-Editor",
       theme,
@@ -197,7 +197,7 @@ export const AIInputEditor = React.forwardRef<
         }
         const markdown = dataPluginRef.current?.getData()
         if (markdown) {
-          if (enableRAG && hasEmbeddingModel) {
+          if (enableRAG && hasEmbeddingModel()) {
             const res = await queryEmbedding({
               query: markdown,
               model: "bge-m3",
