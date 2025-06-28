@@ -9,6 +9,7 @@
   "scripts": {
     "dev": "vite",
     "build": "NODE_OPTIONS=--max-old-space-size=8192 vite build",
+    "generate-icons": "node scripts/generate-icons.cjs",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
