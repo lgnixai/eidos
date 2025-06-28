@@ -1,18 +1,10 @@
 import { MsgType } from "@/lib/const"
-import { FieldType } from "@/lib/fields/const"
-import { ColumnTableName } from "@/lib/sqlite/const"
-import { buildSql, isReadOnlySql } from "@/lib/sqlite/helper"
-import {
-  getTableNameFromSql,
-  transformQuery,
-} from "@/lib/sqlite/sql-formula-parser"
 import {
   EidosFileSystemManager,
   FileSystemType,
 } from "@/lib/storage/eidos-file-system"
 import { ITreeNode, TreeNodeType } from "@/lib/store/ITreeNode"
 import { IView, ViewTypeEnum } from "@/lib/store/IView"
-import { IField } from "@/lib/store/interface"
 import {
   extractIdFromShortId,
   getRawTableNameById,
@@ -20,8 +12,15 @@ import {
   isDayPageId,
   uuidv7,
 } from "@/lib/utils"
+import { FieldType } from "./fields/const"
+import { IField } from "./fields/IField"
+import { ColumnTableName } from "./sqlite/const"
+import { buildSql, isReadOnlySql } from "./sqlite/helper"
+import {
+  getTableNameFromSql,
+  transformQuery,
+} from "./sqlite/sql-formula-parser"
 
-import { BaseServerDatabase } from "@/lib/sqlite/interface"
 import { Email } from "postal-mime"
 import { DataChangeEventHandler } from "./data-pipeline/DataChangeEventHandler"
 import { DataChangeTrigger } from "./data-pipeline/DataChangeTrigger"
@@ -50,6 +49,7 @@ import { RowsManager } from "./sdk/rows"
 import { SqlDataView } from "./sdk/sql-data-view"
 import { TableManager } from "./sdk/table"
 import { ThemeManager } from "./sdk/theme-manager"
+import { BaseServerDatabase } from "./sqlite/interface"
 import { withSqlite3AllUDF } from "./udf"
 // import { QueueTable } from "./meta-table/queue"
 

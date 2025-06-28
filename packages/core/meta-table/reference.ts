@@ -1,5 +1,5 @@
-import { ColumnTableName, ReferenceTableName } from "@/lib/sqlite/const"
-import { IField } from "@/lib/store/interface"
+import { ColumnTableName, ReferenceTableName } from "@/packages/core/sqlite/const"
+import { IField } from "@/packages/core/fields/IField"
 
 import { BaseTable, BaseTableImpl } from "./base"
 

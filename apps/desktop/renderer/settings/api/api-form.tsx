@@ -32,7 +32,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/react-hook-form/form"
-import { useLastOpened } from "@/apps/web-app/[database]/hook"
+import { useLastOpened } from "@/apps/web-app/pages/[database]/hook"
 
 import { useApiAgentStatus } from "../../hooks/useApiAgentStatus"
 import { CodeExample } from "./code-example"

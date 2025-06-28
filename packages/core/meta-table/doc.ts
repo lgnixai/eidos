@@ -1,11 +1,10 @@
-import type { SerializedEditorState, SerializedLexicalNode } from "lexical"
 import { Email } from "postal-mime"
 
 import { MsgType } from "@/lib/const"
-import { DocTableName } from "@/lib/sqlite/const"
+import { DocTableName } from "@/packages/core/sqlite/const"
 
 import { BaseTable, BaseTableImpl } from "./base"
-import { _convertMarkdown2State } from "@/hooks/use-doc-editor"
+import { _convertMarkdown2State } from "@/apps/web-app/hooks/use-doc-editor"
 
 /**
  * Utility function to escape FTS queries safely
@@ -17,15 +16,15 @@ export function escapeFTSQuery(query: string, allowAdvanced: boolean = false): s
   if (!query || typeof query !== 'string') {
     return '';
   }
-  
+
   const trimmedQuery = query.trim();
-  
+
   // Check if query looks like it contains intentional FTS syntax
   const looksAdvanced = /^["'].*["']$/.test(trimmedQuery) || // Quoted phrases
-                       /\b(AND|OR|NOT|NEAR)\b/i.test(trimmedQuery) || // Boolean operators
-                       /\*/.test(trimmedQuery) || // Wildcards
-                       /^\+/.test(trimmedQuery); // Prefix search
-  
+    /\b(AND|OR|NOT|NEAR)\b/i.test(trimmedQuery) || // Boolean operators
+    /\*/.test(trimmedQuery) || // Wildcards
+    /^\+/.test(trimmedQuery); // Prefix search
+
   // If advanced syntax is allowed and query looks intentional
   if (allowAdvanced && looksAdvanced) {
     // Only escape unmatched quotes and basic cleanup
@@ -39,12 +38,12 @@ export function escapeFTSQuery(query: string, allowAdvanced: boolean = false): s
       .replace(/\s+/g, ' ')
       .trim();
   }
-  
+
   // For regular user input, wrap in quotes for exact phrase matching
   // This allows searching for special characters like brackets safely
   // Escape any existing quotes in the content first
   const escaped = trimmedQuery.replace(/"/g, '""');
-  
+
   // Wrap the entire query in quotes for exact phrase matching
   return `"${escaped}"`;
 }
@@ -231,7 +230,7 @@ export class DocTable extends BaseTableImpl<IDoc> implements BaseTable<IDoc> {
         `SELECT id, snippet(fts_docs, 1, '<b>', '</b>','...',127) as result FROM fts_docs WHERE fts_docs MATCH ?;`,
         [trimmedQuery]
       );
-      
+
       // If we found results with original query, return them
       if (res.length > 0) {
         return res.reverse();
@@ -248,7 +247,7 @@ export class DocTable extends BaseTableImpl<IDoc> implements BaseTable<IDoc> {
           `SELECT id, snippet(fts_docs, 1, '<b>', '</b>','...',127) as result FROM fts_docs WHERE fts_docs MATCH ?;`,
           [escapedQuery]
         );
-        
+
         if (res.length > 0) {
           return res.reverse();
         }
@@ -265,7 +264,7 @@ export class DocTable extends BaseTableImpl<IDoc> implements BaseTable<IDoc> {
           .replace(/[\[\]\(\)\-\+\*\&\|\!\@\#\$\%\^\~]/g, ' ')
           .replace(/\s+/g, ' ')
           .trim();
-        
+
         if (cleanQuery) {
           console.log('Trying permissive search with:', cleanQuery);
           const fallbackRes = await this.dataSpace.exec2(
@@ -278,7 +277,7 @@ export class DocTable extends BaseTableImpl<IDoc> implements BaseTable<IDoc> {
         console.error('Fallback search also failed:', fallbackError);
       }
     }
-    
+
     // If all searches fail, return empty results instead of throwing
     return [];
   }
@@ -335,11 +334,11 @@ export class DocTable extends BaseTableImpl<IDoc> implements BaseTable<IDoc> {
   static mergeState = (oldState: string, newState: string) => {
     const _oldState = JSON.parse(
       oldState
-    ) as SerializedEditorState<SerializedLexicalNode>
+    )
 
     const _appendState = JSON.parse(
       newState
-    ) as SerializedEditorState<SerializedLexicalNode>
+    )
 
     _oldState.root.children.push(..._appendState.root.children)
     return JSON.stringify(_oldState)

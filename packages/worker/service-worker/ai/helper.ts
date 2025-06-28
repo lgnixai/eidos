@@ -1,7 +1,4 @@
-import { LanguageModelV1, generateText, type CoreUserMessage, CoreToolMessage, CoreAssistantMessage, UIMessage } from 'ai';
-
-
-import { CoreMessage } from "ai";
+import { CoreAssistantMessage, CoreToolMessage, LanguageModelV1, UIMessage, generateText, CoreMessage } from '@/packages/ai';
 
 
 // import { queryEmbedding } from "../routes/lib"

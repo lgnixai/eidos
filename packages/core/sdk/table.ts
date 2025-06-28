@@ -1,18 +1,18 @@
-import { generateMergeTableWithNewColumnsSql } from "@/lib/sqlite/sql-merge-table-with-new-columns"
 import { IView } from "@/lib/store/IView"
 import { generateColumnName, getRawTableNameById } from "@/lib/utils"
 import { v4 as uuidv4 } from "uuid"
+import { generateMergeTableWithNewColumnsSql } from "../sqlite/sql-merge-table-with-new-columns"
 
+import { isDesktopMode } from "@/lib/env"
 import { DataSpace, EidosDatabase } from "../DataSpace"
+import { allFieldTypesMap } from "../fields"
+import { FieldType } from "../fields/const"
+import { ColumnTable } from "../meta-table/column"
+import { ColumnTableName } from "../sqlite/const"
 import { IndexManager } from "./index-manager"
 import { RowsManager } from "./rows"
 import { FieldsManager } from "./service"
 import { ComputeService } from "./service/compute"
-import { FieldType } from "@/lib/fields/const"
-import { ColumnTableName } from "@/lib/sqlite/const"
-import { ColumnTable } from "../meta-table/column"
-import { isDesktopMode } from "@/lib/env"
-import { allFieldTypesMap } from "@/lib/fields"
 
 interface ITable {
   id: string

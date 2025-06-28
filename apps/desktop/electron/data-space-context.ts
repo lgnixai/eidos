@@ -1,6 +1,6 @@
 import { getProvider } from "@/packages/ai/helper";
 
-import { embed } from "ai";
+import { embed } from "@/packages/ai";
 import { getConfigManager } from "./config";
 
 // Simple LRU Cache implementation using Map
@@ -11,7 +11,9 @@ function setCache(key: string, value: Array<number>) {
     if (embeddingCache.size >= MAX_CACHE_SIZE) {
         // Evict the least recently used item (first key in Map's insertion order)
         const oldestKey = embeddingCache.keys().next().value;
-        embeddingCache.delete(oldestKey);
+        if (oldestKey) {
+            embeddingCache.delete(oldestKey);
+        }
     }
     embeddingCache.set(key, value);
 }

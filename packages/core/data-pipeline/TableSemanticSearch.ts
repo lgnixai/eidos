@@ -1,7 +1,7 @@
 import { getTableIdByRawTableName } from "@/lib/utils";
 import { DataSpace } from "../DataSpace";
 import { TableManager } from "../sdk/table";
-import { FieldType } from "@/lib/fields/const";
+import { FieldType } from "../fields/const";
 
 export class TableSemanticSearch {
     constructor(private readonly dataspace: DataSpace) {

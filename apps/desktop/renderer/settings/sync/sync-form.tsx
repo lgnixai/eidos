@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { AppConfig, GraftConfig } from "@/apps/desktop/electron/config"
 import { useForm } from "react-hook-form"
 
-import { useEngine } from "@/hooks/use-engine"
+import { useEngine } from "@/apps/web-app/hooks/use-engine"
 // Assuming GraftConfig is exported
 import { Button } from "@/components/ui/button"
 import {

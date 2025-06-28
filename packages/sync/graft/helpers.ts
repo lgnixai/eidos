@@ -1,4 +1,3 @@
-import console from 'electron-log';
 
 type ParsedSnapshot = {
     latestLsn: number;

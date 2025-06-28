@@ -2,7 +2,12 @@
   "compilerOptions": {
     "target": "ESNext",
     "useDefineForClassFields": true,
-    "lib": ["ES2020", "DOM", "DOM.Iterable", "WebWorker"],
+    "lib": [
+      "ES2020",
+      "DOM",
+      "DOM.Iterable",
+      "WebWorker"
+    ],
     "module": "ESNext",
     "skipLibCheck": true,
     "allowJs": true,
@@ -21,15 +26,33 @@
     "noFallthroughCasesInSwitch": true,
     "baseUrl": ".",
     "paths": {
-      "@/locales/*": ["./packages/locales/*"],
-      "@/worker/*": ["./packages/worker/*"],
-      "@/lib/*": ["./packages/lib/*"],
-      "@/*": ["./*"]
+      "@/locales/*": [
+        "./packages/locales/*"
+      ],
+      "@/worker/*": [
+        "./packages/worker/*"
+      ],
+      "@/lib/*": [
+        "./packages/lib/*"
+      ],
+      "@/components/*": [
+        "./apps/web-app/components/*"
+      ],
+      "@/hooks/*": [
+        "./apps/web-app/hooks/*"
+      ],
+      "@/styles/*": [
+        "./apps/web-app/styles/*"
+      ],
+      "@/*": [
+        "./*"
+      ]
     },
     "types": [
       "vite-plugin-pwa/react",
       "node",
       "vitest/globals",
+      "vite/client",
       "@types/wicg-file-system-access"
     ]
   },
@@ -38,14 +61,21 @@
     "**/*.ts",
     "**/*.tsx",
     "**/*.js",
-    ".eslintrc.cjs",
     "prettier.config.cjs",
     "apps/web-app/rag.jsx",
     "scripts/version.cjs",
     "scripts/build-cf-worker.cjs",
-    "scripts/notarize.cjs"
+    "scripts/notarize.cjs",
+    "apps/web-app/postcss.config.mjs",
+    "apps/web-app/tailwind.config.mjs",
+    "packages/shared/types/**/*.d.ts"
   ],
-  "exclude": ["node_modules", "dist", "dev-dist", "dist-electron"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "dev-dist",
+    "dist-electron"
+  ],
   "references": [
     {
       "path": "./tsconfig.node.json"

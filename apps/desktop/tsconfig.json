@@ -1,0 +1,13 @@
+{
+    "extends": "../../tsconfig.json",
+    "compilerOptions": {
+        "types": [
+            "vite/client",
+            "./electron/electron-env.d.ts"
+        ]
+    },
+    "include": [
+        "**/*.ts",
+        "**/*.tsx"
+    ]
+}

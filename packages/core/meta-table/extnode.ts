@@ -1,6 +1,6 @@
 import { BaseTable, BaseTableImpl } from "./base"
 import { DataSpace } from "../DataSpace"
-import { ExtNodeTableName } from "@/lib/sqlite/const"
+import { ExtNodeTableName } from "@/packages/core/sqlite/const"
 
 export interface IExtNode {
   id: string

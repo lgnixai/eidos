@@ -2,7 +2,7 @@ import { useLocalStorageState, useSize } from "ahooks"
 import { Suspense, lazy, useEffect, useRef } from "react"
 import { Outlet, useLocation, useNavigate, useParams } from "react-router-dom"
 
-import { ScriptBreadcrumb } from "@/apps/web-app/[database]/extensions/components/extension-breadcrumb"
+import { ScriptBreadcrumb } from "@/apps/web-app/pages/[database]/extensions/components/extension-breadcrumb"
 import { BlockApp } from "@/components/block-renderer/block-app"
 import { DocExtBlockLoader } from "@/components/doc-ext-block-loader"
 import { KeyboardShortCuts } from "@/components/keyboard-shortcuts"
@@ -16,19 +16,19 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable"
-import { useActivation } from "@/hooks/use-activation"
-import { useCurrentPathInfo } from "@/hooks/use-current-pathinfo"
-import { useEidosFileSystemManager } from "@/hooks/use-fs"
-import { useSqlite } from "@/hooks/use-sqlite"
+import { useActivation } from "@/apps/web-app/hooks/use-activation"
+import { useCurrentPathInfo } from "@/apps/web-app/hooks/use-current-pathinfo"
+import { useEidosFileSystemManager } from "@/apps/web-app/hooks/use-fs"
+import { useSqlite } from "@/apps/web-app/hooks/use-sqlite"
 import { EidosDataEventChannelName } from "@/lib/const"
 import { useAppRuntimeStore } from "@/lib/store/runtime-store"
 import { cn, isStandaloneBlocksPath } from "@/lib/utils"
 import { isWindowsDesktop } from "@/lib/web/helper"
 
-import { useLayoutInit } from "../../../web-app/[database]/hook"
+import { useLayoutInit } from "../../../web-app/pages/[database]/hook"
 import {
   useSpaceAppStore
-} from "../../../web-app/[database]/store"
+} from "../../../web-app/pages/[database]/store"
 
 const AIChat = lazy(() => import("@/components/ai-chat/ai-chat-new"))
 

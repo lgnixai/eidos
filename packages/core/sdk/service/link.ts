@@ -1,7 +1,7 @@
-import { FieldType } from "@/lib/fields/const"
-import { ILinkProperty } from "@/lib/fields/link"
-import { ColumnTableName } from "@/lib/sqlite/const"
-import { IField } from "@/lib/store/interface"
+import { FieldType } from "../../fields/const"
+import { ILinkProperty } from "../../fields/link"
+import { ColumnTableName } from "../../sqlite/const"
+import { IField } from "../../fields/IField"
 import { getTableIdByRawTableName } from "@/lib/utils"
 
 import { DataSpace, EidosDatabase } from "../../DataSpace"

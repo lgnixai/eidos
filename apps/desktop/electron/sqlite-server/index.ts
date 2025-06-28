@@ -1,4 +1,4 @@
-import { BaseServerDatabase } from '@/lib/sqlite/interface';
+import { BaseServerDatabase } from '@/packages/core/sqlite/interface';
 import Database from '@eidos.space/better-sqlite3';
 import console from 'electron-log';
 import fs from 'fs';

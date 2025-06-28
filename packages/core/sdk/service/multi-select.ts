@@ -1,6 +1,6 @@
-import { MultiSelectField } from "@/lib/fields/multi-select"
-import { SelectProperty } from "@/lib/fields/select"
-import { IField } from "@/lib/store/interface"
+import { IField } from "@/packages/core/fields/IField"
+import { MultiSelectField } from "@/packages/core/fields/multi-select"
+import { SelectProperty } from "@/packages/core/fields/select"
 
 import { DataSpace } from "../../DataSpace"
 import { TableManager } from "../table"

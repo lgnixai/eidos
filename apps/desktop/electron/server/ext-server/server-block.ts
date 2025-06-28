@@ -1,5 +1,5 @@
-import { extractFunction } from "@/lib/v3/code-tools/code-extractor";
-import { generateImportMap, getAllLibs } from "@/lib/v3/code-tools/get-deps";
+import { extractFunction } from "@/packages/v3/code-tools/code-extractor";
+import { generateImportMap, getAllLibs } from "@/packages/v3/code-tools/get-deps";
 import { DataSpace } from '@/packages/core/DataSpace';
 import { IExtension } from "@/packages/core/meta-table/extension";
 import vm from 'vm';

@@ -4,44 +4,46 @@ import { RouterProvider, createBrowserRouter, redirect } from "react-router-dom"
 import { QueryParamProvider } from "use-query-params"
 import { ReactRouter6Adapter } from "use-query-params/adapters/react-router-6"
 
-import SettingsStoragePage from "@/apps/desktop/renderer/settings/storage/page"
-import NodePage from "@/apps/web-app/[database]/[node]/page"
-import EverydayPage from "@/apps/web-app/[database]/everyday/[day]/page"
-import EverydayHomePage from "@/apps/web-app/[database]/everyday/page"
-import { FileManager } from "@/apps/web-app/[database]/files/page"
-
+import CreateSpacePage from "@/apps/desktop/renderer/initial-setup/create-space"
+import InitialSetupPage from "@/apps/desktop/renderer/initial-setup/storage-setup"
 import SettingsApiPage from "@/apps/desktop/renderer/settings/api/page"
 import SettingsSecurityPage from "@/apps/desktop/renderer/settings/security/page"
+import SettingsStoragePage from "@/apps/desktop/renderer/settings/storage/page"
 import SettingsSyncPage from "@/apps/desktop/renderer/settings/sync/page"
-import "@/locales/i18n"
-// space
-import SpaceHomePage from "@/apps/web-app/[database]/page"
-import { LandingPage } from "@/apps/web-app/page"
-import SettingsAIPage from "@/apps/web-app/settings/ai/page"
-import SettingsAppearancePage from "@/apps/web-app/settings/appearance/page"
-import { BackupSettings } from "@/apps/web-app/settings/backup/page"
-import SettingsExperimentPage from "@/apps/web-app/settings/experiment/page"
-// settings
-import SettingsPage from "@/apps/web-app/settings/general/page"
-import SettingsLayout from "@/apps/web-app/settings/layout"
-import ShareNodePage from "@/apps/web-app/share/[database]/[table]/page"
-import ShareLayout from "@/apps/web-app/share/[database]/layout"
-// share
-import SharePage from "@/apps/web-app/share/page"
+import NodePage from "@/apps/web-app/pages/[database]/[node]/page"
+import EverydayPage from "@/apps/web-app/pages/[database]/everyday/[day]/page"
+import EverydayHomePage from "@/apps/web-app/pages/[database]/everyday/page"
+import { FileManager } from "@/apps/web-app/pages/[database]/files/page"
 
-import { NotFound } from "../../web-app/404"
-import { AppPage } from "../../web-app/[database]/apps/page"
-import { ExtensionDetailPage } from "../../web-app/[database]/extensions/detail"
-import { ScriptPage } from "../../web-app/[database]/extensions/page"
-import { SpaceSetting } from "../../web-app/[database]/settings/page"
-import { DocEditor } from "../../web-app/eidtor/doc"
-import { ErrorBoundary } from "../../web-app/error"
-import { LabPage } from "../../web-app/lab"
-import { LicenseManagePage } from "../../web-app/license-manage/page"
-import { SettingsAILayout } from "../../web-app/settings/ai/layout"
-import { ProviderPage } from "../../web-app/settings/ai/provider/page"
-import SettingsApiKeyPage from "../../web-app/settings/api-key/page"
-import { DevtoolsPage } from "../../web-app/settings/dev/page"
+import "@/locales/i18n"
+import { NotFound } from "@/apps/web-app/pages/404"
+import { AppPage } from "@/apps/web-app/pages/[database]/apps/page"
+import { ExtensionDetailPage } from "@/apps/web-app/pages/[database]/extensions/detail"
+import { ScriptPage } from "@/apps/web-app/pages/[database]/extensions/page"
+// space
+import SpaceHomePage from "@/apps/web-app/pages/[database]/page"
+import { SpaceSetting } from "@/apps/web-app/pages/[database]/settings/page"
+import { DocEditor } from "@/apps/web-app/pages/eidtor/doc"
+import { ErrorBoundary } from "@/apps/web-app/pages/error"
+import { LabPage } from "@/apps/web-app/pages/lab"
+import { LicenseManagePage } from "@/apps/web-app/pages/license-manage/page"
+import { LandingPage } from "@/apps/web-app/pages/page"
+import { SettingsAILayout } from "@/apps/web-app/pages/settings/ai/layout"
+import SettingsAIPage from "@/apps/web-app/pages/settings/ai/page"
+import { ProviderPage } from "@/apps/web-app/pages/settings/ai/provider/page"
+import SettingsApiKeyPage from "@/apps/web-app/pages/settings/api-key/page"
+import SettingsAppearancePage from "@/apps/web-app/pages/settings/appearance/page"
+import { BackupSettings } from "@/apps/web-app/pages/settings/backup/page"
+import { DevtoolsPage } from "@/apps/web-app/pages/settings/dev/page"
+import SettingsExperimentPage from "@/apps/web-app/pages/settings/experiment/page"
+// settings
+import SettingsPage from "@/apps/web-app/pages/settings/general/page"
+import SettingsLayout from "@/apps/web-app/pages/settings/layout"
+import ShareNodePage from "@/apps/web-app/pages/share/[database]/[table]/page"
+import ShareLayout from "@/apps/web-app/pages/share/[database]/layout"
+// share
+import SharePage from "@/apps/web-app/pages/share/page"
+
 import { DesktopSpaceLayout } from "./[database]/layout"
 import BlockPage from "./[database]/standalone-blocks/page"
 // extensions
@@ -64,11 +66,23 @@ const router = createBrowserRouter([
         path: "/",
         element: <LandingPage />,
         loader: ({ params }) => {
-          if (!window.eidos.isDataFolderSet) {
-            return redirect("/settings/storage")
+          if (!window.eidos.checkIsDataFolderSet()) {
+            console.log(
+              "redirect to initial-setup",
+              window.eidos.checkIsDataFolderSet()
+            )
+            return redirect("/initial-setup")
           }
           return null
         },
+      },
+      {
+        path: "initial-setup",
+        element: <InitialSetupPage />,
+      },
+      {
+        path: "create-space",
+        element: <CreateSpacePage />,
       },
       {
         path: "404",
@@ -152,8 +166,8 @@ const router = createBrowserRouter([
         element: <DesktopSpaceLayout />,
         loader: async ({ params }) => {
           // check the space is exist
-          if (!window.eidos.isDataFolderSet) {
-            return redirect("/settings/storage")
+          if (!window.eidos.checkIsDataFolderSet()) {
+            return redirect("/initial-setup")
           }
           const spaceNames = await window.eidos.spaceFileSystem.list()
           if (params.database && !spaceNames.includes(params.database)) {

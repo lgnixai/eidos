@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from "uuid"
 
-import { FieldType } from "@/lib/fields/const"
-import { ColumnTableName } from "@/lib/sqlite/const"
+import { FieldType } from "../fields/const"
+import { ColumnTableName } from "../sqlite/const"
 import { generateColumnName, getRawTableNameById } from "@/lib/utils"
 
 import { DataSpace } from "../DataSpace"

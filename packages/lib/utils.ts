@@ -3,11 +3,12 @@ import { twMerge } from "tailwind-merge";
 
 import type {
   Message
-} from 'ai';
+} from '@/packages/ai';
 import { uuidv7 } from "uuidv7";
 export { uuidv7 } from "uuidv7";
-// export { v4 as uuidv7 } from "uuid"
+import { v4 as uuidv4 } from "uuid"
 
+export { uuidv4 }
 
 export const openUrlViaDefaultBrowser = (url: string) => {
   window.eidos.openUrl(url)

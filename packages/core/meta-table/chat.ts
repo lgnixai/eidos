@@ -1,5 +1,5 @@
-import { ChatTableName } from "@/lib/sqlite/const"
-import { createInsertTriggerForFields } from "@/lib/sqlite/sql-meta-table-trigger"
+import { ChatTableName } from "@/packages/core/sqlite/const"
+import { createInsertTriggerForFields } from "../sqlite/sql-meta-table-trigger"
 import { BaseTable, BaseTableImpl } from "./base"
 import { ChatMessage } from "./message"
 

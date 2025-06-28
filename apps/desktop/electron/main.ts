@@ -14,6 +14,8 @@ import { startServer } from './server/server';
 import { AppUpdater } from './updater';
 import { createWindow } from './window-manager/createWindow';
 import { WorkerManager } from './worker-manager';
+import console from 'electron-log';
+
 
 process.on('uncaughtException', (error) => {
     console.error('Unhandled Exception:', error); // Also log to console
@@ -38,6 +40,8 @@ let protocolHandler: ProtocolHandler;
 let forceQuit = false;
 
 export const PORT = 13127;
+
+
 
 const libPath = getResourcePath(`dist-sqlite-ext/libsimple`);
 const dictPath = getResourcePath('dist-sqlite-ext/dict');

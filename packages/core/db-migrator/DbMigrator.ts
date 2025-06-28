@@ -1,4 +1,4 @@
-import { generateMergeTableWithNewColumnsSql } from "@/lib/sqlite/sql-merge-table-with-new-columns"
+import { generateMergeTableWithNewColumnsSql } from "../sqlite/sql-merge-table-with-new-columns"
 
 import { DataSpace } from "../DataSpace"
 

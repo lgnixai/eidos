@@ -1,4 +1,4 @@
-import { ActionTableName } from "@/lib/sqlite/const"
+import { ActionTableName } from "../sqlite/const"
 
 import { BaseTable, BaseTableImpl } from "./base"
 

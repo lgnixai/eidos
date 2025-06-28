@@ -1,0 +1,23 @@
+{
+  "name": "v3",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.12.4",
+  "devDependencies": {
+    "@types/node": "^20.4.1",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "@oxc-parser/wasm": "^0.60.0",
+    "diff": "^8.0.2",
+    "esbuild-wasm": "^0.24.2",
+    "oxc-parser": "^0.75.0"
+  }
+}

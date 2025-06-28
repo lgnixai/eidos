@@ -1,12 +1,39 @@
 {
-  "name": "core",
+  "name": "@eidos.space/core",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "core package for eidos.space",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
+    "build": "tsdown",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "type": "module",
+  "keywords": [
+    "eidos.space",
+    "core",
+    "sdk"
+  ],
+  "author": "mayneyao",
+  "license": "ISC",
+  "dependencies": {
+    "csv-parse": "^5.6.0",
+    "csv-stringify": "^6.5.2",
+    "lodash": "^4.17.21",
+    "pgsql-ast-parser": "^11.2.0",
+    "postal-mime": "^2.4.4",
+    "sql-formatter": "^15.6.5",
+    "uuid": "^11.1.0",
+    "uuidv7": "^1.0.2",
+    "zod-to-json-schema": "^3.24.6"
+  },
+  "devDependencies": {
+    "@glideapps/glide-data-grid": "^6.0.3",
+    "@types/lodash": "^4.14.195",
+    "@types/node": "^20.4.1",
+    "@types/uuid": "^9.0.2",
+    "tsdown": "^0.12.9",
+    "typescript": "^5.8.3"
+  }
 }

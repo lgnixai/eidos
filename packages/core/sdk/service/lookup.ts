@@ -1,17 +1,17 @@
-import { getFieldInstance } from "@/lib/fields"
-import { FieldType } from "@/lib/fields/const"
-import { ILinkProperty } from "@/lib/fields/link"
+import { getFieldInstance } from "../../fields"
+import { FieldType } from "../../fields/const"
+import { ILinkProperty } from "../../fields/link"
 import {
   ILookupContext,
   ILookupProperty,
   LookupField,
-} from "@/lib/fields/lookup"
-import { IField } from "@/lib/store/interface"
+} from "../../fields/lookup"
+import { IField } from "../../fields/IField"
 import { getTableIdByRawTableName } from "@/lib/utils"
 
 import { DataSpace } from "../../DataSpace"
 import { TableManager } from "../table"
-import { BaseServerDatabase } from "@/lib/sqlite/interface"
+import { BaseServerDatabase } from "../../sqlite/interface"
 
 export class LookupFieldService {
   dataSpace: DataSpace

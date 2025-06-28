@@ -1,5 +1,5 @@
 import { DataSpace } from "../DataSpace";
-import { rewriteQueryWithRowId } from "@/lib/sqlite/sql-view-query";
+import { rewriteQueryWithRowId } from "../sqlite/sql-view-query";
 
 
 export class TableFullTextSearch {

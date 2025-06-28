@@ -2,16 +2,16 @@ import {
   DataUpdateSignalType,
   EidosDataEventChannelMsgType
 } from "@/lib/const"
-import { allFieldTypesMap } from "@/lib/fields"
-import { FieldType } from "@/lib/fields/const"
-import { ILinkProperty } from "@/lib/fields/link"
-import { ColumnTableName } from "@/lib/sqlite/const"
-import { alterColumnType } from "@/lib/sqlite/sql-alter-column-type"
-import { findDependentFormulaFields, getFormulaFieldDeletionOrder, transformFormula2VirtualGeneratedField } from "@/lib/sqlite/sql-formula-parser"
-import { IField } from "@/lib/store/interface"
+import { allFieldTypesMap } from "../fields"
+import { FieldType } from "../fields/const"
+import { ILinkProperty } from "../fields/link"
+import { ColumnTableName } from "../sqlite/const"
+import { alterColumnType } from "../sqlite/sql-alter-column-type"
+import { findDependentFormulaFields, getFormulaFieldDeletionOrder, transformFormula2VirtualGeneratedField } from "../sqlite/sql-formula-parser"
+import { IField } from "@/packages/core/fields/IField"
 import { getColumnIndexName, getTableIdByRawTableName } from "@/lib/utils"
 
-import { BaseServerDatabase } from "@/lib/sqlite/interface"
+import { BaseServerDatabase } from "../sqlite/interface"
 import { TableManager } from "../sdk/table"
 import { BaseTable, BaseTableImpl } from "./base"
 

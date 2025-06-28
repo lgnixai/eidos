@@ -7,7 +7,10 @@
     "allowSyntheticDefaultImports": true
   },
   "include": [
-    "vite.config.ts",
-    "config/**/*"
+    "apps/web-app/vite.config.ts",
+    "apps/desktop/vite.config.ts",
+    "packages/shared/**/*",
+    "apps/web-app/postcss.config.mjs",
+    "apps/web-app/tailwind.config.mjs"
   ]
 }

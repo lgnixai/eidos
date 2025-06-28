@@ -46,8 +46,11 @@ Get the app from: https://preview.eidos.space/download
 
 1. Clone the repository `git clone https://github.com/mayneyao/eidos.git`
 2. Run `pnpm install` to install dependencies
-3. Run `pnpm download-libsimple` to download libsimple (only for the first time)
-4. Run `pnpm dev:desktop` (or `pnpm dev` for web app(PWA))
+3. For desktop development:
+   - Run `cd apps/desktop && node scripts/download-libsimple.cjs` to download libsimple (only for the first time)
+   - Run `pnpm dev:desktop` to start the desktop app
+4. For web development:
+   - Run `pnpm dev` to start the web app (PWA)
 
 ## How Eidos works
 

@@ -1,4 +1,4 @@
-import { EmbeddingTableName } from "@/lib/sqlite/const"
+import { EmbeddingTableName } from "@/packages/core/sqlite/const"
 
 import { BaseTable, BaseTableImpl } from "./base"
 

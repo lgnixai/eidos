@@ -1,7 +1,7 @@
-import { useCurrentUser } from "@/hooks/user-current-user";
+import { useCurrentUser } from "@/apps/web-app/hooks/user-current-user";
 import { EidosProtocolUrlChannelName } from "@/lib/const";
 import { isDesktopMode } from "@/lib/env";
-import { getSqliteProxy } from "@/lib/sqlite/channel";
+import { getSqliteProxy } from "@/packages/core/sqlite/channel";
 import { getToday, uuidv7 } from "@/lib/utils";
 import { useCallback, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";

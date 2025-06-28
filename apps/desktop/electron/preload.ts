@@ -22,6 +22,19 @@ async function main() {
 
 
 
+  const checkIsNeverCreatedSpace = async () => {
+    const userDataPath = (await ipcRenderer.invoke('get-app-data-folder'));
+    const dirHandle = await getOriginPrivateDirectory(nodeAdapter, userDataPath)
+    const spaceFileSystem = new SpaceFileSystem(dirHandle as any)
+    return (await spaceFileSystem.list()).length === 0
+  }
+
+  const checkIsDataFolderSet = () => {
+    return !!configManager.get('dataFolder')
+  }
+
+
+
   // we expose a readonly version of eidos, which only contains a invoke method
   //  eidosReadonly -> sqlite-msg-read -> main -> worker
   contextBridge.exposeInMainWorld('eidosReadonly', {
@@ -119,7 +132,10 @@ async function main() {
       get: (key: keyof AppConfig) => ipcRenderer.invoke('get-config', key),
       set: (key: keyof AppConfig, value: any) => ipcRenderer.invoke('set-config', key, value),
     },
-    isDataFolderSet: !!configManager.get('dataFolder'),
+    isDataFolderSet: checkIsDataFolderSet(),
+    isNeverCreatedSpace: await checkIsNeverCreatedSpace(),
+    checkIsDataFolderSet: checkIsDataFolderSet,
+    checkIsNeverCreatedSpace: checkIsNeverCreatedSpace,
     selectFolder: () => ipcRenderer.invoke('select-folder'),
     openFolder: (folder: string) => ipcRenderer.invoke('open-folder', folder),
     openUrl: (url: string) => ipcRenderer.invoke('open-url', url),

@@ -1,15 +1,15 @@
 import { uuidv7 } from "uuidv7"
 
 import { MsgType } from "@/lib/const"
-import { getFieldInstance } from "@/lib/fields"
-import { FieldType } from "@/lib/fields/const"
+import { FieldType } from "../fields/const"
 import { IView } from "@/lib/store/IView"
-import type { IField } from "@/lib/store/interface"
+import type { IField } from "../fields/IField"
 
-import { rewriteQueryWithOffsetAndLimit } from "@/lib/sqlite/sql-view-query"
+import { rewriteQueryWithOffsetAndLimit } from "../sqlite/sql-view-query"
 import { DataSpace } from "../DataSpace"
 import { workerStore } from "../../worker/web-worker/store"
 import { TableManager } from "./table"
+import { getFieldInstance } from "../fields"
 
 export class RowsManager {
   dataSpace: DataSpace

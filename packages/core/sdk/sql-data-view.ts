@@ -1,9 +1,9 @@
 import { ViewTypeEnum } from "@/lib/store/IView"
 import { DataSpace } from "../DataSpace"
 import { shortenId, uuidv7 } from "@/lib/utils"
-import { IField } from "@/lib/store/interface"
-import { FieldType } from "@/lib/fields/const"
-import { allFieldTypesMap } from "@/lib/fields"
+import { IField } from "../fields/IField"
+import { FieldType } from "../fields/const"
+import { allFieldTypesMap } from "../fields"
 
 export class SqlDataView {
     constructor(private dataSpace: DataSpace) {

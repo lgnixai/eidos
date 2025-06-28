@@ -1,7 +1,7 @@
 import { JsonSchema7ObjectType } from "zod-to-json-schema"
 
-import { ScriptTableName } from "@/lib/sqlite/const"
-import { createUpdateTriggerForFields } from "@/lib/sqlite/sql-meta-table-trigger"
+import { ScriptTableName } from "@/packages/core/sqlite/const"
+import { createUpdateTriggerForFields } from "@/packages/core/sqlite/sql-meta-table-trigger"
 
 import { BaseTable, BaseTableImpl } from "./base"
 
@@ -36,6 +36,7 @@ export interface IExtension {
   description: string
   version: string
   code: string
+  meta?: Record<string, any>
   // icon is a data uri of an image
   icon?: string
   // if the script is published to marketplace, it will have a marketplace_id
@@ -96,6 +97,7 @@ export class ExtensionTable
         version TEXT,
         code TEXT,
         ts_code TEXT,
+        meta TEXT,
         icon TEXT,
         marketplace_id TEXT,
         model TEXT,
@@ -127,6 +129,7 @@ export class ExtensionTable
     "prompt_config",
     "bindings",
     "dependencies",
+    "meta",
   ]
 
   async del(id: string): Promise<boolean> {

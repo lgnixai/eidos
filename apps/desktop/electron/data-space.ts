@@ -9,6 +9,7 @@ import { getSpaceDbPath } from "./file-system/space";
 import { getResourcePath } from "./helper";
 import { win } from "./main";
 import { NodeServerDatabase } from "./sqlite-server";
+import console from 'electron-log';
 
 
 // --- START: Helper function to apply Graft Config to Environment --- 

@@ -1,8 +1,8 @@
-import { ViewTableName } from "@/lib/sqlite/const"
+import { ViewTableName } from "@/packages/core/sqlite/const"
 import {
   replaceQueryTableName,
   replaceWithFindIndexQuery,
-} from "@/lib/sqlite/sql-parser"
+} from "@/packages/core/sqlite/sql-parser"
 import { IView, ViewTypeEnum } from "@/lib/store/IView"
 import { getTableIdByRawTableName, getUuid } from "@/lib/utils"
 

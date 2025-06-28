@@ -37,7 +37,7 @@ const currentVersion = packageJson.version
 const newVersion = semver.inc(currentVersion, versionIncrement)
 
 // Step 3: Update the version in your TypeScript file
-const tsFilePath = "./packages/lib/env.ts" // Adjust the path to your TypeScript file
+const tsFilePath = "./packages/lib/env.ts"
 let tsFileContent = fs.readFileSync(tsFilePath, "utf8")
 
 // Replace the version in your TypeScript file
@@ -49,18 +49,39 @@ tsFileContent = tsFileContent.replace(
 // Write the updated content back to the TypeScript file
 fs.writeFileSync(tsFilePath, tsFileContent)
 
-// Add the TypeScript file changes to git
+// Step 4: Update all package.json files in the monorepo
+const packageJsonPaths = [
+  packageJsonPath, // root package.json
+  "apps/desktop/package.json",
+  "apps/web-app/package.json"
+]
+
+// Update each package.json file
+packageJsonPaths.forEach(pkgPath => {
+  if (fs.existsSync(pkgPath)) {
+    const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"))
+    pkg.version = newVersion
+    fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + "\n")
+    console.log(`Updated version in ${pkgPath}`)
+  }
+})
+
+// Step 5: Add all changed files to git
 execSync(`git add ${tsFilePath}`)
+packageJsonPaths.forEach(pkgPath => {
+  if (fs.existsSync(pkgPath)) {
+    execSync(`git add ${pkgPath}`)
+  }
+})
 
-// Step 4: Update the package version without committing
-execSync(`npm version ${newVersion} --no-git-tag-version`, { stdio: "inherit" })
-
-// Step 5: Commit the package.json and package-lock.json changes
-execSync(`git add ${packageJsonPath}`)
-
-// Commit the TypeScript file change and package.json version update together
+// Commit all version updates together
 execSync(`git commit -m "Update to version ${newVersion}" --no-edit`)
 
 console.log(
-  `Version updated to ${newVersion} in package.json, package-lock.json, and ${tsFilePath}`
+  `Version updated to ${newVersion} in all package.json files and ${tsFilePath}`
 )
+console.log("Updated files:")
+console.log("- Root package.json")
+console.log("- apps/desktop/package.json")
+console.log("- apps/web-app/package.json")
+console.log("- packages/lib/env.ts")

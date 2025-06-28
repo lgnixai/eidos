@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react"
 import { useSize } from "ahooks"
 import { useParams, useSearchParams } from "react-router-dom"
 
-import { useMblock } from "@/hooks/use-mblock"
+import { useMblock } from "@/apps/web-app/hooks/use-mblock"
 import { BlockApp } from "@/components/block-renderer/block-app"
 
 export default function BlockPage() {

@@ -1,4 +1,4 @@
-import { FileTableName } from "@/lib/sqlite/const"
+import { FileTableName } from "@/packages/core/sqlite/const"
 import {
   EidosFileSystemManager,
   FileSystemType,
