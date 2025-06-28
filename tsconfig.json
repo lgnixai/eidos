@@ -74,7 +74,11 @@
     "node_modules",
     "dist",
     "dev-dist",
-    "dist-electron"
+    "dist-electron",
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/dev-dist/**",
+    "**/dist-electron/**"
   ],
   "references": [
     {
