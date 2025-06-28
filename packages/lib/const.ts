@@ -76,11 +76,11 @@ export const EidosMessageChannelName = "eidos-message"
 export const EidosProtocolUrlChannelName = "eidos-protocol-url"
 // TODO: replace hard-coded link
 export const DOMAINS = {
-  HOME: "https://preview.eidos.space",
+  HOME: "https://eidos.space",
   IMAGE_PROXY: "https://proxy.eidos.space",
   LINK_PREVIEW: "https://link-preview.eidos.space",
   WIKI: "https://wiki.eidos.space",
-  DOWNLOAD: "https://preview.eidos.space/download",
+  DOWNLOAD: "https://eidos.space/download",
   ACTIVATION_SERVER: "https://active.eidos.space",
   EXTENSION_SERVER: "https://ext.eidos.space",
   API_AGENT_SERVER: "https://api.eidos.space",
@@ -90,7 +90,7 @@ export const DOMAINS = {
   GEOLOCATION_API: "https://geolocation.api.eidos.space/",
 
   // Account Registration
-  ACCOUNT_REGISTRATION: "https://preview.eidos.space/auth/register",
+  ACCOUNT_REGISTRATION: "https://eidos.space/auth/register",
 }
 
 // custom Event, dispatch via window
@@ -98,6 +98,6 @@ export enum CustomEventType {
   UpdateColumn = "eidos-update-column",
 }
 
-export const EIDOS_SPACE_BASE_URL = process.env.NODE_ENV === "production" ? "https://preview.eidos.space" : "http://localhost:4321";
+export const EIDOS_SPACE_BASE_URL = process.env.NODE_ENV === "production" ? "https://eidos.space" : "http://localhost:4321";
 
 export const EIDOS_CHAT_PROJECT_ID = "EIDOS_CHAT"
