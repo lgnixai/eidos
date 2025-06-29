@@ -1,4 +1,4 @@
-import { IField } from "./IField"
+import { IField } from "../types/IField"
 import { BaseField } from "./base"
 import { CheckboxField } from "./checkbox"
 import { FieldType } from "./const"

@@ -19,7 +19,7 @@ import { Link, useNavigate } from "react-router-dom"
 
 import { DOMAINS } from "@/lib/const"
 import { EIDOS_VERSION, isDesktopMode } from "@/lib/env"
-import { useAppRuntimeStore } from "@/lib/store/runtime-store"
+import { useAppRuntimeStore } from "@/apps/web-app/store/runtime-store"
 import { isDayPageId } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {

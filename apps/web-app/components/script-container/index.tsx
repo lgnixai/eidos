@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react"
 
-import { useAppRuntimeStore } from "@/lib/store/runtime-store"
+import { useAppRuntimeStore } from "@/apps/web-app/store/runtime-store"
 import { useCurrentPathInfo } from "@/apps/web-app/hooks/use-current-pathinfo"
 import {
   ExtensionSourceType,

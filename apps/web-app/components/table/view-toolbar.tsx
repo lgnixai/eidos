@@ -28,7 +28,7 @@ import {
   useSearchParams,
 } from "react-router-dom"
 
-import { IView, ViewTypeEnum } from "@/lib/store/IView"
+import { IView, ViewTypeEnum } from "@/packages/core/types/IView"
 import { cn, getTableIdByRawTableName, shortenId, uuidv7 } from "@/lib/utils"
 import { useCurrentSubPage } from "@/apps/web-app/hooks/use-current-sub-page"
 import { useSqlite } from "@/apps/web-app/hooks/use-sqlite"

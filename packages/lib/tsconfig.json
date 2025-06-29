@@ -11,10 +11,10 @@
   },
   "include": [
     "./**/*.ts",
-    "./**/*.tsx"
+    "./**/*.tsx", "../core/types/ICollaboration.ts",
   ],
   "exclude": [
     "node_modules",
     "dist"
   ]
-} 
+}

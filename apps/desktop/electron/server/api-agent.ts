@@ -1,4 +1,4 @@
-import { handleFunctionCall } from '@/lib/rpc';
+import { handleFunctionCall } from '@/packages/core/rpc';
 import { getUuid } from '@/lib/utils';
 import { log } from 'electron-log';
 import WebSocket, { RawData } from 'ws';

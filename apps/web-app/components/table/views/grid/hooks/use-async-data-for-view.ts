@@ -26,7 +26,7 @@ import {
   rewriteQueryWithOffsetAndLimit,
   rewriteQueryWithSortedQuery
 } from "@/packages/core/sqlite/sql-sort-parser"
-import { IView } from "@/lib/store/IView"
+import { IView } from "@/packages/core/types/IView"
 import { useDebounceFn } from "ahooks"
 
 import { TableContext } from "@/components/table/hooks"

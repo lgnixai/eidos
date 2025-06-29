@@ -1,5 +1,5 @@
 import { TreeTableName } from "@/packages/core/sqlite/const"
-import { ITreeNode } from "@/lib/store/ITreeNode"
+import { ITreeNode } from "@/packages/core/types/ITreeNode"
 import { extractIdFromShortId, getRawTableNameById } from "@/lib/utils"
 import { createTriggersForFields } from "@/packages/core/sqlite/sql-meta-table-trigger"
 

@@ -1,27 +1,31 @@
 import { useCallback, useMemo, useRef } from "react"
 import { IExtension } from "@/packages/core/meta-table/extension"
+import { compileCode } from "@/packages/v3/compiler"
+import { getCompileMethod } from "@/packages/v3/script-compiler"
 import { useMount } from "ahooks"
 import { Copy, ExternalLink, Play } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useLoaderData, useRevalidator } from "react-router-dom"
 
 import { isDesktopMode } from "@/lib/env"
-import { useAppRuntimeStore } from "@/lib/store/runtime-store"
-import { getExtensionUrl, isUuid, openUrlViaDefaultBrowser } from "@/lib/utils"
-import { compileCode } from "@/packages/v3/compiler"
-import { getCompileMethod } from "@/packages/v3/script-compiler"
+import { useAppRuntimeStore } from "@/apps/web-app/store/runtime-store"
+import { getExtensionUrl, isUuid } from "@/lib/utils"
 import { openCursor } from "@/lib/web/schema"
-import { useCurrentPathInfo } from "@/apps/web-app/hooks/use-current-pathinfo"
-import { useScriptCall } from "@/apps/web-app/hooks/use-script-call"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/components/ui/use-toast"
 import { usePlayground } from "@/apps/desktop/renderer/hooks/usePlayground"
+import { useCurrentPathInfo } from "@/apps/web-app/hooks/use-current-pathinfo"
+import { useScriptCall } from "@/apps/web-app/hooks/use-script-call"
 
 import { useExtension } from "../../../../hooks/use-extension"
 import { useRemixPrompt } from "../hooks/use-remix-prompt"
 import { useEditorStore } from "../stores/editor-store"
 import { CheckForUpdatesButton } from "./check-for-updates-button"
 import { ShareExtensionButton } from "./share-extension-button"
+
+export const openUrlViaDefaultBrowser = (url: string) => {
+  window.eidos.openUrl(url)
+}
 
 export const ExtensionToolbar = () => {
   const { t } = useTranslation()

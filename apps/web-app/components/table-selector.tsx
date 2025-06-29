@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next"
 
-import { TreeNodeType } from "@/lib/store/ITreeNode"
+import { TreeNodeType } from "@/packages/core/types/ITreeNode"
 import { useAllNodes } from "@/apps/web-app/hooks/use-nodes"
 import {
   Select,

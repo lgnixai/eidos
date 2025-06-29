@@ -19,7 +19,7 @@ import { useKeyPress, useSize } from "ahooks"
 import { Plus } from "lucide-react"
 import { useTheme } from "next-themes"
 
-import { IGridViewProperties, IView } from "@/lib/store/IView"
+import { IGridViewProperties, IView } from "@/packages/core/types/IView"
 import { cn } from "@/lib/utils"
 import { useSqlite } from "@/apps/web-app/hooks/use-sqlite"
 import { useTableOperation } from "@/apps/web-app/hooks/use-table"

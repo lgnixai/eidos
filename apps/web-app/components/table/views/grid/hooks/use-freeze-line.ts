@@ -4,7 +4,7 @@ import { GridColumn } from "@glideapps/glide-data-grid";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { useViewOperation } from "@/components/table/hooks";
-import { IGridViewProperties, IView } from "@/lib/store/IView";
+import { IGridViewProperties, IView } from "@/packages/core/types/IView";
 
 interface UseFreezeLineProps {
     gridRef: React.RefObject<HTMLElement | null>;

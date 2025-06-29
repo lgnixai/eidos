@@ -1,4 +1,4 @@
-import { ITreeNode, TreeNodeType } from "@/lib/store/ITreeNode"
+import { ITreeNode, TreeNodeType } from "@/packages/core/types/ITreeNode"
 
 import { useSqlite, useSqliteStore } from "./use-sqlite"
 

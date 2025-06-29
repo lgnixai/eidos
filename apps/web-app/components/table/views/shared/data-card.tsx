@@ -1,6 +1,6 @@
 import { useMemo } from "react"
 
-import { IField } from "@/packages/core/fields/IField"
+import { IField } from "@/packages/core/types/IField"
 import { cn } from "@/lib/utils"
 
 import { useRowDataOperation } from "../../../doc-property/hook"

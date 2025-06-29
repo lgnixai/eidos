@@ -2,7 +2,7 @@ import { useState } from "react"
 import { IAction } from "@/packages/core/meta-table/action"
 
 import { ActionExecutor } from "@/lib/action/action"
-import { useAppRuntimeStore } from "@/lib/store/runtime-store"
+import { useAppRuntimeStore } from "@/apps/web-app/store/runtime-store"
 import { uuidv7 } from "@/lib/utils"
 import { useActions } from "@/apps/web-app/hooks/use-actions"
 import { useCurrentPathInfo } from "@/apps/web-app/hooks/use-current-pathinfo"

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 
-import { useAppRuntimeStore } from "@/lib/store/runtime-store"
+import { useAppRuntimeStore } from "@/apps/web-app/store/runtime-store"
 import { useCurrentNode } from "@/apps/web-app/hooks/use-current-node"
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"

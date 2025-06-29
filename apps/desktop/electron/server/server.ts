@@ -1,4 +1,4 @@
-import { handleFunctionCall } from '@/lib/rpc';
+import { handleFunctionCall } from '@/packages/core/rpc';
 import aiHandler, { pathname as aiPath } from '@/worker/service-worker/ai';
 import { serve } from '@hono/node-server';
 import { log } from 'electron-log';

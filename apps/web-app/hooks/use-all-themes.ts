@@ -1,5 +1,5 @@
 import { useMemo } from "react"
-import { useThemeStore } from "@/lib/store/theme-store"
+import { useThemeStore } from "@/apps/web-app/store/theme-store"
 import { presetThemes } from "./use-apply-theme-by-name"
 
 export const useAllThemes = () => {

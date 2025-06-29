@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next"
 import { Outlet } from "react-router-dom"
 
 import { isStagingMode } from "@/lib/env"
-import { useAppStoreBase } from "@/lib/store/app-store"
+import { useAppStoreBase } from "@/apps/web-app/store/app-store"
 import { useWorker } from "@/apps/web-app/hooks/use-worker"
 import { SidebarProvider } from "@/components/ui/sidebar"
 import { Toaster } from "@/components/toaster"

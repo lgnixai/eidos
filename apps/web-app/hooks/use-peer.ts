@@ -6,7 +6,7 @@ import {
   ECollaborationMsgType,
   ICollaborator,
   IMsg,
-} from "@/lib/collaboration/interface"
+} from "@/packages/core/types/ICollaboration"
 import { EidosDataEventChannelName } from "@/lib/const"
 import { getWorker } from "@/packages/core/sqlite/worker"
 

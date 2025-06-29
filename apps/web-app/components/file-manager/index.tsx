@@ -2,7 +2,7 @@ import { useRef } from "react"
 import { useVirtualList } from "ahooks"
 import { ArrowLeftIcon } from "lucide-react"
 
-import { useAppStore } from "@/lib/store/app-store"
+import { useAppStore } from "@/apps/web-app/store/app-store"
 import { cn } from "@/lib/utils"
 import { Separator } from "@/components/ui/separator"
 

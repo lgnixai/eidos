@@ -1,6 +1,6 @@
 import { useContext, useEffect } from "react"
 
-import { IView } from "@/lib/store/IView"
+import { IView } from "@/packages/core/types/IView"
 import { useTableOperation } from "@/apps/web-app/hooks/use-table"
 import { useUiColumns } from "@/apps/web-app/hooks/use-ui-columns"
 import { TableContext } from "@/components/table/hooks"

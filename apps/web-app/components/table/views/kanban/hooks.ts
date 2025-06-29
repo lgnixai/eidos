@@ -10,9 +10,9 @@ import {
 import { FieldType } from "@/packages/core/fields/const"
 import { SelectProperty } from "@/packages/core/fields/select"
 import { transformSql } from "@/packages/core/sqlite/sql-parser"
-import { IView } from "@/lib/store/IView"
+import { IView } from "@/packages/core/types/IView"
 import { getRawTableNameById } from "@/lib/utils"
-import { IField } from "@/packages/core/fields/IField"
+import { IField } from "@/packages/core/types/IField"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { uuidv7 } from "@/lib/utils"
 

@@ -9,7 +9,7 @@ import {
 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
-import { IView } from "@/lib/store/IView"
+import { IView } from "@/packages/core/types/IView"
 import { cn, shortenId } from "@/lib/utils"
 import { useCurrentPathInfo } from "@/apps/web-app/hooks/use-current-pathinfo"
 import { useCurrentSubPage } from "@/apps/web-app/hooks/use-current-sub-page"

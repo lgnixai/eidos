@@ -5,7 +5,7 @@ import { getFieldInstance } from "@/packages/core/fields"
 import { FieldType } from "@/packages/core/fields/const"
 import { FileField } from "@/packages/core/fields/file"
 import { SelectProperty } from "@/packages/core/fields/select"
-import { IField } from "@/packages/core/fields/IField"
+import { IField } from "@/packages/core/types/IField"
 import { cn } from "@/lib/utils"
 import { FileCell } from "@/components/table/views/grid/cells/file/file-cell"
 

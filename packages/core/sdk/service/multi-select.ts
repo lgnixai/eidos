@@ -1,4 +1,4 @@
-import { IField } from "@/packages/core/fields/IField"
+import { IField } from "@/packages/core/types/IField"
 import { MultiSelectField } from "@/packages/core/fields/multi-select"
 import { SelectProperty } from "@/packages/core/fields/select"
 

@@ -1,12 +1,12 @@
 import { CompareOperator } from "@/packages/core/fields/const"
-import { IField } from "@/packages/core/fields/IField"
+import { IField } from "@/packages/core/types/IField"
 import { useCurrentPathInfo } from "@/apps/web-app/hooks/use-current-pathinfo"
 import { useUiColumns } from "@/apps/web-app/hooks/use-ui-columns"
 
 import { CellEditor } from "../cell-editor"
 import { FieldCompareSelector } from "../fields/field-compare-selector"
 import { FieldSelector } from "../fields/field-selector"
-import { IFilterValue } from "./interface"
+import { IFilterValue } from "../../../../../packages/core/types/IViewFilter"
 
 interface IViewFilterItemEditorProps {
   value?: IFilterValue

@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next"
 import { useWindowSize } from "usehooks-ts"
 
 import { EIDOS_CHAT_PROJECT_ID } from "@/lib/const"
-import { useAppStore } from "@/lib/store/app-store"
+import { useAppStore } from "@/apps/web-app/store/app-store"
 import { cn, uuidv7 } from "@/lib/utils"
 import { useAiConfig } from "@/apps/web-app/hooks/use-ai-config"
 import { useAIFunctions } from "@/apps/web-app/hooks/use-ai-functions"

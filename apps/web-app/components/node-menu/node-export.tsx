@@ -1,7 +1,7 @@
 import { CopyIcon, DownloadIcon } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
-import { ITreeNode } from "@/lib/store/ITreeNode"
+import { ITreeNode } from "@/packages/core/types/ITreeNode"
 import { downloadFile } from "@/lib/web/file"
 import { useSqlite } from "@/apps/web-app/hooks/use-sqlite"
 import {

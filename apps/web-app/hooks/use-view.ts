@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import { useSqlite } from "./use-sqlite"
-import { IView } from "@/lib/store/IView"
+import { IView } from "@/packages/core/types/IView"
 
 export const useView = ({ viewId }: { viewId?: string }) => {
     const [view, setView] = useState<IView | null>(null)

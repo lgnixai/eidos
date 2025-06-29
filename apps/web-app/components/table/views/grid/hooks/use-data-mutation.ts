@@ -7,7 +7,7 @@ import {
   Rectangle,
 } from "@glideapps/glide-data-grid"
 import { useThrottleFn } from "ahooks"
-import { IView } from "@/lib/store/IView"
+import { IView } from "@/packages/core/types/IView"
 
 import { isFieldsInQuery } from "@/packages/core/sqlite/sql-view-query"
 import {

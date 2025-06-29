@@ -1,4 +1,4 @@
-import { DataSpace } from "@/packages/core/DataSpace"
+import type { DataSpace } from "@/packages/core/DataSpace"
 import { workerStore } from "@/worker/web-worker/store"
 
 export const handleFunctionCall = async (

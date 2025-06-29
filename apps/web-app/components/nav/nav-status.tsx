@@ -2,7 +2,7 @@ import { Cable, Cog, LockIcon, PinIcon, PinOffIcon, Unplug } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { isDesktopMode } from "@/lib/env"
-import { useAppRuntimeStore } from "@/lib/store/runtime-store"
+import { useAppRuntimeStore } from "@/apps/web-app/store/runtime-store"
 import { isDayPageId } from "@/lib/utils"
 import { useAPIAgent } from "@/apps/web-app/hooks/use-api-agent"
 import { useCurrentNode } from "@/apps/web-app/hooks/use-current-node"

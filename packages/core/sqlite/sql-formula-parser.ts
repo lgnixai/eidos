@@ -8,7 +8,7 @@ import {
 } from "pgsql-ast-parser"
 
 import { FieldType } from "../fields/const"
-import { IField } from "../fields/IField"
+import { IField } from "../types/IField"
 import { nonNullable } from "@/lib/utils"
 
 export const getTableNameFromSql = (sql: string) => {

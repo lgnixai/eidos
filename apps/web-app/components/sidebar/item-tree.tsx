@@ -11,7 +11,7 @@ import {
 import { DndProvider } from "react-dnd"
 import { HTML5Backend } from "react-dnd-html5-backend"
 
-import { ITreeNode, TreeNodeType } from "@/lib/store/ITreeNode"
+import { ITreeNode, TreeNodeType } from "@/packages/core/types/ITreeNode"
 import { cn } from "@/lib/utils"
 
 import { Button } from "../ui/button"

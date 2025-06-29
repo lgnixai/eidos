@@ -1,6 +1,6 @@
 import { DataSpace } from "../../DataSpace"
 import { TableManager } from "../table"
-import { IField } from "@/packages/core/fields/IField"
+import { IField } from "@/packages/core/types/IField"
 import { TextProperty } from "@/packages/core/fields/text"
 
 

@@ -10,7 +10,7 @@ import {
 import ReactDOM from "react-dom"
 import { useTranslation } from "react-i18next"
 
-import { IView, ViewTypeEnum } from "@/lib/store/IView"
+import { IView, ViewTypeEnum } from "@/packages/core/types/IView"
 import { cn } from "@/lib/utils"
 import {
   Dialog,

@@ -3,7 +3,7 @@ import { DataEditorProps } from "@glideapps/glide-data-grid"
 import { getWorker } from "@/packages/core/sqlite/worker"
 import { MsgType } from "@/lib/const"
 import { getRawTableNameById } from "@/lib/utils"
-import { IField } from "@/packages/core/fields/IField"
+import { IField } from "@/packages/core/types/IField"
 
 /**
  * Custom hook to subscribe to highlight row events from the worker.

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 
-import { ITreeNode } from "@/lib/store/ITreeNode"
+import { ITreeNode } from "@/packages/core/types/ITreeNode"
 import { useSqlite } from "@/apps/web-app/hooks/use-sqlite"
 
 export const useNodeBaseInfo = (node: ITreeNode | null) => {

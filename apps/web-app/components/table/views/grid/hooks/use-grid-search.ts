@@ -1,5 +1,5 @@
 import { useTableSearchStore } from "@/components/table/hooks/use-table-search-store";
-import { IField } from "@/packages/core/fields/IField";
+import { IField } from "@/packages/core/types/IField";
 import { Item } from "@glideapps/glide-data-grid";
 import { useEffect, useMemo, useState } from "react";
 

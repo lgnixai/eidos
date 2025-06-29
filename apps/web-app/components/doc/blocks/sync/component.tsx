@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 
-import { ITreeNode } from "@/lib/store/ITreeNode"
+import { ITreeNode } from "@/packages/core/types/ITreeNode"
 import { isDayPageId } from "@/lib/utils"
 import { useCurrentPathInfo } from "@/apps/web-app/hooks/use-current-pathinfo"
 import { useQueryNode } from "@/apps/web-app/hooks/use-query-node"

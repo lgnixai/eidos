@@ -4,7 +4,7 @@ import { getRawTableNameById } from "@/lib/utils"
 
 import { useCurrentNode } from "./use-current-node"
 import { isInkServiceMode } from "@/lib/env"
-import { TreeNodeType } from "@/lib/store/ITreeNode"
+import { TreeNodeType } from "@/packages/core/types/ITreeNode"
 
 export const useCurrentPathInfo = () => {
   let { database, table } = useParams()

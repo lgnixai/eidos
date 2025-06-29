@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from "react"
 
-import { useAppRuntimeStore } from "@/lib/store/runtime-store"
+import { useAppRuntimeStore } from "@/apps/web-app/store/runtime-store"
 
 import { useSqliteStore } from "./use-sqlite"
 

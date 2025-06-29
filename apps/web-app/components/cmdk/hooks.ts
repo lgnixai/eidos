@@ -1,8 +1,8 @@
-import { ITreeNode } from "@/lib/store/ITreeNode"
+import { ITreeNode } from "@/packages/core/types/ITreeNode"
 import { useNavigate } from "react-router-dom"
 import { create } from "zustand"
 
-import { useAppRuntimeStore } from "@/lib/store/runtime-store"
+import { useAppRuntimeStore } from "@/apps/web-app/store/runtime-store"
 
 export type ISearchNodes = ITreeNode & {
   result?: string

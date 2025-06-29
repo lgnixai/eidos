@@ -3,8 +3,8 @@ import {
   EidosFileSystemManager,
   FileSystemType,
 } from "@/lib/storage/eidos-file-system"
-import { ITreeNode, TreeNodeType } from "@/lib/store/ITreeNode"
-import { IView, ViewTypeEnum } from "@/lib/store/IView"
+import { ITreeNode, TreeNodeType } from "@/packages/core/types/ITreeNode"
+import { IView, ViewTypeEnum } from "@/packages/core/types/IView"
 import {
   extractIdFromShortId,
   getRawTableNameById,
@@ -13,7 +13,7 @@ import {
   uuidv7,
 } from "@/lib/utils"
 import { FieldType } from "./fields/const"
-import { IField } from "./fields/IField"
+import { IField } from "./types/IField"
 import { ColumnTableName } from "./sqlite/const"
 import { buildSql, isReadOnlySql } from "./sqlite/helper"
 import {

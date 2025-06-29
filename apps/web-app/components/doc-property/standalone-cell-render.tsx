@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react"
 import { useClickAway } from "ahooks"
 
-import { IField } from "@/packages/core/fields/IField"
+import { IField } from "@/packages/core/types/IField"
 
 import { cellRenderMap } from "../table/views/grid/cells"
 import { lightTheme } from "../table/views/grid/theme"

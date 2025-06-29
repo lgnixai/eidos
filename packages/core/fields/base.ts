@@ -1,4 +1,4 @@
-import { IField } from "@/packages/core/fields/IField"
+import { IField } from "@/packages/core/types/IField"
 
 import { getFieldInstance } from "."
 import { CompareOperator, FieldType } from "./const"

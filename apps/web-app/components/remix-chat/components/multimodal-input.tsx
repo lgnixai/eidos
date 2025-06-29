@@ -10,6 +10,7 @@ import {
   type Dispatch,
   type SetStateAction,
 } from "react"
+import { sanitizeUIMessages } from "@/packages/ai/utils"
 import { IExtension } from "@/packages/core/meta-table/extension"
 import type { Attachment, ChatRequestOptions, CreateMessage, Message } from "ai"
 import cx from "classnames"
@@ -17,11 +18,10 @@ import { motion } from "framer-motion"
 import { toast } from "sonner"
 import { useLocalStorage, useWindowSize } from "usehooks-ts"
 
-import { sanitizeUIMessages } from "@/lib/utils"
-import { useSqlite } from "@/apps/web-app/hooks/use-sqlite"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { AIModelSelect } from "@/components/ai-chat/ai-chat-model-select"
+import { useSqlite } from "@/apps/web-app/hooks/use-sqlite"
 import { getSuggestedActions } from "@/apps/web-app/pages/[database]/extensions/helper"
 
 import { ArrowUpIcon, PaperclipIcon, StopIcon } from "./icons"
@@ -355,7 +355,9 @@ export function MultimodalInput({
           <PromptSelector
             prompts={prompts || []}
             selectedCustomPromptId={selectedCustomPromptId || null}
-            onSelectedCustomPromptIdChange={setSelectedCustomPromptId || (() => {})}
+            onSelectedCustomPromptIdChange={
+              setSelectedCustomPromptId || (() => {})
+            }
           />
           <AIModelSelect
             onValueChange={setAIModel}

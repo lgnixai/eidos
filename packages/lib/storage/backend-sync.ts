@@ -1,7 +1,6 @@
 import { StateStorage } from "zustand/middleware"
 
 import { indexedDBStorage } from "@/lib/storage/indexeddb"
-import { AppConfig } from "@/apps/desktop/electron/config"
 
 interface BackendSyncStorageOptions<T> {
     // The key used for backend configuration
@@ -21,7 +20,7 @@ export function createBackendSyncStorage<T>(
     options: BackendSyncStorageOptions<T>
 ): StateStorage {
     const { backendConfigKey: backendConfigKeyRaw, getBackendState, defaultBackendState } = options
-    const backendConfigKey = backendConfigKeyRaw as keyof AppConfig
+    const backendConfigKey = backendConfigKeyRaw
 
     return {
         getItem: async (name: string): Promise<string | null> => {
@@ -36,10 +35,10 @@ export function createBackendSyncStorage<T>(
                 // 'value' is a JSON string representing the state { state: ..., version: ... }
                 const parsedState = JSON.parse(value)
                 // Assuming window.eidos.config.set expects the actual config object
-                if (window.eidos?.config?.set && parsedState.state) {
+                if ((window as any).eidos?.config?.set && parsedState.state) {
                     const backendState = getBackendState(parsedState.state as T)
                     if (backendState) {
-                        await window.eidos.config.set(backendConfigKey, backendState)
+                        await (window as any).eidos.config.set(backendConfigKey, backendState)
                     }
                 }
             } catch (error) {
@@ -51,8 +50,8 @@ export function createBackendSyncStorage<T>(
             await indexedDBStorage.removeItem(name)
             // Also remove/reset in backend config
             try {
-                if (window.eidos?.config?.set) {
-                    await window.eidos.config.set(backendConfigKey, defaultBackendState)
+                if ((window as any).eidos?.config?.set) {
+                    await (window as any).eidos.config.set(backendConfigKey, defaultBackendState)
                 }
             } catch (error) {
                 console.error("Failed to remove/reset backend config:", error)

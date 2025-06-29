@@ -1,6 +1,6 @@
 import { MsgType } from "@/lib/const"
 import { nonNullable } from "@/lib/utils"
-import { IField } from "@/packages/core/fields/IField"
+import { IField } from "@/packages/core/types/IField"
 import { SelectField, SelectProperty } from "@/packages/core/fields/select"
 
 import { DataSpace } from "../../DataSpace"

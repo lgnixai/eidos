@@ -1,4 +1,4 @@
-import { ITreeNode } from "@/lib/store/ITreeNode"
+import { ITreeNode } from "@/packages/core/types/ITreeNode"
 import { NodeIconEditor } from "@/apps/web-app/pages/[database]/[node]/node-icon"
 
 import { ItemIcon } from "./sidebar/item-tree"

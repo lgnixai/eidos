@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import * as z from "zod"
 
-import { IView, ViewTypeEnum } from "@/lib/store/IView"
+import { IView, ViewTypeEnum } from "@/packages/core/types/IView"
 import { Input } from "@/components/ui/input"
 import {
   Form,

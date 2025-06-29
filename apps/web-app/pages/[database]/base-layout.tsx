@@ -11,8 +11,8 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable"
-import { useAppStore } from "@/lib/store/app-store"
-import { useAppRuntimeStore } from "@/lib/store/runtime-store"
+import { useAppStore } from "@/apps/web-app/store/app-store"
+import { useAppRuntimeStore } from "@/apps/web-app/store/runtime-store"
 import { cn } from "@/lib/utils"
 
 import { Nav } from "@/components/nav"

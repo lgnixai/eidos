@@ -1,7 +1,7 @@
 import { useCallback } from "react"
 import { useNavigate, useSearchParams } from "react-router-dom"
 
-import { useAppRuntimeStore } from "@/lib/store/runtime-store"
+import { useAppRuntimeStore } from "@/apps/web-app/store/runtime-store"
 
 import { useCurrentPathInfo } from "./use-current-pathinfo"
 

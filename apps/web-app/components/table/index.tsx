@@ -1,6 +1,6 @@
 import { useEffect } from "react"
 
-import { ViewTypeEnum } from "@/lib/store/IView"
+import { ViewTypeEnum } from "@/packages/core/types/IView"
 import { useSqliteTableSubscribe } from "@/apps/web-app/hooks/use-sqlite-table-subscribe"
 import { useUiColumns } from "@/apps/web-app/hooks/use-ui-columns"
 

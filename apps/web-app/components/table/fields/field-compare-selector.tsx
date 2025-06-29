@@ -1,6 +1,6 @@
 import { getFieldInstance } from "@/packages/core/fields"
 import { CompareOperator } from "@/packages/core/fields/const"
-import { IField } from "@/packages/core/fields/IField"
+import { IField } from "@/packages/core/types/IField"
 import {
   Select,
   SelectContent,

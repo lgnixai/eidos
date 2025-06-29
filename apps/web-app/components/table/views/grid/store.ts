@@ -5,7 +5,7 @@ import {
 } from "@glideapps/glide-data-grid"
 import { create } from "zustand"
 
-import { IField } from "@/packages/core/fields/IField"
+import { IField } from "@/packages/core/types/IField"
 
 // import { devtools, persist } from 'zustand/middleware'
 

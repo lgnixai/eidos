@@ -1,6 +1,6 @@
 import { FieldType } from "@/packages/core/fields/const"
 import { getColumnsFromQuery } from "@/packages/core/sqlite/sql-parser"
-import { IField } from "@/packages/core/fields/IField"
+import { IField } from "@/packages/core/types/IField"
 
 const PADDING_RIGHT = 20
 

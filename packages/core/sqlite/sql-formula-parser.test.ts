@@ -6,7 +6,7 @@ import {
   transformQueryWithFormulaFields2Sql,
   detectCircularDependencies,
 } from "./sql-formula-parser"
-import { IField } from "../fields/IField"
+import { IField } from "../types/IField"
 import { describe, expect, it } from "vitest"
 
 describe("transformQueryWithFormulaFields2Sql", () => {

@@ -2,7 +2,7 @@ import { getTableIdByRawTableName } from "@/lib/utils"
 import { getFieldInstance } from "."
 import { BaseField } from "./base"
 import { FieldType, GridCellKind } from "./const"
-import { IField } from "./IField"
+import { IField } from "../types/IField"
 import { ILinkProperty } from "./link"
 
 export type ILookupProperty = {

@@ -1,4 +1,4 @@
-import { ITreeNode } from "@/lib/store/ITreeNode"
+import { ITreeNode } from "@/packages/core/types/ITreeNode"
 import { useNode } from "@/apps/web-app/hooks/use-nodes"
 
 import { useFolderStore } from "./store"

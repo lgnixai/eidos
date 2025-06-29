@@ -1,7 +1,7 @@
 import { useState } from "react"
 
 import { FileProperty } from "@/packages/core/fields/file"
-import { IField } from "@/packages/core/fields/IField"
+import { IField } from "@/packages/core/types/IField"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"

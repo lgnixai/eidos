@@ -4,7 +4,7 @@ import { Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { FieldType } from "@/packages/core/fields/const"
-import { IField } from "@/packages/core/fields/IField"
+import { IField } from "@/packages/core/types/IField"
 import { useTableOperation } from "@/apps/web-app/hooks/use-table"
 import { Label } from "@/components/ui/label"
 import { CommonMenuItem } from "@/components/common-menu-item"

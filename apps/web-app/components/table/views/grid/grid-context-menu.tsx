@@ -8,7 +8,7 @@ import {
   Trash2Icon,
 } from "lucide-react"
 
-import { IField } from "@/packages/core/fields/IField"
+import { IField } from "@/packages/core/types/IField"
 import { shortenId } from "@/lib/utils"
 import { useCurrentPathInfo } from "@/apps/web-app/hooks/use-current-pathinfo"
 import { useCurrentSubPage } from "@/apps/web-app/hooks/use-current-sub-page"

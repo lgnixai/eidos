@@ -1,4 +1,4 @@
-import { IField } from "@/packages/core/fields/IField"
+import { IField } from "@/packages/core/types/IField"
 import { useSqliteStore } from "@/apps/web-app/hooks/use-sqlite"
 import { DataCard } from "@/components/table/views/shared/data-card"
 

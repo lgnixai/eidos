@@ -1,6 +1,6 @@
 
-import { ITreeNode } from "./ITreeNode"
-import { IView } from "./IView"
+import { ITreeNode } from "../../../packages/core/types/ITreeNode"
+import { IView } from "../../../packages/core/types/IView"
 import { IField } from "../../core/fields/IField"
 
 export interface ITable {

@@ -1,4 +1,4 @@
-import { IView } from "@/lib/store/IView"
+import { IView } from "@/packages/core/types/IView"
 import { generateColumnName, getRawTableNameById } from "@/lib/utils"
 import { v4 as uuidv4 } from "uuid"
 import { generateMergeTableWithNewColumnsSql } from "../sqlite/sql-merge-table-with-new-columns"

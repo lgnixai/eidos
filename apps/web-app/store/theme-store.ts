@@ -1,7 +1,7 @@
 import { create } from "zustand"
 import { createJSONStorage, persist } from "zustand/middleware"
 
-import { createBackendSyncStorage } from "../storage/backend-sync"
+import { createBackendSyncStorage } from "@/lib/storage/backend-sync"
 
 export interface CustomTheme {
   name: string

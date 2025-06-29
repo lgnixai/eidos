@@ -1,6 +1,6 @@
 import { callScriptById } from "@/components/script-container/helper"
 import { getSqliteProxy } from "@/packages/core/sqlite/channel"
-import { useAppRuntimeStore } from "@/lib/store/runtime-store"
+import { useAppRuntimeStore } from "@/apps/web-app/store/runtime-store"
 import { useCurrentPathInfo } from "./use-current-pathinfo"
 
 

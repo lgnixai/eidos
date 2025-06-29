@@ -1,4 +1,4 @@
-import { useAppRuntimeStore } from "@/lib/store/runtime-store"
+import { useAppRuntimeStore } from "@/apps/web-app/store/runtime-store"
 import { IScriptContext, IScriptInput, callJavaScript, callPythonScript } from "./helper"
 
 

@@ -1,4 +1,4 @@
-import { useThemeStore } from "@/lib/store/theme-store"
+import { useThemeStore } from "@/apps/web-app/store/theme-store"
 import {
     parseCSSVariables,
     setThemeVariables

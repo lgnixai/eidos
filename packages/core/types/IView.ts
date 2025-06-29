@@ -1,4 +1,4 @@
-import { FilterValueType } from "@/components/table/view-filter-editor/interface"
+import { FilterValueType } from "@/packages/core/types/IViewFilter"
 
 export enum ViewTypeEnum {
   Grid = "grid",

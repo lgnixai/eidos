@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from "react"
 import { create } from "zustand"
 
-import { IField } from "@/packages/core/fields/IField"
+import { IField } from "@/packages/core/types/IField"
 import { useSqlite } from "@/apps/web-app/hooks/use-sqlite"
 
 interface TableState {

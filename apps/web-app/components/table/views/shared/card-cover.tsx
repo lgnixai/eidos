@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react"
 
 import { FileField } from "@/packages/core/fields/file"
-import { IField } from "@/packages/core/fields/IField"
+import { IField } from "@/packages/core/types/IField"
 import {
   cn,
   getBlockIdFromUrl,

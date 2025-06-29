@@ -3,7 +3,7 @@ import { GridCell, GridCellKind } from "@glideapps/glide-data-grid"
 
 import { getFieldInstance } from "@/packages/core/fields"
 import { FieldType } from "@/packages/core/fields/const"
-import { IField } from "@/packages/core/fields/IField"
+import { IField } from "@/packages/core/types/IField"
 import { useTableOperation } from "@/apps/web-app/hooks/use-table"
 import { useUiColumns } from "@/apps/web-app/hooks/use-ui-columns"
 import { useUserMap } from "@/apps/web-app/hooks/use-user-map"

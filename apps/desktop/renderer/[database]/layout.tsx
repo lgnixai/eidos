@@ -21,7 +21,7 @@ import { useCurrentPathInfo } from "@/apps/web-app/hooks/use-current-pathinfo"
 import { useEidosFileSystemManager } from "@/apps/web-app/hooks/use-fs"
 import { useSqlite } from "@/apps/web-app/hooks/use-sqlite"
 import { EidosDataEventChannelName } from "@/lib/const"
-import { useAppRuntimeStore } from "@/lib/store/runtime-store"
+import { useAppRuntimeStore } from "@/apps/web-app/store/runtime-store"
 import { cn, isStandaloneBlocksPath } from "@/lib/utils"
 import { isWindowsDesktop } from "@/lib/web/helper"
 

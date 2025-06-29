@@ -6,7 +6,7 @@ import { useCurrentExtension, useCurrentNode } from "@/apps/web-app/hooks/use-cu
 import { useCurrentPathInfo } from "@/apps/web-app/hooks/use-current-pathinfo"
 import { useDocEditor } from "@/apps/web-app/hooks/use-doc-editor"
 import { useSqlite } from "@/apps/web-app/hooks/use-sqlite"
-import { ITreeNode } from "@/lib/store/ITreeNode"
+import { ITreeNode } from "@/packages/core/types/ITreeNode"
 import { getRawTableNameById, getTableIdByRawTableName } from "@/lib/utils"
 import systemPromptRaw from "./prompt.md?raw"
 

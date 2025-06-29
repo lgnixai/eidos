@@ -27,7 +27,7 @@ import {
 } from "lexical"
 import { useTranslation } from "react-i18next"
 
-import { ITreeNode } from "@/lib/store/ITreeNode"
+import { ITreeNode } from "@/packages/core/types/ITreeNode"
 import { useToast } from "@/components/ui/use-toast"
 import { MentionNode } from "@/components/doc/blocks/mention/node"
 import NewMentionsPlugin, {

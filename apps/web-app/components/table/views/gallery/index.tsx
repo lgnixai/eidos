@@ -2,7 +2,7 @@ import { useContext, useEffect, useRef, useState } from "react"
 import AutoSizer from "react-virtualized-auto-sizer"
 import { VariableSizeGrid as Grid } from "react-window"
 
-import { IView } from "@/lib/store/IView"
+import { IView } from "@/packages/core/types/IView"
 import { getTableIdByRawTableName } from "@/lib/utils"
 import { useSqliteStore } from "@/apps/web-app/hooks/use-sqlite"
 import { useUiColumns } from "@/apps/web-app/hooks/use-ui-columns"

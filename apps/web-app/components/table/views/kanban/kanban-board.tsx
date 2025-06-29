@@ -7,7 +7,7 @@ import { useTheme } from "next-themes"
 import { useTranslation } from "react-i18next"
 
 import { SelectField } from "@/packages/core/fields/select"
-import { IField } from "@/packages/core/fields/IField"
+import { IField } from "@/packages/core/types/IField"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"

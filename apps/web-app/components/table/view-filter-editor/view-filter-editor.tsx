@@ -2,7 +2,7 @@ import { CopyPlusIcon, PlusIcon } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { BinaryOperator, CompareOperator } from "@/packages/core/fields/const"
-import { IField } from "@/packages/core/fields/IField"
+import { IField } from "@/packages/core/types/IField"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 
@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/popover"
 import { CommonMenuItem } from "@/components/common-menu-item"
 
-import { IFilterValue, IGroupFilterValue } from "./interface"
+import { IFilterValue, IGroupFilterValue } from "../../../../../packages/core/types/IViewFilter"
 import { ViewFilterGroupEditor } from "./view-filter-group-editor"
 import { ViewFilterItemEditor } from "./view-filter-item-editor"
 

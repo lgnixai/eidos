@@ -11,7 +11,7 @@ import {
   EidosDataEventChannelName,
 } from "@/lib/const"
 import { transformSql } from "@/packages/core/sqlite/sql-parser"
-import { IView } from "@/lib/store/IView"
+import { IView } from "@/packages/core/types/IView"
 import { TableContext } from "../../hooks"
 
 type RowData = Record<string, any> & {

@@ -30,12 +30,12 @@ import {
   rewriteQueryWithOffsetAndLimit,
   rewriteQueryWithSortedQuery,
 } from "@/packages/core/sqlite/sql-sort-parser"
-import { IView } from "@/lib/store/IView"
+import { IView } from "@/packages/core/types/IView"
 import { useDebounceFn } from "ahooks"
 
 import { TableContext } from "@/components/table/hooks"
 import { isInkServiceMode, isDesktopMode } from "@/lib/env"
-import { useAppRuntimeStore } from "@/lib/store/runtime-store"
+import { useAppRuntimeStore } from "@/apps/web-app/store/runtime-store"
 import { useDataMutation } from "./use-data-mutation"
 import { useNavigate } from "react-router-dom"
 

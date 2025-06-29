@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 
-import { ITreeNode } from "@/lib/store/ITreeNode"
+import { ITreeNode } from "@/packages/core/types/ITreeNode"
 
 import { FolderComponent } from "./folder"
 import { NodeDetail } from "./node-detail"

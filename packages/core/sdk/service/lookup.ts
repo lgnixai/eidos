@@ -6,7 +6,7 @@ import {
   ILookupProperty,
   LookupField,
 } from "../../fields/lookup"
-import { IField } from "../../fields/IField"
+import { IField } from "../../types/IField"
 import { getTableIdByRawTableName } from "@/lib/utils"
 
 import { DataSpace } from "../../DataSpace"

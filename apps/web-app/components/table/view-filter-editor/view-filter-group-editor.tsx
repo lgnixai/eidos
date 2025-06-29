@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next"
 
 import { BinaryOperator } from "@/packages/core/fields/const"
 import { isLogicOperator } from "@/packages/core/sqlite/sql-filter-parser"
-import { IField } from "@/packages/core/fields/IField"
+import { IField } from "@/packages/core/types/IField"
 import {
   Select,
   SelectContent,
@@ -13,7 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-import { IFilterValue, IGroupFilterValue } from "./interface"
+import { IFilterValue, IGroupFilterValue } from "../../../../../packages/core/types/IViewFilter"
 import { ViewFilterEditor } from "./view-filter-editor"
 
 interface IViewFilterGroupEditorProps {

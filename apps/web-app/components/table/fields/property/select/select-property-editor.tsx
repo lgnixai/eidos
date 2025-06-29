@@ -17,7 +17,7 @@ import {
 } from "@dnd-kit/sortable"
 
 import { SelectField } from "@/packages/core/fields/select"
-import { IField } from "@/packages/core/fields/IField"
+import { IField } from "@/packages/core/types/IField"
 import { useSqlite } from "@/apps/web-app/hooks/use-sqlite"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"

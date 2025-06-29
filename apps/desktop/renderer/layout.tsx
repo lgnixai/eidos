@@ -12,7 +12,7 @@ import { Toaster } from "@/components/toaster"
 import { SidebarProvider } from "@/components/ui/sidebar"
 import { WindowControls } from "@/components/window-controls"
 import { useWorker } from "@/apps/web-app/hooks/use-worker"
-import { useAppStoreBase } from "@/lib/store/app-store"
+import { useAppStoreBase } from "@/apps/web-app/store/app-store"
 
 import { useProtocolUrl } from "./hooks/useProtocolUrl"
 

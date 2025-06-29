@@ -6,7 +6,7 @@ import { useDrag, useDrop } from "react-dnd"
 import { cn } from "@/lib/utils"
 
 import "./index.css"
-import { IField } from "@/packages/core/fields/IField"
+import { IField } from "@/packages/core/types/IField"
 import { useTableAppStore } from "@/components/table/views/grid/store"
 
 import { makeHeaderIcons } from "../fields/header-icons"

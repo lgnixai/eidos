@@ -15,7 +15,7 @@ import { useTheme } from "next-themes"
 import { useTranslation } from "react-i18next"
 
 import { isDesktopMode, isInkServiceMode } from "@/lib/env"
-import { useAppRuntimeStore } from "@/lib/store/runtime-store"
+import { useAppRuntimeStore } from "@/apps/web-app/store/runtime-store"
 import { getToday } from "@/lib/utils"
 import { useCurrentNode } from "@/apps/web-app/hooks/use-current-node"
 import { useCurrentPathInfo } from "@/apps/web-app/hooks/use-current-pathinfo"

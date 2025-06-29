@@ -4,7 +4,7 @@ import { useEffect } from "react"
 import { Outlet, useSearchParams } from "react-router-dom"
 
 import { getSqliteProxy } from "@/packages/core/sqlite/channel"
-import { useAppRuntimeStore } from "@/lib/store/runtime-store"
+import { useAppRuntimeStore } from "@/apps/web-app/store/runtime-store"
 import { cn } from "@/lib/utils"
 import { useCurrentPathInfo } from "@/apps/web-app/hooks/use-current-pathinfo"
 import { usePeerConnect } from "@/apps/web-app/hooks/use-peer"

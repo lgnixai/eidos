@@ -9,7 +9,7 @@ import {
 
 import { OrderByItem } from "@/components/table/view-sort-editor"
 
-import { IField } from "../fields/IField"
+import { IField } from "../types/IField"
 
 export const getSortColumns = (query: string) => {
   const ast = parseFirst(query) as SelectFromStatement

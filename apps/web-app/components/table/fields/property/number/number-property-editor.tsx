@@ -4,7 +4,7 @@ import { useTheme } from "next-themes"
 
 import { NumberProperty } from "@/packages/core/fields/number"
 import { SelectField } from "@/packages/core/fields/select"
-import { IField } from "@/packages/core/fields/IField"
+import { IField } from "@/packages/core/types/IField"
 import { Button } from "@/components/ui/button"
 import {
   Command,

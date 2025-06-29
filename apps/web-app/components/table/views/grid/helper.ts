@@ -1,7 +1,7 @@
 import { DataEditorProps, GridCellKind } from "@glideapps/glide-data-grid"
 
 import { ColumnTableName } from "@/packages/core/sqlite/const"
-import { IField } from "@/packages/core/fields/IField"
+import { IField } from "@/packages/core/types/IField"
 
 import { defaultAllColumnsHandle } from "../../fields/colums"
 import { headerIcons } from "../../fields/header-icons"

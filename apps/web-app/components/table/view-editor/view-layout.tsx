@@ -1,7 +1,7 @@
 import React, { useEffect } from "react"
 import { ChevronsUpDown } from "lucide-react"
 
-import { ViewTypeEnum } from "@/lib/store/IView"
+import { ViewTypeEnum } from "@/packages/core/types/IView"
 import {
   Collapsible,
   CollapsibleContent,

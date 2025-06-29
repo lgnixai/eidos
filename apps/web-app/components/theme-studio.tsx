@@ -3,7 +3,7 @@ import { PlusCircle, TelescopeIcon, Trash2 } from "lucide-react"
 import { useTheme } from "next-themes"
 import { useTranslation } from "react-i18next"
 
-import { useThemeStore } from "@/lib/store/theme-store"
+import { useThemeStore } from "@/apps/web-app/store/theme-store"
 import {
   handleApplyTheme,
   presetThemes as themes,

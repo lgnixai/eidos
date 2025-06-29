@@ -10,7 +10,7 @@ import {
   EidosDataEventChannelName,
 } from "@/lib/const"
 import { isInkServiceMode } from "@/lib/env"
-import { TreeNodeType } from "@/lib/store/ITreeNode"
+import { TreeNodeType } from "@/packages/core/types/ITreeNode"
 import { isDayPageId } from "@/lib/utils"
 import {
   useCurrentExtNodeHandleBlockId,

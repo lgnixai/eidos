@@ -1,4 +1,4 @@
-import { MsgType } from "../const"
+import { MsgType } from "@/lib/const"
 import { IQueryResp } from "@/packages/core/sqlite/interface"
 
 export interface ICollaborator {

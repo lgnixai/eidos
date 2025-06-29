@@ -1,26 +1,19 @@
-import React, { useEffect, useMemo, useRef, useState } from "react"
 import { ICommand, IExtension } from "@/packages/core/meta-table/extension"
 import { useKeyPress } from "ahooks"
+import React, { useMemo, useState } from "react"
 
-import { ActionExecutor } from "@/lib/action/action"
-import { useAppRuntimeStore } from "@/lib/store/runtime-store"
 import { useAllExtensions } from "@/apps/web-app/hooks/use-all-extensions"
 import { useCurrentNode } from "@/apps/web-app/hooks/use-current-node"
 import { useCurrentPathInfo } from "@/apps/web-app/hooks/use-current-pathinfo"
 import { useTableViews } from "@/apps/web-app/hooks/use-table"
+import { ActionExecutor } from "@/lib/action/action"
 
-import { CommandDialogDemo } from "."
 import { useScriptFunction } from "../script-container/hook"
 import {
-  CommandDialog,
-  CommandEmpty,
   CommandGroup,
-  CommandInput,
   CommandItem,
-  CommandList,
-  CommandShortcut,
+  CommandShortcut
 } from "../ui/command"
-import { useInput } from "./hooks"
 
 interface ScriptCommandItemsProps {
   input: string

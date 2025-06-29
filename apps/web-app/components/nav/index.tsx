@@ -2,7 +2,7 @@ import { Menu, PanelRightIcon } from "lucide-react"
 import { useTheme } from "next-themes"
 
 import { isDesktopMode } from "@/lib/env"
-import { useAppStore } from "@/lib/store/app-store"
+import { useAppStore } from "@/apps/web-app/store/app-store"
 import { cn } from "@/lib/utils"
 import { isMac, isWindowsDesktop } from "@/lib/web/helper"
 import { Button } from "@/components/ui/button"

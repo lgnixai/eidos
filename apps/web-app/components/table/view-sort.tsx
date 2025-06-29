@@ -7,7 +7,7 @@ import {
   toSql,
 } from "pgsql-ast-parser"
 
-import { IView } from "@/lib/store/IView"
+import { IView } from "@/packages/core/types/IView"
 import { cn } from "@/lib/utils"
 import {
   Popover,

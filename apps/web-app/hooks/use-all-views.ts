@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { useEffect } from "react"
 import { useSqlite } from "./use-sqlite"
-import { IView } from "@/lib/store/IView"
+import { IView } from "@/packages/core/types/IView"
 
 export const useAllViews = ({ tableId }: { tableId: string }) => {
     const [views, setViews] = useState<IView[]>([])

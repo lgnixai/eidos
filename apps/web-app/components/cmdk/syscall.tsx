@@ -2,7 +2,7 @@ import { useKeyPress } from "ahooks"
 
 import { MsgType } from "@/lib/const"
 import { getWorker } from "@/packages/core/sqlite/worker"
-import { useAppRuntimeStore } from "@/lib/store/runtime-store"
+import { useAppRuntimeStore } from "@/apps/web-app/store/runtime-store"
 import { getUuid } from "@/lib/utils"
 
 import { CommandDialogDemo } from "."

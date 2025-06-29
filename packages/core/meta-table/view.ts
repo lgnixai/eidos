@@ -3,7 +3,7 @@ import {
   replaceQueryTableName,
   replaceWithFindIndexQuery,
 } from "@/packages/core/sqlite/sql-parser"
-import { IView, ViewTypeEnum } from "@/lib/store/IView"
+import { IView, ViewTypeEnum } from "@/packages/core/types/IView"
 import { getTableIdByRawTableName, getUuid } from "@/lib/utils"
 
 import { BaseTable, BaseTableImpl } from "./base"

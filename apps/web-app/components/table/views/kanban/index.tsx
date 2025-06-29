@@ -2,7 +2,7 @@
 
 import { useMemo } from "react"
 
-import { IView } from "@/lib/store/IView"
+import { IView } from "@/packages/core/types/IView"
 import { useUiColumns } from "@/apps/web-app/hooks/use-ui-columns"
 import {
   KanbanProvider,

@@ -10,7 +10,7 @@ import {
   toSql,
 } from "pgsql-ast-parser"
 
-import type { FilterValueType } from "@/components/table/view-filter-editor/interface"
+import type { FilterValueType } from "@/packages/core/types/IViewFilter"
 
 import { BinaryOperator, CompareOperator } from "../fields/const"
 

@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useRef, useState } from "react"
 import { useVirtualList } from "ahooks"
 
-import { IView } from "@/lib/store/IView"
+import { IView } from "@/packages/core/types/IView"
 import {
   cn,
   extractIdFromShortId,

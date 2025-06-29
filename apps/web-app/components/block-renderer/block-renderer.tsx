@@ -8,7 +8,7 @@ import React, {
 import { useTheme } from "next-themes"
 
 import { isDesktopMode } from "@/lib/env"
-import { useThemeStore } from "@/lib/store/theme-store"
+import { useThemeStore } from "@/apps/web-app/store/theme-store"
 import { serializePropsToUrl } from "@/lib/utils"
 import { generateImportMap, getAllLibs } from "@/packages/v3/compiler"
 import { getThemeVariables } from "@/lib/web/theme"

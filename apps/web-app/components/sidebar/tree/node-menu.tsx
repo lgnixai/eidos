@@ -19,7 +19,7 @@ import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 
 import { isInkServiceMode } from "@/lib/env"
-import { ITreeNode } from "@/lib/store/ITreeNode"
+import { ITreeNode } from "@/packages/core/types/ITreeNode"
 import { useAllExtNodes } from "@/apps/web-app/hooks/use-all-ext-nodes"
 import { useCurrentPathInfo } from "@/apps/web-app/hooks/use-current-pathinfo"
 import { useGoto } from "@/apps/web-app/hooks/use-goto"

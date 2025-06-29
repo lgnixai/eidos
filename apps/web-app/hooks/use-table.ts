@@ -17,7 +17,7 @@ import {
   uuidv7,
 } from "@/lib/utils"
 
-import { IField } from "@/packages/core/fields/IField"
+import { IField } from "@/packages/core/types/IField"
 import { useSqlWorker } from "./use-sql-worker"
 import { useSqliteStore } from "./use-sqlite"
 import { useUiColumns } from "./use-ui-columns"

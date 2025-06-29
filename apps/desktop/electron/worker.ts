@@ -1,4 +1,4 @@
-import { handleFunctionCall } from '@/lib/rpc';
+import { handleFunctionCall } from '@/packages/core/rpc';
 import { DataSpace } from "@/packages/core/DataSpace";
 import { parentPort, workerData } from 'worker_threads';
 import { NodeServerDatabase } from "./sqlite-server";

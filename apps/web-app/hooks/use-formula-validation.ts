@@ -1,5 +1,5 @@
 import { useCurrentUiColumns } from "@/apps/web-app/hooks/use-ui-columns";
-import { IField } from "@/packages/core/fields/IField";
+import { IField } from "@/packages/core/types/IField";
 import { FormulaProperty } from "@/packages/core/fields/formula";
 import { transformFormula2VirtualGeneratedField } from "@/packages/core/sqlite/sql-formula-parser";
 

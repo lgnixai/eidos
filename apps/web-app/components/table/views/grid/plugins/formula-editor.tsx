@@ -14,7 +14,7 @@ import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 
 import { FormulaProperty } from "@/packages/core/fields/formula"
-import { IField } from "@/packages/core/fields/IField"
+import { IField } from "@/packages/core/types/IField"
 import { cn } from "@/lib/utils"
 import { useFormulaUpdate } from "@/apps/web-app/hooks/use-formula-update"
 import { useFormulaValidation } from "@/apps/web-app/hooks/use-formula-validation"

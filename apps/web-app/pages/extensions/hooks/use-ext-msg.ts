@@ -7,7 +7,7 @@ import { useAiConfig } from "@/apps/web-app/hooks/use-ai-config"
 import { useEidosFileSystemManager } from "@/apps/web-app/hooks/use-fs"
 import { useScriptCall } from "@/apps/web-app/hooks/use-script-call"
 import { getSqliteChannel } from "@/packages/core/sqlite/channel"
-import { useAppRuntimeStore } from "@/lib/store/runtime-store"
+import { useAppRuntimeStore } from "@/apps/web-app/store/runtime-store"
 import { generateText } from "ai"
 import { useExtensions } from "./use-extensions"
 

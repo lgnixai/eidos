@@ -9,8 +9,8 @@ import { useFileSystem } from "@/apps/web-app/hooks/use-files"
 import { useEidosFileSystemManager } from "@/apps/web-app/hooks/use-fs"
 import { useHnsw } from "@/apps/web-app/hooks/use-hnsw"
 import { useSqlite } from "@/apps/web-app/hooks/use-sqlite"
-import { useAppStore } from "@/lib/store/app-store"
-import { useAppRuntimeStore } from "@/lib/store/runtime-store"
+import { useAppStore } from "@/apps/web-app/store/app-store"
+import { useAppRuntimeStore } from "@/apps/web-app/store/runtime-store"
 
 export function FileItemContextMenu({ children }: any) {
   const { selectedEntries, deleteFiles, getFileUrlPath } = useFileSystem()

@@ -17,8 +17,8 @@ import {
 import { embeddingTexts } from "@/lib/embedding/worker"
 import { getSqliteProxy } from "@/packages/core/sqlite/channel"
 import { getWorker } from "@/packages/core/sqlite/worker"
-import { useAppStore } from "@/lib/store/app-store"
-import { useAppRuntimeStore } from "@/lib/store/runtime-store"
+import { useAppStore } from "@/apps/web-app/store/app-store"
+import { useAppRuntimeStore } from "@/apps/web-app/store/runtime-store"
 import { uuidv7 } from "@/lib/utils"
 
 import { isDesktopMode, isInkServiceMode } from "@/lib/env"

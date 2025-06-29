@@ -2,7 +2,7 @@ import React, { useEffect } from "react"
 import { DndProvider } from "react-dnd"
 import { HTML5Backend } from "react-dnd-html5-backend"
 
-import { ITreeNode } from "@/lib/store/ITreeNode"
+import { ITreeNode } from "@/packages/core/types/ITreeNode"
 import { useAllNodes } from "@/apps/web-app/hooks/use-nodes"
 import { useTabStore } from "@/apps/web-app/hooks/use-tabs"
 

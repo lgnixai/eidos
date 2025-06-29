@@ -1,7 +1,7 @@
-import { ViewTypeEnum } from "@/lib/store/IView"
+import { ViewTypeEnum } from "@/packages/core/types/IView"
 import { DataSpace } from "../DataSpace"
 import { shortenId, uuidv7 } from "@/lib/utils"
-import { IField } from "../fields/IField"
+import { IField } from "../types/IField"
 import { FieldType } from "../fields/const"
 import { allFieldTypesMap } from "../fields"
 

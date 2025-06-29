@@ -11,7 +11,7 @@ import { Link } from "react-router-dom"
 import { toast } from "sonner"
 
 import { TextProperty } from "@/packages/core/fields/text"
-import { IField } from "@/packages/core/fields/IField"
+import { IField } from "@/packages/core/types/IField"
 import { getTableIdByRawTableName } from "@/lib/utils"
 import { useAiConfig } from "@/apps/web-app/hooks/use-ai-config"
 import { Button } from "@/components/ui/button"

@@ -7,7 +7,7 @@ import {
   EidosDataEventChannelName,
 } from "@/lib/const"
 import { ScriptTableName, TreeTableName } from "@/packages/core/sqlite/const"
-import { ITreeNode } from "@/lib/store/ITreeNode"
+import { ITreeNode } from "@/packages/core/types/ITreeNode"
 
 import { useEngine } from "./use-engine"
 import { useSqliteStore } from "./use-sqlite"

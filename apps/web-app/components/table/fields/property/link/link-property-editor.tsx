@@ -2,7 +2,7 @@ import { useState } from "react"
 import { ChevronsUpDown } from "lucide-react"
 
 import { ILinkProperty } from "@/packages/core/fields/link"
-import { IField } from "@/packages/core/fields/IField"
+import { IField } from "@/packages/core/types/IField"
 import { generateColumnName } from "@/lib/utils"
 import { useAllNodes } from "@/apps/web-app/hooks/use-nodes"
 import { Button } from "@/components/ui/button"
