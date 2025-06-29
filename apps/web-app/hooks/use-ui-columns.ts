@@ -2,7 +2,7 @@ import { useCallback, useContext, useMemo } from "react"
 
 import { getTableIdByRawTableName } from "@/lib/utils"
 
-import { IField } from "@/packages/core/types/IField"
+import type { IField } from "@/packages/core/types/IField"
 import { useCurrentPathInfo } from "./use-current-pathinfo"
 import { useSqlite, useSqliteStore } from "./use-sqlite"
 import { useTableFields } from "./use-table"

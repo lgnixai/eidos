@@ -2,13 +2,13 @@ import { uuidv7 } from "uuidv7"
 
 import { MsgType } from "@/lib/const"
 import { FieldType } from "../fields/const"
-import { IView } from "@/packages/core/types/IView"
+import type { IView } from "@/packages/core/types/IView"
 import type { IField } from "../types/IField"
 
 import { rewriteQueryWithOffsetAndLimit } from "../sqlite/sql-view-query"
-import { DataSpace } from "../DataSpace"
+import type { DataSpace } from "../DataSpace"
 import { workerStore } from "../../worker/web-worker/store"
-import { TableManager } from "./table"
+import type { TableManager } from "./table"
 import { getFieldInstance } from "../fields"
 
 export class RowsManager {

@@ -1,9 +1,9 @@
-import { IExtension } from "@/packages/core/meta-table/extension"
+import type { IExtension } from "@/packages/core/meta-table/extension"
 import { useEffect, useState } from "react"
 
 import { useCurrentPathInfo } from "@/apps/web-app/hooks/use-current-pathinfo"
 import { useSqlite } from "@/apps/web-app/hooks/use-sqlite"
-import { DocBlock } from "../blocks/interface"
+import type { DocBlock } from "../blocks/interface"
 
 export type ExtBlock = DocBlock
 export const useExtBlocks = () => {

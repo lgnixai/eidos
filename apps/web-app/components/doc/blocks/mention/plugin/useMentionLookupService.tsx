@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 
-import { ITreeNode } from "@/packages/core/types/ITreeNode"
+import type { ITreeNode } from "@/packages/core/types/ITreeNode"
 import { getToday, getTomorrow, getYesterday } from "@/lib/utils"
 import { useQueryNode } from "@/apps/web-app/hooks/use-query-node"
 

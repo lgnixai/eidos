@@ -1,4 +1,5 @@
-import { SelectFromStatement, parseFirst, toSql } from "pgsql-ast-parser"
+import type { SelectFromStatement} from "pgsql-ast-parser";
+import { parseFirst, toSql } from "pgsql-ast-parser"
 import {
   createContext,
   useCallback,
@@ -12,8 +13,9 @@ import { useSearchParams } from "react-router-dom"
 import { useSqlite, useSqliteStore } from "@/apps/web-app/hooks/use-sqlite"
 import { useTableFields, useTableOperation } from "@/apps/web-app/hooks/use-table"
 import { FieldType } from "@/packages/core/fields/const"
-import { IView, ViewTypeEnum } from "@/packages/core/types/IView"
-import { IField } from "@/packages/core/types/IField"
+import type { IView} from "@/packages/core/types/IView";
+import { ViewTypeEnum } from "@/packages/core/types/IView"
+import type { IField } from "@/packages/core/types/IField"
 import { getTableIdByRawTableName } from "@/lib/utils"
 
 import { isInkServiceMode } from "@/lib/env"

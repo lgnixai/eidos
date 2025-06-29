@@ -1,8 +1,9 @@
-import {
+import type {
     LexicalEditor,
     LexicalNode
 } from "lexical";
-import { $createListNode, $isListItemNode, ListItemNode, ListNode, ListType } from "@lexical/list";
+import type { ListItemNode, ListNode, ListType } from "@lexical/list";
+import { $createListNode, $isListItemNode } from "@lexical/list";
 
 
 

@@ -1,6 +1,6 @@
 
 import { isInkServiceMode } from '@/lib/env';
-import { DataSpace } from '@/packages/core/DataSpace';
+import type { DataSpace } from '@/packages/core/DataSpace';
 import { create } from 'zustand';
 import { useSqlite } from './use-sqlite';
 

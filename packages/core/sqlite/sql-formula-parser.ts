@@ -1,14 +1,15 @@
-import {
+import type {
   ExprRef,
   SelectFromStatement,
-  SelectedColumn,
+  SelectedColumn} from "pgsql-ast-parser";
+import {
   astMapper,
   parseFirst,
   toSql
 } from "pgsql-ast-parser"
 
 import { FieldType } from "../fields/const"
-import { IField } from "../types/IField"
+import type { IField } from "../types/IField"
 import { nonNullable } from "@/lib/utils"
 
 export const getTableNameFromSql = (sql: string) => {

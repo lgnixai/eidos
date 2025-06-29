@@ -9,6 +9,9 @@
 import { useEffect } from "react"
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
 import { $wrapNodeInElement, mergeRegister } from "@lexical/utils"
+import type {
+  LexicalCommand,
+  LexicalEditor} from "lexical";
 import {
   $createParagraphNode,
   $createRangeSelection,
@@ -23,14 +26,13 @@ import {
   DRAGOVER_COMMAND,
   DRAGSTART_COMMAND,
   DROP_COMMAND,
-  LexicalCommand,
-  LexicalEditor,
   createCommand,
 } from "lexical"
 
 import { CAN_USE_DOM } from "../../utils/dom"
 import { $insertDecoratorBlockNode } from "../helper"
-import { $createImageNode, $isImageNode, ImageNode, ImagePayload } from "./node"
+import type { ImagePayload } from "./node";
+import { $createImageNode, $isImageNode, ImageNode } from "./node"
 
 export type InsertImagePayload = Readonly<ImagePayload>
 

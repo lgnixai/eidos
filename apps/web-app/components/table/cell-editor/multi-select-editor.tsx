@@ -2,7 +2,8 @@ import React, { useMemo } from "react"
 import { XIcon } from "lucide-react"
 import { useTheme } from "next-themes"
 
-import { SelectField, SelectOption } from "@/packages/core/fields/select"
+import type { SelectOption } from "@/packages/core/fields/select";
+import { SelectField } from "@/packages/core/fields/select"
 import { cn } from "@/lib/utils"
 import {
   Command,

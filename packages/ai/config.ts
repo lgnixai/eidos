@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-import { LLMProviderType } from "@/packages/ai/helper"
+import type { LLMProviderType } from "@/packages/ai/helper"
 
 
 // Define the enum using all provider types directly

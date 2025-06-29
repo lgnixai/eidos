@@ -10,6 +10,9 @@ import * as React from "react"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
 import { useLexicalEditable } from "@lexical/react/useLexicalEditable"
+import type {
+  TableCellNode,
+  TableRowNode} from "@lexical/table";
 import {
   $getTableAndElementByKey,
   $getTableColumnIndexFromTableCellNode,
@@ -18,15 +21,14 @@ import {
   $insertTableRow__EXPERIMENTAL,
   $isTableCellNode,
   $isTableNode,
-  TableCellNode,
   TableNode,
-  TableRowNode,
   getTableElement,
 } from "@lexical/table"
 import { $findMatchingParent, mergeRegister } from "@lexical/utils"
 // import { useDebounce } from "../CodeActionMenuPlugin/utils"
 import { useDebounceFn } from "ahooks"
-import { $getNearestNodeFromDOMNode, NodeKey } from "lexical"
+import type { NodeKey } from "lexical";
+import { $getNearestNodeFromDOMNode } from "lexical"
 import { createPortal } from "react-dom"
 
 const BUTTON_WIDTH_PX = 20

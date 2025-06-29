@@ -1,6 +1,6 @@
 import react from "@vitejs/plugin-react"
 import path from "path"
-import { UserConfig } from "vite"
+import type { UserConfig } from "vite"
 import topLevelAwait from "vite-plugin-top-level-await"
 import wasm from "vite-plugin-wasm"
 

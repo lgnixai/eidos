@@ -4,7 +4,7 @@ import { MsgType } from '@/lib/const'; // Assuming MsgType is exported from here
 import { useEffect, useState } from 'react';
 import { create } from 'zustand';
 import { useCurrentPathInfo } from './use-current-pathinfo';
-import { GraftStatus } from '@/packages/sync/graft/helpers';
+import type { GraftStatus } from '@/packages/sync/graft/helpers';
 import { useSpaceInfo } from './use-space';
 
 const POLLING_INTERVAL = 10000; // Poll every 10 seconds

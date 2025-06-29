@@ -1,4 +1,4 @@
-import { PyodideInterface } from 'pyodide';
+import type { PyodideInterface } from 'pyodide';
 
 export async function analyzePythonImports(pyodide: PyodideInterface, code: string) {
     // Add this code to analyze Python imports

@@ -7,7 +7,7 @@ import { useTheme } from "next-themes"
 import { useTranslation } from "react-i18next"
 
 import { SelectField } from "@/packages/core/fields/select"
-import { IField } from "@/packages/core/types/IField"
+import type { IField } from "@/packages/core/types/IField"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
@@ -19,15 +19,16 @@ import {
 } from "@/components/ui/kibo-ui/kanban"
 import { DataCard } from "@/components/table/views/shared/data-card"
 
-import { IGalleryViewProperties } from "../gallery/properties"
+import type { IGalleryViewProperties } from "../gallery/properties"
 import { computeCardHeight } from "../gallery/utils"
-import {
+import type {
   KanbanItem,
+  StatusCount} from "./hooks";
+import {
   NULL_STATUS,
-  StatusCount,
   useKanbanItemOperations,
 } from "./hooks"
-import { IKanbanViewProperties } from "./properties"
+import type { IKanbanViewProperties } from "./properties"
 
 export const KanbanBoard = memo(
   ({

@@ -1,10 +1,11 @@
-import {
-  Expr,
+import type {
   ExprBinary,
   ExprRef,
   ExprString,
   ExprUnary,
-  SelectFromStatement,
+  SelectFromStatement} from "pgsql-ast-parser";
+import {
+  Expr,
   astVisitor,
   parseFirst,
   toSql,

@@ -1,7 +1,7 @@
-import { IField } from "@/packages/core/types/IField"
+import type { IField } from "@/packages/core/types/IField"
 
 import { getFieldInstance } from "."
-import { CompareOperator, FieldType } from "./const"
+import type { CompareOperator, FieldType } from "./const"
 
 // cellData, Property, RawData, row context, field context
 interface IBaseField<CD, P, R, RC, FC> {

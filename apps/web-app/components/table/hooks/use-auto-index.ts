@@ -2,7 +2,7 @@ import { useEffect } from "react"
 
 import { useSqlite } from "@/apps/web-app/hooks/use-sqlite"
 import { getSortColumns } from "@/packages/core/sqlite/sql-sort-parser"
-import { IView } from "@/packages/core/types/IView"
+import type { IView } from "@/packages/core/types/IView"
 
 import { getRawTableNameFromQuery } from "@/packages/core/sqlite/sql-parser"
 import { DataLevel, getDataLevel } from "../helper"

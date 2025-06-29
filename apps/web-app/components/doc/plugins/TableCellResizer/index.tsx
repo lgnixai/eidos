@@ -6,9 +6,10 @@
  *
  */
 
-import {
+import type {
   MouseEventHandler,
-  ReactPortal,
+  ReactPortal} from "react";
+import {
   useCallback,
   useEffect,
   useMemo,

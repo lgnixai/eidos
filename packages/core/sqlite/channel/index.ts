@@ -1,10 +1,11 @@
-import { DataSpace, EidosTable } from "@/packages/core/DataSpace"
-import { DataConnection } from "peerjs"
+import type { DataSpace, EidosTable } from "@/packages/core/DataSpace"
+import type { DataConnection } from "peerjs"
 
 import { HttpSqlite } from "./http"
-import { ILocalSendData, LocalSqlite } from "./local"
+import type { ILocalSendData} from "./local";
+import { LocalSqlite } from "./local"
 import { buildSql } from "../helper"
-import { IQuery, ISqlite } from "../interface"
+import type { IQuery, ISqlite } from "../interface"
 import { getWorker } from "../worker"
 import { RemoteSqlite } from "./webrtc"
 import { MsgType } from "@/packages/lib/const"

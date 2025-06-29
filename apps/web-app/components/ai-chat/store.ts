@@ -1,6 +1,6 @@
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
-import { ITreeNode } from "@/packages/core/types/ITreeNode"
+import type { ITreeNode } from "@/packages/core/types/ITreeNode"
 
 type Store = {
   currentSysPrompt: string

@@ -1,9 +1,9 @@
 import { useCallback, useMemo } from "react"
 
 import { useSpaceAppStore } from "@/apps/web-app/pages/[database]/store"
-import { RowRange } from "@/components/table/views/grid/hooks/use-async-data"
+import type { RowRange } from "@/components/table/views/grid/hooks/use-async-data"
 import { allFieldTypesMap } from "@/packages/core/fields"
-import { FieldType } from "@/packages/core/fields/const"
+import type { FieldType } from "@/packages/core/fields/const"
 import { ColumnTableName } from "@/packages/core/sqlite/const"
 import {
   checkSqlIsModifyTableData,
@@ -17,7 +17,7 @@ import {
   uuidv7,
 } from "@/lib/utils"
 
-import { IField } from "@/packages/core/types/IField"
+import type { IField } from "@/packages/core/types/IField"
 import { useSqlWorker } from "./use-sql-worker"
 import { useSqliteStore } from "./use-sqlite"
 import { useUiColumns } from "./use-ui-columns"

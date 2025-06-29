@@ -1,6 +1,7 @@
 import { extension } from "@/lib/mime/mime"
+import type {
+  EidosFileSystemManager} from "@/lib/storage/eidos-file-system";
 import {
-  EidosFileSystemManager,
   getExternalFolderManager,
 } from "@/lib/storage/eidos-file-system"
 

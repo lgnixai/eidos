@@ -4,16 +4,17 @@ import {
 } from "@/lib/const"
 import { allFieldTypesMap } from "../fields"
 import { FieldType } from "../fields/const"
-import { ILinkProperty } from "../fields/link"
+import type { ILinkProperty } from "../fields/link"
 import { ColumnTableName } from "../sqlite/const"
 import { alterColumnType } from "../sqlite/sql-alter-column-type"
 import { findDependentFormulaFields, getFormulaFieldDeletionOrder, transformFormula2VirtualGeneratedField } from "../sqlite/sql-formula-parser"
-import { IField } from "@/packages/core/types/IField"
+import type { IField } from "@/packages/core/types/IField"
 import { getColumnIndexName, getTableIdByRawTableName } from "@/lib/utils"
 
-import { BaseServerDatabase } from "../sqlite/interface"
+import type { BaseServerDatabase } from "../sqlite/interface"
 import { TableManager } from "../sdk/table"
-import { BaseTable, BaseTableImpl } from "./base"
+import type { BaseTable} from "./base";
+import { BaseTableImpl } from "./base"
 
 
 /**

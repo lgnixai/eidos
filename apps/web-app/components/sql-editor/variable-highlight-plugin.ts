@@ -1,14 +1,16 @@
-import { CompletionContext } from "@codemirror/autocomplete";
-import { LanguageSupport, syntaxTree } from "@codemirror/language";
-import { Range } from "@codemirror/state";
+import type { CompletionContext } from "@codemirror/autocomplete";
+import type { LanguageSupport} from "@codemirror/language";
+import { syntaxTree } from "@codemirror/language";
+import type { Range } from "@codemirror/state";
+import type {
+    DecorationSet,
+    ViewUpdate} from "@codemirror/view";
 import {
     Decoration,
-    DecorationSet,
     EditorView,
-    ViewPlugin,
-    ViewUpdate,
+    ViewPlugin
 } from "@codemirror/view";
-import { SyntaxNode } from "@lezer/common";
+import type { SyntaxNode } from "@lezer/common";
 
 const variableMark = Decoration.mark({ class: "cm-handlebar" });
 

@@ -1,6 +1,8 @@
 import { EidosDataEventChannelName, EidosMessageChannelName } from "@/lib/const";
-import { DataSpace, EidosDatabase } from "@/packages/core/DataSpace";
-import { WebContents, ipcMain } from "electron";
+import type { EidosDatabase } from "@/packages/core/DataSpace";
+import { DataSpace } from "@/packages/core/DataSpace";
+import type { WebContents} from "electron";
+import { ipcMain } from "electron";
 import { EventEmitter } from 'events';
 import { getConfigManager } from "./config";
 import { embedding } from "./data-space-context";

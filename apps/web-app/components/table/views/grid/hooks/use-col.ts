@@ -1,9 +1,9 @@
 import React, { useEffect } from "react"
-import { GridColumn } from "@glideapps/glide-data-grid"
+import type { GridColumn } from "@glideapps/glide-data-grid"
 import { useDebounceFn } from "ahooks"
 
-import { IGridViewProperties, IView } from "@/packages/core/types/IView"
-import { IField } from "@/packages/core/types/IField"
+import type { IGridViewProperties, IView } from "@/packages/core/types/IView"
+import type { IField } from "@/packages/core/types/IField"
 import { useViewOperation } from "@/components/table/hooks"
 
 import { getShowColumns } from "../helper"

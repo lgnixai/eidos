@@ -1,4 +1,5 @@
-import { UserConfig, defineConfig, mergeConfig } from "vite"
+import type { UserConfig} from "vite";
+import { defineConfig, mergeConfig } from "vite"
 import { VitePWA } from "vite-plugin-pwa"
 import { sharedConfig } from "../../packages/shared/vite/base.config"
 import { createHtmlPlugin } from "../../packages/shared/vite/plugins"

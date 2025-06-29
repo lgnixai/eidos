@@ -1,7 +1,8 @@
 import { ChatTableName } from "@/packages/core/sqlite/const"
 import { createInsertTriggerForFields } from "../sqlite/sql-meta-table-trigger"
-import { BaseTable, BaseTableImpl } from "./base"
-import { ChatMessage } from "./message"
+import type { BaseTable} from "./base";
+import { BaseTableImpl } from "./base"
+import type { ChatMessage } from "./message"
 
 export type Chat = {
   id: string

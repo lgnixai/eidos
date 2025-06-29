@@ -1,10 +1,13 @@
 import { MsgType } from "@/lib/const"
+import type {
+  FileSystemType} from "@/lib/storage/eidos-file-system";
 import {
-  EidosFileSystemManager,
-  FileSystemType,
+  EidosFileSystemManager
 } from "@/lib/storage/eidos-file-system"
-import { ITreeNode, TreeNodeType } from "@/packages/core/types/ITreeNode"
-import { IView, ViewTypeEnum } from "@/packages/core/types/IView"
+import type { ITreeNode} from "@/packages/core/types/ITreeNode";
+import { TreeNodeType } from "@/packages/core/types/ITreeNode"
+import type { IView} from "@/packages/core/types/IView";
+import { ViewTypeEnum } from "@/packages/core/types/IView"
 import {
   extractIdFromShortId,
   getRawTableNameById,
@@ -13,7 +16,7 @@ import {
   uuidv7,
 } from "@/lib/utils"
 import { FieldType } from "./fields/const"
-import { IField } from "./types/IField"
+import type { IField } from "./types/IField"
 import { ColumnTableName } from "./sqlite/const"
 import { buildSql, isReadOnlySql } from "./sqlite/helper"
 import {
@@ -21,7 +24,7 @@ import {
   transformQuery,
 } from "./sqlite/sql-formula-parser"
 
-import { Email } from "postal-mime"
+import type { Email } from "postal-mime"
 import { DataChangeEventHandler } from "./data-pipeline/DataChangeEventHandler"
 import { DataChangeTrigger } from "./data-pipeline/DataChangeTrigger"
 import { LinkRelationUpdater } from "./data-pipeline/LinkRelationUpdater"
@@ -33,14 +36,17 @@ import { timeit } from "./helper"
 import { CsvImportAndExport } from "./import-and-export/csv"
 import { MarkdownImportAndExport } from "./import-and-export/markdown"
 import { ActionTable } from "./meta-table/action"
-import { BaseTable } from "./meta-table/base"
+import type { BaseTable } from "./meta-table/base"
 import { ChatTable } from "./meta-table/chat"
 import { ColumnTable } from "./meta-table/column"
 import { DocTable } from "./meta-table/doc"
-import { EmbeddingTable, IEmbedding } from "./meta-table/embedding"
-import { ExtensionStatus, ExtensionTable, IExtension } from "./meta-table/extension"
+import type { IEmbedding } from "./meta-table/embedding";
+import { EmbeddingTable } from "./meta-table/embedding"
+import type { ExtensionStatus, IExtension } from "./meta-table/extension";
+import { ExtensionTable } from "./meta-table/extension"
 import { ExtNodeTable } from "./meta-table/extnode"
-import { FileTable, IFile } from "./meta-table/file"
+import type { IFile } from "./meta-table/file";
+import { FileTable } from "./meta-table/file"
 import { MessageTable } from "./meta-table/message"
 import { ReferenceTable } from "./meta-table/reference"
 import { TreeTable } from "./meta-table/tree"
@@ -49,7 +55,7 @@ import { RowsManager } from "./sdk/rows"
 import { SqlDataView } from "./sdk/sql-data-view"
 import { TableManager } from "./sdk/table"
 import { ThemeManager } from "./sdk/theme-manager"
-import { BaseServerDatabase } from "./sqlite/interface"
+import type { BaseServerDatabase } from "./sqlite/interface"
 import { withSqlite3AllUDF } from "./udf"
 // import { QueueTable } from "./meta-table/queue"
 

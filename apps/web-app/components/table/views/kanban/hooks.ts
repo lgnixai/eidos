@@ -2,17 +2,18 @@ import { useCurrentPathInfo } from "@/apps/web-app/hooks/use-current-pathinfo"
 import { useSqlite, useSqliteStore } from "@/apps/web-app/hooks/use-sqlite"
 import { useTableOperation } from "@/apps/web-app/hooks/use-table"
 import { useUiColumns } from "@/apps/web-app/hooks/use-ui-columns"
+import type {
+    EidosDataEventChannelMsg} from "@/lib/const";
 import {
-    EidosDataEventChannelMsg,
     EidosDataEventChannelMsgType,
     EidosDataEventChannelName
 } from "@/lib/const"
 import { FieldType } from "@/packages/core/fields/const"
-import { SelectProperty } from "@/packages/core/fields/select"
+import type { SelectProperty } from "@/packages/core/fields/select"
 import { transformSql } from "@/packages/core/sqlite/sql-parser"
-import { IView } from "@/packages/core/types/IView"
+import type { IView } from "@/packages/core/types/IView"
 import { getRawTableNameById } from "@/lib/utils"
-import { IField } from "@/packages/core/types/IField"
+import type { IField } from "@/packages/core/types/IField"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { uuidv7 } from "@/lib/utils"
 

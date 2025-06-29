@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next"
 
-import { ITreeNode, TreeNodeType } from "@/packages/core/types/ITreeNode"
+import type { ITreeNode} from "@/packages/core/types/ITreeNode";
+import { TreeNodeType } from "@/packages/core/types/ITreeNode"
 import { useNodeTree } from "@/apps/web-app/hooks/use-node-tree"
 import { useAllNodes } from "@/apps/web-app/hooks/use-nodes"
 import { useSqlite } from "@/apps/web-app/hooks/use-sqlite"

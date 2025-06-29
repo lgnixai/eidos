@@ -1,7 +1,8 @@
 import type { CustomCell } from "@glideapps/glide-data-grid"
 import { BaseField } from "./base"
 import { CompareOperator, FieldType, GridCellKind } from "./const"
-import { SelectField, SelectOption, SelectProperty } from "./select"
+import type { SelectOption, SelectProperty } from "./select";
+import { SelectField } from "./select"
 
 type MultiSelectProperty = SelectProperty
 

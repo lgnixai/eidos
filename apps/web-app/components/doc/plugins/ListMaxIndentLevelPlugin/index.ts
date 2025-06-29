@@ -9,12 +9,13 @@
 import { useEffect } from "react"
 import { $getListDepth, $isListItemNode, $isListNode } from "@lexical/list"
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
+import type {
+  ElementNode} from "lexical";
 import {
   $getSelection,
   $isElementNode,
   $isRangeSelection,
   COMMAND_PRIORITY_CRITICAL,
-  ElementNode,
   INDENT_CONTENT_COMMAND,
   type RangeSelection,
 } from "lexical"

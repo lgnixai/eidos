@@ -1,13 +1,14 @@
-import { ReactNode } from "react"
+import type { ReactNode } from "react"
 import { BlockWithAlignableContents } from "@lexical/react/LexicalBlockWithAlignableContents"
-import {
-  DecoratorNode,
+import type {
   EditorConfig,
   LexicalEditor,
   LexicalNode,
   NodeKey,
   SerializedLexicalNode,
-  Spread,
+  Spread} from "lexical";
+import {
+  DecoratorNode
 } from "lexical"
 
 import { SyncBlockComponent } from "./component"

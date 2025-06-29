@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils"
 import { ItemIcon } from "@/components/sidebar/item-tree"
 
-import { MentionTypeaheadOption } from "./MentionTypeaheadOption"
+import type { MentionTypeaheadOption } from "./MentionTypeaheadOption"
 
 export function MentionsTypeaheadMenuItem({
   index,

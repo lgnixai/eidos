@@ -1,10 +1,11 @@
-import { MultilineElementTransformer } from "@lexical/markdown"
+import type { MultilineElementTransformer } from "@lexical/markdown"
 import { BlockWithAlignableContents } from "@lexical/react/LexicalBlockWithAlignableContents"
+import type {
+  SerializedDecoratorBlockNode} from "@lexical/react/LexicalDecoratorBlockNode";
 import {
-  DecoratorBlockNode,
-  SerializedDecoratorBlockNode,
+  DecoratorBlockNode
 } from "@lexical/react/LexicalDecoratorBlockNode"
-import {
+import type {
   EditorConfig,
   ElementFormatType,
   LexicalEditor,
@@ -13,7 +14,7 @@ import {
   Spread,
 } from "lexical"
 
-import {
+import type {
   DataSourceConfig,
   DataTransform,
 } from "@/components/chart/config-form/types"

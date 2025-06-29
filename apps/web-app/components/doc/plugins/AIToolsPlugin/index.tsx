@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useState } from "react"
 import { FloatingPortal } from "@floating-ui/react"
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
+import type {
+  LexicalCommand} from "lexical";
 import {
   $getSelection,
   COMMAND_PRIORITY_EDITOR,
   KEY_ESCAPE_COMMAND,
-  LexicalCommand,
   createCommand,
 } from "lexical"
 import { createPortal } from "react-dom"

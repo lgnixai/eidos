@@ -1,6 +1,6 @@
-import { Transformer } from "@lexical/markdown"
-import { LexicalCommand } from "lexical"
-import { FunctionComponent } from "react"
+import type { Transformer } from "@lexical/markdown"
+import type { LexicalCommand } from "lexical"
+import type { FunctionComponent } from "react"
 
 export interface DocBlock {
     name: string

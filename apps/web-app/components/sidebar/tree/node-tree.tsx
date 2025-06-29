@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useState } from "react"
 
-import { ITreeNode } from "@/packages/core/types/ITreeNode"
+import type { ITreeNode } from "@/packages/core/types/ITreeNode"
 import { cn } from "@/lib/utils"
 import { useNode } from "@/apps/web-app/hooks/use-nodes"
 
-import { Card, DragItem } from "./card"
-import { useFolderStore, IHoverTarget } from "./store"
+import type { DragItem } from "./card";
+import { Card } from "./card"
+import type { IHoverTarget } from "./store";
+import { useFolderStore } from "./store"
 
 export interface ContainerState {
   cards: ITreeNode[]

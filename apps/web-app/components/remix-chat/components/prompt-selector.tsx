@@ -1,4 +1,4 @@
-import { IExtension } from "@/packages/core/meta-table/extension"
+import type { IExtension } from "@/packages/core/meta-table/extension"
 
 import {
   Select,

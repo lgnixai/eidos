@@ -1,5 +1,5 @@
-import { LexicalEditor } from "lexical"
-import { DocBlock } from "../interface"
+import type { LexicalEditor } from "lexical"
+import type { DocBlock } from "../interface"
 import { SyncBlockPlugin, INSERT_SYNC_BLOCK_COMMAND } from "./plugin"
 import { $createSyncBlockNode, SyncBlockNode } from "./node"
 

@@ -1,7 +1,8 @@
 import { toast } from "@/components/ui/use-toast"
 import { useAiConfig } from "@/apps/web-app/hooks/use-ai-config"
 import { getProvider } from "@/packages/ai/helper"
-import { LanguageModelV1, embedMany, generateText } from "ai"
+import type { LanguageModelV1} from "ai";
+import { embedMany, generateText } from "ai"
 import { useState } from "react"
 
 export enum TaskType {

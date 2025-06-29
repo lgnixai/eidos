@@ -6,9 +6,11 @@
  *
  */
 
-import {
-    $getRoot,
+import type {
     LexicalEditor
+} from "lexical";
+import {
+    $getRoot
 } from "lexical"
 
 

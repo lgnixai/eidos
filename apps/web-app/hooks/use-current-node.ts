@@ -1,7 +1,8 @@
 import { useCallback, useMemo } from "react"
 import { useParams } from "react-router-dom"
 
-import { ITreeNode, TreeNodeType } from "@/packages/core/types/ITreeNode"
+import type { ITreeNode} from "@/packages/core/types/ITreeNode";
+import { TreeNodeType } from "@/packages/core/types/ITreeNode"
 import { getWeek, isDayPageId, isWeekNodeId } from "@/lib/utils"
 
 import { useExtensionById } from "@/apps/web-app/hooks/use-extension"

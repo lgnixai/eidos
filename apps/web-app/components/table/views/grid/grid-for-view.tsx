@@ -1,9 +1,10 @@
-import DataEditor, {
+import type {
   DataEditorProps,
   DataEditorRef,
   HeaderClickedEventArgs,
   Item,
-} from "@glideapps/glide-data-grid"
+} from "@glideapps/glide-data-grid";
+import DataEditor from "@glideapps/glide-data-grid"
 
 import { useSpaceAppStore } from "@/apps/web-app/pages/[database]/store"
 
@@ -18,7 +19,7 @@ import React, {
 import { Plus } from "lucide-react"
 import { useTheme } from "next-themes"
 
-import { IGridViewProperties, IView } from "@/packages/core/types/IView"
+import type { IGridViewProperties, IView } from "@/packages/core/types/IView"
 import { cn } from "@/lib/utils"
 import { useTableOperation } from "@/apps/web-app/hooks/use-table"
 import { useUiColumns } from "@/apps/web-app/hooks/use-ui-columns"

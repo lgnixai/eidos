@@ -9,7 +9,7 @@ import {
 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
-import { IView } from "@/packages/core/types/IView"
+import type { IView } from "@/packages/core/types/IView"
 import { cn, shortenId } from "@/lib/utils"
 import { useCurrentPathInfo } from "@/apps/web-app/hooks/use-current-pathinfo"
 import { useCurrentSubPage } from "@/apps/web-app/hooks/use-current-sub-page"
@@ -18,8 +18,9 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
 import { useTableSearch } from "./hooks/use-table-search"
+import type {
+  SemanticSearchResultData} from "./hooks/use-table-search-store";
 import {
-  SemanticSearchResultData,
   useTableSearchStore,
 } from "./hooks/use-table-search-store"
 import { useTableSemanticSearch } from "./hooks/use-table-semantic-search"

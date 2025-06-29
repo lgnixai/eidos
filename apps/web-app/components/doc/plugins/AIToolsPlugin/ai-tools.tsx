@@ -1,14 +1,16 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { $convertFromMarkdownString, Transformer } from "@lexical/markdown"
+import type { Transformer } from "@lexical/markdown";
+import { $convertFromMarkdownString } from "@lexical/markdown"
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
 import { useClickAway, useKeyPress } from "ahooks"
 import { useChat } from "ai/react"
+import type {
+  LexicalNode,
+  RangeSelection} from "lexical";
 import {
   $createParagraphNode,
   $getRoot,
-  $isTextNode,
-  LexicalNode,
-  RangeSelection,
+  $isTextNode
 } from "lexical"
 import { PauseIcon, RefreshCcwIcon } from "lucide-react"
 import { useTranslation } from "react-i18next"
@@ -21,7 +23,8 @@ import { useAiConfig } from "@/apps/web-app/hooks/use-ai-config"
 import { Button } from "@/components/ui/button"
 import { toast } from "@/components/ui/use-toast"
 import { BlockRenderer } from "@/components/block-renderer/block-renderer"
-import { Chart, ChartConfig } from "@/components/chart"
+import type { ChartConfig } from "@/components/chart";
+import { Chart } from "@/components/chart"
 import { Thinking } from "@/components/thinking"
 import { useAllMblocks } from "@/apps/web-app/hooks/use-all-mblocks"
 import { useExtension } from "@/apps/web-app/hooks/use-extension"

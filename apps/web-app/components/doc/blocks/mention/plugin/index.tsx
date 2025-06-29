@@ -8,9 +8,10 @@
  */
 
 import { useCallback, useEffect, useMemo, useState } from "react"
+import type {
+  Placement} from "@floating-ui/react";
 import {
   FloatingPortal,
-  Placement,
   flip,
   offset,
   shift,
@@ -21,7 +22,8 @@ import {
   LexicalTypeaheadMenuPlugin,
   useBasicTypeaheadTriggerMatch,
 } from "@lexical/react/LexicalTypeaheadMenuPlugin"
-import { $getSelection, $insertNodes, RangeSelection, TextNode } from "lexical"
+import type { RangeSelection, TextNode } from "lexical";
+import { $getSelection, $insertNodes } from "lexical"
 
 import { shortenId, uuidv7 } from "@/lib/utils"
 import { useSqlite } from "@/apps/web-app/hooks/use-sqlite"

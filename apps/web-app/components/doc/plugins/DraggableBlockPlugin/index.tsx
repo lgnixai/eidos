@@ -6,10 +6,15 @@
  *
  */
 
-import { DragEvent as ReactDragEvent, useEffect, useRef, useState } from "react"
+import type { DragEvent as ReactDragEvent} from "react";
+import { useEffect, useRef, useState } from "react"
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
 import { eventFiles } from "@lexical/rich-text"
 import { mergeRegister } from "@lexical/utils"
+import type {
+  LexicalEditor,
+  LexicalNode,
+  NodeKey} from "lexical";
 import {
   $createParagraphNode,
   $createTextNode,
@@ -17,10 +22,7 @@ import {
   $getNodeByKey,
   COMMAND_PRIORITY_HIGH,
   DRAGOVER_COMMAND,
-  DROP_COMMAND,
-  LexicalEditor,
-  LexicalNode,
-  NodeKey,
+  DROP_COMMAND
 } from "lexical"
 import { Trash2Icon } from "lucide-react"
 import { createPortal } from "react-dom"

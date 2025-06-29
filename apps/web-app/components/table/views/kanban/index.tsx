@@ -2,7 +2,7 @@
 
 import { useMemo } from "react"
 
-import { IView } from "@/packages/core/types/IView"
+import type { IView } from "@/packages/core/types/IView"
 import { useUiColumns } from "@/apps/web-app/hooks/use-ui-columns"
 import {
   KanbanProvider,
@@ -10,7 +10,8 @@ import {
 } from "@/components/ui/kibo-ui/kanban"
 
 import { useShowColumns } from "../../hooks"
-import { KanbanItem, useKanbanViewData } from "./hooks"
+import type { KanbanItem} from "./hooks";
+import { useKanbanViewData } from "./hooks"
 import { KanbanBoard } from "./kanban-board"
 
 export const KanbanView = ({

@@ -1,7 +1,7 @@
 import { useMemo } from "react"
 
 import { transformQueryWithFormulaFields2Sql } from "@/packages/core/sqlite/sql-formula-parser"
-import { IField } from "@/packages/core/types/IField"
+import type { IField } from "@/packages/core/types/IField"
 
 export const useTransformSqlQuery = (sql: string, fields: IField[]) => {
   return useMemo(() => {

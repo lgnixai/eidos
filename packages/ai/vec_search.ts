@@ -1,4 +1,5 @@
-import { HierarchicalNSW, HnswlibModule, loadHnswlib } from "hnswlib-wasm"
+import type { HierarchicalNSW, HnswlibModule} from "hnswlib-wasm";
+import { loadHnswlib } from "hnswlib-wasm"
 
 let hnswlib: HnswlibModule
 const EF_SIZE = 32

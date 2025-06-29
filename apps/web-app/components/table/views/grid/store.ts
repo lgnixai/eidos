@@ -1,11 +1,12 @@
-import {
-  CompactSelection,
+import type {
   GridSelection,
-  Rectangle,
+  Rectangle} from "@glideapps/glide-data-grid";
+import {
+  CompactSelection
 } from "@glideapps/glide-data-grid"
 import { create } from "zustand"
 
-import { IField } from "@/packages/core/types/IField"
+import type { IField } from "@/packages/core/types/IField"
 
 // import { devtools, persist } from 'zustand/middleware'
 

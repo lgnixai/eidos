@@ -2,9 +2,10 @@ import { forwardRef, useEffect, useImperativeHandle, useRef } from "react"
 import { autocompletion } from "@codemirror/autocomplete"
 import { javascript } from "@codemirror/lang-javascript"
 import { sql } from "@codemirror/lang-sql"
+import type {
+  LanguageSupport} from "@codemirror/language";
 import {
   HighlightStyle,
-  LanguageSupport,
   syntaxHighlighting,
   syntaxTree,
 } from "@codemirror/language"
@@ -13,7 +14,8 @@ import { keymap, placeholder } from "@codemirror/view"
 import { tags } from "@lezer/highlight"
 import { EditorView, basicSetup } from "codemirror"
 
-import { Udf, UiColumn, sqlCompletions } from "./completions"
+import type { Udf, UiColumn} from "./completions";
+import { sqlCompletions } from "./completions"
 import { useEditor } from "./hooks"
 
 const syntaxHighlightingTheme = HighlightStyle.define([

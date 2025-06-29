@@ -1,6 +1,7 @@
-import {
+import type {
   CreateColumnDef,
-  CreateTableStatement,
+  CreateTableStatement} from "pgsql-ast-parser";
+import {
   parseFirst,
   toSql,
 } from "pgsql-ast-parser"

@@ -2,7 +2,7 @@ import { useAiConfig } from "@/apps/web-app/hooks/use-ai-config";
 import { useEmbedding } from "@/apps/web-app/hooks/use-embedding";
 import { useSqlite } from "@/apps/web-app/hooks/use-sqlite";
 import { toast } from "@/apps/web-app/hooks/use-toast";
-import { TextProperty } from "@/packages/core/fields/text";
+import type { TextProperty } from "@/packages/core/fields/text";
 import { getRawTableNameById } from "@/lib/utils";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";

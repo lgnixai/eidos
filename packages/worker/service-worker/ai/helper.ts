@@ -1,9 +1,10 @@
-import { CoreAssistantMessage, CoreToolMessage, LanguageModelV1, UIMessage, generateText, CoreMessage } from '@/packages/ai';
+import type { CoreAssistantMessage, CoreToolMessage, LanguageModelV1, UIMessage, CoreMessage } from '@/packages/ai';
+import { generateText } from '@/packages/ai';
 
 
 // import { queryEmbedding } from "../routes/lib"
-import { DataSpace } from "@/packages/core/DataSpace";
-import { ChatMessage } from '@/packages/core/meta-table/message';
+import type { DataSpace } from "@/packages/core/DataSpace";
+import type { ChatMessage } from '@/packages/core/meta-table/message';
 
 
 export function getMostRecentUserMessage(messages: Array<CoreMessage>) {

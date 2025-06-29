@@ -4,14 +4,15 @@ import { useCurrentPathInfo } from "@/apps/web-app/hooks/use-current-pathinfo"
 import { useSqlite, useSqliteStore } from "@/apps/web-app/hooks/use-sqlite"
 import { useUiColumns } from "@/apps/web-app/hooks/use-ui-columns"
 import { useViewSort } from "@/apps/web-app/hooks/use-view-sort"
+import type {
+  EidosDataEventChannelMsg} from "@/lib/const";
 import {
   DataUpdateSignalType,
-  EidosDataEventChannelMsg,
   EidosDataEventChannelMsgType,
   EidosDataEventChannelName,
 } from "@/lib/const"
 import { transformSql } from "@/packages/core/sqlite/sql-parser"
-import { IView } from "@/packages/core/types/IView"
+import type { IView } from "@/packages/core/types/IView"
 import { TableContext } from "../../hooks"
 
 type RowData = Record<string, any> & {

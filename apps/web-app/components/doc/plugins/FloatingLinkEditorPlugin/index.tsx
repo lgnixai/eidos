@@ -6,7 +6,8 @@
  *
  */
 import "./index.css"
-import { Dispatch, useCallback, useEffect, useRef, useState } from "react"
+import type { Dispatch} from "react";
+import { useCallback, useEffect, useRef, useState } from "react"
 import * as React from "react"
 import {
   $isAutoLinkNode,
@@ -15,6 +16,8 @@ import {
 } from "@lexical/link"
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
 import { $findMatchingParent, mergeRegister } from "@lexical/utils"
+import type {
+  LexicalEditor} from "lexical";
 import {
   $getSelection,
   $isRangeSelection,
@@ -22,7 +25,6 @@ import {
   COMMAND_PRIORITY_HIGH,
   COMMAND_PRIORITY_LOW,
   KEY_ESCAPE_COMMAND,
-  LexicalEditor,
   NodeSelection,
   RangeSelection,
   SELECTION_CHANGE_COMMAND,

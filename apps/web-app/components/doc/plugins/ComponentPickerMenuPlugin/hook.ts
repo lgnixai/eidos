@@ -1,7 +1,8 @@
 import { useCallback } from "react"
+import type {
+  TriggerFn} from "@lexical/react/LexicalTypeaheadMenuPlugin";
 import {
-  PUNCTUATION,
-  TriggerFn,
+  PUNCTUATION
 } from "@lexical/react/LexicalTypeaheadMenuPlugin"
 
 export function useBasicTypeaheadTriggerMatch(

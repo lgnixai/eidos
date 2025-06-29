@@ -1,4 +1,4 @@
-import { Control } from "react-hook-form"
+import type { Control } from "react-hook-form"
 
 import {
   FormControl,
@@ -15,7 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-import { ChartConfig, ChartType } from ".."
+import type { ChartConfig, ChartType } from ".."
 
 const getDataColumns = (data: Record<string, any>[]) => {
   if (!data.length) return []

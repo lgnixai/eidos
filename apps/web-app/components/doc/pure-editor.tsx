@@ -2,8 +2,9 @@
 
 import React, { useEffect, useState } from "react"
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin"
+import type {
+  InitialConfigType} from "@lexical/react/LexicalComposer";
 import {
-  InitialConfigType,
   LexicalComposer,
 } from "@lexical/react/LexicalComposer"
 import { ContentEditable } from "@lexical/react/LexicalContentEditable"

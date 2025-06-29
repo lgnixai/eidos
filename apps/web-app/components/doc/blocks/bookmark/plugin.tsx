@@ -7,15 +7,16 @@ import {
   useBasicTypeaheadTriggerMatch,
 } from "@lexical/react/LexicalTypeaheadMenuPlugin"
 import { $insertNodeToNearestRoot, mergeRegister } from "@lexical/utils"
+import type {
+  LexicalCommand,
+  TextNode} from "lexical";
 import {
   $getSelection,
   $isRangeSelection,
   $nodesOfType,
   COMMAND_PRIORITY_EDITOR,
   COMMAND_PRIORITY_NORMAL,
-  LexicalCommand,
   PASTE_COMMAND,
-  TextNode,
   createCommand,
 } from "lexical"
 import ReactDOM from "react-dom"
@@ -24,12 +25,13 @@ import { getSelectedNode } from "../../utils/getSelectedNode"
 import { validateUrl } from "../../utils/url"
 import { $insertDecoratorBlockNode } from "../helper"
 import { INSERT_YOUTUBE_COMMAND } from "../youtube/plugin"
+import type {
+  BookmarkPayload} from "./node";
 import {
   $createBookmarkNode,
   $getUrlMetaData,
   $isBookmarkNode,
-  BookmarkNode,
-  BookmarkPayload,
+  BookmarkNode
 } from "./node"
 
 export type InsertBookmarkPayload = Readonly<BookmarkPayload>

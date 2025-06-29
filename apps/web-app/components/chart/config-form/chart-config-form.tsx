@@ -16,7 +16,7 @@ import { ChartBasicSettings } from "./chart-basic-settings"
 import { ChartDisplayOptions } from "./chart-display-options"
 import { ChartPreview } from "./chart-preview"
 import { ChartSeriesConfig } from "./chart-series-config"
-import { DataSourceConfig, DataTransform } from "./types"
+import type { DataSourceConfig, DataTransform } from "./types"
 
 interface ChartConfigFormProps {
   config: ChartConfig

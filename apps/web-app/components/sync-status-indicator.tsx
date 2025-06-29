@@ -4,7 +4,7 @@ import React from "react"
 import { AlertCircle, CheckCircle, CloudOff, Database } from "lucide-react"
 
 import type { GraftStatus } from "@/packages/sync/graft/helpers"
-import { SpaceInfo } from "@/apps/web-app/hooks/use-space"
+import type { SpaceInfo } from "@/apps/web-app/hooks/use-space"
 import { useSpaceSyncStatus } from "@/apps/web-app/hooks/use-sync-status"
 
 import {

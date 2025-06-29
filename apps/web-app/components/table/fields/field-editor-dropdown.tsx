@@ -12,7 +12,7 @@ import { useTranslation } from "react-i18next"
 import { useLayer } from "react-laag"
 
 import { FieldType } from "@/packages/core/fields/const"
-import { IGridViewProperties, IView } from "@/packages/core/types/IView"
+import type { IGridViewProperties, IView } from "@/packages/core/types/IView"
 import { cn } from "@/lib/utils"
 import { useTableFields } from "@/apps/web-app/hooks/use-table"
 import { Button } from "@/components/ui/button"

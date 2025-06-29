@@ -1,4 +1,4 @@
-import { IAction } from "@/packages/core/meta-table/action"
+import type { IAction } from "@/packages/core/meta-table/action"
 
 export class ActionExecutor {
   functionMap: Record<string, Function> = {

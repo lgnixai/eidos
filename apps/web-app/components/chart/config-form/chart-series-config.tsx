@@ -1,5 +1,5 @@
 import { Trash2 } from "lucide-react"
-import {
+import type {
   Control,
   UseFormGetValues,
   UseFormSetValue,
@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 
-import { ChartConfig, SeriesConfig } from ".."
+import type { ChartConfig, SeriesConfig } from ".."
 import { PRESET_COLORS } from "../constants"
 
 interface ChartSeriesConfigProps {

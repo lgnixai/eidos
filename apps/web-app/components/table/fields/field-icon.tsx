@@ -1,4 +1,4 @@
-import { FieldType } from "@/packages/core/fields/const"
+import type { FieldType } from "@/packages/core/fields/const"
 
 import { makeHeaderIcons } from "./header-icons"
 

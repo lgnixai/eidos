@@ -16,7 +16,8 @@ import {
 } from "@/components/react-hook-form/form"
 import { Button } from "@/components/ui/button"
 import { toast } from "@/components/ui/use-toast"
-import { AIFormValues, aiFormSchema } from "@/packages/ai/config"
+import type { AIFormValues} from "@/packages/ai/config";
+import { aiFormSchema } from "@/packages/ai/config"
 
 import { TaskType } from "./hooks"
 import { ModelTestButton } from "./model-test-button"

@@ -1,6 +1,6 @@
 import { useMemo } from "react"
 
-import { IField } from "@/packages/core/types/IField"
+import type { IField } from "@/packages/core/types/IField"
 import { cn } from "@/lib/utils"
 
 import { useRowDataOperation } from "../../../doc-property/hook"
@@ -12,7 +12,7 @@ import {
 } from "../../../ui/tooltip"
 import { CellEditor } from "../../cell-editor"
 import { useTableContext } from "../../hooks"
-import { IGalleryViewProperties } from "../gallery/properties"
+import type { IGalleryViewProperties } from "../gallery/properties"
 import { GalleryCardCover } from "./card-cover"
 import { DataCardMenu } from "./data-card-menu"
 

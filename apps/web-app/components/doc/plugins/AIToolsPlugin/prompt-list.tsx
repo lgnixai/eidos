@@ -1,6 +1,7 @@
 import { useRef, useState } from "react"
 import * as Icons from "lucide-react"
-import { ChevronRightIcon, LucideIcon } from "lucide-react"
+import type { LucideIcon } from "lucide-react";
+import { ChevronRightIcon } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { useAiConfig } from "@/apps/web-app/hooks/use-ai-config"

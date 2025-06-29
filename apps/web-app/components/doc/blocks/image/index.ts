@@ -1,5 +1,5 @@
-import { LexicalEditor } from "lexical";
-import { DocBlock } from "../interface";
+import type { LexicalEditor } from "lexical";
+import type { DocBlock } from "../interface";
 import { $createImageNode, ImageNode, IMAGE_NODE_TRANSFORMER } from "./node";
 import ImagesPlugin, { INSERT_IMAGE_COMMAND } from "./plugin";
 

@@ -2,7 +2,7 @@ import { useState } from "react"
 import { Check } from "lucide-react"
 import { useTheme } from "next-themes"
 
-import { SelectOption } from "@/packages/core/fields/select"
+import type { SelectOption } from "@/packages/core/fields/select"
 import { cn } from "@/lib/utils"
 import {
   Command,

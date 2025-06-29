@@ -1,6 +1,6 @@
 import { useState } from "react"
 import * as Icons from "lucide-react"
-import { LucideIcon } from "lucide-react"
+import type { LucideIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {

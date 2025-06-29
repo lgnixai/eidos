@@ -1,5 +1,5 @@
 import { useEffect } from "react"
-import { Transformer } from "@lexical/markdown"
+import type { Transformer } from "@lexical/markdown"
 import { CheckListPlugin } from "@lexical/react/LexicalCheckListPlugin"
 import { ClickableLinkPlugin } from "@lexical/react/LexicalClickableLinkPlugin"
 import { HashtagPlugin } from "@lexical/react/LexicalHashtagPlugin"

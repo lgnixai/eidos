@@ -1,4 +1,4 @@
-import { IExtension } from "@/packages/core/meta-table/extension"
+import type { IExtension } from "@/packages/core/meta-table/extension"
 import { useMemo, useState } from "react"
 import { useLoaderData, useRevalidator } from "react-router-dom"
 

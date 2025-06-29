@@ -1,6 +1,6 @@
 // import { handleGoogleAI } from "./google"
-import { DataSpace } from "@/packages/core/DataSpace"
-import { IData } from "./interface"
+import type { DataSpace } from "@/packages/core/DataSpace"
+import type { IData } from "./interface"
 import { handleChatApi } from "./chat-api"
 
 export const pathname = "/api/chat"

@@ -2,9 +2,9 @@ import { create } from "zustand"
 import { persist } from "zustand/middleware"
 
 import { uuidv7 } from "@/lib/utils"
-import { BackupServerFormValues } from "@/apps/web-app/pages/settings/backup/page"
+import type { BackupServerFormValues } from "@/apps/web-app/pages/settings/backup/page"
 
-import { ProfileFormValues } from "./general/profile-form"
+import type { ProfileFormValues } from "./general/profile-form"
 
 export interface ApiKey {
   id: string;

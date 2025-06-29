@@ -2,7 +2,7 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { $getSelection, $insertNodes, $isRangeSelection } from "lexical"
 import { useEffect, useState } from "react"
 
-import { ITreeNode } from "@/packages/core/types/ITreeNode"
+import type { ITreeNode } from "@/packages/core/types/ITreeNode"
 import { $createMentionNode } from "@/components/doc/blocks/mention/node"
 import { useQueryNode } from "@/apps/web-app/hooks/use-query-node"
 import { useContextNodes } from "../../hooks/use-context-nodes"

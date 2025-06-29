@@ -1,11 +1,13 @@
+import type {
+  TriggerField 
+} from './sql-meta-table-trigger';
 import { 
   generateInsertTrigger, 
   generateUpdateTrigger, 
   generateMetaTableTriggers,
   createTriggersForFields,
   createInsertTriggerForFields,
-  createUpdateTriggerForFields,
-  TriggerField 
+  createUpdateTriggerForFields 
 } from './sql-meta-table-trigger'
 
 describe('SQL Meta Table Trigger Generator', () => {

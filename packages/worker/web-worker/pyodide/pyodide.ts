@@ -1,6 +1,7 @@
-import { IPythonScriptCallProps } from '@/components/script-container/helper';
-import { loadPyodide, PyodideInterface } from 'pyodide';
-import { PyProxy } from 'pyodide/ffi';
+import type { IPythonScriptCallProps } from '@/components/script-container/helper';
+import type { PyodideInterface } from 'pyodide';
+import { loadPyodide } from 'pyodide';
+import type { PyProxy } from 'pyodide/ffi';
 
 
 declare const self: Worker

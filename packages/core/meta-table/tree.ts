@@ -1,9 +1,10 @@
 import { TreeTableName } from "@/packages/core/sqlite/const"
-import { ITreeNode } from "@/packages/core/types/ITreeNode"
+import type { ITreeNode } from "@/packages/core/types/ITreeNode"
 import { extractIdFromShortId, getRawTableNameById } from "@/lib/utils"
 import { createTriggersForFields } from "@/packages/core/sqlite/sql-meta-table-trigger"
 
-import { BaseTable, BaseTableImpl } from "./base"
+import type { BaseTable} from "./base";
+import { BaseTableImpl } from "./base"
 
 export class TreeTable extends BaseTableImpl implements BaseTable<ITreeNode> {
   name = TreeTableName

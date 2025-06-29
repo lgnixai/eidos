@@ -1,7 +1,8 @@
 import { useEffect } from "react"
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
 import { $insertNodeToNearestRoot } from "@lexical/utils"
-import { $getSelection, $isRangeSelection, COMMAND_PRIORITY_EDITOR, LexicalCommand, createCommand } from "lexical"
+import type { LexicalCommand} from "lexical";
+import { $getSelection, $isRangeSelection, COMMAND_PRIORITY_EDITOR, createCommand } from "lexical"
 
 import { $createAudioNode, AudioNode } from "../../blocks/audio/node"
 import { getSelectedNode } from "../../utils/getSelectedNode"

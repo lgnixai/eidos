@@ -4,7 +4,7 @@ import { FieldType } from "../fields/const"
 import { ColumnTableName } from "../sqlite/const"
 import { generateColumnName, getRawTableNameById } from "@/lib/utils"
 
-import { DataSpace } from "../DataSpace"
+import type { DataSpace } from "../DataSpace"
 import { TableManager } from "../sdk/table"
 import { BaseImportAndExport } from "./base"
 import { parse } from "csv-parse/sync"

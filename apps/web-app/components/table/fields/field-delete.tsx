@@ -2,7 +2,7 @@ import { useState } from "react"
 import { useTranslation } from "react-i18next"
 
 import { FieldType } from "@/packages/core/fields/const"
-import { IField } from "@/packages/core/types/IField"
+import type { IField } from "@/packages/core/types/IField"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,

@@ -1,3 +1,5 @@
+import type {
+  Transformer} from "@lexical/markdown";
 import {
   CHECK_LIST,
   CODE,
@@ -7,14 +9,13 @@ import {
   LINK,
   ORDERED_LIST,
   QUOTE,
-  TRANSFORMERS,
-  Transformer,
+  TRANSFORMERS
 } from "@lexical/markdown"
 
 
 
 import { BuiltInBlocks } from "../blocks"
-import { BookmarkPayload } from "../blocks/bookmark/node"
+import type { BookmarkPayload } from "../blocks/bookmark/node"
 import { HR, TABLE } from "./MarkdownTransformers"
 
 export const allTransformers = [

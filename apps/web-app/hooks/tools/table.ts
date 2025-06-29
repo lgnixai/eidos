@@ -1,4 +1,4 @@
-import { Tool } from "ai"
+import type { Tool } from "ai"
 
 export const createRecordsTool: Tool = {
     description: "Create records in a table, keep batch size small, 10-20 is good",

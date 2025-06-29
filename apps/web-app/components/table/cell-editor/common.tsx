@@ -1,4 +1,5 @@
-import { SelectField, SelectOption } from "@/packages/core/fields/select"
+import type { SelectOption } from "@/packages/core/fields/select";
+import { SelectField } from "@/packages/core/fields/select"
 
 export const EmptyValue = () => {
   return (

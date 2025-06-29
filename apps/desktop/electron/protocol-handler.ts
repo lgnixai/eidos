@@ -1,5 +1,5 @@
 import { EidosProtocolUrlChannelName } from '@/lib/const';
-import { BrowserWindow } from 'electron';
+import type { BrowserWindow } from 'electron';
 import { log } from 'electron-log';
 
 export interface ProtocolUrlPayload {

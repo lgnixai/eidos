@@ -1,6 +1,6 @@
 // import { decode as _decode, encode as _encode } from "gpt-tokenizer"
-import OpenAI from "openai"
-import { LLMBaseVendor } from "./base"
+import type OpenAI from "openai"
+import type { LLMBaseVendor } from "./base"
 
 export class LLMOpenAI implements LLMBaseVendor {
   name = "openai"

@@ -80,7 +80,7 @@
     "**/node_modules/**",
     "**/dist/**",
     "**/dev-dist/**",
-    "**/dist-electron/**",
+    "**/dist-electron/**"
   ],
   "references": [
     {

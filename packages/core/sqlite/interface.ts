@@ -1,4 +1,4 @@
-import { MsgType } from "@/lib/const"
+import type { MsgType } from "@/lib/const"
 
 export interface AggregateItem {
   column: string;

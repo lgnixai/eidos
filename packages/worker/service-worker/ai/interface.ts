@@ -1,4 +1,4 @@
-import { LLMProvider } from "@/packages/ai/config"
+import type { LLMProvider } from "@/packages/ai/config"
 import type { Message, Tool, UIMessage } from "ai"
 
 export interface IData {

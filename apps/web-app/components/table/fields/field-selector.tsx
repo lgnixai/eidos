@@ -2,7 +2,7 @@ import { useState } from "react"
 import { ChevronsUpDown } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
-import { IField } from "@/packages/core/types/IField"
+import type { IField } from "@/packages/core/types/IField"
 import {
   Command,
   CommandEmpty,

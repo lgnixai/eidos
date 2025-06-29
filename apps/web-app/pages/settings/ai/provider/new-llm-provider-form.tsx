@@ -7,12 +7,14 @@ import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 import * as z from "zod"
 
+import type {
+  LLMProvider} from "@/packages/ai/config";
 import {
-  LLMProvider,
   llmProviderSchema as baseLlmProviderSchema,
 } from "@/packages/ai/config"
+import type {
+  AvailableModel} from "@/packages/ai/helper";
 import {
-  AvailableModel,
   LLM_PROVIDER_INFO,
   fetchAvailableModels,
 } from "@/packages/ai/helper"

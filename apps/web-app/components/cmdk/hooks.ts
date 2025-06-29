@@ -1,4 +1,4 @@
-import { ITreeNode } from "@/packages/core/types/ITreeNode"
+import type { ITreeNode } from "@/packages/core/types/ITreeNode"
 import { useNavigate } from "react-router-dom"
 import { create } from "zustand"
 

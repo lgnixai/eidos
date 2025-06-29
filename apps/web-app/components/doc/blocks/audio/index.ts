@@ -1,5 +1,5 @@
-import { LexicalEditor } from "lexical";
-import { DocBlock } from "../interface";
+import type { LexicalEditor } from "lexical";
+import type { DocBlock } from "../interface";
 import { AudioPlugin, INSERT_AUDIO_FILE_COMMAND } from "./plugin";
 import { $createAudioNode, AudioNode } from "./node";
 

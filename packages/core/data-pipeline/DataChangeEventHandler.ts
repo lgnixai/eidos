@@ -1,11 +1,12 @@
+import type {
+  EidosDataEventChannelMsg} from "@/lib/const";
 import {
   DataUpdateSignalType,
-  EidosDataEventChannelMsg,
   EidosDataEventChannelMsgType
 } from "@/lib/const"
 import { getTableIdByRawTableName } from "@/lib/utils"
 
-import { DataSpace } from "../DataSpace"
+import type { DataSpace } from "../DataSpace"
 import { TableManager } from "../sdk/table"
 
 

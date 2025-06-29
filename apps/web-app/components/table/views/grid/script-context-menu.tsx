@@ -1,4 +1,4 @@
-import { ICommand, IExtension } from "@/packages/core/meta-table/extension"
+import type { ICommand, IExtension } from "@/packages/core/meta-table/extension"
 import { RowsManager } from "@/packages/core/sdk/rows"
 
 import { useAllExtensions } from "@/apps/web-app/hooks/use-all-extensions"

@@ -1,6 +1,6 @@
 import { useContext, useEffect, useRef, useState } from "react"
 
-import { IField } from "@/packages/core/types/IField"
+import type { IField } from "@/packages/core/types/IField"
 import { useTableOperation } from "@/apps/web-app/hooks/use-table"
 import { useUiColumns } from "@/apps/web-app/hooks/use-ui-columns"
 import { Input } from "@/components/ui/input"

@@ -1,9 +1,9 @@
 import { useCallback, useContext, useState } from "react"
-import { IExtension } from "@/packages/core/meta-table/extension"
-import { DataEditorProps, GridSelection } from "@glideapps/glide-data-grid"
+import type { IExtension } from "@/packages/core/meta-table/extension"
+import type { DataEditorProps, GridSelection } from "@glideapps/glide-data-grid"
 
 import { generateText } from "@/packages/ai/generate"
-import { IField } from "@/packages/core/types/IField"
+import type { IField } from "@/packages/core/types/IField"
 import { useAiConfig } from "@/apps/web-app/hooks/use-ai-config"
 import { useTableOperation } from "@/apps/web-app/hooks/use-table"
 import {

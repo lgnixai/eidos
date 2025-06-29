@@ -1,6 +1,7 @@
-import { ReactNode } from "react"
+import type { ReactNode } from "react"
 import { BlockWithAlignableContents } from "@lexical/react/LexicalBlockWithAlignableContents"
-import { DecoratorNode, EditorConfig, LexicalEditor, NodeKey } from "lexical"
+import type { EditorConfig, LexicalEditor, NodeKey } from "lexical";
+import { DecoratorNode } from "lexical"
 
 import { MentionComponent } from "./component"
 

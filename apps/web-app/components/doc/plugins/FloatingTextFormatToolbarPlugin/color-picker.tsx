@@ -1,6 +1,8 @@
-import { MouseEventHandler, useCallback } from "react"
+import type { MouseEventHandler} from "react";
+import { useCallback } from "react"
 import { $patchStyleText } from "@lexical/selection"
-import { $getSelection, $isRangeSelection, LexicalEditor } from "lexical"
+import type { LexicalEditor } from "lexical";
+import { $getSelection, $isRangeSelection } from "lexical"
 import { useTheme } from "next-themes"
 
 import { cn } from "@/lib/utils"

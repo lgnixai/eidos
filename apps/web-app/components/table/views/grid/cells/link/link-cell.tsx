@@ -1,11 +1,12 @@
-import {
+import type {
   CustomCell,
   CustomRenderer,
-  GridCellKind,
-  ProvideEditorCallback,
+  ProvideEditorCallback} from "@glideapps/glide-data-grid";
+import {
+  GridCellKind
 } from "@glideapps/glide-data-grid"
 
-import { LinkCellData } from "@/packages/core/fields/link"
+import type { LinkCellData } from "@/packages/core/fields/link"
 import { useCurrentPathInfo } from "@/apps/web-app/hooks/use-current-pathinfo"
 
 import { drawDrilldownCell } from "../helper"

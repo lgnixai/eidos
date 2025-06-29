@@ -1,5 +1,6 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
-import { $getSelection, COMMAND_PRIORITY_EDITOR, LexicalCommand, createCommand } from "lexical"
+import type { LexicalCommand} from "lexical";
+import { $getSelection, COMMAND_PRIORITY_EDITOR, createCommand } from "lexical"
 import { useEffect } from "react"
 
 import { $createSQLNode, SQLNode } from "./node"

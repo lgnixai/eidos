@@ -1,4 +1,5 @@
-import { DOMAttributes, useEffect, useState } from "react"
+import type { DOMAttributes} from "react";
+import { useEffect, useState } from "react"
 import data from "@emoji-mart/data"
 import Picker from "@emoji-mart/react"
 import { init } from "emoji-mart"

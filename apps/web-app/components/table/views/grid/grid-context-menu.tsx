@@ -1,5 +1,5 @@
 import { useCallback, useContext, useMemo } from "react"
-import { CompactSelectionRanges } from "@glideapps/glide-data-grid"
+import type { CompactSelectionRanges } from "@glideapps/glide-data-grid"
 import {
   ExternalLinkIcon,
   MoveDiagonalIcon,
@@ -8,7 +8,7 @@ import {
   Trash2Icon,
 } from "lucide-react"
 
-import { IField } from "@/packages/core/types/IField"
+import type { IField } from "@/packages/core/types/IField"
 import { shortenId } from "@/lib/utils"
 import { useCurrentPathInfo } from "@/apps/web-app/hooks/use-current-pathinfo"
 import { useCurrentSubPage } from "@/apps/web-app/hooks/use-current-sub-page"

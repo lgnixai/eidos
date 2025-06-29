@@ -1,11 +1,12 @@
+import type {
+    EidosDataEventChannelMsg} from "@/lib/const";
 import {
     DataUpdateSignalType,
-    EidosDataEventChannelMsg,
     EidosDataEventChannelMsgType,
     EidosDataEventChannelName,
 } from "@/lib/const"
-import { DataSpace } from '@/packages/core/DataSpace'
-import { BaseTableImpl } from '@/packages/core/meta-table/base'
+import type { DataSpace } from '@/packages/core/DataSpace'
+import type { BaseTableImpl } from '@/packages/core/meta-table/base'
 import { useEffect, useState, useSyncExternalStore } from 'react'
 import { z } from 'zod'
 

@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { LexicalEditor } from "lexical"
+import type { LexicalEditor } from "lexical"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"

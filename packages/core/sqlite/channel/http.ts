@@ -1,6 +1,6 @@
-import { MsgType } from "@/packages/lib/const"
+import type { MsgType } from "@/packages/lib/const"
 
-import { ISqlite } from "../interface"
+import type { ISqlite } from "../interface"
 
 interface IHttpSendData {
   type: MsgType.CallFunction

@@ -1,8 +1,8 @@
 import { useCallback } from "react"
-import { DataSpace } from "@/packages/core/DataSpace"
+import type { DataSpace } from "@/packages/core/DataSpace"
 
 import { TodoTableName } from "@/packages/core/sqlite/const"
-import { TodoListItem } from "@/components/doc/plugins/TodoPlugin"
+import type { TodoListItem } from "@/components/doc/plugins/TodoPlugin"
 
 export const useTodo = (
   sqlite: DataSpace | null,

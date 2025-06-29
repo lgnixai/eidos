@@ -1,4 +1,5 @@
-import { FeatureExtractionPipeline, env, pipeline } from "@xenova/transformers"
+import type { FeatureExtractionPipeline} from "@xenova/transformers";
+import { env, pipeline } from "@xenova/transformers"
 
 import { efsManager } from "@/lib/storage/eidos-file-system"
 

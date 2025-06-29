@@ -1,7 +1,7 @@
 import { XIcon } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 
-import { ITreeNode } from "@/packages/core/types/ITreeNode"
+import type { ITreeNode } from "@/packages/core/types/ITreeNode"
 import { isDayPageId } from "@/lib/utils"
 import { useCurrentPathInfo } from "@/apps/web-app/hooks/use-current-pathinfo"
 import { Badge } from "@/components/ui/badge"

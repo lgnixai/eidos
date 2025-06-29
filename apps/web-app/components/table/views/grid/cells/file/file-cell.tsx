@@ -1,9 +1,10 @@
 import { useCallback, useState } from "react"
-import {
+import type {
   CustomCell,
   CustomRenderer,
-  GridCellKind,
-  ProvideEditorCallback,
+  ProvideEditorCallback} from "@glideapps/glide-data-grid";
+import {
+  GridCellKind
 } from "@glideapps/glide-data-grid"
 import { useKeyPress } from "ahooks"
 import update from "immutability-helper"

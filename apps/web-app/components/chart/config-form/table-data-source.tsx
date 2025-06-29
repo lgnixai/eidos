@@ -13,7 +13,7 @@ import { SQLQueryDisplay } from "@/components/sql-query-display"
 import { TableSelector } from "@/components/table-selector"
 import { ViewSelector } from "@/components/view-selector"
 
-import { DataTableConfig } from "./types"
+import type { DataTableConfig } from "./types"
 
 interface TableDataSourceProps {
   config: DataTableConfig

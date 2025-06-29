@@ -1,13 +1,14 @@
 import React, { useEffect, useImperativeHandle, useRef } from "react"
 import { BGEM3 } from "@/packages/ai/llm_vendors/bge"
-import { IEmbedding } from "@/packages/core/meta-table/embedding"
+import type { IEmbedding } from "@/packages/core/meta-table/embedding"
 import { LinkNode } from "@lexical/link"
 import { ListItemNode, ListNode } from "@lexical/list"
 import { MarkNode } from "@lexical/mark"
 import { $convertToMarkdownString } from "@lexical/markdown"
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin"
+import type {
+  InitialConfigType} from "@lexical/react/LexicalComposer";
 import {
-  InitialConfigType,
   LexicalComposer,
 } from "@lexical/react/LexicalComposer"
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
@@ -16,8 +17,8 @@ import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary"
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin"
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin"
 import { HeadingNode, QuoteNode } from "@lexical/rich-text"
-import { Attachment, ChatRequestOptions, CreateMessage } from "ai"
-import { Message } from "ai/react"
+import type { Attachment, ChatRequestOptions, CreateMessage } from "ai"
+import type { Message } from "ai/react"
 import {
   $getRoot,
   $getSelection,
@@ -27,12 +28,13 @@ import {
 } from "lexical"
 import { useTranslation } from "react-i18next"
 
-import { ITreeNode } from "@/packages/core/types/ITreeNode"
+import type { ITreeNode } from "@/packages/core/types/ITreeNode"
 import { useToast } from "@/components/ui/use-toast"
 import { MentionNode } from "@/components/doc/blocks/mention/node"
-import NewMentionsPlugin, {
+import type {
   MentionPluginProps,
-} from "@/components/doc/blocks/mention/plugin"
+} from "@/components/doc/blocks/mention/plugin";
+import NewMentionsPlugin from "@/components/doc/blocks/mention/plugin"
 import { allTransformers } from "@/components/doc/plugins/const"
 import { useEmbedding } from "@/apps/web-app/hooks/use-embedding"
 import { useHnsw } from "@/apps/web-app/hooks/use-hnsw"

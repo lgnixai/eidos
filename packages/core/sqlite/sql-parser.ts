@@ -1,6 +1,7 @@
-import {
+import type {
   SelectFromStatement,
-  Statement,
+  Statement} from "pgsql-ast-parser";
+import {
   astMapper,
   parse,
   parseFirst,

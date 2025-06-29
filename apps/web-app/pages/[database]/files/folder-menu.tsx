@@ -1,4 +1,5 @@
-import { MouseEventHandler, useRef, useState } from "react"
+import type { MouseEventHandler} from "react";
+import { useRef, useState } from "react"
 import { FolderPlusIcon, MoveLeftIcon, UploadIcon } from "lucide-react"
 import ReactDOM from "react-dom"
 

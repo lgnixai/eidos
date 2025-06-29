@@ -1,8 +1,11 @@
 import { useEffect, useMemo, useState } from "react"
 import { CodeNode } from "@lexical/code"
-import { $convertFromMarkdownString, Transformer } from "@lexical/markdown"
+import type { Transformer } from "@lexical/markdown";
+import { $convertFromMarkdownString } from "@lexical/markdown"
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
 import { mergeRegister } from "@lexical/utils"
+import type {
+  RangeSelection} from "lexical";
 import {
   $createParagraphNode,
   $getRoot,
@@ -10,7 +13,6 @@ import {
   $isRangeSelection,
   $nodesOfType,
   COMMAND_PRIORITY_LOW,
-  RangeSelection,
   SELECTION_CHANGE_COMMAND,
 } from "lexical"
 

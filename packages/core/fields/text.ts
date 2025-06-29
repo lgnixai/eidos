@@ -2,7 +2,7 @@ import type { TextCell } from "@glideapps/glide-data-grid"
 
 import { BaseField } from "./base"
 import { FieldType, GridCellKind, TEXT_BASED_COMPARE_OPERATORS } from "./const"
-import { IVecMeta } from "@/packages/core/sdk/service/text"
+import type { IVecMeta } from "@/packages/core/sdk/service/text"
 
 export interface TextProperty {
   model?: string | null // Add other text-specific properties here if needed

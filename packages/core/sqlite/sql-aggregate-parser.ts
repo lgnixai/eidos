@@ -1,13 +1,14 @@
-import {
+import type {
   Expr,
   ExprCall,
   ExprRef,
   SelectFromStatement,
-  SelectedColumn,
+  SelectedColumn} from "pgsql-ast-parser";
+import {
   parseFirst,
   toSql
 } from "pgsql-ast-parser"
-import { AggregateItem } from "./interface"
+import type { AggregateItem } from "./interface"
 
 export const transformAggregateItems2SqlString = (
   sql: string,

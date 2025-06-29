@@ -1,4 +1,4 @@
-import { AggregateItem } from "./interface";
+import type { AggregateItem } from "./interface";
 import { transformAggregateItems2SqlString } from "./sql-aggregate-parser";
 
 describe("transformAggregateItems2SqlString", () => {

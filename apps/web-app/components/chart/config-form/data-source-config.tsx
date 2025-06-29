@@ -14,7 +14,7 @@ import { Callout } from "@/components/eui/callout"
 import { DataTransforms } from "../../data-pipeline/data-transforms"
 import { ScriptDataSource } from "./script-data-source"
 import { TableDataSource } from "./table-data-source"
-import { DataSourceConfig, DataSourceType, DataTransform } from "./types"
+import type { DataSourceConfig, DataSourceType, DataTransform } from "./types"
 
 interface DataSourceConfigProps {
   data: any[]

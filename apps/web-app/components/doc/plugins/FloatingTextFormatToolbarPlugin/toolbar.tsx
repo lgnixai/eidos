@@ -2,12 +2,13 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import { TOGGLE_LINK_COMMAND } from "@lexical/link"
 import { mergeRegister } from "@lexical/utils"
 import { useKeyPress } from "ahooks"
+import type {
+  LexicalEditor} from "lexical";
 import {
   $getRoot,
   $getSelection,
   COMMAND_PRIORITY_LOW,
   FORMAT_TEXT_COMMAND,
-  LexicalEditor,
   SELECTION_CHANGE_COMMAND,
 } from "lexical"
 import {

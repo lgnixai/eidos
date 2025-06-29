@@ -1,11 +1,11 @@
 import { useEffect, useRef } from "react"
-import { DataSpace } from "@/packages/core/DataSpace"
-import { IEmbedding } from "@/packages/core/meta-table/embedding"
+import type { DataSpace } from "@/packages/core/DataSpace"
+import type { IEmbedding } from "@/packages/core/meta-table/embedding"
 import chunk from "lodash/chunk"
 import zip from "lodash/zip"
 
 import { DocLoader } from "@/packages/ai/doc_loader/doc"
-import { LLMBaseVendor } from "@/packages/ai/llm_vendors/base"
+import type { LLMBaseVendor } from "@/packages/ai/llm_vendors/base"
 import { getHnswIndex } from "@/packages/ai/vec_search"
 import { EmbeddingTableName } from "@/packages/core/sqlite/const"
 

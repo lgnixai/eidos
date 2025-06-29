@@ -2,9 +2,10 @@ import { Plus } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Link, useNavigate } from "react-router-dom"
 
+import type {
+  LLMProviderType} from "@/packages/ai/helper";
 import {
-  ALL_PROVIDERS,
-  LLMProviderType,
+  ALL_PROVIDERS
 } from "@/packages/ai/helper"
 import { Button } from "@/components/ui/button"
 import {

@@ -6,11 +6,12 @@ import {
   useState,
 } from "react"
 import { createDOMRange, createRectsFromDOMRange } from "@lexical/selection"
+import type {
+  LexicalEditor,
+  RangeSelection} from "lexical";
 import {
   $getSelection,
-  $isRangeSelection,
-  LexicalEditor,
-  RangeSelection,
+  $isRangeSelection
 } from "lexical"
 
 export const useUpdateLocation = (

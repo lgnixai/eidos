@@ -1,7 +1,9 @@
 import { createHeadlessEditor } from "@lexical/headless"
 import { $convertToMarkdownString } from "@lexical/markdown"
-import { $createParagraphNode, $createRangeSelection, $createTextNode, $getRoot, $getSelection, $isParagraphNode, $isRangeSelection, $setSelection, BaseSelection, RootNode, $isTextNode } from "lexical"
-import { $isListItemNode, ListItemNode, $isListNode, ListNode } from "@lexical/list"
+import type { BaseSelection} from "lexical";
+import { $createParagraphNode, $createRangeSelection, $createTextNode, $getRoot, $getSelection, $isParagraphNode, $isRangeSelection, $setSelection, RootNode, $isTextNode } from "lexical"
+import type { ListItemNode} from "@lexical/list";
+import { $isListItemNode, $isListNode, ListNode } from "@lexical/list"
 
 import { _getDocMarkdown } from "@/apps/web-app/hooks/use-doc-editor"
 

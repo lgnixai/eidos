@@ -10,7 +10,8 @@ import {
   $convertFromMarkdownString,
   $convertToMarkdownString,
 } from "@lexical/markdown"
-import { $getRoot, $insertNodes, $nodesOfType, LexicalEditor } from "lexical"
+import type { LexicalEditor } from "lexical";
+import { $getRoot, $insertNodes, $nodesOfType } from "lexical"
 import zip from "lodash/zip"
 
 import { getAllLinks } from "@/lib/markdown"

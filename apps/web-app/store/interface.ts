@@ -1,7 +1,7 @@
 
-import { ITreeNode } from "../../../packages/core/types/ITreeNode"
-import { IView } from "../../../packages/core/types/IView"
-import { IField } from "../../core/fields/IField"
+import type { ITreeNode } from "../../../packages/core/types/ITreeNode"
+import type { IView } from "../../../packages/core/types/IView"
+import type { IField } from "../../core/fields/IField"
 
 export interface ITable {
   rowMap: {

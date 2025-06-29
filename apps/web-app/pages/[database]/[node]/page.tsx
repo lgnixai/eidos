@@ -3,9 +3,10 @@ import { Wand2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useNavigate, useParams } from "react-router-dom"
 
+import type {
+  EidosDataEventChannelMsg} from "@/lib/const";
 import {
   DataUpdateSignalType,
-  EidosDataEventChannelMsg,
   EidosDataEventChannelMsgType,
   EidosDataEventChannelName,
 } from "@/lib/const"

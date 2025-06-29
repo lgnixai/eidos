@@ -1,19 +1,23 @@
 "use client"
 
-import { KeyboardEventHandler, forwardRef, useMemo } from "react"
+import type { KeyboardEventHandler} from "react";
+import { forwardRef, useMemo } from "react"
 import {
   acceptCompletion,
   completionStatus,
   startCompletion,
 } from "@codemirror/autocomplete"
 import { defaultKeymap, insertTab } from "@codemirror/commands"
-import { SQLNamespace, sql } from "@codemirror/lang-sql"
-import { LanguageSupport, indentUnit } from "@codemirror/language"
+import type { SQLNamespace} from "@codemirror/lang-sql";
+import { sql } from "@codemirror/lang-sql"
+import type { LanguageSupport} from "@codemirror/language";
+import { indentUnit } from "@codemirror/language"
 import { keymap } from "@codemirror/view"
-import CodeMirror, {
-  EditorView,
+import type {
   Extension,
-  ReactCodeMirrorRef,
+  ReactCodeMirrorRef} from "@uiw/react-codemirror";
+import CodeMirror, {
+  EditorView
 } from "@uiw/react-codemirror"
 import { toast } from "sonner"
 

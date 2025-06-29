@@ -1,6 +1,7 @@
 import esmShim from '@rollup/plugin-esm-shim'
 import path from "path"
-import { Plugin, UserConfig, mergeConfig, defineConfig } from "vite"
+import type { Plugin, UserConfig} from "vite";
+import { mergeConfig, defineConfig } from "vite"
 import electron from 'vite-plugin-electron/simple'
 import { sharedAlias, sharedConfig } from "../../packages/shared/vite/base.config"
 import { createHtmlPlugin } from "../../packages/shared/vite/plugins"

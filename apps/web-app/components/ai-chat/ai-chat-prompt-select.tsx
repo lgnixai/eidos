@@ -1,5 +1,5 @@
 import * as React from "react"
-import { IExtension } from "@/packages/core/meta-table/extension"
+import type { IExtension } from "@/packages/core/meta-table/extension"
 import { Check, ChevronsUpDown } from "lucide-react"
 import { Link } from "react-router-dom"
 

@@ -1,4 +1,4 @@
-import { DataSpace } from "../DataSpace"
+import type { DataSpace } from "../DataSpace"
 
 export abstract class BaseImportAndExport {
   abstract import(textFileLike: {

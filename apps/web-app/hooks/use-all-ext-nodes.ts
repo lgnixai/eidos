@@ -1,7 +1,8 @@
 import { useSqlite } from "@/apps/web-app/hooks/use-sqlite"
-import { DataUpdateSignalType, EidosDataEventChannelMsg, EidosDataEventChannelMsgType, EidosDataEventChannelName } from "@/lib/const"
+import type { EidosDataEventChannelMsg} from "@/lib/const";
+import { DataUpdateSignalType, EidosDataEventChannelMsgType, EidosDataEventChannelName } from "@/lib/const"
 import { ScriptTableName } from "@/packages/core/sqlite/const"
-import { IExtension } from "@/packages/core/meta-table/extension"
+import type { IExtension } from "@/packages/core/meta-table/extension"
 import { useCallback, useEffect } from "react"
 import { create } from "zustand"
 

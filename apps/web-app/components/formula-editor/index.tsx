@@ -1,5 +1,5 @@
 import { CodeMirrorFormulaEditor } from "./codemirror-editor"
-import { Udf } from "./completions"
+import type { Udf } from "./completions"
 
 export const FormulaEditor = ({
   value,

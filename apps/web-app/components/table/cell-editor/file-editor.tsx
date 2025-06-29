@@ -1,8 +1,9 @@
 import { useClickAway } from "ahooks"
 import { useRef, useState } from "react"
 
+import type {
+  FileCell} from "@/components/table/views/grid/cells/file/file-cell";
 import {
-  FileCell,
   FileCellEditor,
 } from "@/components/table/views/grid/cells/file/file-cell"
 import {

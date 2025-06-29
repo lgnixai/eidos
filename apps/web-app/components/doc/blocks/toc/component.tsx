@@ -1,6 +1,6 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
 import { TableOfContentsPlugin } from "@lexical/react/LexicalTableOfContentsPlugin"
-import { NodeKey } from "lexical"
+import type { NodeKey } from "lexical"
 
 import { cn } from "@/lib/utils"
 

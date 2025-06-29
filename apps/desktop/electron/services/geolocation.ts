@@ -1,5 +1,5 @@
 import { DOMAINS } from "@/lib/const";
-import { BrowserWindow } from "electron";
+import type { BrowserWindow } from "electron";
 
 /**
  * Sets up geolocation permission handling for a browser window

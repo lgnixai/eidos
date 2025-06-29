@@ -1,16 +1,18 @@
 import * as React from "react"
-import {
+import type {
   CustomCell,
   CustomRenderer,
-  GridCellKind,
   ProvideEditorCallback,
-  Rectangle,
+  Rectangle} from "@glideapps/glide-data-grid";
+import {
+  GridCellKind,
   getMiddleCenterBias,
   measureTextCached,
 } from "@glideapps/glide-data-grid"
 import { XIcon } from "lucide-react"
 
-import { SelectField, SelectOption } from "@/packages/core/fields/select"
+import type { SelectOption } from "@/packages/core/fields/select";
+import { SelectField } from "@/packages/core/fields/select"
 import { cn } from "@/lib/utils"
 import {
   Command,

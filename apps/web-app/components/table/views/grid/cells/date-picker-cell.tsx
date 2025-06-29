@@ -1,7 +1,8 @@
 import * as React from "react"
-import {
+import type {
   CustomCell,
-  CustomRenderer,
+  CustomRenderer} from "@glideapps/glide-data-grid";
+import {
   GridCellKind,
   drawTextCell,
 } from "@glideapps/glide-data-grid"

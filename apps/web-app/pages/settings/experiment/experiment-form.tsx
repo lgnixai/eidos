@@ -14,8 +14,9 @@ import {
   FormLabel,
 } from "@/components/react-hook-form/form"
 
+import type {
+  ExperimentFormValues} from "./store";
 import {
-  ExperimentFormValues,
   experimentFormSchema,
   useExperimentConfigStore,
 } from "./store"

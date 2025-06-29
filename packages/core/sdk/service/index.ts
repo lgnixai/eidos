@@ -1,5 +1,5 @@
-import { DataSpace } from "../../DataSpace"
-import { TableManager } from "../table"
+import type { DataSpace } from "../../DataSpace"
+import type { TableManager } from "../table"
 import { LinkFieldService } from "./link"
 import { LookupFieldService } from "./lookup"
 import { MultiSelectFieldService } from "./multi-select"

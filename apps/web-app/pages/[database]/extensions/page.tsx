@@ -1,5 +1,5 @@
 import { useMemo } from "react"
-import { IExtension } from "@/packages/core/meta-table/extension"
+import type { IExtension } from "@/packages/core/meta-table/extension"
 import { useQueryParam, StringParam, BooleanParam } from "use-query-params"
 import { useMount } from "ahooks"
 import {

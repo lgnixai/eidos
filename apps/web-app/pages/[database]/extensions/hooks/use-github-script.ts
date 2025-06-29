@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { IExtension } from "@/packages/core/meta-table/extension"
+import type { IExtension } from "@/packages/core/meta-table/extension"
 
 import { DOMAINS } from "@/lib/const"
 

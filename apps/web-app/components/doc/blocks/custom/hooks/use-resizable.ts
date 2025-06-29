@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useRef, useEffect } from "react"
-import { LexicalEditor, $getNodeByKey, NodeKey } from "lexical"
+import type { LexicalEditor, NodeKey } from "lexical";
+import { $getNodeByKey } from "lexical"
 
 import { $isCustomBlockNode } from "../node"
 

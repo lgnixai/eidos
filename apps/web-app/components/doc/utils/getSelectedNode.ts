@@ -6,7 +6,7 @@
  *
  */
 import { $isAtNodeEnd } from "@lexical/selection"
-import { ElementNode, RangeSelection, TextNode, LexicalNode } from "lexical"
+import type { ElementNode, RangeSelection, TextNode, LexicalNode } from "lexical"
 
 export function findFirstBlockElement(node: LexicalNode): ElementNode | null {
   let current: LexicalNode | null = node;

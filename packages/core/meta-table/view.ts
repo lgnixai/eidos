@@ -3,10 +3,12 @@ import {
   replaceQueryTableName,
   replaceWithFindIndexQuery,
 } from "@/packages/core/sqlite/sql-parser"
-import { IView, ViewTypeEnum } from "@/packages/core/types/IView"
+import type { IView} from "@/packages/core/types/IView";
+import { ViewTypeEnum } from "@/packages/core/types/IView"
 import { getTableIdByRawTableName, getUuid } from "@/lib/utils"
 
-import { BaseTable, BaseTableImpl } from "./base"
+import type { BaseTable} from "./base";
+import { BaseTableImpl } from "./base"
 import { timeit } from "../helper"
 
 export class ViewTable extends BaseTableImpl implements BaseTable<IView> {

@@ -6,10 +6,12 @@
  * LICENSE file in the root directory of this source tree.
  *
  */
+import type {
+  ElementTransformer
+} from '@lexical/markdown';
 import {
   $convertFromMarkdownString,
-  $convertToMarkdownString,
-  ElementTransformer
+  $convertToMarkdownString
 } from '@lexical/markdown';
 import {
   $createHorizontalRuleNode,
@@ -28,11 +30,13 @@ import {
   TableNode,
   TableRowNode,
 } from '@lexical/table';
+import type {
+  LexicalNode
+} from 'lexical';
 import {
   $getEditor,
   $isParagraphNode,
-  $isTextNode,
-  LexicalNode
+  $isTextNode
 } from 'lexical';
 import { allTransformers } from './const';
 

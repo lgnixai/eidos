@@ -27,8 +27,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import type {
+  INodePath} from "@/apps/web-app/hooks/use-current-node";
 import {
-  INodePath,
   useCurrentNode,
   useCurrentNodePath,
 } from "@/apps/web-app/hooks/use-current-node"

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react"
-import { SQLNamespace } from "@codemirror/lang-sql"
+import type { SQLNamespace } from "@codemirror/lang-sql"
 import { useTranslation } from "react-i18next"
 
 import { formatSql } from "@/packages/core/sqlite/helper"

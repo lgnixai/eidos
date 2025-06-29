@@ -1,9 +1,10 @@
-import { DataConnection } from "peerjs"
+import type { DataConnection } from "peerjs"
 
-import {
-    ECollaborationMsgType,
+import type {
     IMsgForward,
-    IMsgQueryResp,
+    IMsgQueryResp} from "@/packages/core/types/ICollaboration";
+import {
+    ECollaborationMsgType
 } from "@/packages/core/types/ICollaboration"
 import { EidosDataEventChannelName } from "@/packages/lib/const"
 

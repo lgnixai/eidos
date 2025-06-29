@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
 
-import { ITreeNode } from "@/packages/core/types/ITreeNode"
+import type { ITreeNode } from "@/packages/core/types/ITreeNode"
 import { useGotoCurrentSpaceHome } from "@/apps/web-app/hooks/use-goto"
 import { useSqlite } from "@/apps/web-app/hooks/use-sqlite"
 import {

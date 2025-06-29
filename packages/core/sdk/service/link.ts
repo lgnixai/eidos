@@ -1,11 +1,11 @@
 import { FieldType } from "../../fields/const"
-import { ILinkProperty } from "../../fields/link"
+import type { ILinkProperty } from "../../fields/link"
 import { ColumnTableName } from "../../sqlite/const"
-import { IField } from "../../types/IField"
+import type { IField } from "../../types/IField"
 import { getTableIdByRawTableName } from "@/lib/utils"
 
-import { DataSpace, EidosDatabase } from "../../DataSpace"
-import { TableManager } from "../table"
+import type { DataSpace, EidosDatabase } from "../../DataSpace"
+import type { TableManager } from "../table"
 
 interface IRelation {
   self: string

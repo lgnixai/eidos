@@ -2,7 +2,7 @@ import { useContext, useEffect, useRef, useState } from "react"
 import AutoSizer from "react-virtualized-auto-sizer"
 import { VariableSizeGrid as Grid } from "react-window"
 
-import { IView } from "@/packages/core/types/IView"
+import type { IView } from "@/packages/core/types/IView"
 import { getTableIdByRawTableName } from "@/lib/utils"
 import { useSqliteStore } from "@/apps/web-app/hooks/use-sqlite"
 import { useUiColumns } from "@/apps/web-app/hooks/use-ui-columns"
@@ -10,7 +10,7 @@ import { useUiColumns } from "@/apps/web-app/hooks/use-ui-columns"
 import { TableContext, useShowColumns } from "../../hooks"
 import { GalleryCard } from "./gallery-card"
 import { useGalleryViewData } from "./hooks"
-import { IGalleryViewProperties } from "./properties"
+import type { IGalleryViewProperties } from "./properties"
 import { computeCardHeight, getColumnWidthAndCount } from "./utils"
 
 interface IGalleryViewProps {

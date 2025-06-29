@@ -1,12 +1,13 @@
 import * as React from "react"
-import { DataSpace } from "@/packages/core/DataSpace"
+import type { DataSpace } from "@/packages/core/DataSpace"
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
 import { $getNodeByKey } from "lexical"
 
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
-import { $isSQLNode, SQLNode } from "./node"
+import type { SQLNode } from "./node";
+import { $isSQLNode } from "./node"
 import { useModal } from "../../hooks/useModal"
 import { SqlQueryDialog } from "./dialog"
 import { QueryResultType, getQueryResultType } from "./helper"

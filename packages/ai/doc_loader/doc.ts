@@ -1,7 +1,7 @@
-import { DataSpace } from "@/packages/core/DataSpace"
+import type { DataSpace } from "@/packages/core/DataSpace"
 import chunk from "lodash/chunk"
 
-import { BaseLoader } from "./base"
+import type { BaseLoader } from "./base"
 
 export class DocLoader implements BaseLoader {
   constructor(private dataSpace: DataSpace) {}

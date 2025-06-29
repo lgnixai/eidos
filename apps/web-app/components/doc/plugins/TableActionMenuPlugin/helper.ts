@@ -6,12 +6,13 @@
  *
  */
 
+import type {
+    TableCellNode,
+    TableSelection} from "@lexical/table";
 import {
     $getNodeTriplet,
     $isTableCellNode,
-    $isTableSelection,
-    TableCellNode,
-    TableSelection,
+    $isTableSelection
 } from "@lexical/table"
 import {
     $getSelection,

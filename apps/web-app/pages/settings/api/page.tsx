@@ -20,8 +20,9 @@ import {
   FormMessage,
 } from "@/components/react-hook-form/form"
 
+import type {
+  APIAgentFormValues} from "./store";
 import {
-  APIAgentFormValues,
   apiAgentFormSchema,
   useAPIConfigStore,
 } from "./store"

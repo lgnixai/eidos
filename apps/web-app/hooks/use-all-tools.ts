@@ -1,4 +1,4 @@
-import { Tool } from "ai"
+import type { Tool } from "ai"
 import { useMemo } from "react"
 import { useAllScripts } from "./use-all-scripts"
 import { createRecordsTool } from "./tools/table"

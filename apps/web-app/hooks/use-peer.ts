@@ -2,10 +2,11 @@ import { useCallback, useEffect } from "react"
 import type { DataConnection, Peer } from "peerjs"
 import { create } from "zustand"
 
-import {
-  ECollaborationMsgType,
+import type {
   ICollaborator,
-  IMsg,
+  IMsg} from "@/packages/core/types/ICollaboration";
+import {
+  ECollaborationMsgType
 } from "@/packages/core/types/ICollaboration"
 import { EidosDataEventChannelName } from "@/lib/const"
 import { getWorker } from "@/packages/core/sqlite/worker"

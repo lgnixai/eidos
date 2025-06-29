@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
 import html2canvas from "html2canvas"
-import { $getNodeByKey, NodeKey } from "lexical"
+import type { NodeKey } from "lexical";
+import { $getNodeByKey } from "lexical"
 import { ChevronDown } from "lucide-react"
 import { useTheme } from "next-themes"
 

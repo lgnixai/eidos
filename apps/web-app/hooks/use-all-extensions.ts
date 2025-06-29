@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { IExtension } from "@/packages/core/meta-table/extension"
+import type { IExtension } from "@/packages/core/meta-table/extension"
 
 import { useSqlite } from "./use-sqlite"
 

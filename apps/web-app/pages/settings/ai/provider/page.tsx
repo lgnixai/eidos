@@ -1,6 +1,6 @@
 import { useParams, useSearchParams, useNavigate } from "react-router-dom"
 
-import { LLMProvider } from "@/packages/ai/config"
+import type { LLMProvider } from "@/packages/ai/config"
 import { useAIConfigStore } from "../store"
 import { LLMProviderForm } from "./new-llm-provider-form"
 

@@ -1,14 +1,15 @@
 import { extractFunction } from "@/packages/v3/code-tools/code-extractor";
 import { generateImportMap, getAllLibs } from "@/packages/v3/code-tools/get-deps";
-import { DataSpace } from '@/packages/core/DataSpace';
-import { IExtension } from "@/packages/core/meta-table/extension";
+import type { DataSpace } from '@/packages/core/DataSpace';
+import type { IExtension } from "@/packages/core/meta-table/extension";
 import vm from 'vm';
 import { getOrSetDataSpace } from "../../data-space";
 import { getIndexHtml } from "./ext-html";
 import { makeSdkInjectScript, presetThemes, twConfig } from "./helper";
 
 
-import { ConfigManager, getConfigManager } from "@/apps/desktop/electron/config";
+import type { ConfigManager} from "@/apps/desktop/electron/config";
+import { getConfigManager } from "@/apps/desktop/electron/config";
 import { uiComponentsDependencies } from "./ui-deps";
 
 

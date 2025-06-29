@@ -1,10 +1,10 @@
-import { GridColumn } from "@glideapps/glide-data-grid";
+import type { GridColumn } from "@glideapps/glide-data-grid";
 // Use a compatible type for size if the direct import fails
 // import { type Size } from "ahooks/lib/useSize"; // Previous attempts failed
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { useViewOperation } from "@/components/table/hooks";
-import { IGridViewProperties, IView } from "@/packages/core/types/IView";
+import type { IGridViewProperties, IView } from "@/packages/core/types/IView";
 
 interface UseFreezeLineProps {
     gridRef: React.RefObject<HTMLElement | null>;

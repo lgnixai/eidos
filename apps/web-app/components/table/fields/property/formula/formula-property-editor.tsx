@@ -2,7 +2,7 @@ import { FunctionSquareIcon } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 
 import { useCurrentUiColumns } from "@/apps/web-app/hooks/use-ui-columns"
-import { CodeMirrorFormulaEditorRef } from "@/components/formula-editor/codemirror-editor"
+import type { CodeMirrorFormulaEditorRef } from "@/components/formula-editor/codemirror-editor"
 import { Label } from "@/components/ui/label"
 import {
   Popover,
@@ -11,8 +11,8 @@ import {
 } from "@/components/ui/popover"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { FieldType } from "@/packages/core/fields/const"
-import { FormulaProperty } from "@/packages/core/fields/formula"
-import { IField } from "@/packages/core/types/IField"
+import type { FormulaProperty } from "@/packages/core/fields/formula"
+import type { IField } from "@/packages/core/types/IField"
 
 import { FormulaEditor } from "../../../views/grid/plugins/formula-editor"
 

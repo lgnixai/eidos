@@ -1,5 +1,5 @@
 import { getPythonWorker } from "@/lib/python/worker";
-import { DataSpace } from "@/packages/core/DataSpace";
+import type { DataSpace } from "@/packages/core/DataSpace";
 import sdkInjectScript from "./sdk-inject-script.html?raw";
 
 

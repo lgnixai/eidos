@@ -1,5 +1,5 @@
-import { LexicalEditor } from "lexical"
-import { DocBlock } from "../interface"
+import type { LexicalEditor } from "lexical"
+import type { DocBlock } from "../interface"
 import { $createChartNode, CHART_NODE_TRANSFORMER, ChartNode } from "./node"
 import { INSERT_CHART_COMMAND, ChartPlugin } from "./plugin"
 

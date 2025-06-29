@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { useToast } from "@/components/ui/use-toast";
-import { IExtension } from "@/packages/core/meta-table/extension";
+import type { IExtension } from "@/packages/core/meta-table/extension";
 import { getEditorLanguage } from "../helper";
 import { useExtension } from "../../../../hooks/use-extension";
 import { EIDOS_SPACE_BASE_URL } from "@/lib/const";

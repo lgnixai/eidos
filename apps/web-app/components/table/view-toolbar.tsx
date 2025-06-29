@@ -5,9 +5,10 @@ import React, {
   useRef,
   useState,
 } from "react"
+import type {
+  DragEndEvent} from "@dnd-kit/core";
 import {
   DndContext,
-  DragEndEvent,
   KeyboardSensor,
   PointerSensor,
   closestCenter,
@@ -28,7 +29,8 @@ import {
   useSearchParams,
 } from "react-router-dom"
 
-import { IView, ViewTypeEnum } from "@/packages/core/types/IView"
+import type { IView} from "@/packages/core/types/IView";
+import { ViewTypeEnum } from "@/packages/core/types/IView"
 import { cn, getTableIdByRawTableName, shortenId, uuidv7 } from "@/lib/utils"
 import { useCurrentSubPage } from "@/apps/web-app/hooks/use-current-sub-page"
 import { useSqlite } from "@/apps/web-app/hooks/use-sqlite"

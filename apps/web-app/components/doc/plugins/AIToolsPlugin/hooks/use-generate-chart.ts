@@ -1,6 +1,7 @@
 import { useAiConfig } from '@/apps/web-app/hooks/use-ai-config';
 import { getProvider } from '@/packages/ai/helper';
-import { LanguageModelV1, generateObject } from 'ai';
+import type { LanguageModelV1} from 'ai';
+import { generateObject } from 'ai';
 import { useState } from 'react';
 import { z } from 'zod';
 

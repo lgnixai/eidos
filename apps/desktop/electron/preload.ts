@@ -3,10 +3,11 @@ import { SpaceFileSystem } from '@/lib/storage/space';
 import { contextBridge, ipcRenderer } from 'electron';
 import { getOriginPrivateDirectory } from 'native-file-system-adapter';
 
-import { AppConfig, ConfigManager } from './config/index';
-import { PlaygroundFile } from './file-system/playground';
+import type { AppConfig} from './config/index';
+import { ConfigManager } from './config/index';
+import type { PlaygroundFile } from './file-system/playground';
 import nodeAdapter from './lib/node-adapter';
-import { ApiAgentStatus } from './server/api-agent';
+import type { ApiAgentStatus } from './server/api-agent';
 
 type IpcListener = (event: Electron.IpcRendererEvent, ...args: any[]) => void;
 

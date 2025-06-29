@@ -1,8 +1,8 @@
 import { useSqlite } from "@/apps/web-app/hooks/use-sqlite"
 import { useEditorStore } from "../stores/editor-store"
 import { useEffect } from "react"
-import { DataSpace } from "@/packages/core/DataSpace"
-import { Message } from "ai"
+import type { DataSpace } from "@/packages/core/DataSpace"
+import type { Message } from "ai"
 import { uuidv7 } from "@/lib/utils"
 
 const getChatIds = async (sqlite: DataSpace, scriptId: string) => {

@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { Attachment } from 'ai'
+import type { Attachment } from 'ai'
 import { useSqlite } from '@/apps/web-app/hooks/use-sqlite'
 import { useToast } from '@/components/ui/use-toast'
 

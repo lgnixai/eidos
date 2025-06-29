@@ -2,7 +2,7 @@ import { useEmbedding } from "@/apps/web-app/hooks/use-embedding"
 import { EmbeddingManager } from "@/apps/web-app/hooks/use-hnsw"
 import { BGEM3 } from "@/packages/ai/llm_vendors/bge"
 import { getSqliteProxy } from "@/packages/core/sqlite/channel"
-import { EidosFileSystemManager } from "@/lib/storage/eidos-file-system"
+import type { EidosFileSystemManager } from "@/lib/storage/eidos-file-system"
 
 const needRemovedPaths = ["resolve", "main"]
 export const saveTransformerCache = (efsManager: EidosFileSystemManager) => async () => {

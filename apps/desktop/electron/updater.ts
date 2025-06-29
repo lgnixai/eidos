@@ -1,5 +1,5 @@
 import { autoUpdater } from 'electron-updater';
-import { BrowserWindow } from 'electron';
+import type { BrowserWindow } from 'electron';
 import log from 'electron-log';
 
 export class AppUpdater {

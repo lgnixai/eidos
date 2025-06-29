@@ -11,7 +11,7 @@ import {
   type SetStateAction,
 } from "react"
 import { sanitizeUIMessages } from "@/packages/ai/utils"
-import { IExtension } from "@/packages/core/meta-table/extension"
+import type { IExtension } from "@/packages/core/meta-table/extension"
 import type { Attachment, ChatRequestOptions, CreateMessage, Message } from "ai"
 import cx from "classnames"
 import { motion } from "framer-motion"

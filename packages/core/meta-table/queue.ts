@@ -1,4 +1,5 @@
-import { BaseTable, BaseTableImpl } from "./base";
+import type { BaseTable} from "./base";
+import { BaseTableImpl } from "./base";
 import { QueueTableName } from "@/packages/core/sqlite/const";
 
 export type QueueStatus = "pending" | "processing" | "completed" | "failed";

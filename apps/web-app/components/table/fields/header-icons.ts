@@ -1,4 +1,4 @@
-import { SpriteMap } from "@glideapps/glide-data-grid"
+import type { SpriteMap } from "@glideapps/glide-data-grid"
 
 import { FieldType } from "@/packages/core/fields/const"
 

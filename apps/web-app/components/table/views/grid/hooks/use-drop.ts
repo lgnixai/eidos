@@ -1,15 +1,16 @@
 import React from "react"
-import {
+import type {
   DataEditorProps,
   GridCell,
-  GridCellKind,
-  Item,
+  Item} from "@glideapps/glide-data-grid";
+import {
+  GridCellKind
 } from "@glideapps/glide-data-grid"
 
 import { useFileSystem } from "@/apps/web-app/hooks/use-files"
 import { getDragFileUrl } from "@/components/file-manager/helper"
 
-import { FileCell } from "../cells/file/file-cell"
+import type { FileCell } from "../cells/file/file-cell"
 
 const SUPPORTED_IMAGE_TYPES = new Set([
   "image/png",

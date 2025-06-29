@@ -11,13 +11,14 @@ import {
 import { DndProvider } from "react-dnd"
 import { HTML5Backend } from "react-dnd-html5-backend"
 
-import { ITreeNode, TreeNodeType } from "@/packages/core/types/ITreeNode"
+import type { ITreeNode} from "@/packages/core/types/ITreeNode";
+import { TreeNodeType } from "@/packages/core/types/ITreeNode"
 import { cn } from "@/lib/utils"
 
 import { Button } from "../ui/button"
 import { CreateNodeTrigger } from "./tree/create-node-trigger"
 import { NodeTreeContainer } from "./tree/node-tree"
-import { IHoverTarget } from "./tree/store"
+import type { IHoverTarget } from "./tree/store"
 
 export const CurrentItemTree = ({
   allNodes,

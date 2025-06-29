@@ -1,5 +1,5 @@
-import { CompletionContext, CompletionResult } from "@codemirror/autocomplete"
-import { EditorView } from "codemirror"
+import type { CompletionContext, CompletionResult } from "@codemirror/autocomplete"
+import type { EditorView } from "codemirror"
 import { parse } from "comment-parser"
 
 import { JSON_FUNCTIONS } from "./functions/json"

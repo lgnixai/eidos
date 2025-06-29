@@ -2,13 +2,14 @@ import { useCallback, useEffect, useState } from "react"
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
 import { $isTableCellNode, $isTableSelection } from "@lexical/table"
 import { useKeyPress } from "ahooks"
+import type {
+  LexicalNode} from "lexical";
 import {
   $getNodeByKey,
   $getRoot,
   $getSelection,
   $isRangeSelection,
-  $isRootNode,
-  LexicalNode,
+  $isRootNode
 } from "lexical"
 
 import { useEditorInstance } from "../../hooks/editor-instance-context"

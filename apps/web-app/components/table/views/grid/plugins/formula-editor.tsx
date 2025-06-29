@@ -13,8 +13,8 @@ import {
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 
-import { FormulaProperty } from "@/packages/core/fields/formula"
-import { IField } from "@/packages/core/types/IField"
+import type { FormulaProperty } from "@/packages/core/fields/formula"
+import type { IField } from "@/packages/core/types/IField"
 import { cn } from "@/lib/utils"
 import { useFormulaUpdate } from "@/apps/web-app/hooks/use-formula-update"
 import { useFormulaValidation } from "@/apps/web-app/hooks/use-formula-validation"
@@ -27,12 +27,14 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import type {
+  CodeMirrorFormulaEditorRef} from "@/components/formula-editor/codemirror-editor";
 import {
-  CodeMirrorFormulaEditor,
-  CodeMirrorFormulaEditorRef,
+  CodeMirrorFormulaEditor
 } from "@/components/formula-editor/codemirror-editor"
+import type {
+  UiColumn} from "@/components/formula-editor/completions";
 import {
-  UiColumn,
   getCompletions,
 } from "@/components/formula-editor/completions"
 import { TableContext } from "@/components/table/hooks"

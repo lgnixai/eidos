@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Check, X } from "lucide-react"
-import { ControllerRenderProps, useForm } from "react-hook-form"
+import type { ControllerRenderProps} from "react-hook-form";
+import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import * as z from "zod"
 

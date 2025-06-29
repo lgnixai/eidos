@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react"
-import { EventEmitter } from "ahooks/lib/useEventEmitter"
+import type { EventEmitter } from "ahooks/lib/useEventEmitter"
 
 import { ExtensionSourceType, useExtMsg } from "./hooks/use-ext-msg"
 

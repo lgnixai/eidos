@@ -1,6 +1,6 @@
 import { create } from "zustand"
 
-import { ITreeNode } from "@/packages/core/types/ITreeNode"
+import type { ITreeNode } from "@/packages/core/types/ITreeNode"
 import { persist } from "zustand/middleware"
 
 export interface IHoverTarget extends ITreeNode {

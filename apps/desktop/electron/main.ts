@@ -1,6 +1,7 @@
 import { MsgType } from '@/lib/const';
 import { handleFunctionCall } from '@/packages/core/rpc';
-import { BrowserWindow, Menu, Tray, app, dialog, ipcMain, nativeImage, shell } from 'electron';
+import type { BrowserWindow} from 'electron';
+import { Menu, Tray, app, dialog, ipcMain, nativeImage, shell } from 'electron';
 import electronLog from 'electron-log';
 import path from 'path';
 import { getConfigManager } from './config';

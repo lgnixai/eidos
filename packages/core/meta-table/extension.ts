@@ -1,9 +1,10 @@
-import { JsonSchema7ObjectType } from "zod-to-json-schema"
+import type { JsonSchema7ObjectType } from "zod-to-json-schema"
 
 import { ScriptTableName } from "@/packages/core/sqlite/const"
 import { createUpdateTriggerForFields } from "@/packages/core/sqlite/sql-meta-table-trigger"
 
-import { BaseTable, BaseTableImpl } from "./base"
+import type { BaseTable} from "./base";
+import { BaseTableImpl } from "./base"
 
 export type ExtensionStatus = "all" | "enabled" | "disabled"
 

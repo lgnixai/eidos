@@ -1,13 +1,14 @@
 import { useCallback } from "react"
 import { ArrowDownUpIcon } from "lucide-react"
-import {
+import type {
   OrderByStatement,
-  SelectFromStatement,
+  SelectFromStatement} from "pgsql-ast-parser";
+import {
   parseFirst,
   toSql,
 } from "pgsql-ast-parser"
 
-import { IView } from "@/packages/core/types/IView"
+import type { IView } from "@/packages/core/types/IView"
 import { cn } from "@/lib/utils"
 import {
   Popover,
@@ -17,7 +18,8 @@ import {
 
 import { Button } from "../ui/button"
 import { useViewOperation } from "./hooks"
-import { OrderByItem, ViewSortEditor } from "./view-sort-editor"
+import type { OrderByItem} from "./view-sort-editor";
+import { ViewSortEditor } from "./view-sort-editor"
 
 // filter orderBy
 export const ViewSort = ({ view }: { view?: IView }) => {

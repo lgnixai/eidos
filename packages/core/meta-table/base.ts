@@ -1,4 +1,4 @@
-import { DataSpace } from "../DataSpace"
+import type { DataSpace } from "../DataSpace"
 
 export interface MetaTable<T> {
   add(data: T): Promise<T>

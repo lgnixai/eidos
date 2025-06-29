@@ -1,7 +1,8 @@
 import { useEffect } from "react"
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
 import { $insertNodeToNearestRoot } from "@lexical/utils"
-import { COMMAND_PRIORITY_EDITOR, LexicalCommand, createCommand } from "lexical"
+import type { LexicalCommand} from "lexical";
+import { COMMAND_PRIORITY_EDITOR, createCommand } from "lexical"
 
 import { $createFileNode, FileNode } from "./node"
 import { $insertDecoratorBlockNode } from "../helper"

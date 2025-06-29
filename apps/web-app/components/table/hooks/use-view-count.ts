@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useState } from "react"
-import { Expr, SelectFromStatement, parseFirst, toSql } from "pgsql-ast-parser"
+import type { Expr, SelectFromStatement} from "pgsql-ast-parser";
+import { parseFirst, toSql } from "pgsql-ast-parser"
 import { create } from "zustand"
 
-import { IView } from "@/packages/core/types/IView"
+import type { IView } from "@/packages/core/types/IView"
 import { useSqlite } from "@/apps/web-app/hooks/use-sqlite"
 
 const countExpr = {

@@ -7,15 +7,17 @@
  */
 
 import * as React from "react"
-import { TextMatchTransformer } from "@lexical/markdown"
+import type { TextMatchTransformer } from "@lexical/markdown"
 import { BlockWithAlignableContents } from "@lexical/react/LexicalBlockWithAlignableContents"
+import type {
+  SerializedDecoratorBlockNode} from "@lexical/react/LexicalDecoratorBlockNode";
 import {
-  DecoratorBlockNode,
-  SerializedDecoratorBlockNode,
+  DecoratorBlockNode
 } from "@lexical/react/LexicalDecoratorBlockNode"
+import type {
+  ElementFormatType} from "lexical";
 import {
   $applyNodeReplacement,
-  ElementFormatType,
   createEditor,
   type DOMConversionMap,
   type DOMConversionOutput,

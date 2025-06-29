@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react"
-import { DataEditorProps } from "@glideapps/glide-data-grid"
+import type { DataEditorProps } from "@glideapps/glide-data-grid"
 import { getWorker } from "@/packages/core/sqlite/worker"
 import { MsgType } from "@/lib/const"
 import { getRawTableNameById } from "@/lib/utils"
-import { IField } from "@/packages/core/types/IField"
+import type { IField } from "@/packages/core/types/IField"
 
 /**
  * Custom hook to subscribe to highlight row events from the worker.

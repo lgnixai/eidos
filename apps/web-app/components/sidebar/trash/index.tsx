@@ -3,7 +3,7 @@ import { Trash2Icon, Undo2Icon } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 
-import { ITreeNode } from "@/packages/core/types/ITreeNode"
+import type { ITreeNode } from "@/packages/core/types/ITreeNode"
 import { useCurrentPathInfo } from "@/apps/web-app/hooks/use-current-pathinfo"
 import { useAllNodes } from "@/apps/web-app/hooks/use-nodes"
 import { useSqlite } from "@/apps/web-app/hooks/use-sqlite"

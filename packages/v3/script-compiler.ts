@@ -1,4 +1,4 @@
-import { IExtension } from "@/packages/core/meta-table/extension";
+import type { IExtension } from "@/packages/core/meta-table/extension";
 import { compileCode } from "./compiler";
 import { compileLexicalCode } from "./lexical-compiler";
 import { transform } from "./esbuild";

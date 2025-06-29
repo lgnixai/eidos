@@ -1,9 +1,10 @@
-import { Email } from "postal-mime"
+import type { Email } from "postal-mime"
 
 import { MsgType } from "@/lib/const"
 import { DocTableName } from "@/packages/core/sqlite/const"
 
-import { BaseTable, BaseTableImpl } from "./base"
+import type { BaseTable} from "./base";
+import { BaseTableImpl } from "./base"
 
 /**
  * Utility function to escape FTS queries safely

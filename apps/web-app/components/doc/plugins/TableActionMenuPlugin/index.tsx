@@ -1,7 +1,9 @@
-import { ReactPortal, useCallback, useEffect, useRef, useState } from "react"
+import type { ReactPortal} from "react";
+import { useCallback, useEffect, useRef, useState } from "react"
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
 import { useLexicalEditable } from "@lexical/react/useLexicalEditable"
-import { $isTableCellNode, TableCellNode } from "@lexical/table"
+import type { TableCellNode } from "@lexical/table";
+import { $isTableCellNode } from "@lexical/table"
 import {
   $getNearestNodeFromDOMNode,
   $getSelection,

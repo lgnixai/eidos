@@ -1,11 +1,12 @@
-import { RefObject, useEffect, useRef } from "react"
+import type { RefObject} from "react";
+import { useEffect, useRef } from "react"
 import { useTranslation } from "react-i18next"
 
 import { cn } from "@/lib/utils"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 
 import { useFileFields } from "./hooks"
-import {
+import type {
   SemanticSearchResult,
   SemanticSearchResultData,
 } from "./hooks/use-table-search-store"

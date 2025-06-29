@@ -1,4 +1,4 @@
-import { DecoratorBlockNode } from "@lexical/react/LexicalDecoratorBlockNode"
+import type { DecoratorBlockNode } from "@lexical/react/LexicalDecoratorBlockNode"
 import { $getSelection, $isRangeSelection, $createParagraphNode } from "lexical"
 import { getSelectedNode } from "../utils/getSelectedNode"
 import { $isListItemNode } from "@lexical/list"

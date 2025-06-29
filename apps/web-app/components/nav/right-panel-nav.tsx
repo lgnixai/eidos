@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react"
+import type {
+  LucideIcon} from "lucide-react";
 import {
   BotIcon,
-  LucideIcon,
   MoreHorizontalIcon,
   PanelRightIcon,
   PlusIcon,

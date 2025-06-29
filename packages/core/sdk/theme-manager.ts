@@ -1,6 +1,6 @@
 
 import { MsgType } from "@/lib/const"
-import { DataSpace } from "../DataSpace"
+import type { DataSpace } from "../DataSpace"
 
 export class ThemeManager {
 

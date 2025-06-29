@@ -2,7 +2,7 @@ import { useRef, useState } from "react"
 import { useDrop, useSize } from "ahooks"
 import { useTranslation } from "react-i18next"
 
-import { ITreeNode } from "@/packages/core/types/ITreeNode"
+import type { ITreeNode } from "@/packages/core/types/ITreeNode"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {

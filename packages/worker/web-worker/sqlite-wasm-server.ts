@@ -1,10 +1,10 @@
-import type { Database } from "@sqlite.org/sqlite-wasm"
-import sqlite3InitModule, { Sqlite3Static } from "@sqlite.org/sqlite-wasm"
+import type { Database , Sqlite3Static } from "@sqlite.org/sqlite-wasm"
+import sqlite3InitModule from "@sqlite.org/sqlite-wasm"
 
 import { logger } from "@/lib/env"
 
 import { EidosDataEventChannelName } from "@/lib/const"
-import { BaseServerDatabase } from "@/packages/core/sqlite/interface"
+import type { BaseServerDatabase } from "@/packages/core/sqlite/interface"
 import { DataSpace } from "../../core/DataSpace"
 
 const log = logger.info

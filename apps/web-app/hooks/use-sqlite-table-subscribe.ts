@@ -1,9 +1,10 @@
 import { useCallback, useEffect } from "react"
 import { ColumnTable } from "@/packages/core/meta-table/column"
 
+import type {
+  EidosDataEventChannelMsg} from "@/lib/const";
 import {
   DataUpdateSignalType,
-  EidosDataEventChannelMsg,
   EidosDataEventChannelMsgType,
   EidosDataEventChannelName,
 } from "@/lib/const"

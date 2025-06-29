@@ -1,4 +1,5 @@
-import { MouseEvent, useRef, type FC } from "react"
+import type { MouseEvent} from "react";
+import { useRef, type FC } from "react"
 import type { Identifier, XYCoord } from "dnd-core"
 import { EyeIcon, EyeOffIcon, GripVerticalIcon } from "lucide-react"
 import { useDrag, useDrop } from "react-dnd"
@@ -6,7 +7,7 @@ import { useDrag, useDrop } from "react-dnd"
 import { cn } from "@/lib/utils"
 
 import "./index.css"
-import { IField } from "@/packages/core/types/IField"
+import type { IField } from "@/packages/core/types/IField"
 import { useTableAppStore } from "@/components/table/views/grid/store"
 
 import { makeHeaderIcons } from "../fields/header-icons"

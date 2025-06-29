@@ -7,7 +7,8 @@ import {
 } from "@/lib/storage/eidos-file-system"
 import { getUuid } from "@/lib/utils"
 
-import { BaseTable, BaseTableImpl } from "./base"
+import type { BaseTable} from "./base";
+import { BaseTableImpl } from "./base"
 
 export interface IFile {
   id: string

@@ -1,4 +1,5 @@
-import { SelectFromStatement, parseFirst, toSql } from "pgsql-ast-parser"
+import type { SelectFromStatement} from "pgsql-ast-parser";
+import { parseFirst, toSql } from "pgsql-ast-parser"
 import { format } from "sql-formatter"
 
 export const getTransformedQuery = (query: string) => {

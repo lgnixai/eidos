@@ -1,4 +1,4 @@
-import { Control } from "react-hook-form"
+import type { Control } from "react-hook-form"
 
 import {
   FormControl,
@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/form"
 import { Switch } from "@/components/ui/switch"
 
-import { ChartConfig } from ".."
+import type { ChartConfig } from ".."
 
 interface ChartDisplayOptionsProps {
   control: Control<ChartConfig>

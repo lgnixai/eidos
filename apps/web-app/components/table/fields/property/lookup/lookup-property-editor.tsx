@@ -1,9 +1,9 @@
 import { useMemo, useState } from "react"
 
 import { FieldType } from "@/packages/core/fields/const"
-import { ILinkProperty } from "@/packages/core/fields/link"
-import { ILookupProperty } from "@/packages/core/fields/lookup"
-import { IField } from "@/packages/core/types/IField"
+import type { ILinkProperty } from "@/packages/core/fields/link"
+import type { ILookupProperty } from "@/packages/core/fields/lookup"
+import type { IField } from "@/packages/core/types/IField"
 import { useSqlite } from "@/apps/web-app/hooks/use-sqlite"
 import { useCurrentUiColumns, useUiColumns } from "@/apps/web-app/hooks/use-ui-columns"
 import { Button } from "@/components/ui/button"

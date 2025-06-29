@@ -1,6 +1,6 @@
 import { useCurrentPathInfo } from "@/apps/web-app/hooks/use-current-pathinfo"
 import { useGoto } from "@/apps/web-app/hooks/use-goto"
-import { ITreeNode } from "@/packages/core/types/ITreeNode"
+import type { ITreeNode } from "@/packages/core/types/ITreeNode"
 
 import { ItemIcon } from "../sidebar/item-tree"
 import { Button } from "../ui/button"

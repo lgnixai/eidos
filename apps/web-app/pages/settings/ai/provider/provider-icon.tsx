@@ -19,7 +19,7 @@ import {
   XAI,
 } from "@lobehub/icons"
 
-import { LLMProviderType } from "@/packages/ai/helper"
+import type { LLMProviderType } from "@/packages/ai/helper"
 
 export const providerIcons = {
   google: <Google size={16} />,

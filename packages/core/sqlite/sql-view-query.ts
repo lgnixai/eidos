@@ -1,4 +1,5 @@
-import { LimitStatement, SelectFromStatement, astMapper, parseFirst, toSql } from "pgsql-ast-parser"
+import type { LimitStatement, SelectFromStatement} from "pgsql-ast-parser";
+import { astMapper, parseFirst, toSql } from "pgsql-ast-parser"
 import { getFilterColumns } from "./sql-filter-parser"
 import { getSortColumns } from "./sql-sort-parser"
 

@@ -1,4 +1,4 @@
-import { MenuTextMatch } from "@lexical/react/LexicalTypeaheadMenuPlugin"
+import type { MenuTextMatch } from "@lexical/react/LexicalTypeaheadMenuPlugin"
 
 const PUNCTUATION =
   "\\.,\\+\\*\\?\\$\\@\\|#{}\\(\\)\\^\\-\\[\\]\\\\/!%'\"~=<>_:;"

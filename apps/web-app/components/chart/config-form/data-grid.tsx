@@ -1,9 +1,10 @@
+import type {
+  GridCell,
+  GridColumn,
+  Item} from "@glideapps/glide-data-grid";
 import {
   DataEditor,
-  GridCell,
-  GridCellKind,
-  GridColumn,
-  Item,
+  GridCellKind
 } from "@glideapps/glide-data-grid"
 
 import { useDynamicTheme } from "@/components/table/views/grid/theme"

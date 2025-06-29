@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from "react"
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin"
+import type {
+  InitialConfigType} from "@lexical/react/LexicalComposer";
 import {
-  InitialConfigType,
   LexicalComposer,
 } from "@lexical/react/LexicalComposer"
 import { ContentEditable } from "@lexical/react/LexicalContentEditable"
@@ -16,7 +17,7 @@ import { AIEditorPlugin } from "@/components/doc/plugins/AIEditorPlugin"
 import { Skeleton } from "../ui/skeleton"
 import { EditorInstanceProvider } from "./hooks/editor-instance-context"
 import { useLoadingExtBlocks } from "./hooks/use-all-nodes"
-import { ExtBlock } from "./hooks/use-ext-blocks"
+import type { ExtBlock } from "./hooks/use-ext-blocks"
 import { useEditorStore } from "./hooks/useEditorContext"
 import { getAllNodes } from "./nodes"
 import { AllPlugins } from "./plugins"

@@ -1,5 +1,5 @@
-import { LexicalEditor } from "lexical"
-import { DocBlock } from "../interface"
+import type { LexicalEditor } from "lexical"
+import type { DocBlock } from "../interface"
 import { SQLPlugin, INSERT_SQL_COMMAND } from "./plugin"
 import { $createSQLNode, SQLNode, SQL_NODE_TRANSFORMER } from "./node"
 

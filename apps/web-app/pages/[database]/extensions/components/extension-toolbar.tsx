@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useRef } from "react"
-import { IExtension } from "@/packages/core/meta-table/extension"
+import type { IExtension } from "@/packages/core/meta-table/extension"
 import { compileCode } from "@/packages/v3/compiler"
 import { getCompileMethod } from "@/packages/v3/script-compiler"
 import { useMount } from "ahooks"

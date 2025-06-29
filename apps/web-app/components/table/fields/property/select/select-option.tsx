@@ -4,7 +4,8 @@ import { CSS } from "@dnd-kit/utilities"
 import { GripVertical, Trash } from "lucide-react"
 import { useTheme } from "next-themes"
 
-import { SelectOption as ISelectOption, SelectField } from "@/packages/core/fields/select"
+import type { SelectOption as ISelectOption} from "@/packages/core/fields/select";
+import { SelectField } from "@/packages/core/fields/select"
 import { Input } from "@/components/ui/input"
 import {
   Popover,

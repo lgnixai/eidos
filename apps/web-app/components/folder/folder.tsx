@@ -2,7 +2,7 @@ import { useVirtualList } from "ahooks"
 import { useRef } from "react"
 
 import { useAllNodes } from "@/apps/web-app/hooks/use-nodes"
-import { ITreeNode } from "@/packages/core/types/ITreeNode"
+import type { ITreeNode } from "@/packages/core/types/ITreeNode"
 import { cn } from "@/lib/utils"
 
 import { NodeName } from "../node-name"

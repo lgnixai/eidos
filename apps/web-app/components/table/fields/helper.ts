@@ -1,4 +1,4 @@
-import { IField } from "@/packages/core/types/IField"
+import type { IField } from "@/packages/core/types/IField"
 
 export const checkNewFieldNameIsOk = (
   name: string,

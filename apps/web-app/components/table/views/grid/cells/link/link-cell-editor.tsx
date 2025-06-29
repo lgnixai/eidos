@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { Check } from "lucide-react"
 
-import { LinkCellData } from "@/packages/core/fields/link"
+import type { LinkCellData } from "@/packages/core/fields/link"
 import { cn } from "@/lib/utils"
 import { useSqlite } from "@/apps/web-app/hooks/use-sqlite"
 import {

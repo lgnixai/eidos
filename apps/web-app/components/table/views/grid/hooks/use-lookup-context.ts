@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react"
 
 import { FieldType } from "@/packages/core/fields/const"
-import { ILookupContext } from "@/packages/core/fields/lookup"
+import type { ILookupContext } from "@/packages/core/fields/lookup"
 import { useSqlite } from "@/apps/web-app/hooks/use-sqlite"
 import { useUiColumns } from "@/apps/web-app/hooks/use-ui-columns"
 

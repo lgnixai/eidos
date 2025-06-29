@@ -1,7 +1,8 @@
 import { handleFunctionCall } from '@/packages/core/rpc';
 import { getUuid } from '@/lib/utils';
 import { log } from 'electron-log';
-import WebSocket, { RawData } from 'ws';
+import type { RawData } from 'ws';
+import WebSocket from 'ws';
 import { getOrSetDataSpace } from '../data-space';
 import { z } from 'zod';
 import { getConfigManager } from '../config';

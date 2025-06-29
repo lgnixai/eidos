@@ -1,17 +1,19 @@
-import { TextMatchTransformer } from "@lexical/markdown"
+import type { TextMatchTransformer } from "@lexical/markdown"
 import { BlockWithAlignableContents } from "@lexical/react/LexicalBlockWithAlignableContents"
+import type {
+  SerializedDecoratorBlockNode} from "@lexical/react/LexicalDecoratorBlockNode";
 import {
-  DecoratorBlockNode,
-  SerializedDecoratorBlockNode,
+  DecoratorBlockNode
 } from "@lexical/react/LexicalDecoratorBlockNode"
-import {
-  $applyNodeReplacement,
+import type {
   EditorConfig,
   ElementFormatType,
   LexicalEditor,
   LexicalNode,
   NodeKey,
-  Spread,
+  Spread} from "lexical";
+import {
+  $applyNodeReplacement
 } from "lexical"
 
 import { markdownLinkInfoMap } from "../../plugins/const"

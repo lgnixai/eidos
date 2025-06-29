@@ -1,13 +1,14 @@
 import { useEffect } from "react"
 
+import type {
+  EidosDataEventChannelMsg} from "@/lib/const";
 import {
   DataUpdateSignalType,
-  EidosDataEventChannelMsg,
   EidosDataEventChannelMsgType,
   EidosDataEventChannelName,
 } from "@/lib/const"
 import { ScriptTableName, TreeTableName } from "@/packages/core/sqlite/const"
-import { ITreeNode } from "@/packages/core/types/ITreeNode"
+import type { ITreeNode } from "@/packages/core/types/ITreeNode"
 
 import { useEngine } from "./use-engine"
 import { useSqliteStore } from "./use-sqlite"

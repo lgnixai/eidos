@@ -1,7 +1,7 @@
 import { useCurrentTheme } from "@/apps/web-app/hooks/use-all-themes"
 import { useThemeStore } from "@/apps/web-app/store/theme-store"
 import { getThemeVariables } from "@/lib/web/theme"
-import { Theme } from "@glideapps/glide-data-grid"
+import type { Theme } from "@glideapps/glide-data-grid"
 import { useCallback, useMemo } from "react"
 
 const commonTheme: Partial<Theme> = {

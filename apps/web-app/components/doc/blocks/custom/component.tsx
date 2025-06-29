@@ -1,6 +1,7 @@
 import { useMemo, useRef } from "react"
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
-import { $getNodeByKey, NodeKey } from "lexical"
+import type { NodeKey } from "lexical";
+import { $getNodeByKey } from "lexical"
 import { Link } from "react-router-dom"
 
 import { getBlockIdFromUrl, getBlockUrl } from "@/lib/utils"

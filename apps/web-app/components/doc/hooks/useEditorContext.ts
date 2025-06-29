@@ -1,4 +1,4 @@
-import { RangeSelection } from "lexical"
+import type { RangeSelection } from "lexical"
 import { create } from "zustand"
 
 export const useEditorStore = create<{

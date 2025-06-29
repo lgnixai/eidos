@@ -1,13 +1,14 @@
-import { MutableRefObject, useCallback, useContext } from "react"
+import type { MutableRefObject} from "react";
+import { useCallback, useContext } from "react"
 import { DataChangeEventHandler } from "@/packages/core/data-pipeline/DataChangeEventHandler"
-import {
+import type {
   DataEditorRef,
   EditableGridCell,
   Item,
   Rectangle,
 } from "@glideapps/glide-data-grid"
 import { useThrottleFn } from "ahooks"
-import { IView } from "@/packages/core/types/IView"
+import type { IView } from "@/packages/core/types/IView"
 
 import { isFieldsInQuery } from "@/packages/core/sqlite/sql-view-query"
 import {

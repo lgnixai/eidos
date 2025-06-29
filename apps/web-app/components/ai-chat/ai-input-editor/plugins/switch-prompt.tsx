@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { IExtension } from "@/packages/core/meta-table/extension"
+import type { IExtension } from "@/packages/core/meta-table/extension"
 import {
   FloatingPortal,
   flip,
@@ -13,7 +13,7 @@ import {
   MenuOption,
   useBasicTypeaheadTriggerMatch,
 } from "@lexical/react/LexicalTypeaheadMenuPlugin"
-import { TextNode } from "lexical"
+import type { TextNode } from "lexical"
 
 import { useAIChatStore, } from "../../store"
 import { useAllPrompts } from "@/apps/web-app/hooks/use-all-prompts"

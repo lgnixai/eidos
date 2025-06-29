@@ -1,6 +1,6 @@
 import { uuidv7 } from "@/lib/utils"
 
-import { DataSpace } from "../DataSpace"
+import type { DataSpace } from "../DataSpace"
 import { BaseImportAndExport } from "./base"
 
 export class MarkdownImportAndExport extends BaseImportAndExport {

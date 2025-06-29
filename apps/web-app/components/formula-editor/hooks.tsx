@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react"
 import { completionStatus } from "@codemirror/autocomplete"
-import { EditorView } from "codemirror"
+import type { EditorView } from "codemirror"
 
-import { Udf, UiColumn } from "./completions"
+import type { Udf, UiColumn } from "./completions"
 
 export interface UseEditorProps {
   editorRef: React.RefObject<HTMLDivElement>

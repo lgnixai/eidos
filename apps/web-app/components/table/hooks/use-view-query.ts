@@ -1,7 +1,8 @@
 import { useMemo } from "react"
-import { SelectFromStatement, parseFirst, toSql } from "pgsql-ast-parser"
+import type { SelectFromStatement} from "pgsql-ast-parser";
+import { parseFirst, toSql } from "pgsql-ast-parser"
 
-import { IView } from "@/packages/core/types/IView"
+import type { IView } from "@/packages/core/types/IView"
 
 export const useViewQuery = (view?: IView) => {
   const { parsedSql, sql } = useMemo(() => {

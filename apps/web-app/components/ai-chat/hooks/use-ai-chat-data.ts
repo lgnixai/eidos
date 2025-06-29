@@ -1,10 +1,10 @@
 import { useCurrentChatProjectId, useCurrentNode } from "@/apps/web-app/hooks/use-current-node"
 import { useSqlite } from "@/apps/web-app/hooks/use-sqlite"
-import { Chat } from "@/packages/core/meta-table/chat"
-import { ChatMessage } from "@/packages/core/meta-table/message"
+import type { Chat } from "@/packages/core/meta-table/chat"
+import type { ChatMessage } from "@/packages/core/meta-table/message"
 import { useCallback, useEffect, useMemo } from "react"
 import { create } from "zustand"
-import { Message } from "@ai-sdk/react"
+import type { Message } from "@ai-sdk/react"
 import { uuidv7 } from "@/lib/utils"
 
 const useAIChatDataStore = create<{

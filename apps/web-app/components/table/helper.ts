@@ -1,6 +1,6 @@
 import orderBy from "lodash/orderBy"
 
-import { IField } from "@/packages/core/types/IField"
+import type { IField } from "@/packages/core/types/IField"
 
 export const getShowColumns = (
   uiColumns: IField[],

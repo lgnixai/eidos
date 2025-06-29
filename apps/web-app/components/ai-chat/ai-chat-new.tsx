@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useChat } from "@/packages/ai"
-import { IEmbedding } from "@/packages/core/meta-table/embedding"
+import type { IEmbedding } from "@/packages/core/meta-table/embedding"
 import { Paintbrush, PauseIcon } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useWindowSize } from "usehooks-ts"
@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button"
 import { toast } from "@/components/ui/use-toast"
 import { useExperimentConfigStore } from "@/apps/web-app/pages/settings/experiment/store"
 
-import { UIBlock } from "../remix-chat/components/block"
+import type { UIBlock } from "../remix-chat/components/block"
 import {
   PreviewMessage,
   ThinkingMessage,
@@ -28,7 +28,8 @@ import { Switch } from "../ui/switch"
 import { AIChatAttachments } from "./ai-chat-attachments"
 import { AIModelSelect } from "./ai-chat-model-select"
 import { AIContextNodes } from "./ai-context-nodes"
-import { AIInputEditor, AIInputEditorRef } from "./ai-input-editor"
+import type { AIInputEditorRef } from "./ai-input-editor";
+import { AIInputEditor } from "./ai-input-editor"
 import { AIToolsConfig, useFilteredTools, useMaxSteps } from "./ai-tools-config"
 import { useAIChatData } from "./hooks/use-ai-chat-data"
 import { useAttachments } from "./hooks/use-attachments"

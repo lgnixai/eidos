@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useCurrentUiColumns } from "@/apps/web-app/hooks/use-ui-columns";
-import { IField } from "@/packages/core/types/IField";
-import { FormulaProperty } from "@/packages/core/fields/formula";
+import type { IField } from "@/packages/core/types/IField";
+import type { FormulaProperty } from "@/packages/core/fields/formula";
 import { transformFormula2VirtualGeneratedField } from "@/packages/core/sqlite/sql-formula-parser";
-import { FieldType } from "@/packages/core/fields/const";
+import type { FieldType } from "@/packages/core/fields/const";
 
 export function useFormulaUpdate(
     uiColumn: IField<FormulaProperty> | null,

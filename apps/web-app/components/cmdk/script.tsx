@@ -1,4 +1,4 @@
-import { ICommand, IExtension } from "@/packages/core/meta-table/extension"
+import type { ICommand, IExtension } from "@/packages/core/meta-table/extension"
 import { useKeyPress } from "ahooks"
 import React, { useMemo, useState } from "react"
 

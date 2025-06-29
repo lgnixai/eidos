@@ -1,4 +1,5 @@
-import { BrowserWindow, WebContentsViewConstructorOptions, ipcMain } from 'electron';
+import type { WebContentsViewConstructorOptions} from 'electron';
+import { BrowserWindow, ipcMain } from 'electron';
 import os from "node:os";
 import path from 'path';
 import { getConfigManager } from '../config';

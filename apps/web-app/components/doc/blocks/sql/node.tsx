@@ -1,11 +1,12 @@
-import { ReactNode } from "react"
-import { ElementTransformer } from "@lexical/markdown"
-import {
-  DecoratorNode,
+import type { ReactNode } from "react"
+import type { ElementTransformer } from "@lexical/markdown"
+import type {
   LexicalNode,
   NodeKey,
   SerializedLexicalNode,
-  Spread,
+  Spread} from "lexical";
+import {
+  DecoratorNode
 } from "lexical"
 
 import { SQLComponent } from "./component"

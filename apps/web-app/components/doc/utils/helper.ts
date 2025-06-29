@@ -1,7 +1,8 @@
 import { CodeNode } from "@lexical/code"
-import { $nodesOfType, EditorState, Klass, LexicalNode, NodeMap } from "lexical"
+import type { EditorState, Klass, LexicalNode, NodeMap } from "lexical";
+import { $nodesOfType } from "lexical"
 
-import { ExtBlock } from "../hooks/use-ext-blocks"
+import type { ExtBlock } from "../hooks/use-ext-blocks"
 import { ImageNode } from "../blocks/image/node";
 import invariant from "./invariant";
 

@@ -1,6 +1,6 @@
 import { useCallback } from "react"
 
-import { ISearchNodes } from "@/components/cmdk/hooks"
+import type { ISearchNodes } from "@/components/cmdk/hooks"
 
 import { useNodeMap } from "./use-current-node"
 import { useCurrentPathInfo } from "./use-current-pathinfo"

@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { ScriptSelector } from "@/components/script-selector"
 
-import { DataScriptConfig } from "./types"
+import type { DataScriptConfig } from "./types"
 
 interface ScriptDataSourceProps {
   config: DataScriptConfig

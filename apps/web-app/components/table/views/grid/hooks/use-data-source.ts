@@ -1,16 +1,17 @@
 import React, { useCallback } from "react"
-import { GridCell, GridCellKind } from "@glideapps/glide-data-grid"
+import type { GridCell} from "@glideapps/glide-data-grid";
+import { GridCellKind } from "@glideapps/glide-data-grid"
 
 import { getFieldInstance } from "@/packages/core/fields"
 import { FieldType } from "@/packages/core/fields/const"
-import { IField } from "@/packages/core/types/IField"
+import type { IField } from "@/packages/core/types/IField"
 import { useTableOperation } from "@/apps/web-app/hooks/use-table"
 import { useUiColumns } from "@/apps/web-app/hooks/use-ui-columns"
 import { useUserMap } from "@/apps/web-app/hooks/use-user-map"
 import { useCurrentView } from "@/components/table/hooks"
 
 import { columnsHandleMap } from "../helper"
-import { RowEditedCallback } from "./use-async-data"
+import type { RowEditedCallback } from "./use-async-data"
 import { useColumns } from "./use-col"
 import { useLookupContext } from "./use-lookup-context"
 import { useSqlite } from "@/apps/web-app/hooks/use-sqlite"

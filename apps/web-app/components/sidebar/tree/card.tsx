@@ -4,7 +4,7 @@ import { useDrag, useDrop } from "react-dnd"
 import { Link, useSearchParams } from "react-router-dom"
 
 import { isInkServiceMode } from "@/lib/env"
-import { ITreeNode } from "@/packages/core/types/ITreeNode"
+import type { ITreeNode } from "@/packages/core/types/ITreeNode"
 import { useAppRuntimeStore } from "@/apps/web-app/store/runtime-store"
 import { cn } from "@/lib/utils"
 import { useCurrentNode } from "@/apps/web-app/hooks/use-current-node"
@@ -18,7 +18,8 @@ import { NodeIconEditor } from "@/apps/web-app/pages/[database]/[node]/node-icon
 import { ItemIcon } from "../item-tree"
 import { NodeItem } from "./node-menu"
 import { NodeTreeContainer } from "./node-tree"
-import { IHoverTarget, useFolderStore } from "./store"
+import type { IHoverTarget} from "./store";
+import { useFolderStore } from "./store"
 
 export const ItemTypes = {
   CARD: "card",

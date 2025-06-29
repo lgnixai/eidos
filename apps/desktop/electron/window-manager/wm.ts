@@ -1,5 +1,6 @@
 import { isExtensionURL, isFilesPath, isStandaloneBlocksPath } from "@/lib/utils";
-import { BrowserWindow, WebContents, WebContentsView, WebContentsViewConstructorOptions, shell } from "electron";
+import type { WebContents, WebContentsViewConstructorOptions} from "electron";
+import { BrowserWindow, WebContentsView, shell } from "electron";
 import path from "path";
 import { getExtensionByUrl } from "../helper";
 

@@ -19,7 +19,7 @@ import {
 } from "lucide-react"
 
 import { FieldType } from "@/packages/core/fields/const"
-import { IField } from "@/packages/core/types/IField"
+import type { IField } from "@/packages/core/types/IField"
 import { cn, generateColumnName } from "@/lib/utils"
 import { useCurrentPathInfo } from "@/apps/web-app/hooks/use-current-pathinfo"
 import { Button } from "@/components/ui/button"

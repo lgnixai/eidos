@@ -25,7 +25,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 
-import { Document, Suggestion, Vote } from "../interface"
+import type { Document, Suggestion, Vote } from "../interface"
 import { DiffView } from "./diffview"
 import { DocumentSkeleton } from "./document-skeleton"
 import { Editor } from "./editor"

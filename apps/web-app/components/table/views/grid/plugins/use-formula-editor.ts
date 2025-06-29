@@ -1,8 +1,8 @@
-import { CodeMirrorFormulaEditorRef } from "@/components/formula-editor/codemirror-editor";
+import type { CodeMirrorFormulaEditorRef } from "@/components/formula-editor/codemirror-editor";
 import { FieldType } from "@/packages/core/fields/const";
-import { FormulaProperty } from "@/packages/core/fields/formula";
-import { IField } from "@/packages/core/types/IField";
-import { DataEditorRef, GridSelection, Item } from "@glideapps/glide-data-grid";
+import type { FormulaProperty } from "@/packages/core/fields/formula";
+import type { IField } from "@/packages/core/types/IField";
+import type { DataEditorRef, GridSelection, Item } from "@glideapps/glide-data-grid";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { defaultConfig } from "../helper";
 import { getFieldInstance } from "@/packages/core/fields";

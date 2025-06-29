@@ -2,6 +2,8 @@ import { useCallback, useEffect, useState } from "react"
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
 import { mergeRegister } from "@lexical/utils"
 import { useCompletion } from "ai/react"
+import type {
+  TextNode} from "lexical";
 import {
   $createTextNode,
   $getNodeByKey,
@@ -12,7 +14,6 @@ import {
   KEY_ARROW_RIGHT_COMMAND,
   KEY_ESCAPE_COMMAND,
   KEY_TAB_COMMAND,
-  TextNode,
   type NodeKey,
 } from "lexical"
 

@@ -1,7 +1,7 @@
-import { LexicalEditor } from "lexical";
+import type { LexicalEditor } from "lexical";
 import { INSERT_VIDEO_FILE_COMMAND, VideoPlugin } from "./plugin";
 import { $createVideoNode, VideoNode } from "./node";
-import { DocBlock } from "../interface";
+import type { DocBlock } from "../interface";
 
 
 export default {

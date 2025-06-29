@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
-import { $getNodeByKey, NodeKey } from "lexical"
+import type { NodeKey } from "lexical";
+import { $getNodeByKey } from "lexical"
 import { File } from "lucide-react"
 
 import {

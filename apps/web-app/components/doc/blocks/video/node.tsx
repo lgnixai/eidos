@@ -1,9 +1,10 @@
 import { BlockWithAlignableContents } from "@lexical/react/LexicalBlockWithAlignableContents"
+import type {
+  SerializedDecoratorBlockNode} from "@lexical/react/LexicalDecoratorBlockNode";
 import {
-  DecoratorBlockNode,
-  SerializedDecoratorBlockNode,
+  DecoratorBlockNode
 } from "@lexical/react/LexicalDecoratorBlockNode"
-import {
+import type {
   EditorConfig,
   ElementFormatType,
   LexicalEditor,

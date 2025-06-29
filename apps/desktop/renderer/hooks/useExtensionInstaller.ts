@@ -1,5 +1,5 @@
 import { useIndexedDB } from "@/apps/web-app/hooks/use-indexed-db";
-import { IExtension } from "@/packages/core/meta-table/extension";
+import type { IExtension } from "@/packages/core/meta-table/extension";
 import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useExtension } from "../../../web-app/hooks/use-extension";

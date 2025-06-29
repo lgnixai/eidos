@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react"
-import { IExtension } from "@/packages/core/meta-table/extension"
+import type { IExtension } from "@/packages/core/meta-table/extension"
 import { Share2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 

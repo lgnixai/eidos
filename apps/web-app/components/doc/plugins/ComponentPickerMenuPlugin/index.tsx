@@ -22,12 +22,13 @@ import {
 import { $createHeadingNode, $createQuoteNode } from "@lexical/rich-text"
 import { $patchStyleText, $setBlocksType } from "@lexical/selection"
 import { INSERT_TABLE_COMMAND } from "@lexical/table"
+import type {
+  TextNode} from "lexical";
 import {
   $createParagraphNode,
   $getSelection,
   $isRangeSelection,
-  $isTextNode,
-  TextNode,
+  $isTextNode
 } from "lexical"
 import {
   AudioLinesIcon,

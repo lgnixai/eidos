@@ -8,13 +8,13 @@ import {
 } from "@/components/ui/popover"
 import { useUiColumns } from "@/apps/web-app/hooks/use-ui-columns"
 import { transformFilterItems2SqlString } from "@/packages/core/sqlite/sql-filter-parser"
-import { IView } from "@/packages/core/types/IView"
+import type { IView } from "@/packages/core/types/IView"
 import { cn } from "@/lib/utils"
 
 import { Button } from "../ui/button"
 import { TableContext, useViewOperation } from "./hooks"
 import { useViewQuery } from "./hooks/use-view-query"
-import { FilterValueType } from "../../../../packages/core/types/IViewFilter"
+import type { FilterValueType } from "../../../../packages/core/types/IViewFilter"
 import { ViewFilterEditor } from "./view-filter-editor/view-filter-editor"
 
 export const ViewFilter = (props: { view: IView }) => {

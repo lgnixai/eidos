@@ -2,7 +2,7 @@
  * state store for runtime, for cross component communication
  */
 
-import { IFile } from "@/packages/core/meta-table/file"
+import type { IFile } from "@/packages/core/meta-table/file"
 import { create } from "zustand"
 
 interface AppRuntimeState {

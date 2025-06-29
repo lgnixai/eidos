@@ -1,13 +1,14 @@
 import React, { useCallback, useMemo } from "react"
 import { Plus } from "lucide-react"
+import type {
+  DragEndEvent} from "@dnd-kit/core";
 import {
   DndContext,
   closestCenter,
   KeyboardSensor,
   PointerSensor,
   useSensor,
-  useSensors,
-  DragEndEvent,
+  useSensors
 } from "@dnd-kit/core"
 import {
   arrayMove,
@@ -17,7 +18,7 @@ import {
 } from "@dnd-kit/sortable"
 
 import { SelectField } from "@/packages/core/fields/select"
-import { IField } from "@/packages/core/types/IField"
+import type { IField } from "@/packages/core/types/IField"
 import { useSqlite } from "@/apps/web-app/hooks/use-sqlite"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"

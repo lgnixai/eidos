@@ -1,7 +1,8 @@
 import { Plus } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
-import { ITreeNode, TreeNodeType } from "@/packages/core/types/ITreeNode"
+import type { ITreeNode} from "@/packages/core/types/ITreeNode";
+import { TreeNodeType } from "@/packages/core/types/ITreeNode"
 import { useAllExtNodes } from "@/apps/web-app/hooks/use-all-ext-nodes"
 import { useCurrentPathInfo } from "@/apps/web-app/hooks/use-current-pathinfo"
 import { useGoto } from "@/apps/web-app/hooks/use-goto"

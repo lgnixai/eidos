@@ -1,8 +1,8 @@
 // code from https://github.com/glideapps/glide-data-grid/blob/main/packages/core/src/data-grid/data-grid-lib.ts
 
-import { BaseDrawArgs, BaseGridCell, Theme } from "@glideapps/glide-data-grid"
+import type { BaseDrawArgs, BaseGridCell, Theme } from "@glideapps/glide-data-grid"
 
-import { LinkCellData } from "@/packages/core/fields/link"
+import type { LinkCellData } from "@/packages/core/fields/link"
 
 interface CornerRadius {
   tl: number

@@ -1,8 +1,8 @@
-import { IField } from "@/packages/core/types/IField"
+import type { IField } from "@/packages/core/types/IField"
 import { useSqliteStore } from "@/apps/web-app/hooks/use-sqlite"
 import { DataCard } from "@/components/table/views/shared/data-card"
 
-import { IGalleryViewProperties } from "./properties"
+import type { IGalleryViewProperties } from "./properties"
 
 interface ICardProps<T> {
   columnIndex: number

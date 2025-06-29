@@ -1,6 +1,6 @@
 import { useCurrentUiColumns } from "@/apps/web-app/hooks/use-ui-columns";
-import { IField } from "@/packages/core/types/IField";
-import { FormulaProperty } from "@/packages/core/fields/formula";
+import type { IField } from "@/packages/core/types/IField";
+import type { FormulaProperty } from "@/packages/core/fields/formula";
 import { transformFormula2VirtualGeneratedField } from "@/packages/core/sqlite/sql-formula-parser";
 
 export function useFormulaValidation() {

@@ -1,4 +1,5 @@
-import { MouseEventHandler, useRef, useState } from "react"
+import type { MouseEventHandler} from "react";
+import { useRef, useState } from "react"
 import { useClickAway } from "ahooks"
 import {
   ClipboardPasteIcon,
@@ -19,7 +20,7 @@ import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 
 import { isInkServiceMode } from "@/lib/env"
-import { ITreeNode } from "@/packages/core/types/ITreeNode"
+import type { ITreeNode } from "@/packages/core/types/ITreeNode"
 import { useAllExtNodes } from "@/apps/web-app/hooks/use-all-ext-nodes"
 import { useCurrentPathInfo } from "@/apps/web-app/hooks/use-current-pathinfo"
 import { useGoto } from "@/apps/web-app/hooks/use-goto"

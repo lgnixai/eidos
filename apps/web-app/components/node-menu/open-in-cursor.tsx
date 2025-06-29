@@ -2,7 +2,7 @@ import { ExternalLinkIcon } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { isDesktopMode } from "@/lib/env"
-import { ITreeNode } from "@/packages/core/types/ITreeNode"
+import type { ITreeNode } from "@/packages/core/types/ITreeNode"
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu"
 
 interface NodeOpenInCursorProps {

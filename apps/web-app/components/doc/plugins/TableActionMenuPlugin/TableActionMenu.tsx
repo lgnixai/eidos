@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
+import type {
+  TableRowNode} from "@lexical/table";
 import {
   $deleteTableColumn__EXPERIMENTAL,
   $deleteTableRow__EXPERIMENTAL,
@@ -15,7 +17,6 @@ import {
   $unmergeCell,
   TableCellHeaderStates,
   TableCellNode,
-  TableRowNode,
   getTableElement,
   getTableObserverFromTableElement,
 } from "@lexical/table"

@@ -13,6 +13,7 @@
     "pkg:desktop": "pnpm run --filter eidos package",
     "pkg:desktop:dev": "pnpm run --filter eidos package:dev",
     "lint": "oxlint .",
+    "lint:fix": "oxlint --fix .",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "format:write": "prettier --write \"**/*.{ts,tsx,mdx}\" --cache",

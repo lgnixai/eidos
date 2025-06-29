@@ -1,5 +1,5 @@
 import { BlockWithAlignableContents } from "@lexical/react/LexicalBlockWithAlignableContents"
-import { ElementFormatType, NodeKey } from "lexical"
+import type { ElementFormatType, NodeKey } from "lexical"
 
 import { getRawTableNameById } from "@/lib/utils"
 import { useCurrentPathInfo } from "@/apps/web-app/hooks/use-current-pathinfo"

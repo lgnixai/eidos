@@ -1,18 +1,20 @@
-import {
+import type {
   CellArray,
-  CompactSelection,
   DataEditorProps,
   DataEditorRef,
   EditableGridCell,
   GridCell,
-  GridCellKind,
   Item,
-  Rectangle,
+  Rectangle} from "@glideapps/glide-data-grid";
+import {
+  CompactSelection,
+  GridCellKind
 } from "@glideapps/glide-data-grid"
 import chunk from "lodash/chunk"
 import range from "lodash/range"
+import type {
+  MutableRefObject} from "react";
 import {
-  MutableRefObject,
   useCallback,
   useContext,
   useEffect,
@@ -30,7 +32,7 @@ import {
   rewriteQueryWithOffsetAndLimit,
   rewriteQueryWithSortedQuery,
 } from "@/packages/core/sqlite/sql-sort-parser"
-import { IView } from "@/packages/core/types/IView"
+import type { IView } from "@/packages/core/types/IView"
 import { useDebounceFn } from "ahooks"
 
 import { TableContext } from "@/components/table/hooks"

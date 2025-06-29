@@ -1,5 +1,5 @@
 import { forwardRef } from "react"
-import { IExtension } from "@/packages/core/meta-table/extension"
+import type { IExtension } from "@/packages/core/meta-table/extension"
 
 import { Button } from "@/components/ui/button"
 import { BlockRenderer } from "@/components/block-renderer/block-renderer"

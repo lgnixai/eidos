@@ -1,4 +1,4 @@
-import { DocBlock } from './interface';
+import type { DocBlock } from './interface';
 import mermaidBlock from './mermaid';
 import videoBlock from './video';
 import audioBlock from './audio';

@@ -1,7 +1,8 @@
 import { ColumnTableName, ReferenceTableName } from "@/packages/core/sqlite/const"
-import { IField } from "@/packages/core/types/IField"
+import type { IField } from "@/packages/core/types/IField"
 
-import { BaseTable, BaseTableImpl } from "./base"
+import type { BaseTable} from "./base";
+import { BaseTableImpl } from "./base"
 
 export interface IReference {
   // lookup field id

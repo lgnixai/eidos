@@ -1,6 +1,6 @@
 "use client"
 
-import { LucideIcon } from "lucide-react"
+import type { LucideIcon } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 

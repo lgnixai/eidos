@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { IExtension } from "@/packages/core/meta-table/extension"
+import type { IExtension } from "@/packages/core/meta-table/extension"
 import { useLoaderData, useRevalidator } from "react-router-dom"
 
 import { useToast } from "@/components/ui/use-toast"

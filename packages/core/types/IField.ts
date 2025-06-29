@@ -1,4 +1,4 @@
-import { FieldType } from "../fields/const";
+import type { FieldType } from "../fields/const";
 
 
 export type IField<T = any> = {

@@ -6,15 +6,16 @@ import orderBy from "lodash/orderBy"
 import { create } from "zustand"
 
 import { TreeTableName } from "@/packages/core/sqlite/const"
-import { ITreeNode, TreeNodeType } from "@/packages/core/types/ITreeNode"
-import { IView } from "@/packages/core/types/IView"
+import type { ITreeNode} from "@/packages/core/types/ITreeNode";
+import { TreeNodeType } from "@/packages/core/types/ITreeNode"
+import type { IView } from "@/packages/core/types/IView"
 import { useAppRuntimeStore } from "@/apps/web-app/store/runtime-store"
 import { getRawTableNameById, uuidv7 } from "@/lib/utils"
 import { DefaultState } from "@/components/doc/plugins/AutoLoadSavePlugin"
 import { createTemplateTableSql } from "@/components/table/views/grid/helper"
 
-import { IDataStore } from "@/apps/web-app/store/interface"
-import { IField } from "@/packages/core/types/IField"
+import type { IDataStore } from "@/apps/web-app/store/interface"
+import type { IField } from "@/packages/core/types/IField"
 import { useAllNodes } from "./use-nodes"
 import { isDesktopMode } from "@/lib/env"
 

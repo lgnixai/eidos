@@ -1,5 +1,5 @@
 import { useCallback, useEffect } from "react"
-import { ITreeNode } from "@/packages/core/types/ITreeNode"
+import type { ITreeNode } from "@/packages/core/types/ITreeNode"
 import { useAIChatStore } from "../store"
 import { useCurrentPathInfo } from "@/apps/web-app/hooks/use-current-pathinfo"
 

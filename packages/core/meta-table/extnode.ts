@@ -1,4 +1,5 @@
-import { BaseTable, BaseTableImpl } from "./base"
+import type { BaseTable} from "./base";
+import { BaseTableImpl } from "./base"
 import { DataSpace } from "../DataSpace"
 import { ExtNodeTableName } from "@/packages/core/sqlite/const"
 

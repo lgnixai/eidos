@@ -1,6 +1,6 @@
 import { MenuOption } from "@lexical/react/LexicalTypeaheadMenuPlugin"
 
-import { ITreeNode } from "@/packages/core/types/ITreeNode"
+import type { ITreeNode } from "@/packages/core/types/ITreeNode"
 
 export class MentionTypeaheadOption extends MenuOption {
   name: string

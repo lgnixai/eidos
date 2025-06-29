@@ -1,9 +1,9 @@
-import { IField } from "@/packages/core/types/IField"
+import type { IField } from "@/packages/core/types/IField"
 import { MultiSelectField } from "@/packages/core/fields/multi-select"
-import { SelectProperty } from "@/packages/core/fields/select"
+import type { SelectProperty } from "@/packages/core/fields/select"
 
-import { DataSpace } from "../../DataSpace"
-import { TableManager } from "../table"
+import type { DataSpace } from "../../DataSpace"
+import type { TableManager } from "../table"
 
 export class MultiSelectFieldService {
   dataSpace: DataSpace

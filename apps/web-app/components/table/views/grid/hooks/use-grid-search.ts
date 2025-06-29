@@ -1,6 +1,6 @@
 import { useTableSearchStore } from "@/components/table/hooks/use-table-search-store";
-import { IField } from "@/packages/core/types/IField";
-import { Item } from "@glideapps/glide-data-grid";
+import type { IField } from "@/packages/core/types/IField";
+import type { Item } from "@glideapps/glide-data-grid";
 import { useEffect, useMemo, useState } from "react";
 
 interface FormattedResult {

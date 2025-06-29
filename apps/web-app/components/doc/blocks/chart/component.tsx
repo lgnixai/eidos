@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
 import html2canvas from "html2canvas"
-import { $getNodeByKey, NodeKey } from "lexical"
+import type { NodeKey } from "lexical";
+import { $getNodeByKey } from "lexical"
 import { ChevronDown } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -12,9 +13,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useToast } from "@/components/ui/use-toast"
-import { Chart, ChartConfig } from "@/components/chart"
+import type { ChartConfig } from "@/components/chart";
+import { Chart } from "@/components/chart"
 import { ChartConfigForm } from "@/components/chart/config-form/chart-config-form"
-import {
+import type {
   DataSourceConfig,
   DataTransform,
 } from "@/components/chart/config-form/types"

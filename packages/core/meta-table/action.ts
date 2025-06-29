@@ -1,6 +1,7 @@
 import { ActionTableName } from "../sqlite/const"
 
-import { BaseTable, BaseTableImpl } from "./base"
+import type { BaseTable} from "./base";
+import { BaseTableImpl } from "./base"
 
 type ParamType = "string" | "number" | "boolean"
 

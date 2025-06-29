@@ -2,8 +2,8 @@ import { app } from 'electron';
 import fs from 'fs';
 import path from 'path';
 import { EventEmitter } from 'events';
-import { AIFormValues } from '@/packages/ai/config';
-import { CustomTheme } from '@/apps/web-app/store/theme-store';
+import type { AIFormValues } from '@/packages/ai/config';
+import type { CustomTheme } from '@/apps/web-app/store/theme-store';
 
 export interface GraftConfig {
     // URL for the Graft MetaStore

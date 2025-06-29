@@ -1,11 +1,12 @@
-import {
+import type {
   EditorView,
-  ViewPlugin,
-  Decoration,
   DecorationSet,
-  ViewUpdate,
+  ViewUpdate} from "@codemirror/view";
+import {
+  ViewPlugin,
+  Decoration
 } from "@codemirror/view";
-import { Range } from "@codemirror/state";
+import type { Range } from "@codemirror/state";
 import { syntaxTree } from "@codemirror/language";
 
 const underlineMark = Decoration.mark({ class: "cm-table-name" });

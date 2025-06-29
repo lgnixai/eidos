@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react"
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
 import { useKeyPress } from "ahooks"
+import type {
+  LexicalNode} from "lexical";
 import {
   $getNearestNodeFromDOMNode,
   $getNodeByKey,
-  $getRoot,
-  LexicalNode,
+  $getRoot
 } from "lexical"
 
 import { useEditorInstance } from "../../hooks/editor-instance-context"

@@ -1,5 +1,6 @@
-import { ReactNode, createContext, useContext, useState } from "react"
-import { IExtension } from "@/packages/core/meta-table/extension"
+import type { ReactNode} from "react";
+import { createContext, useContext, useState } from "react"
+import type { IExtension } from "@/packages/core/meta-table/extension"
 
 import { useAllMblocks } from "@/apps/web-app/hooks/use-all-mblocks"
 

@@ -7,8 +7,8 @@ import { DndProvider } from "react-dnd"
 import { HTML5Backend } from "react-dnd-html5-backend"
 import { useTranslation } from "react-i18next"
 
-import { IView } from "@/packages/core/types/IView"
-import { IField } from "@/packages/core/types/IField"
+import type { IView } from "@/packages/core/types/IView"
+import type { IField } from "@/packages/core/types/IField"
 import { useUiColumns } from "@/apps/web-app/hooks/use-ui-columns"
 import { Button } from "@/components/ui/button"
 import {
