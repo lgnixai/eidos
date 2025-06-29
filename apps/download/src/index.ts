@@ -20,6 +20,9 @@ export interface Env {
 	//
 	// Example binding to a Service. Learn more at https://developers.cloudflare.com/workers/runtime-apis/service-bindings/
 	// MY_SERVICE: Fetcher;
+
+	// GitHub personal access token for API requests
+	GITHUB_TOKEN: SecretsStoreSecret;
 }
 
 export default {
@@ -44,14 +47,39 @@ export default {
 		const apiUrl = `${baseUrl}/${owner}/${repo}/releases`
 
 		try {
-			const response = await fetch(apiUrl, {
-				headers: {
-					'User-Agent': 'Cloudflare Worker GitHub Release Checker',
-					'Accept': 'application/vnd.github.v3+json'
-				}
-			})
+
+			const headers: Record<string, string> = {
+				'User-Agent': 'Cloudflare Worker GitHub Release Checker',
+				'Accept': 'application/vnd.github.v3+json'
+			};
+
+			const apiKey = await env.GITHUB_TOKEN.get();
+			// Add GitHub token if available
+			if (apiKey) {
+				headers['Authorization'] = `token ${apiKey}`;
+			}
+
+			const response = await fetch(apiUrl, { headers });
 
 			if (!response.ok) {
+				if (response.status === 403) {
+					const rateLimitRemaining = response.headers.get('x-ratelimit-remaining');
+					const rateLimitReset = response.headers.get('x-ratelimit-reset');
+
+					if (rateLimitRemaining === '0') {
+						const resetTime = rateLimitReset ? new Date(parseInt(rateLimitReset) * 1000) : 'unknown';
+						return new Response(
+							`Rate limit exceeded. Resets at: ${resetTime}. Consider adding a GitHub token for higher limits.`,
+							{ status: 429 }
+						);
+					}
+
+					return new Response(
+						`GitHub API access forbidden (403). This might be due to rate limiting or IP restrictions. Consider adding a GitHub token.`,
+						{ status: 403 }
+					);
+				}
+
 				throw new Error(`GitHub API responded with ${response.status} ${response.statusText}`)
 			}
 

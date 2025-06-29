@@ -5,7 +5,6 @@ dist-sqlite-ext
 
 # wrangler
 .wrangler/*
-wrangler.toml
 
 #extension
 temp
