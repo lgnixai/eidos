@@ -42,6 +42,10 @@ export default defineConfig({
           label: "Extensions",
           autogenerate: { directory: "extensions" },
         },
+        {
+          label: "Comparisons",
+          autogenerate: { directory: "comparisons" },
+        },
       ],
     }),
   ],

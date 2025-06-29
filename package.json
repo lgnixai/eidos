@@ -8,8 +8,11 @@
   "scripts": {
     "dev": "pnpm run --filter web-app dev",
     "dev:desktop": "pnpm run --filter eidos dev",
+    "dev:docs": "pnpm run --filter docs dev",
     "build": "pnpm run --filter web-app build",
     "build:desktop": "pnpm run --filter eidos build",
+    "build:docs": "pnpm run --filter docs build",
+    "deploy:docs": "pnpm run --filter docs deploy",
     "pkg:desktop": "pnpm run --filter eidos package",
     "pkg:desktop:dev": "pnpm run --filter eidos package:dev",
     "lint": "oxlint .",
