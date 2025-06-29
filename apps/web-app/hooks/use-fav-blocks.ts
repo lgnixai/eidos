@@ -17,6 +17,7 @@ interface FavBlocksStore {
   removeFavBlock: (space: string, blockId: string) => void
   isFavorite: (space: string, blockId: string) => boolean
   getFavBlocks: (space: string) => FavBlock[]
+  reorderFavBlocks: (space: string, newOrder: FavBlock[]) => void
 }
 
 const useFavBlocksStore = create<FavBlocksStore>()(
@@ -71,6 +72,16 @@ const useFavBlocksStore = create<FavBlocksStore>()(
       getFavBlocks: (space: string) => {
         const { favBlocksBySpace } = get()
         return favBlocksBySpace[space] || []
+      },
+      
+      reorderFavBlocks: (space: string, newOrder: FavBlock[]) => {
+        const { favBlocksBySpace } = get()
+        set({
+          favBlocksBySpace: {
+            ...favBlocksBySpace,
+            [space]: newOrder
+          }
+        })
       }
     }),
     {
@@ -85,7 +96,8 @@ export const useFavBlocks = () => {
     addFavBlock: _addFavBlock, 
     removeFavBlock: _removeFavBlock, 
     isFavorite: _isFavorite,
-    getFavBlocks
+    getFavBlocks,
+    reorderFavBlocks: _reorderFavBlocks
   } = useFavBlocksStore()
 
   const favBlocks = getFavBlocks(space)
@@ -123,11 +135,19 @@ export const useFavBlocks = () => {
     [isFavorite, removeFavBlock, addFavBlock]
   )
 
+  const reorderFavBlocks = useCallback(
+    (newOrder: FavBlock[]) => {
+      _reorderFavBlocks(space, newOrder)
+    },
+    [space, _reorderFavBlocks]
+  )
+
   return {
     favBlocks,
     addFavBlock,
     removeFavBlock,
     isFavorite,
     toggleFavBlock,
+    reorderFavBlocks,
   }
 } 
