@@ -1,13 +1,25 @@
 {
     "extends": "../../tsconfig.json",
     "compilerOptions": {
+        "composite": true,
+        "outDir": "./dist",
+        "rootDir": ".",
+        "declaration": true,
+        "declarationMap": true,
+        "noEmit": false,
+        "emitDeclarationOnly": true,
         "types": [
             "vite/client",
             "./electron/electron-env.d.ts"
         ]
     },
     "include": [
-        "**/*.ts",
-        "**/*.tsx"
+        "./**/*.ts",
+        "./**/*.tsx"
+    ],
+    "references": [
+        {
+            "path": "../web-app"
+        }
     ]
 }

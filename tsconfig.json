@@ -85,6 +85,12 @@
   "references": [
     {
       "path": "./tsconfig.node.json"
+    },
+    {
+      "path": "./apps/web-app"
+    },
+    {
+      "path": "./apps/desktop"
     }
   ]
 }
