@@ -20,7 +20,9 @@
 
 </div>
 
-![eidos](/static/assets/images/table-and-doc.webp)
+![eidos](/static/assets/images/eidos-table-and-doc.webp)
+
+![extension micro block](/static/assets/images/eidos-extension-micro-block.webp)
 
 > [!IMPORTANT]
 > Eidos is under active development. While you can try it out, it's not recommended for production use. Stay tuned for updates on the official release.
@@ -31,7 +33,6 @@
 - Offline Support: Everything runs inside your local machine. Access your data without an internet connection. Data is stored locally for blazing-fast performance.
 - AI Features: Deeply integrated with LLM for AI-powered capabilities. Translate, summarize, and interact with your data within Eidos.
 - Extensible: Simple and powerful extension system, make Eidos a malleable software, write extension code manually or use AI to generate extension code.
-
   - Micro block: UI components for customized data display and interaction.
   - Script: Create powerful data processing logic with TypeScript/JavaScript/Python.
   - UDF: Use JavaScript to create custom calculation functions for use in table Formula fields.
