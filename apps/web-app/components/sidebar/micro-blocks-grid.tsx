@@ -18,7 +18,7 @@ import {
 import { CSS } from "@dnd-kit/utilities"
 import { ToyBrickIcon } from "lucide-react"
 import { useTranslation } from "react-i18next"
-import { Link, useNavigate } from "react-router-dom"
+import { Link, useNavigate, useParams } from "react-router-dom"
 
 import {
   ContextMenu,
@@ -34,6 +34,7 @@ interface SortableItemProps {
   mblock: any
   space: string
   onRemoveFav: (blockId: string, e: React.MouseEvent) => void
+  isCurrentBlock?: boolean
 }
 
 const SortableItem = ({
@@ -41,6 +42,7 @@ const SortableItem = ({
   mblock,
   space,
   onRemoveFav,
+  isCurrentBlock = false,
 }: SortableItemProps) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
@@ -76,7 +78,9 @@ const SortableItem = ({
         <ContextMenuTrigger asChild>
           <div className="group block cursor-pointer" onClick={handleClick}>
             <div
-              className="relative w-full aspect-[2/1] rounded-md bg-secondary flex items-center justify-center overflow-hidden transition-all duration-200 hover:ring-1 hover:scale-105"
+              className={`relative w-full aspect-[2/1] rounded-md bg-secondary flex items-center justify-center overflow-hidden transition-all duration-200 hover:ring-1 hover:scale-105 ${
+                isCurrentBlock ? "ring-1 ring-primary" : ""
+              }`}
               {...listeners}
             >
               {/* Subtle background pattern */}
@@ -117,6 +121,7 @@ const SortableItem = ({
 
 export const MicroBlocksGrid = () => {
   const { space } = useCurrentPathInfo()
+  const { blockId } = useParams()
   const { favBlocks, removeFavBlock, reorderFavBlocks } = useFavBlocks()
   const { t } = useTranslation()
 
@@ -177,6 +182,7 @@ export const MicroBlocksGrid = () => {
               mblock={mblock}
               space={space}
               onRemoveFav={handleRemoveFav}
+              isCurrentBlock={blockId === mblock.id}
             />
           ))}
         </div>

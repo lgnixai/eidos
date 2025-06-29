@@ -194,7 +194,7 @@ const router = createBrowserRouter([
             path: "blocks",
             children: [
               {
-                path: ":id",
+                path: ":blockId",
                 element: <BlocksPage />,
               },
             ],
