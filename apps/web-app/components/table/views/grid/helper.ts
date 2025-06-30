@@ -52,14 +52,14 @@ export const getShowColumns = (
   }
 ): IField[] => {
   const { orderMap } = options
-  uiColumns.sort((a, b) => {
+  const sortedColumns = [...uiColumns].sort((a, b) => {
     const aOrder = orderMap?.[a.table_column_name] ?? 233
     const bOrder = orderMap?.[b.table_column_name] ?? 233
     return aOrder - bOrder
   })
   const hiddenFieldsSet = new Set(options.hiddenFields ?? [])
 
-  return uiColumns.filter(
+  return sortedColumns.filter(
     (column) => !hiddenFieldsSet.has(column.table_column_name)
   )
 }
