@@ -2,9 +2,6 @@ import { describe, it, expect, beforeAll } from 'vitest';
 import { compileLexicalCode } from './lexical-compiler';
 
 describe('lexical-compiler', () => {
-    beforeAll(async () => {
-        await compileLexicalCode('');
-    });
 
     describe('compileLexicalCode', () => {
         it('should transform named imports from lexical packages', async () => {

@@ -1,26 +1,29 @@
 import type { IExtension } from "@/packages/core/meta-table/extension";
 import { compileCode } from "./compiler";
 import { compileLexicalCode } from "./lexical-compiler";
-import { transform } from "./esbuild";
-
+import * as oxc from "oxc-transform";
 
 export const scriptCodeCompile = async (
     sourceCode: string
 ): Promise<string> => {
     try {
-        const result = await transform(sourceCode, {
-            loader: "ts",
-            target: "es2020",
-            minify: false,
-            keepNames: true,
-            charset: "utf8",
-        });
+        const result = oxc.transform(
+            'source.ts',
+            sourceCode,
+            {
+                typescript: {}
+            }
+        );
 
-        return result.code
+        if (result.errors && result.errors.length > 0) {
+            const errorMessages = result.errors.map((err: any) => err.message || err.toString()).join('\n');
+            throw new Error(errorMessages);
+        }
+
+        return result.code;
     } catch (err: any) {
         throw new Error(err.message)
     }
-
 };
 
 async function blockCodeCompile(ts_code: string): Promise<string> {

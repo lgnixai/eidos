@@ -1,4 +1,4 @@
-import { parseSync, type Program } from '@oxc-parser/wasm';
+import { parseSync, type Program } from 'oxc-parser';
 
 
 export function getImportsFromCode(code: string): string[] {
@@ -9,10 +9,7 @@ export function getImportsFromCode(code: string): string[] {
     }
 
     try {
-        const ast: Program = parseSync(code, {
-            sourceType: 'module',
-            sourceFilename: 'file.tsx',
-        }).program;
+        const ast: Program = parseSync("file.tsx", code).program;
 
         function walk(node: any, visitor: (node: any) => void) {
             if (!node) return;

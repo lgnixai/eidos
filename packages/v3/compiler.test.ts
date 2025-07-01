@@ -1,89 +1,193 @@
-import { expect } from "vitest";
-import { getImportsFromCode, getAllLibs } from "./compiler";
-import { compileCode } from "./compiler";
-import importUIlibCode from "./test-code/import-ui-lib.tsx?raw";
-// import uilibCode from "@/components/ui/button.tsx?raw";
+import { describe, it, expect } from 'vitest';
+import { compileCode } from './compiler';
 
-describe("getImportsFromCode", () => {
-  it("", () => {
-    const imports = getImportsFromCode(importUIlibCode);
-    expect(imports).toEqual([
-      "react",
-      "lucide-react",
-      "@/components/ui/button",
-      "@/components/ui/input",
-      "@/components/ui/slider",
-    ]);
-  });
-  it("should return an array of import paths from the code", () => {
-    const code = `
-      import React from 'react';
-      import { useState } from 'react';
-    `;
-    const expectedImports = ["react"];
-    const imports = getImportsFromCode(code);
-    expect(imports).toEqual(expectedImports);
-  });
+describe('compiler', () => {
+  describe('compileCode', () => {
+    it('should compile basic JSX without React import', async () => {
+      const input = `
+        function Component() {
+          return <div>Hello World</div>;
+        }
+      `;
 
-  it("multiple lines imports", () => {
-    const code = `
-      import React from 'react';
-      import {
-        Card,
-        CardContent,
-        CardDescription,
-        CardFooter,
-        CardHeader,
-        CardTitle,
-      } from "@/components/ui/card"
-    `;
-    const expectedImports = ["react", "@/components/ui/card"];
-    const imports = getImportsFromCode(code);
-    expect(imports).toEqual(expectedImports);
-  });
+      const result = await compileCode(input);
+      
+      expect(result.error).toBeNull();
+      expect(result.code).toContain('jsx');
+      expect(result.code).toContain('react/jsx-runtime');
+    });
 
-  it("should return an empty array if there are no import statements", () => {
-    const code = `
-      const a = 1;
-      console.log(a);
-    `;
-    const expectedImports: string[] = [];
-    const imports = getImportsFromCode(code);
-    expect(imports).toEqual(expectedImports);
-  });
+    it('should compile TypeScript JSX', async () => {
+      const input = `
+        interface Props {
+          message: string;
+        }
+        
+        function Component({ message }: Props) {
+          return <div>{message}</div>;
+        }
+      `;
 
-  it("should handle dynamic imports", () => {
-    // const code = `
-    //   import('lodash').then(_ => {
-    //     console.log('Lodash loaded');
-    //   });
-    // `;
-    // const expectedImports = ["lodash"];
-    // const imports = getImportsFromCode(code);
-    // expect(imports).toEqual(expectedImports);
-  });
-});
+      const result = await compileCode(input);
+      
+      expect(result.error).toBeNull();
+      expect(result.code).toBeTruthy();
+    });
 
-describe("compileCode", () => {
-  // it("ui button", async () => {
-  //   const result = await compileCode(uilibCode);
-  // });
-  it("should handle empty code input", async () => {
-    const result = await compileCode("");
-    expect(result.error).toBeNull();
-  });
-});
+    it('should remove CSS imports', async () => {
+      const input = `
+        import './styles.css';
+        import "global.css";
+        
+        function Component() {
+          return <div>Hello</div>;
+        }
+      `;
 
-describe("getThirdPartyLibs", () => {
-  it("should return third party libs", () => {
-    const result = getAllLibs(importUIlibCode);
-    expect(result.thirdPartyLibs).toEqual([
-      "react",
-      "lucide-react",
-      "@radix-ui/react-slot",
-      "class-variance-authority",
-      "@radix-ui/react-slider",
-    ]);
-    expect(result.uiLibs).toEqual(["button", "input", "slider"]);
+      const result = await compileCode(input);
+      
+      expect(result.error).toBeNull();
+      expect(result.code).not.toContain('styles.css');
+      expect(result.code).not.toContain('global.css');
+    });
+
+    it('should include uiLibCode when provided', async () => {
+      const input = `
+        function Component() {
+          return <Button>Click me</Button>;
+        }
+      `;
+
+      const uiLibCode = `
+        const Button = ({ children }) => <button>{children}</button>;
+      `;
+
+      const result = await compileCode(input, { uiLibCode });
+      
+      expect(result.error).toBeNull();
+      expect(result.code).toContain('Button');
+    });
+
+    it('should handle complex JSX with props', async () => {
+      const input = `
+        function App() {
+          const items = ['a', 'b', 'c'];
+          return (
+            <div className="container">
+              <h1 style={{ color: 'red' }}>Title</h1>
+              {items.map(item => (
+                <span key={item}>{item}</span>
+              ))}
+            </div>
+          );
+        }
+      `;
+
+      const result = await compileCode(input);
+      
+      expect(result.error).toBeNull();
+      expect(result.code).toBeTruthy();
+    });
+
+    it('should handle TypeScript types and interfaces', async () => {
+      const input = `
+        type Color = 'red' | 'blue' | 'green';
+        
+        interface ButtonProps {
+          color: Color;
+          onClick: () => void;
+        }
+        
+        const Button: React.FC<ButtonProps> = ({ color, onClick }) => {
+          return <button style={{ color }} onClick={onClick}>Click</button>;
+        };
+      `;
+
+      const result = await compileCode(input);
+      
+      expect(result.error).toBeNull();
+      expect(result.code).toBeTruthy();
+    });
+
+    it('should handle React hooks', async () => {
+      const input = `
+        import { useState, useEffect } from 'react';
+        
+        function Counter() {
+          const [count, setCount] = useState(0);
+          
+          useEffect(() => {
+            document.title = \`Count: \${count}\`;
+          }, [count]);
+          
+          return (
+            <button onClick={() => setCount(count + 1)}>
+              Count: {count}
+            </button>
+          );
+        }
+      `;
+
+      const result = await compileCode(input);
+      
+      expect(result.error).toBeNull();
+      expect(result.code).toContain('useState');
+      expect(result.code).toContain('useEffect');
+    });
+
+    it('should return error for invalid syntax', async () => {
+      const input = `
+        function Component() {
+          return <div>unclosed div
+        }
+      `;
+
+      const result = await compileCode(input);
+      
+      expect(result.error).not.toBeNull();
+      expect(result.code).toBe('');
+    });
+
+    it('should handle empty input', async () => {
+      const result = await compileCode('');
+      
+      expect(result.error).toBeNull();
+      expect(result.code).toBeTruthy();
+    });
+
+    it('should handle regular JavaScript without JSX', async () => {
+      const input = `
+        function add(a, b) {
+          return a + b;
+        }
+        
+        const result = add(2, 3);
+        console.log(result);
+      `;
+
+      const result = await compileCode(input);
+      
+      expect(result.error).toBeNull();
+      expect(result.code).toContain('add');
+      expect(result.code).toContain('console.log');
+    });
+
+    it('should handle JSX fragments', async () => {
+      const input = `
+        function Component() {
+          return (
+            <>
+              <div>First</div>
+              <div>Second</div>
+            </>
+          );
+        }
+      `;
+
+      const result = await compileCode(input);
+      
+      expect(result.error).toBeNull();
+      expect(result.code).toBeTruthy();
+    });
   });
-});
+}); 

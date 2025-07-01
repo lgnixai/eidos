@@ -16,9 +16,10 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
-    "@oxc-parser/wasm": "^0.60.0",
+    "@oxc-parser/binding-wasm32-wasi": "^0.75.0",
+    "@oxc-transform/binding-wasm32-wasi": "^0.75.0",
     "diff": "^8.0.2",
-    "esbuild-wasm": "^0.24.2",
-    "oxc-parser": "^0.75.0"
+    "oxc-parser": "^0.74.0",
+    "oxc-transform": "^0.74.0"
   }
 }

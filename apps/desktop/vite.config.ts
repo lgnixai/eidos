@@ -1,6 +1,6 @@
 import esmShim from '@rollup/plugin-esm-shim'
 import path from "path"
-import type { Plugin, UserConfig} from "vite";
+import type { Plugin, UserConfig } from "vite";
 import { mergeConfig, defineConfig } from "vite"
 import electron from 'vite-plugin-electron/simple'
 import { sharedAlias, sharedConfig } from "../../packages/shared/vite/base.config"
@@ -59,6 +59,7 @@ const desktopConfig: UserConfig = mergeConfig(sharedConfig, {
           'electron/worker.ts',
         ],
         vite: {
+          assetsInclude: ['**/*.node'],
           resolve: {
             alias: sharedAlias,
           },
@@ -69,7 +70,8 @@ const desktopConfig: UserConfig = mergeConfig(sharedConfig, {
               ],
               external: [
                 '@eidos.space/better-sqlite3',
-                '@oxc-parser/wasm',
+                'oxc-parser',
+                'oxc-transform'
               ]
             },
           },
@@ -78,11 +80,16 @@ const desktopConfig: UserConfig = mergeConfig(sharedConfig, {
       preload: {
         input: 'electron/preload.ts',
         vite: {
+          assetsInclude: ['**/*.node'],
           resolve: {
             alias: sharedAlias,
           },
           build: {
             rollupOptions: {
+              external: [
+                'oxc-parser',
+                'oxc-transform'
+              ],
               output: {
                 format: 'es',
                 inlineDynamicImports: true,

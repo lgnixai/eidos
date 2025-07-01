@@ -23,7 +23,10 @@
         "**/node_modules/@eidos.space/better-sqlite3/**/*",
         "**/node_modules/bindings/**/*",
         "**/node_modules/file-uri-to-path/**/*",
-        "**/node_modules/@oxc-parser/wasm/**/*"
+        "**/node_modules/oxc-parser/**/*",
+        "**/node_modules/@oxc-parser/binding-*/**/*",
+        "**/node_modules/oxc-transform/**/*",
+        "**/node_modules/@oxc-transform/binding-*/**/*"
     ],
     "extraResources": [
         {

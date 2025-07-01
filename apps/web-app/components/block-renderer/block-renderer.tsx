@@ -5,7 +5,11 @@ import React, {
   useRef,
   useState,
 } from "react"
-import { generateImportMap, getAllLibs } from "@/packages/v3/compiler"
+import {
+  generateImportMap,
+  getAllLibs,
+} from "@/packages/v3/code-tools/get-deps"
+import { uiComponentsDependencies } from "@/packages/v3/ui-deps"
 import { useTheme } from "next-themes"
 
 import { isDesktopMode } from "@/lib/env"
@@ -28,7 +32,7 @@ export interface BlockRendererRef {
 interface BlockRendererProps {
   code: string
   compiledCode: string
-  blockId: string
+  blockId?: string
   env?: Record<string, string>
   bindings?: Record<string, { type: "table"; value: string }>
   width?: string | number
@@ -80,7 +84,10 @@ export const BlockRenderer = React.forwardRef<
       if (!code.length || isDesktopMode) {
         return
       }
-      const { thirdPartyLibs, uiLibs } = getAllLibs(code)
+      const { thirdPartyLibs, uiLibs } = getAllLibs(
+        code,
+        uiComponentsDependencies
+      )
       // preload some libs
       thirdPartyLibs.push(
         "@radix-ui/react-icons",
@@ -91,8 +98,8 @@ export const BlockRenderer = React.forwardRef<
       uiLibs.push("toast", "toaster", "use-toast")
       setDependencies(thirdPartyLibs)
       setUiComponents(uiLibs)
-      generateImportMap(thirdPartyLibs, uiLibs).then(({ importMap }) => {
-        setImportMap(importMap)
+      generateImportMap(thirdPartyLibs, uiLibs).then(({ importMapScript }) => {
+        setImportMap(importMapScript)
         setIsLoading(false)
       })
     }, [code])
@@ -344,7 +351,7 @@ export const BlockRenderer = React.forwardRef<
     if (isDesktopMode) {
       return (
         <WebViewBlock
-          blockId={blockId}
+          blockId={blockId!}
           defaultProps={defaultProps}
           width={width}
           height={height}

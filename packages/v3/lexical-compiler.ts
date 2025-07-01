@@ -1,4 +1,4 @@
-import { transform } from "./esbuild";
+import * as oxc from "oxc-transform";
 
 const BUILT_IN_PACKAGES = [
     "react",
@@ -47,22 +47,24 @@ function processLexicalImports(sourceCode: string): string {
 }
 
 export async function compileLexicalCode(sourceCode: string): Promise<CompileResult> {
-
     try {
         const processedCode = processLexicalImports(sourceCode);
 
-        const jsxResult = await transform(processedCode, {
-            loader: "tsx",
-            target: "esnext",
-            jsxFactory: "React.createElement",
-            jsxFragment: "React.Fragment",
-            minify: false,
-            keepNames: true,
-            charset: "utf8",
-        });
+        const result = oxc.transform(
+            'source.tsx',
+            processedCode,
+            {
+                typescript: {}
+            }
+        );
+
+        if (result.errors && result.errors.length > 0) {
+            const errorMessages = result.errors.map((err: any) => err.message || err.toString()).join('\n');
+            return { code: "", error: errorMessages };
+        }
 
         return {
-            code: jsxResult.code,
+            code: result.code,
             error: null,
         };
     } catch (err: any) {

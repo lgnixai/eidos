@@ -1,4 +1,4 @@
-import { parseSync } from '@oxc-parser/wasm';
+import { parseSync } from 'oxc-parser';
 
 function extractFunction(code: string, functionName: string): string | null {
     // Quick check: if function name doesn't exist in code, return null immediately
@@ -6,10 +6,7 @@ function extractFunction(code: string, functionName: string): string | null {
         return null;
     }
 
-    const ast = parseSync(code, {
-        sourceType: 'module',
-        sourceFilename: 'file.tsx',
-    }).program;
+    const ast = parseSync("file.tsx", code).program;
 
     for (const node of ast.body) {
         if (node.type === 'FunctionDeclaration' && node.id && node.id.name === functionName) {
@@ -29,15 +26,12 @@ function extractConstant(code: string, constantName: string): any {
         return null;
     }
 
-    const ast = parseSync(code, {
-        sourceType: 'module',
-        sourceFilename: 'file.tsx',
-    }).program;
+    const ast = parseSync("file.tsx", code).program;
 
     // Helper function to convert AST node to actual value
     function nodeToValue(node: any): any {
         if (!node) return null;
-        
+
         switch (node.type) {
             case 'Literal':
                 return node.value;
@@ -55,8 +49,8 @@ function extractConstant(code: string, constantName: string): any {
                 const obj: any = {};
                 for (const prop of node.properties) {
                     if (prop.type === 'Property') {
-                        const key = prop.key.type === 'Identifier' ? prop.key.name : 
-                                  prop.key.type === 'StringLiteral' ? prop.key.value : nodeToValue(prop.key);
+                        const key = prop.key.type === 'Identifier' ? prop.key.name :
+                            prop.key.type === 'StringLiteral' ? prop.key.value : nodeToValue(prop.key);
                         obj[key] = nodeToValue(prop.value);
                     }
                 }
@@ -79,12 +73,12 @@ function extractConstant(code: string, constantName: string): any {
                 }
             }
         }
-        
+
         // Handle export { CONSTANT }; pattern
         if (node.type === 'ExportNamedDeclaration' && node.specifiers) {
             for (const specifier of node.specifiers) {
-                if (specifier.type === 'ExportSpecifier' && 
-                    specifier.exported.type === 'Identifier' && 
+                if (specifier.type === 'ExportSpecifier' &&
+                    specifier.exported.type === 'Identifier' &&
                     specifier.exported.name === constantName) {
                     // Find the original declaration
                     const originalName = specifier.local.type === 'Identifier' ? specifier.local.name : constantName;
