@@ -2,7 +2,7 @@
 title: Micro Block
 description: 一个通用的 UI 扩展框架，实现自定义渲染和交互功能。
 sidebar:
-  order: 2
+  order: 3
   badge: RFC
 ---
 

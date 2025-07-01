@@ -1,10 +1,23 @@
 ---
-title: Extensions
-description: How to extend Eidos
+title: Extension
+description: Extension is one of Eidos's core capabilities, allowing users to implement custom functionality through extensions.
 sidebar:
   order: 4
 ---
 
-Eidos is designed to be extensible. You can write your own extensions to add new features to Eidos.
+import { CardGrid, LinkCard } from "@astrojs/starlight/components"
 
-## How to write an extension
+Software typically traps users in two modes: one is completely preset, where you can only follow the designer's script; the other is extensible, like VSCode or browsers, but extension development is dauntingly complex. Platform software divides people into developers and users: developers rack their brains to write plugins, while users passively install them. This division seems reasonable but artificially creates a barrier. Platforms want plugins to be reused to flourish the ecosystem, but for ordinary users, the threshold is too high.
+
+Imagine you're using software and have a flash of inspiration to improve something. In the traditional mode, you first need to transform into a "developer": learn APIs, set up environments, write code, package, and publish. This path is long and painful, with most good ideas dying before they take shape. Greasemonkey scripts are an exception - they make browser extensions lightweight, like "extensions within extensions," but still not intuitive enough.
+
+Eidos attempts a new exploration. Extensions are no longer add-ons but part of the software's DNA. You can write code directly inside and see effects in real time. When friction disappears, magical things happen: users start thinking like creators. They no longer passively accept but actively solve their own problems and customize their own tools.
+
+AI makes all this even simpler. The threshold for creating tools has never been so low.
+
+Eidos has two types of extensions: Script handles data logic, and Micro Block handles interface interactions.
+
+<CardGrid>
+  <LinkCard title="Script" href="/extensions/script"></LinkCard>
+  <LinkCard title="Micro Block" href="/extensions/micro-block"></LinkCard>
+</CardGrid>

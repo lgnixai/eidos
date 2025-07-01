@@ -2,7 +2,7 @@
 title: Script
 description: "一个灵活的数据层解决方案，通过三个主要执行上下文实现可扩展功能：LLM 工具、表格操作和用户自定义函数 (UDF)。"
 sidebar:
-  order: 1
+  order: 2
   badge: RFC
 ---
 

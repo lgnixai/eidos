@@ -1,8 +1,23 @@
 ---
 title: 扩展
-description: 如何扩展 Eidos
+description: 扩展是 Eidos 的核心能力之一，它允许用户通过扩展来实现自定义功能。
 sidebar:
   order: 4
 ---
 
-你可能注意到 Eidos 在自己的描述中称自己为 "可扩展的数据管理框架"。
+import { CardGrid, LinkCard } from "@astrojs/starlight/components"
+
+软件通常把用户困在两种模式里：一种是完全预设的，你只能按设计者的剧本走；另一种是可扩展的，像 VSCode 或浏览器，但扩展开发复杂得让人望而生畏。平台类软件把人分成开发者与使用者：开发者费尽心思写插件，使用者被动安装。这种分工看似合理，却人为制造了一道壁垒。平台希望插件被复用，繁荣生态，但对普通用户来说，门槛太高了。
+
+想象你在用软件时，灵光一现，想改进点什么。在传统模式下，你得先变身“开发者”：学API，搭环境，写代码，打包，发布。这条路漫长而痛苦，大多数好点子还没成型就胎死腹中。油猴脚本是个例外，它让浏览器扩展变得轻量，像是“扩展中的扩展”，但依然不够直观。
+
+Eidos 尝试了新的探索。扩展不再是外挂，而是软件的 DNA。你可以直接在里面写代码，实时看到效果。摩擦消失后，奇妙的事情发生了：用户开始像创造者一样思考。他们不再被动接受，而是主动解决自己的问题，定制自己的工具。
+
+AI 的加入让这一切变得更简单。创造工具的门槛从未如此之低。
+
+Eidos 的扩展分两种：Script 处理数据逻辑，Micro Block 处理界面交互。
+
+<CardGrid>
+  <LinkCard title="Script" href="/zh-cn/extensions/script"></LinkCard>
+  <LinkCard title="Micro Block" href="/zh-cn/extensions/micro-block"></LinkCard>
+</CardGrid>
