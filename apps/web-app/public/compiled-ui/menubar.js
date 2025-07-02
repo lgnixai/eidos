@@ -2,7 +2,7 @@
 var __defProp = Object.defineProperty;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
 import * as React from "react";
-import { Menubar as MenubarPrimitive } from "radix-ui";
+import * as MenubarPrimitive from "@radix-ui/react-menubar";
 import { cn } from "@/lib/utils";
 import { CheckIcon, ChevronRightIcon, DotFilledIcon } from "@radix-ui/react-icons";
 function MenubarMenu({

@@ -2,7 +2,7 @@
 var __defProp = Object.defineProperty;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
 import * as React from "react";
-import { Dialog as SheetPrimitive } from "radix-ui";
+import * as SheetPrimitive from "@radix-ui/react-dialog";
 import { cva } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 import { Cross2Icon } from "@radix-ui/react-icons";

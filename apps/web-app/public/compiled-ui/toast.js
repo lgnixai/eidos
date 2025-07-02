@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Toast as ToastPrimitives } from "radix-ui";
+import * as ToastPrimitives from "@radix-ui/react-toast";
 import { cva } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 import { Cross2Icon } from "@radix-ui/react-icons";

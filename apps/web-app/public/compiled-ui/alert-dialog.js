@@ -1,7 +1,7 @@
 var __defProp = Object.defineProperty;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
 import * as React from "react";
-import { AlertDialog as AlertDialogPrimitive } from "radix-ui";
+import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 const AlertDialog = AlertDialogPrimitive.Root;

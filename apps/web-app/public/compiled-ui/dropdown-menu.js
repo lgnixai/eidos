@@ -1,7 +1,7 @@
 var __defProp = Object.defineProperty;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
 import * as React from "react";
-import { DropdownMenu as DropdownMenuPrimitive } from "radix-ui";
+import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
 import {
   CheckIcon,
   ChevronRightIcon,

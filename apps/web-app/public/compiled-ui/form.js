@@ -2,7 +2,7 @@
 var __defProp = Object.defineProperty;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
 import * as React from "react";
-import { Slot as SlotPrimitive } from "radix-ui";
+import { Slot } from "@radix-ui/react-slot";
 import {
   Controller,
   FormProvider,
@@ -61,7 +61,7 @@ FormLabel.displayName = "FormLabel";
 const FormControl = React.forwardRef(({ ...props }, ref) => {
   const { error, formItemId, formDescriptionId, formMessageId } = useFormField();
   return /* @__PURE__ */ React.createElement(
-    SlotPrimitive.Slot,
+    Slot,
     {
       ref,
       id: formItemId,

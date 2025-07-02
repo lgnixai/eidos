@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ScrollArea as ScrollAreaPrimitive } from "radix-ui";
+import * as ScrollAreaPrimitive from "@radix-ui/react-scroll-area";
 import { cn } from "@/lib/utils";
 const ScrollArea = React.forwardRef(({ className, children, ...props }, ref) => /* @__PURE__ */ React.createElement(
   ScrollAreaPrimitive.Root,
