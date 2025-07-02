@@ -5,8 +5,7 @@ import React, {
   useRef,
   useState,
 } from "react"
-import type {
-  DragEndEvent} from "@dnd-kit/core";
+import type { IView, ViewType } from "@/packages/core/types/IView"
 import {
   DndContext,
   KeyboardSensor,
@@ -14,6 +13,7 @@ import {
   closestCenter,
   useSensor,
   useSensors,
+  type DragEndEvent,
 } from "@dnd-kit/core"
 import {
   SortableContext,
@@ -29,12 +29,7 @@ import {
   useSearchParams,
 } from "react-router-dom"
 
-import type { IView} from "@/packages/core/types/IView";
-import { ViewTypeEnum } from "@/packages/core/types/IView"
 import { cn, getTableIdByRawTableName, shortenId, uuidv7 } from "@/lib/utils"
-import { useCurrentSubPage } from "@/apps/web-app/hooks/use-current-sub-page"
-import { useSqlite } from "@/apps/web-app/hooks/use-sqlite"
-import { useTableOperation } from "@/apps/web-app/hooks/use-table"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -47,14 +42,18 @@ import {
   DialogContent,
   DialogTrigger,
 } from "@/components/eui/sub-page-dialog"
+import { useCurrentSubPage } from "@/apps/web-app/hooks/use-current-sub-page"
+import { useSqlite } from "@/apps/web-app/hooks/use-sqlite"
+import { useTableOperation } from "@/apps/web-app/hooks/use-table"
 import { NodeComponent } from "@/apps/web-app/pages/[database]/[node]/page"
 
 import { Button } from "../ui/button"
+import { AddViewDropdown } from "./add-view-dropdown"
 import { TableContext, useCurrentView, useViewOperation } from "./hooks"
 import { useTableSearchStore } from "./hooks/use-table-search-store"
 import { ViewField } from "./view-field/view-field"
 import { ViewFilter } from "./view-filter"
-import { ViewIconMap, ViewItem } from "./view-item"
+import { ViewItem } from "./view-item"
 import { ViewRawQuery } from "./view-raw-query"
 import { ViewSearch } from "./view-search"
 import { ViewSort } from "./view-sort"
@@ -267,7 +266,7 @@ export const ViewToolbar = (props: {
   )
 
   const handleAddView = useCallback(
-    async (viewType: ViewTypeEnum = ViewTypeEnum.Grid) => {
+    async (viewType: ViewType) => {
       const view = await addView(viewType)
       if (view) {
         jump2View(view.id)
@@ -326,49 +325,11 @@ export const ViewToolbar = (props: {
             deleteView={deleteView}
             onReorder={handleReorderViews}
           />
-          {!props.isReadOnly && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm">
-                  <PlusIcon className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem
-                  onClick={() => handleAddView(ViewTypeEnum.Grid)}
-                >
-                  <div className="flex items-center gap-2">
-                    {React.createElement(ViewIconMap[ViewTypeEnum.Grid], {
-                      className: "h-4 w-4",
-                    })}
-                    <span>{t("views.types.grid")}</span>
-                  </div>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => handleAddView(ViewTypeEnum.Gallery)}
-                >
-                  <div className="flex items-center gap-2">
-                    {React.createElement(ViewIconMap[ViewTypeEnum.Gallery], {
-                      className: "h-4 w-4",
-                    })}
-                    <span>{t("views.types.gallery")}</span>
-                  </div>
-                </DropdownMenuItem>
-                {!isView && (
-                  <DropdownMenuItem
-                    onClick={() => handleAddView(ViewTypeEnum.Kanban)}
-                  >
-                    <div className="flex items-center gap-2">
-                      {React.createElement(ViewIconMap[ViewTypeEnum.Kanban], {
-                        className: "h-4 w-4",
-                      })}
-                      <span>{t("views.types.kanban")}</span>
-                    </div>
-                  </DropdownMenuItem>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
+          <AddViewDropdown
+            onAddView={handleAddView}
+            isView={isView}
+            isReadOnly={props.isReadOnly}
+          />
         </div>
         <div
           className={cn("flex gap-2 hover:opacity-100", {

@@ -1,4 +1,4 @@
-import type { SelectFromStatement} from "pgsql-ast-parser";
+import type { SelectFromStatement } from "pgsql-ast-parser";
 import { parseFirst, toSql } from "pgsql-ast-parser"
 import {
   createContext,
@@ -13,7 +13,7 @@ import { useSearchParams } from "react-router-dom"
 import { useSqlite, useSqliteStore } from "@/apps/web-app/hooks/use-sqlite"
 import { useTableFields, useTableOperation } from "@/apps/web-app/hooks/use-table"
 import { FieldType } from "@/packages/core/fields/const"
-import type { IView} from "@/packages/core/types/IView";
+import type { IView, ViewType } from "@/packages/core/types/IView";
 import { ViewTypeEnum } from "@/packages/core/types/IView"
 import type { IField } from "@/packages/core/types/IField"
 import { getTableIdByRawTableName } from "@/lib/utils"
@@ -75,7 +75,7 @@ export const useViewOperation = () => {
   const { setView } = useSqliteStore()
   const { sqlite } = useSqlite()
 
-  const addView = useCallback(async (type: ViewTypeEnum = ViewTypeEnum.Grid) => {
+  const addView = useCallback(async (type: ViewType = ViewTypeEnum.Grid) => {
     if (tableId && sqlite) {
       const view = await sqlite.createDefaultView(tableName, type)
       await updateViews()

@@ -1,5 +1,10 @@
 import { Suspense, lazy, useCallback, useEffect, useRef, useState } from "react"
 import type { IExtension } from "@/packages/core/meta-table/extension"
+import { parseSync } from "@/packages/v3"
+import { extractConstant } from "@/packages/v3/code-tools/code-extractor"
+import { compileCode } from "@/packages/v3/compiler"
+import { compileLexicalCode } from "@/packages/v3/lexical-compiler"
+import { getCompileMethod } from "@/packages/v3/script-compiler"
 import { useLocalStorageState, useMount, useSize } from "ahooks"
 import { CodeIcon, EyeIcon, SettingsIcon } from "lucide-react"
 import { useTheme } from "next-themes"
@@ -9,13 +14,10 @@ import {
   useSearchParams,
 } from "react-router-dom"
 
-import { compileCode } from "@/packages/v3/compiler"
-import { compileLexicalCode } from "@/packages/v3/lexical-compiler"
-import { getCompileMethod } from "@/packages/v3/script-compiler"
-import { useExtension } from "@/apps/web-app/hooks/use-extension"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/components/ui/use-toast"
+import { useExtension } from "@/apps/web-app/hooks/use-extension"
 
 import { ExtensionPreview } from "./components/extension-preview"
 import { ExtensionToolbar } from "./components/extension-toolbar"
@@ -23,7 +25,6 @@ import { ExtensionConfig } from "./config/common-config"
 import { ScriptSandbox } from "./editor/script-sandbox"
 import { getDescriptionFromCode, getEditorLanguage } from "./helper"
 import { useEditorStore } from "./stores/editor-store"
-import { extractConstant } from "@/packages/v3/code-tools/code-extractor"
 
 const CodeEditor = lazy(() => import("./editor/code-editor"))
 
@@ -100,12 +101,12 @@ export const ExtensionDetailPage = () => {
         (version && version !== script.version)
       ) {
         setEditorContent(ts_code || code)
-        const asTableView = await extractConstant(ts_code || code, "asTableView")
-        console.log("asTableView", asTableView)
+        const meta = await extractConstant(ts_code || code, "meta")
         await updateExtension({
           id: script.id,
           code,
           ts_code,
+          meta,
           version,
         })
         revalidator.revalidate()
@@ -118,6 +119,8 @@ export const ExtensionDetailPage = () => {
       }
       if (script.type === "script") {
         const sandbox = new ScriptSandbox()
+        const ast = parseSync("index.ts", ts_code || code)
+        console.log(ast)
         try {
           const exportsCommands = await sandbox.extractExports(code)
           if (exportsCommands) {

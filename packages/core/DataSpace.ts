@@ -1,12 +1,13 @@
 import { MsgType } from "@/lib/const"
 import type {
-  FileSystemType} from "@/lib/storage/eidos-file-system";
+  FileSystemType
+} from "@/lib/storage/eidos-file-system";
 import {
   EidosFileSystemManager
 } from "@/lib/storage/eidos-file-system"
-import type { ITreeNode} from "@/packages/core/types/ITreeNode";
+import type { ITreeNode } from "@/packages/core/types/ITreeNode";
 import { TreeNodeType } from "@/packages/core/types/ITreeNode"
-import type { IView} from "@/packages/core/types/IView";
+import type { IView, ViewType } from "@/packages/core/types/IView";
 import { ViewTypeEnum } from "@/packages/core/types/IView"
 import {
   extractIdFromShortId,
@@ -597,7 +598,7 @@ export class DataSpace {
     return await this.view.set(viewId, view)
   }
 
-  public async createDefaultView(tableName: string, type: ViewTypeEnum = ViewTypeEnum.Grid) {
+  public async createDefaultView(tableName: string, type: ViewType = ViewTypeEnum.Grid) {
     return await this.view.createDefaultView(tableName, type)
   }
 

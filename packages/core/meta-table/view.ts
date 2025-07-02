@@ -3,11 +3,11 @@ import {
   replaceQueryTableName,
   replaceWithFindIndexQuery,
 } from "@/packages/core/sqlite/sql-parser"
-import type { IView} from "@/packages/core/types/IView";
+import type { IView, ViewType } from "@/packages/core/types/IView";
 import { ViewTypeEnum } from "@/packages/core/types/IView"
 import { getTableIdByRawTableName, getUuid } from "@/lib/utils"
 
-import type { BaseTable} from "./base";
+import type { BaseTable } from "./base";
 import { BaseTableImpl } from "./base"
 import { timeit } from "../helper"
 
@@ -69,7 +69,7 @@ CREATE TABLE IF NOT EXISTS ${this.name} (
     )
   }
 
-  public async createDefaultView(tableName: string, type: ViewTypeEnum = ViewTypeEnum.Grid) {
+  public async createDefaultView(tableName: string, type: ViewType = ViewTypeEnum.Grid) {
     const table_id = getTableIdByRawTableName(tableName)
     return await this.add({
       id: getUuid(),

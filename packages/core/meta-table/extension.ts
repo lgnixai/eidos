@@ -1,91 +1,22 @@
-import type { JsonSchema7ObjectType } from "zod-to-json-schema"
-
 import { ScriptTableName } from "@/packages/core/sqlite/const"
 import { createUpdateTriggerForFields } from "@/packages/core/sqlite/sql-meta-table-trigger"
+import type {
+  IExtension,
+  TableViewInfo,
+  ExtensionStatus,
+  ICommand,
+  IPromptConfig
+} from "@/packages/core/types/IExtension"
 
-import type { BaseTable} from "./base";
+import type { BaseTable } from "./base";
 import { BaseTableImpl } from "./base"
 
-export type ExtensionStatus = "all" | "enabled" | "disabled"
-
-export interface ICommand {
-  name: string
-  description: string
-  inputJSONSchema?: JsonSchema7ObjectType
-  outputJSONSchema?: JsonSchema7ObjectType
-  asTableAction?: boolean
-  asTool?: boolean
-}
-
-export interface IPromptConfig {
-  model?: string
-  actions?: string[]
-}
-
-
-// aka extension
-export interface IExtension {
-  id: string
-  name: string
-  // block is static code stored in local file system
-  // m_block is mini or macro block, just a piece of code snippet stored in database
-  type: "script" | "udf" | "prompt" | "block" | "app" | "m_block" | "doc_plugin" | "py_script" | "ext_node"
-  // ext_node_type is the type of the ext_node
-  ext_node_type?: string
-  // block used to handle the ext_node
-  ext_node_handle_block_id?: string
-  description: string
-  version: string
-  code: string
-  meta?: Record<string, any>
-  // icon is a data uri of an image
-  icon?: string
-  // if the script is published to marketplace, it will have a marketplace_id
-  marketplace_id?: string
-  ts_code?: string
-  enabled?: boolean
-  // for prompt
-  model?: string
-  prompt_config?: IPromptConfig
-  // for script
-  commands: ICommand[]
-  tables?: {
-    name: string
-    fields: {
-      name: string
-      type: string
-    }[]
-  }[]
-  envs?: {
-    name: string
-    type: string
-    readonly?: boolean
-  }[]
-  env_map?: {
-    [key: string]: string
-  }
-  fields_map?: {
-    [tableName: string]: {
-      id: string
-      name: string
-      fieldsMap: {
-        [fieldName: string]: string
-      }
-    }
-  }
-  // FIXME: there are too many fields in this table, we need to refactor it
-  bindings?: Record<string, {
-    type: 'table'
-    value: string
-  }>
-  // for py_script
-  dependencies?: string[]
-}
+// Re-export types for backward compatibility
+export type { IExtension, TableViewInfo, ExtensionStatus, ICommand, IPromptConfig }
 
 export class ExtensionTable
   extends BaseTableImpl<IExtension>
-  implements BaseTable<IExtension>
-{
+  implements BaseTable<IExtension> {
   name = ScriptTableName
   createTableSql = `
     CREATE TABLE IF NOT EXISTS ${this.name} (
@@ -132,6 +63,63 @@ export class ExtensionTable
     "dependencies",
     "meta",
   ]
+
+  async getTableViews(): Promise<IExtension[]> {
+    const sql = `
+      SELECT * FROM ${this.name} 
+      WHERE enabled = 1 
+      AND meta IS NOT NULL 
+      AND meta != ''
+      AND JSON_VALID(meta) = 1
+      AND JSON_EXTRACT(meta, '$.type') = 'tableView'
+    `
+    const res = await this.dataSpace.exec2(sql)
+    return res.map((item: any) => this.toJson(item))
+  }
+
+  async getTableViewExtensionInfoByExtType(viewType: string): Promise<IExtension[]> {
+    const sql = `
+      SELECT * FROM ${this.name} 
+      WHERE enabled = 1 
+      AND meta IS NOT NULL 
+      AND meta != ''
+      AND JSON_VALID(meta) = 1
+      AND JSON_EXTRACT(meta, '$.tableView.type') = ?
+    `
+    const res = await this.dataSpace.exec2(sql, [viewType])
+    return res.map((item: any) => this.toJson(item))
+  }
+
+  async getTableViewsInfo(): Promise<TableViewInfo[]> {
+    const sql = `
+      SELECT 
+        id,
+        description,
+        CASE
+          WHEN meta IS NOT NULL AND meta != '' AND JSON_VALID(meta) = 1 
+          THEN JSON_EXTRACT(meta, '$.tableView.type')
+          ELSE NULL 
+        END as type,
+        CASE 
+          WHEN meta IS NOT NULL AND meta != '' AND JSON_VALID(meta) = 1 
+          THEN JSON_EXTRACT(meta, '$.tableView.title') 
+          ELSE NULL 
+        END as title
+      FROM ${this.name} 
+      WHERE enabled = 1 
+      AND meta IS NOT NULL 
+      AND meta != ''
+      AND JSON_VALID(meta) = 1
+      AND JSON_EXTRACT(meta, '$.type') = 'tableView'
+    `
+    const res = await this.dataSpace.exec2(sql)
+    return res.map((row: any) => ({
+      id: row.id,
+      title: row.title,
+      type: row.type,
+      description: row.description,
+    }))
+  }
 
   async del(id: string): Promise<boolean> {
     await this.dataSpace.db.transaction(async () => {

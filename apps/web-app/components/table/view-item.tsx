@@ -1,4 +1,5 @@
 import { useContext, useEffect, useState } from "react"
+import { ViewTypeEnum, type IView } from "@/packages/core/types/IView"
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 import {
@@ -10,8 +11,6 @@ import {
 import ReactDOM from "react-dom"
 import { useTranslation } from "react-i18next"
 
-import type { IView} from "@/packages/core/types/IView";
-import { ViewTypeEnum } from "@/packages/core/types/IView"
 import { cn } from "@/lib/utils"
 import {
   Dialog,
@@ -76,7 +75,9 @@ export const ViewItem = ({
     transition,
   }
 
-  const Icon = ViewIconMap[view.type]
+  const Icon = view.type.startsWith("ext__")
+    ? ViewIconMap[ViewTypeEnum.Grid]
+    : ViewIconMap[view.type as ViewTypeEnum]
 
   const handleOpen = () => {
     if (isActive && !isReadOnly) {

@@ -1,4 +1,3 @@
-import { describe, it, expect } from 'vitest';
 import { compileCode } from './compiler';
 
 describe('compiler', () => {
@@ -11,7 +10,7 @@ describe('compiler', () => {
       `;
 
       const result = await compileCode(input);
-      
+
       expect(result.error).toBeNull();
       expect(result.code).toContain('jsx');
       expect(result.code).toContain('react/jsx-runtime');
@@ -29,7 +28,7 @@ describe('compiler', () => {
       `;
 
       const result = await compileCode(input);
-      
+
       expect(result.error).toBeNull();
       expect(result.code).toBeTruthy();
     });
@@ -45,7 +44,7 @@ describe('compiler', () => {
       `;
 
       const result = await compileCode(input);
-      
+
       expect(result.error).toBeNull();
       expect(result.code).not.toContain('styles.css');
       expect(result.code).not.toContain('global.css');
@@ -63,7 +62,7 @@ describe('compiler', () => {
       `;
 
       const result = await compileCode(input, { uiLibCode });
-      
+
       expect(result.error).toBeNull();
       expect(result.code).toContain('Button');
     });
@@ -84,7 +83,7 @@ describe('compiler', () => {
       `;
 
       const result = await compileCode(input);
-      
+
       expect(result.error).toBeNull();
       expect(result.code).toBeTruthy();
     });
@@ -104,7 +103,7 @@ describe('compiler', () => {
       `;
 
       const result = await compileCode(input);
-      
+
       expect(result.error).toBeNull();
       expect(result.code).toBeTruthy();
     });
@@ -129,7 +128,7 @@ describe('compiler', () => {
       `;
 
       const result = await compileCode(input);
-      
+
       expect(result.error).toBeNull();
       expect(result.code).toContain('useState');
       expect(result.code).toContain('useEffect');
@@ -143,14 +142,14 @@ describe('compiler', () => {
       `;
 
       const result = await compileCode(input);
-      
+
       expect(result.error).not.toBeNull();
       expect(result.code).toBe('');
     });
 
     it('should handle empty input', async () => {
       const result = await compileCode('');
-      
+
       expect(result.error).toBeNull();
       expect(result.code).toBeTruthy();
     });
@@ -166,7 +165,7 @@ describe('compiler', () => {
       `;
 
       const result = await compileCode(input);
-      
+
       expect(result.error).toBeNull();
       expect(result.code).toContain('add');
       expect(result.code).toContain('console.log');
@@ -185,7 +184,7 @@ describe('compiler', () => {
       `;
 
       const result = await compileCode(input);
-      
+
       expect(result.error).toBeNull();
       expect(result.code).toBeTruthy();
     });

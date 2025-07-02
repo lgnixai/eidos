@@ -7,9 +7,9 @@ import type { IField } from "../types/IField"
 
 import { rewriteQueryWithOffsetAndLimit } from "../sqlite/sql-view-query"
 import type { DataSpace } from "../DataSpace"
-import { workerStore } from "../../worker/web-worker/store"
 import type { TableManager } from "./table"
 import { getFieldInstance } from "../fields"
+import { workerStore } from "../rpc"
 
 export class RowsManager {
   dataSpace: DataSpace

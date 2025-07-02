@@ -7,10 +7,12 @@ export enum ViewTypeEnum {
   Kanban = "kanban",
 }
 
+export type ViewType = ViewTypeEnum | `ext__${string}`
+
 export interface IView<T = any> {
   id: string
   name: string
-  type: ViewTypeEnum
+  type: ViewTypeEnum | `ext__${string}`
   table_id: string // tableId uuid
   query: string
   fieldIds?: string[]
