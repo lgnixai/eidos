@@ -1,10 +1,11 @@
-import type {
-  DataEditorProps,
-  DataEditorRef,
-  HeaderClickedEventArgs,
-  Item,
-} from "@glideapps/glide-data-grid";
-import DataEditor from "@glideapps/glide-data-grid"
+import type { IGridViewProperties, IView } from "@/packages/core/types/IView"
+import DataEditor, {
+  type DataEditorProps,
+  type DataEditorRef,
+  type GridSelection,
+  type HeaderClickedEventArgs,
+  type Item,
+} from "@glideapps/glide-data-grid"
 
 import { useSpaceAppStore } from "@/apps/web-app/pages/[database]/store"
 
@@ -20,9 +21,7 @@ import { useKeyPress, useSize } from "ahooks"
 import { Plus } from "lucide-react"
 import { useTheme } from "next-themes"
 
-import type { IGridViewProperties, IView } from "@/packages/core/types/IView"
 import { cn } from "@/lib/utils"
-import { useSqlite } from "@/apps/web-app/hooks/use-sqlite"
 import { useTableOperation } from "@/apps/web-app/hooks/use-table"
 import { useUiColumns } from "@/apps/web-app/hooks/use-ui-columns"
 
@@ -47,6 +46,7 @@ import { FormulaEditor } from "./plugins/formula-editor"
 import { useFormulaEditor } from "./plugins/use-formula-editor"
 import { useTableAppStore } from "./store"
 import "./styles.css"
+import { useUndoRedo } from "./hooks/use-undo-redo"
 import { useDynamicTheme } from "./theme"
 
 interface IGridProps {
@@ -65,7 +65,7 @@ export default function GridView(props: IGridProps) {
   const { setCurrentTableSchema } = useSpaceAppStore()
   const glideDataGridRef = useRef<DataEditorRef>(null)
   const containerRef = useRef<HTMLDivElement>(null)
-  const { undo, redo } = useSqlite(databaseName)
+  // const { undo, redo } = useSqlite(databaseName)
   const size = useSize(containerRef)
   const aiContainerRef = useRef<HTMLDivElement>(null)
   const [aiHighlightRegions, setAIHighlightRegions] = React.useState<
@@ -131,15 +131,39 @@ export default function GridView(props: IGridProps) {
     view: currentView,
   })
 
+  const {
+    gridSelection,
+    onCellEdited: onCellEditedUndoRedo,
+    onGridSelectionChange,
+    undo,
+    canRedo,
+    canUndo,
+    redo,
+    reset,
+  } = useUndoRedo(glideDataGridRef, getCellContent, onCellEdited!)
+
   const { customHighlightRegions, setCustomHighlightRegions } = useHighlightRow(
     tableName,
     getIndexByRowId,
     showColumns
   )
 
+  // Reset undo/redo stack when view changes
+  useEffect(() => {
+    reset()
+  }, [currentView?.id, reset])
+
   const { setIsAddFieldEditorOpen, selection, setSelection, clearSelection } =
     useTableAppStore()
   const [isAItoolsOpen, setIsAItoolsOpen] = React.useState(false)
+
+  const onSelectionChange = useCallback(
+    (selection: GridSelection) => {
+      setSelection(selection)
+      onGridSelectionChange?.(selection)
+    },
+    [setSelection, onGridSelectionChange]
+  )
 
   // Get search state from context
   const { searchQuery, showSearch } = useTableSearchStore()
@@ -399,11 +423,11 @@ export default function GridView(props: IGridProps) {
               onDrop={onDrop}
               onDragOverCell={onDragOverCell}
               highlightRegions={highlightRegions}
-              gridSelection={selection}
+              gridSelection={gridSelection || selection}
               onItemHovered={onItemHovered}
               onHeaderClicked={onHeaderClicked}
               onHeaderContextMenu={onHeaderClicked}
-              onGridSelectionChange={setSelection}
+              onGridSelectionChange={onSelectionChange}
               onColumnResize={onColumnResize}
               onColumnMoved={onColumnMoved}
               getCellContent={getCellContent}
@@ -431,7 +455,7 @@ export default function GridView(props: IGridProps) {
               rightElementProps={{
                 fill: true,
               }}
-              onCellEdited={onCellEdited}
+              onCellEdited={onCellEditedUndoRedo}
               onCellsEdited={onCellsEdited}
               onCellActivated={onCellActivated}
               onRowAppended={isReadOnly ? undefined : handleAddRow}
