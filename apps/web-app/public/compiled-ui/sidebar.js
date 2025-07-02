@@ -1,9 +1,9 @@
 var __defProp = Object.defineProperty;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
 import * as React from "react";
-import { Slot } from "@radix-ui/react-slot";
+import { Slot as SlotPrimitive } from "radix-ui";
 import { cva } from "class-variance-authority";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { useIsMobile } from "@/apps/web-app/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -329,7 +329,7 @@ const SidebarGroup = React.forwardRef(({ className, ...props }, ref) => {
 });
 SidebarGroup.displayName = "SidebarGroup";
 const SidebarGroupLabel = React.forwardRef(({ className, asChild = false, ...props }, ref) => {
-  const Comp = asChild ? Slot : "div";
+  const Comp = asChild ? SlotPrimitive.Slot : "div";
   return /* @__PURE__ */ React.createElement(
     Comp,
     {
@@ -346,7 +346,7 @@ const SidebarGroupLabel = React.forwardRef(({ className, asChild = false, ...pro
 });
 SidebarGroupLabel.displayName = "SidebarGroupLabel";
 const SidebarGroupAction = React.forwardRef(({ className, asChild = false, ...props }, ref) => {
-  const Comp = asChild ? Slot : "button";
+  const Comp = asChild ? SlotPrimitive.Slot : "button";
   return /* @__PURE__ */ React.createElement(
     Comp,
     {
@@ -424,7 +424,7 @@ const SidebarMenuButton = React.forwardRef(
     className,
     ...props
   }, ref) => {
-    const Comp = asChild ? Slot : "button";
+    const Comp = asChild ? SlotPrimitive.Slot : "button";
     const { isMobile, state } = useSidebar();
     const button = /* @__PURE__ */ React.createElement(
       Comp,
@@ -458,7 +458,7 @@ const SidebarMenuButton = React.forwardRef(
 );
 SidebarMenuButton.displayName = "SidebarMenuButton";
 const SidebarMenuAction = React.forwardRef(({ className, asChild = false, showOnHover = false, ...props }, ref) => {
-  const Comp = asChild ? Slot : "button";
+  const Comp = asChild ? SlotPrimitive.Slot : "button";
   return /* @__PURE__ */ React.createElement(
     Comp,
     {
@@ -547,7 +547,7 @@ SidebarMenuSub.displayName = "SidebarMenuSub";
 const SidebarMenuSubItem = React.forwardRef(({ ...props }, ref) => /* @__PURE__ */ React.createElement("li", { ref, ...props }));
 SidebarMenuSubItem.displayName = "SidebarMenuSubItem";
 const SidebarMenuSubButton = React.forwardRef(({ asChild = false, size = "md", isActive, className, ...props }, ref) => {
-  const Comp = asChild ? Slot : "a";
+  const Comp = asChild ? SlotPrimitive.Slot : "a";
   return /* @__PURE__ */ React.createElement(
     Comp,
     {

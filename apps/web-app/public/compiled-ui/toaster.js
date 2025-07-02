@@ -2,7 +2,7 @@ import React from 'react';
 
 var __defProp = Object.defineProperty;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/apps/web-app/hooks/use-toast";
 import {
   Toast,
   ToastClose,

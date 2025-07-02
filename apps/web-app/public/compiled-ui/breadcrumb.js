@@ -1,7 +1,7 @@
 var __defProp = Object.defineProperty;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
 import * as React from "react";
-import { Slot } from "@radix-ui/react-slot";
+import { Slot as SlotPrimitive } from "radix-ui";
 import { cn } from "@/lib/utils";
 import { ChevronRightIcon, DotsHorizontalIcon } from "@radix-ui/react-icons";
 const Breadcrumb = React.forwardRef(({ ...props }, ref) => /* @__PURE__ */ React.createElement("nav", { ref, "aria-label": "breadcrumb", ...props }));
@@ -28,7 +28,7 @@ const BreadcrumbItem = React.forwardRef(({ className, ...props }, ref) => /* @__
 ));
 BreadcrumbItem.displayName = "BreadcrumbItem";
 const BreadcrumbLink = React.forwardRef(({ asChild, className, ...props }, ref) => {
-  const Comp = asChild ? Slot : "a";
+  const Comp = asChild ? SlotPrimitive.Slot : "a";
   return /* @__PURE__ */ React.createElement(
     Comp,
     {
