@@ -16,15 +16,39 @@ try {
     const deserializePropsFromUrl = (url) => {
       const props = {}
       url.searchParams.forEach((value, key) => {
-        if (key === "__context__") {
-          try {
-            props[key] = JSON.parse(value)
-          } catch (e) {
-            console.error("Failed to parse __context__:", e)
-            props[key] = {}
-          }
-        } else {
+        if (!value) {
           props[key] = value
+          return
+        }
+        
+                 // Check if the value has our JSON prefix
+         if (value.startsWith('__JSON__:')) {
+           const jsonString = value.substring(9) // Remove '__JSON__:' prefix
+           try {
+             props[key] = JSON.parse(jsonString)
+           } catch (e) {
+             console.error(`Failed to parse JSON for key "${key}":`, e)
+             // Fallback to the original value without prefix
+             props[key] = jsonString || value
+           }
+        } else {
+          // Try to automatically detect and parse common data types
+          if (value === 'true') {
+            props[key] = true
+          } else if (value === 'false') {
+            props[key] = false
+          } else if (value === 'null') {
+            props[key] = null
+          } else if (value === 'undefined') {
+            props[key] = undefined
+                     } else if (!isNaN(Number(value)) && value.trim() !== '' && !isNaN(parseFloat(value))) {
+             // Check if it's a number (integer or float)
+             const numValue = Number(value)
+             props[key] = Number.isInteger(numValue) ? parseInt(value, 10) : numValue
+          } else {
+            // Keep as string
+            props[key] = value
+          }
         }
       })
       return props

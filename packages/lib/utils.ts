@@ -315,11 +315,66 @@ export const fetcher = async (url: string) => {
 export const serializePropsToUrl = (props: Record<string, any>, url: string) => {
   const urlObj = new URL(url)
   Object.entries(props).forEach(([key, value]) => {
-    if (key === '__context__') {
-      urlObj.searchParams.set(key, JSON.stringify(value))
+    if (value === null || value === undefined) {
+      urlObj.searchParams.set(key, '')
+      return
+    }
+    
+    const valueType = typeof value
+    
+    if (valueType === 'string' || valueType === 'number' || valueType === 'boolean') {
+      urlObj.searchParams.set(key, String(value))
+    } else if (valueType === 'object' || Array.isArray(value)) {
+      // Add a prefix to indicate this is JSON data
+      urlObj.searchParams.set(key, `__JSON__:${JSON.stringify(value)}`)
     } else {
+      // Fallback to string conversion for other types
       urlObj.searchParams.set(key, String(value))
     }
   })
   return urlObj.toString()
+}
+
+export const deserializePropsFromUrl = (url: string | URL): Record<string, any> => {
+  const urlObj = typeof url === 'string' ? new URL(url) : url
+  const props: Record<string, any> = {}
+  
+  urlObj.searchParams.forEach((value, key) => {
+    if (!value) {
+      props[key] = value
+      return
+    }
+    
+    // Check if the value has our JSON prefix
+    if (value.startsWith('__JSON__:')) {
+      const jsonString = value.substring(9) // Remove '__JSON__:' prefix
+      try {
+        props[key] = JSON.parse(jsonString)
+      } catch (e) {
+        console.error(`Failed to parse JSON for key "${key}":`, e)
+        // Fallback to the original value without prefix
+        props[key] = jsonString || value
+      }
+    } else {
+      // Try to automatically detect and parse common data types
+      if (value === 'true') {
+        props[key] = true
+      } else if (value === 'false') {
+        props[key] = false
+      } else if (value === 'null') {
+        props[key] = null
+      } else if (value === 'undefined') {
+        props[key] = undefined
+             } else if (!isNaN(Number(value)) && value.trim() !== '' && !isNaN(parseFloat(value))) {
+         // Check if it's a number (integer or float)
+         const numValue = Number(value)
+         props[key] = Number.isInteger(numValue) ? parseInt(value, 10) : numValue
+      } else {
+        // Keep as string
+        props[key] = value
+      }
+    }
+  })
+  
+  return props
 }
