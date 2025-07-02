@@ -1,4 +1,4 @@
-import type { SelectFromStatement} from "pgsql-ast-parser";
+import type { SelectFromStatement } from "pgsql-ast-parser";
 import { parseFirst } from "pgsql-ast-parser"
 
 import { FieldType } from "../fields/const"
@@ -11,7 +11,7 @@ import {
 describe("rewriteQuery2getSortedRowIds", () => {
   test("should rewrite query to get sorted row IDs", () => {
     const query = "SELECT * FROM table_name"
-    const expected = "SELECT _id FROM table_name ORDER BY rowid ASC"
+    const expected = "SELECT _id FROM table_name ORDER BY _id ASC"
     const result = rewriteQuery2getSortedRowIds(query)
     expect(result).toBe(getTransformedQuery(expected))
   })

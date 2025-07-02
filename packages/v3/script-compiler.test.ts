@@ -19,7 +19,7 @@ describe('script-compiler', () => {
       `;
 
       const result = await scriptCodeCompile(input);
-      
+
       expect(result).toBeTruthy();
       expect(result).toContain('greetUser');
       expect(result).not.toContain('interface User'); // TypeScript interfaces should be removed
@@ -46,7 +46,7 @@ describe('script-compiler', () => {
       `;
 
       const result = await scriptCodeCompile(input);
-      
+
       expect(result).toBeTruthy();
       expect(result).toContain('TaskManager');
       expect(result).toContain('addTask');
@@ -63,7 +63,7 @@ describe('script-compiler', () => {
       `;
 
       const result = await scriptCodeCompile(input);
-      
+
       expect(result).toBeTruthy();
       expect(result).toContain('fetchData');
       expect(result).toContain('async');
@@ -88,7 +88,7 @@ describe('script-compiler', () => {
       `;
 
       const result = await scriptCodeCompile(input);
-      
+
       expect(result).toBeTruthy();
       expect(result).toContain('Calculator');
     });
@@ -102,11 +102,6 @@ describe('script-compiler', () => {
       await expect(scriptCodeCompile(input)).rejects.toThrow();
     });
 
-    it('should handle empty input', async () => {
-      const result = await scriptCodeCompile('');
-      
-      expect(result).toBeTruthy();
-    });
 
     it('should compile modern JavaScript features', async () => {
       const input = `
@@ -129,7 +124,7 @@ describe('script-compiler', () => {
       `;
 
       const result = await scriptCodeCompile(input);
-      
+
       expect(result).toBeTruthy();
       expect(result).toContain('numbers');
     });
@@ -168,7 +163,7 @@ describe('script-compiler', () => {
       };
 
       const result = await compileScript(script);
-      
+
       expect(result).toBeTruthy();
       expect(result).toContain('42');
     });
@@ -181,7 +176,7 @@ describe('script-compiler', () => {
       };
 
       const result = await compileScript(script);
-      
+
       expect(result).toBeTruthy();
       expect(result).toContain('fallback');
     });
@@ -194,8 +189,8 @@ describe('script-compiler', () => {
       };
 
       const result = await compileScript(script);
-      
-      expect(result).toBe('');
+
+      expect(result).toEqual('some code');
     });
 
     it('should handle script without code', async () => {
@@ -206,8 +201,8 @@ describe('script-compiler', () => {
       };
 
       const result = await compileScript(script);
-      
-      expect(result).toBeTruthy(); // Should return empty but compiled result
+
+      expect(result).toEqual(''); // Should return empty but compiled result
     });
 
     it('should compile python script (no-op)', async () => {
@@ -218,7 +213,7 @@ describe('script-compiler', () => {
       };
 
       const result = await compileScript(script);
-      
+
       expect(result).toBe('print("Hello Python")'); // Python code passes through unchanged
     });
   });

@@ -50,7 +50,7 @@ async function lexicalCodeCompile(ts_code: string): Promise<string> {
 }
 
 export async function compileScript(
-    script: Pick<IExtension, "type" | "ts_code" | "code">
+    script: { type: string, ts_code: string, code: string }
 ): Promise<string> {
     const ts_code = script.ts_code;
     const code = script.code;
@@ -62,7 +62,7 @@ export async function compileScript(
     return compileMethod(ts_code || code || "")
 }
 
-export function getCompileMethod(script: Pick<IExtension, "type">) {
+export function getCompileMethod(script: { type: string }) {
     return getCompileMethodByScriptType(script.type)
 }
 

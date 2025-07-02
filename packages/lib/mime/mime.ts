@@ -1,4 +1,4 @@
-import * as db from "mime-db"
+import db from "mime-db"
 import { extname } from "path-browserify"
 
 /**
