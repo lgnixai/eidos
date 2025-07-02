@@ -1,10 +1,11 @@
 var __defProp = Object.defineProperty;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
 import * as React from "react";
-import { Slot as SlotPrimitive } from "radix-ui";
+import { ViewVerticalIcon } from "@radix-ui/react-icons";
 import { cva } from "class-variance-authority";
-import { useIsMobile } from "@/apps/web-app/hooks/use-mobile";
+import { Slot as SlotPrimitive } from "radix-ui";
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
@@ -16,7 +17,6 @@ import {
   TooltipProvider,
   TooltipTrigger
 } from "@/components/ui/tooltip";
-import { ViewVerticalIcon } from "@radix-ui/react-icons";
 const SIDEBAR_COOKIE_NAME = "sidebar_state";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
 const SIDEBAR_WIDTH = "16rem";
