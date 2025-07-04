@@ -1,5 +1,5 @@
 ---
-title: Micro Block
+title: Block
 description: A universal UI extension framework that enables custom rendering and interaction capabilities.
 sidebar:
   order: 2
