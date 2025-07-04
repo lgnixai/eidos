@@ -3,7 +3,6 @@ import { create } from "zustand"
 import { persist } from "zustand/middleware"
 
 import { useToast } from "@/components/ui/use-toast"
-import { isDevMode, isSelfHosted, isStagingMode } from "@/lib/env"
 import { uuidv7 } from "@/lib/utils"
 import { verifyMessage } from "@/lib/web/crypto"
 
@@ -97,12 +96,13 @@ export const useActivation = () => {
     }
   }
   return {
-    isActivated:
-      isDevMode || isSelfHosted || isStagingMode
-        ? true
-        : clientId && license
-          ? isActivated
-          : false,
+    isActivated: true,
+    // isActivated:
+    //   isDevMode || isSelfHosted || isStagingMode
+    //     ? true
+    //     : clientId && license
+    //       ? isActivated
+    //       : false,
     active,
   }
 }
