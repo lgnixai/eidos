@@ -29,13 +29,11 @@ import { useAllPrompts } from "@/apps/web-app/hooks/use-all-prompts"
 
 interface PromptListProps {
   onPromptSelect: (prompt: string, model?: string, isCustom?: boolean) => void
-  onMakeItReal: () => void
   onGenerateChart: () => void
 }
 
 export function PromptList({
   onPromptSelect,
-  onMakeItReal,
   onGenerateChart,
 }: PromptListProps) {
   const { findFirstAvailableModel, findAvailableModel } = useAiConfig()
@@ -82,15 +80,6 @@ export function PromptList({
         <CommandList className="max-h-[20rem]">
           <CommandEmpty>No Prompt found.</CommandEmpty>
           <CommandGroup heading="Built-in Prompts" ref={commandGroupRef}>
-            <CommandItem
-              className="flex items-center justify-between"
-              onSelect={onMakeItReal}
-            >
-              <div className="flex items-center gap-2">
-                <Icons.WandIcon className="h-5 w-5 opacity-50" />
-                <span>Make it real</span>
-              </div>
-            </CommandItem>
             <CommandItem
               className="flex items-center justify-between"
               onSelect={onGenerateChart}

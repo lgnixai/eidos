@@ -15,22 +15,15 @@ import {
 import { PauseIcon, RefreshCcwIcon } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
-import { getCodeFromMarkdown } from "@/lib/markdown"
 import { generateId, getBlockUrl, uuidv7 } from "@/lib/utils"
-import { compileCode } from "@/packages/v3/compiler"
-import builtInRemixPrompt from "@/packages/v3/prompts/built-in-remix-prompt.md?raw"
 import { useAiConfig } from "@/apps/web-app/hooks/use-ai-config"
 import { Button } from "@/components/ui/button"
 import { toast } from "@/components/ui/use-toast"
-import { BlockRenderer } from "@/components/block-renderer/block-renderer"
 import type { ChartConfig } from "@/components/chart";
 import { Chart } from "@/components/chart"
 import { Thinking } from "@/components/thinking"
-import { useAllMblocks } from "@/apps/web-app/hooks/use-all-mblocks"
-import { useExtension } from "@/apps/web-app/hooks/use-extension"
 
 import { $createChartNode } from "../../blocks/chart/node"
-import { $createCustomBlockNode } from "../../blocks/custom/node"
 import { $isMermaidNode } from "../../blocks/mermaid/node"
 import { useAllDocBlocks } from "../../hooks/use-all-doc-blocks"
 import { useExtBlocks } from "../../hooks/use-ext-blocks"
@@ -70,26 +63,17 @@ export function AITools({
     return [...extBlocks.map((block) => block.transform), ...allTransformers]
   }, [extBlocks]) as Transformer[]
 
-  const { reload: reloadBlocks } = useAllMblocks()
-  const [generatedCode, setGeneratedCode] = useState<{
-    ts_code: string
-    code: string
-  } | null>(null)
-
   const [isFinished, setIsFinished] = useState(true)
   const [promptListOpen, setPromptListOpen] = useState(true)
   const [actionOpen, setActionOpen] = useState(false)
   const [aiResult, setAiResult] = useState<string>("")
   const [chartConfig, setChartConfig] = useState<ChartConfig | null>(null)
-  const { getConfigByModel, codingModel, textModel } = useAiConfig()
+  const { getConfigByModel, textModel, codingModel } = useAiConfig()
   const { t } = useTranslation()
   const { generateConfig, isLoading: isChartLoading } = useGenerateChartConfig()
 
-  const [scriptId, setScriptId] = useState<string | null>(null)
   const aiContentBoxRef = useRef<HTMLDivElement>(null)
-  const isMakeItRealRef = useRef(false)
   const isGenerateChartRef = useRef(false)
-  const isMakeItReal = () => isMakeItRealRef.current
 
   useEffect(() => {
     if (!aiContentBoxRef.current) {
@@ -127,14 +111,12 @@ export function AITools({
   }
 
   const resetState = () => {
-    isMakeItRealRef.current = false
     isGenerateChartRef.current = false
     setIsFinished(true)
     // reset placeholder height
     resetPlaceholderHeight()
   }
 
-  const { addExtension } = useExtension()
   const config = useMemo(() => {
     try {
       return getConfigByModel(currentModel)
@@ -152,22 +134,6 @@ export function AITools({
     },
     onFinish(message) {
       setAiResult(message.content)
-      if (isMakeItReal()) {
-        const codeBlocks = getCodeFromMarkdown(message.content)
-        const indexJsxCode = codeBlocks.find(
-          (code) => code.lang === "jsx" || code.lang === "typescript"
-        )?.code
-        if (indexJsxCode) {
-          compileCode(indexJsxCode).then((res) => {
-            if (!res.error) {
-              setGeneratedCode({
-                ts_code: indexJsxCode,
-                code: res.code,
-              })
-            }
-          })
-        }
-      }
       setActionOpen(true)
     },
     body: {
@@ -195,41 +161,12 @@ export function AITools({
         return chartNode
       }
 
-      const prepareGeneratedNodes = async () => {
-        if (isMakeItRealRef.current) {
-          let scriptId = ""
-          if (isMakeItRealRef.current && generatedCode) {
-            scriptId = generateId()
-            await addExtension({
-              id: scriptId,
-              name: content,
-              type: "m_block",
-              description: content,
-              version: "0.1.0",
-              code: generatedCode.code,
-              ts_code: generatedCode.ts_code,
-              enabled: true,
-              commands: [],
-            })
-            reloadBlocks()
-            setScriptId(scriptId)
-          }
-          return scriptId
-        }
-        return null
-      }
-
-      const getGeneratedNodes = (scriptId: string | null) => {
-        if (isMakeItRealRef.current && scriptId) {
-          return [$createCustomBlockNode(getBlockUrl(scriptId))]
-        }
+      const getGeneratedNodes = () => {
         if (isGenerateChartRef.current) {
           return [createChartNode()]
         }
         return createParagraphNode()
       }
-
-      let scriptId: string | null = null
 
       const appendNodesAfterSelection = (generatedNodes: LexicalNode[]) => {
         const selection = selectionRef.current
@@ -274,20 +211,17 @@ export function AITools({
 
       switch (action) {
         case AIActionEnum.INSERT_BELOW:
-          scriptId = await prepareGeneratedNodes()
           editor.update(() => {
-            const generatedNodes = getGeneratedNodes(scriptId)
+            const generatedNodes = getGeneratedNodes()
             appendNodesAfterSelection(generatedNodes)
-            // $transformExtCodeBlock(allBlocks)
           })
           resetState()
           break
         case AIActionEnum.REPLACE:
-          scriptId = await prepareGeneratedNodes()
           editor.update(() => {
             const selection = selectionRef.current
             const text = aiResult
-            const generatedNodes = getGeneratedNodes(scriptId)
+            const generatedNodes = getGeneratedNodes()
             if (selection) {
               const [start, end] = selection.getStartEndPoints() || []
               const isOneLine = start?.key === end?.key
@@ -304,8 +238,7 @@ export function AITools({
                 const generatedNode = generatedNodes[0]
                 if (
                   $isMermaidNode(generatedNode) ||
-                  isGenerateChartRef.current ||
-                  isMakeItRealRef.current
+                  isGenerateChartRef.current
                 ) {
                   appendNodesAfterSelection(generatedNodes)
                   selection.removeText()
@@ -342,9 +275,7 @@ export function AITools({
       aiResult,
       cancelAIAction,
       editor,
-      extBlocks,
       reload,
-      isMakeItRealRef.current,
       isGenerateChartRef.current,
     ]
   )
@@ -398,14 +329,8 @@ be between <content-begin> and <content-end>. you just output the transformed co
     }, 100)
   }
 
-  const handleMakeItReal = () => {
-    isMakeItRealRef.current = true
-    handlePromptSelect(builtInRemixPrompt, codingModel)
-  }
-
   useKeyPress("esc", () => {
     cancelAIAction(Boolean(isLoading || aiResult.length))
-    isMakeItRealRef.current = false
     isGenerateChartRef.current = false
   })
   useClickAway(
@@ -418,7 +343,6 @@ be between <content-begin> and <content-end>. you just output the transformed co
         return
       }
       cancelAIAction(Boolean(isLoading || aiResult.length))
-      isMakeItRealRef.current = false
       isGenerateChartRef.current = false
     },
     boxRef,
@@ -453,22 +377,9 @@ be between <content-begin> and <content-end>. you just output the transformed co
                 )}
               </div>
             )}
-            {!isMakeItRealRef.current && (
+            {!isGenerateChartRef.current && (
               <AIContentEditor markdown={messages[2]?.content} />
             )}
-            {isMakeItRealRef.current &&
-              (isLoading ? (
-                <Thinking />
-              ) : (
-                generatedCode &&
-                scriptId && (
-                  <BlockRenderer
-                    blockId={scriptId}
-                    code={generatedCode?.ts_code}
-                    compiledCode={generatedCode?.code}
-                  />
-                )
-              ))}
             <div className="flex  w-full items-center justify-end opacity-50">
               {isLoading && (
                 <Button onClick={stop} variant="ghost" size="sm">
@@ -491,7 +402,6 @@ be between <content-begin> and <content-end>. you just output the transformed co
       {promptListOpen && (
         <PromptList
           onPromptSelect={handlePromptSelect}
-          onMakeItReal={handleMakeItReal}
           onGenerateChart={generateChartConfig}
         />
       )}
