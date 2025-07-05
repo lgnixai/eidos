@@ -15,6 +15,7 @@ import { ShortCuts } from "@/components/keyboard-shortcuts/shortcuts"
 import { TailwindIndicator } from "@/components/tailwind-indicator"
 import { ThemeProvider } from "@/components/theme-provider"
 import { ThemeUpdater } from "@/components/theme-updater"
+import { GodModeTooltip } from "@/components/god-mode-tooltip"
 
 export default function RootLayout() {
   const { isInitialized, initWorker } = useWorker()
@@ -48,6 +49,7 @@ export default function RootLayout() {
       <BlockUIDialog />
       <ReloadPrompt />
       <ThemeUpdater />
+      <GodModeTooltip />
     </ThemeProvider>
   )
 }

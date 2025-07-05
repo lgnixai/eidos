@@ -8,6 +8,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
@@ -36,7 +37,11 @@ export const AddViewDropdown = ({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="sm">
+        <Button
+          variant="ghost"
+          size="sm"
+          data-eidos="eidos.currentSpace.createDefaultView(tableName, type)"
+        >
           <PlusIcon className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
@@ -67,6 +72,7 @@ export const AddViewDropdown = ({
             </div>
           </DropdownMenuItem>
         )}
+        <DropdownMenuSeparator />
         {tableViews.map((view) => {
           // Get the icon component, fallback to Grid icon if not found
           const IconComponent =

@@ -1,13 +1,16 @@
-import { Cable, Cog, LockIcon, PinIcon, PinOffIcon, Unplug } from "lucide-react"
+import {
+  Cable,
+  Cog,
+  LockIcon,
+  PinIcon,
+  PinOffIcon,
+  Unplug,
+  Wand2,
+} from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { isDesktopMode } from "@/lib/env"
-import { useAppRuntimeStore } from "@/apps/web-app/store/runtime-store"
 import { isDayPageId } from "@/lib/utils"
-import { useAPIAgent } from "@/apps/web-app/hooks/use-api-agent"
-import { useCurrentNode } from "@/apps/web-app/hooks/use-current-node"
-import { useNodeTree } from "@/apps/web-app/hooks/use-node-tree"
-import { usePeer } from "@/apps/web-app/hooks/use-peer"
 import { Button } from "@/components/ui/button"
 import {
   Tooltip,
@@ -16,7 +19,12 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { AvatarList } from "@/components/avatar-list"
+import { useAPIAgent } from "@/apps/web-app/hooks/use-api-agent"
+import { useCurrentNode } from "@/apps/web-app/hooks/use-current-node"
+import { useNodeTree } from "@/apps/web-app/hooks/use-node-tree"
+import { usePeer } from "@/apps/web-app/hooks/use-peer"
 import { useSpaceAppStore } from "@/apps/web-app/pages/[database]/store"
+import { useAppRuntimeStore } from "@/apps/web-app/store/runtime-store"
 
 import { SyncStatusIndicator } from "../sync-status-indicator"
 
@@ -29,6 +37,8 @@ export const NavStatus = () => {
     setIsExtAppOpen,
     apps,
   } = useSpaceAppStore()
+  const { isGodMode } = useAppRuntimeStore()
+
   const { connected } = useAPIAgent()
   const { runningCommand } = useAppRuntimeStore()
 
@@ -39,6 +49,17 @@ export const NavStatus = () => {
 
   return (
     <>
+      {isGodMode && (
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            data-eidos="eidos.utils.enableGodMode()"
+          >
+            <Wand2 className="h-4 w-4" />
+          </Button>
+        </div>
+      )}
       {runningCommand && (
         <TooltipProvider>
           <Tooltip>

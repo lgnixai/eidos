@@ -10,17 +10,13 @@ import {
   Palette,
   RefreshCcwIcon,
   Settings,
+  Wand2,
 } from "lucide-react"
 import { useTheme } from "next-themes"
 import { useTranslation } from "react-i18next"
 
 import { isDesktopMode, isInkServiceMode } from "@/lib/env"
-import { useAppRuntimeStore } from "@/apps/web-app/store/runtime-store"
 import { getToday } from "@/lib/utils"
-import { useCurrentNode } from "@/apps/web-app/hooks/use-current-node"
-import { useCurrentPathInfo } from "@/apps/web-app/hooks/use-current-pathinfo"
-import { useQueryNode } from "@/apps/web-app/hooks/use-query-node"
-import { useSqlite } from "@/apps/web-app/hooks/use-sqlite"
 import {
   CommandDialog,
   CommandEmpty,
@@ -31,8 +27,13 @@ import {
   CommandSeparator,
   CommandShortcut,
 } from "@/components/ui/command"
+import { useCurrentNode } from "@/apps/web-app/hooks/use-current-node"
+import { useCurrentPathInfo } from "@/apps/web-app/hooks/use-current-pathinfo"
+import { useQueryNode } from "@/apps/web-app/hooks/use-query-node"
+import { useSqlite } from "@/apps/web-app/hooks/use-sqlite"
 import { useLastOpened } from "@/apps/web-app/pages/[database]/hook"
 import { useSpaceAppStore } from "@/apps/web-app/pages/[database]/store"
+import { useAppRuntimeStore } from "@/apps/web-app/store/runtime-store"
 
 import { ThemeStudio } from "../theme-studio"
 import { ActionCommandItems } from "./action"
@@ -49,7 +50,8 @@ type SecondaryView = {
 } | null
 
 export function CommandDialogDemo() {
-  const { isCmdkOpen, setCmdkOpen } = useAppRuntimeStore()
+  const { isCmdkOpen, setCmdkOpen, isGodMode, setGodMode } =
+    useAppRuntimeStore()
   const { input, setInput, mode } = useInput()
   const { queryNodes, fullTextSearch } = useQueryNode()
   const { theme, setTheme } = useTheme()
@@ -95,6 +97,11 @@ export function CommandDialogDemo() {
   const switchTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light"
     setTheme(newTheme)
+  }
+
+  const toggleGodMode = () => {
+    setGodMode(!isGodMode)
+    setCmdkOpen(false)
   }
 
   const rebuildTableFTS = async (id: string) => {
@@ -201,6 +208,14 @@ export function CommandDialogDemo() {
                 <Palette className="mr-2 h-4 w-4" />
                 <span>{t("cmdk.switchTheme")}</span>
                 <CommandShortcut>⌘+Shift+L</CommandShortcut>
+              </CommandItem>
+              <CommandItem onSelect={toggleGodMode}>
+                <Wand2 className="mr-2 h-4 w-4" />
+                <span>
+                  {isGodMode
+                    ? t("cmdk.disableGodMode", "Disable Creator Mode")
+                    : t("cmdk.enableGodMode", "Enable Creator Mode")}
+                </span>
               </CommandItem>
               <CommandItem
                 onSelect={() => {

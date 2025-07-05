@@ -346,7 +346,7 @@ export const ViewToolbar = (props: {
           </div>
 
           {!props.isReadOnly && !isView && (
-            <Button size="xs" onClick={handleAddRow}>
+            <Button size="xs" onClick={handleAddRow} variant="ghost">
               <PlusIcon className="h-4 w-4"></PlusIcon>
               {t("common.new")}
             </Button>

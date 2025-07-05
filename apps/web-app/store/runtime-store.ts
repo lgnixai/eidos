@@ -15,6 +15,9 @@ interface AppRuntimeState {
   isShareMode: boolean
   setShareMode: (isShareMode: boolean) => void
 
+  isGodMode: boolean
+  setGodMode: (isGodMode: boolean) => void
+
   isEmbeddingModeLoaded: boolean
   setEmbeddingModeLoaded: (isEmbeddingModeLoaded: boolean) => void
 
@@ -44,6 +47,9 @@ interface AppRuntimeState {
 }
 
 export const useAppRuntimeStore = create<AppRuntimeState>()((set) => ({
+  isGodMode: false,
+  setGodMode: (isGodMode) => set({ isGodMode }),
+
   isEmbeddingModeLoaded: false,
   setEmbeddingModeLoaded: (isEmbeddingModeLoaded) =>
     set({ isEmbeddingModeLoaded }),
