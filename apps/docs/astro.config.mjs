@@ -1,11 +1,13 @@
 // @ts-check
 
+import sitemap from "@astrojs/sitemap"
 import starlight from "@astrojs/starlight"
 import { defineConfig } from "astro/config"
 import starlightThemeFlexoki from "starlight-theme-flexoki"
 
 // https://astro.build/config
 export default defineConfig({
+  site: "https://docs.eidos.space",
   integrations: [
     starlight({
       title: "Eidos Docs",
@@ -48,5 +50,6 @@ export default defineConfig({
         },
       ],
     }),
+    sitemap(),
   ],
 })

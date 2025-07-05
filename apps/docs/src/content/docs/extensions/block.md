@@ -6,13 +6,13 @@ sidebar:
   badge: RFC
 ---
 
-This document specifies the Micro-Block extension framework, a universal UI extension solution that enables custom rendering and interaction capabilities. The Micro-Block extension provides a lightweight, single-file UI extension approach that supports React component rendering while maintaining reusability across different environments.
+This document specifies the block extension framework, a universal UI extension solution that enables custom rendering and interaction capabilities. The block extension provides a lightweight, single-file UI extension approach that supports React component rendering while maintaining reusability across different environments.
 
 ## 1. Introduction
 
-The Micro-Block extension addresses the need for extensible UI capabilities within the Eidos ecosystem while preserving generality for code reuse in other projects. This specification defines a lightweight, single-file UI extension approach that can serve as both a development playground and a production component library.
+The block extension addresses the need for extensible UI capabilities within the Eidos ecosystem while preserving generality for code reuse in other projects. This specification defines a lightweight, single-file UI extension approach that can serve as both a development playground and a production component library.
 
-Micro-Block functions as pure UI components, with Eidos SDK integration available when interaction with Eidos logic is required. Without the Eidos SDK, Micro-Block components behave identically to standard React components.
+block functions as pure UI components, with Eidos SDK integration available when interaction with Eidos logic is required. Without the Eidos SDK, block components behave identically to standard React components.
 
 ## 2. Architecture and Design Principles
 
@@ -55,7 +55,7 @@ Shadcn/ui's LLM-friendly architecture facilitates AI-assisted development, enabl
 
 ### 4.1 Execution Context
 
-Micro-Block components execute in browser environments similar to standard React components. In Eidos Desktop, each Micro-Block runs in an isolated domain:
+block components execute in browser environments similar to standard React components. In Eidos Desktop, each block runs in an isolated domain:
 
 ```
 <extid>.ext.<spaceId>.eidos.localhost:13127
@@ -249,7 +249,7 @@ Extension execution should be properly sandboxed to prevent unauthorized system 
 
 ## 7. Implementation Requirements
 
-- Micro-Block extensions SHOULD export a `meta` object conforming to the specified interface when specific extension functionality is required
+- block extensions SHOULD export a `meta` object conforming to the specified interface when specific extension functionality is required
 - When no `meta` object is exported, the component will run as a regular React component without injected specific props
 - If a `meta` object is exported, component names in `meta.componentName` MUST match the actual exported component
 - Extensions SHOULD implement proper error boundaries and loading states
