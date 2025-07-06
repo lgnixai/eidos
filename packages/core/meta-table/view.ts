@@ -1,10 +1,10 @@
-import { ViewTableName } from "@/packages/core/sqlite/const"
+import { ViewTableName } from "../sqlite/const"
 import {
   replaceQueryTableName,
   replaceWithFindIndexQuery,
-} from "@/packages/core/sqlite/sql-parser"
-import type { IView, ViewType } from "@/packages/core/types/IView";
-import { ViewTypeEnum } from "@/packages/core/types/IView"
+} from "../sqlite/sql-parser"
+import type { IView, ViewType } from "../types/IView";
+import { ViewTypeEnum } from "../types/IView"
 import { getTableIdByRawTableName, getUuid } from "@/lib/utils"
 
 import type { BaseTable } from "./base";

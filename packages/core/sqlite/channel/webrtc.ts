@@ -2,10 +2,10 @@ import type { DataConnection } from "peerjs"
 
 import type {
     IMsgForward,
-    IMsgQueryResp} from "@/packages/core/types/ICollaboration";
+    IMsgQueryResp} from "../../types/ICollaboration";
 import {
     ECollaborationMsgType
-} from "@/packages/core/types/ICollaboration"
+} from "../../types/ICollaboration"
 import { EidosDataEventChannelName } from "@/packages/lib/const"
 
 export interface ISqlite<T, D> {

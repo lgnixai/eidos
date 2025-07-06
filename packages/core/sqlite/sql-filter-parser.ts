@@ -11,7 +11,7 @@ import {
   toSql,
 } from "pgsql-ast-parser"
 
-import type { FilterValueType } from "@/packages/core/types/IViewFilter"
+import type { FilterValueType } from "../types/IViewFilter"
 
 import { BinaryOperator, CompareOperator } from "../fields/const"
 

@@ -1,4 +1,4 @@
-import type { DataSpace, EidosTable } from "@/packages/core/DataSpace"
+import type { DataSpace, EidosTable } from "../../DataSpace"
 import type { DataConnection } from "peerjs"
 
 import { HttpSqlite } from "./http"

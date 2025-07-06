@@ -1,6 +1,6 @@
+import { JsonSchema7ObjectType } from "zod-to-json-schema";
 import { Email } from "postal-mime";
 import { Message } from "ai";
-import { JsonSchema7ObjectType } from "zod-to-json-schema";
 
 //#region fields/const.d.ts
 declare enum FieldType {
@@ -41,7 +41,7 @@ declare enum BinaryOperator {
   Or = "OR",
 }
 //#endregion
-//#region fields/IField.d.ts
+//#region types/IField.d.ts
 type IField<T = any> = {
   name: string;
   type: FieldType;
@@ -51,6 +51,7 @@ type IField<T = any> = {
   created_at?: string;
   updated_at?: string;
 };
+//# sourceMappingURL=IField.d.ts.map
 //#endregion
 //#region fields/link.d.ts
 type ILinkProperty = {
@@ -79,6 +80,82 @@ type ILookupContext = {
     };
   };
 };
+//#endregion
+//#region types/IExtension.d.ts
+type ExtensionStatus = "all" | "enabled" | "disabled";
+type BindingType = "table" | "secret" | "text";
+type ExtensionMeta = TableViewMeta | ExtNodeMeta | ToolMeta | TableActionMeta | UDFMeta;
+interface IExtension<T extends ExtensionMeta = ExtensionMeta> {
+  id: string;
+  slug: string;
+  name: string;
+  type: "script" | "block";
+  description: string;
+  version: string;
+  code: string;
+  meta?: T;
+  icon?: string;
+  marketplace_id?: string;
+  ts_code?: string;
+  enabled?: boolean;
+  bindings?: Record<string, {
+    type: BindingType;
+    value: string;
+  }>;
+}
+declare enum ScriptExtensionType {
+  TableAction = "tableAction",
+  Tool = "tool",
+  UDF = "udf",
+}
+declare enum BlockExtensionType {
+  TableView = "tableView",
+  ExtNode = "extNode",
+}
+interface TableViewMeta {
+  type: BlockExtensionType.TableView;
+  componentName: string;
+  tableView: {
+    title: string;
+    type: string;
+    description: string;
+  };
+}
+interface ExtNodeMeta {
+  type: BlockExtensionType.ExtNode;
+  componentName: string;
+  extNode: {
+    title: string;
+    description: string;
+    extHandler: string[];
+  };
+}
+interface ToolMeta {
+  type: ScriptExtensionType.Tool;
+  funcName: string;
+  tool: {
+    name: string;
+    description: string;
+    inputJSONSchema: JsonSchema7ObjectType;
+    outputJSONSchema: JsonSchema7ObjectType;
+  };
+}
+interface TableActionMeta {
+  type: ScriptExtensionType.TableAction;
+  funcName: string;
+  action: {
+    name: string;
+    description: string;
+  };
+}
+interface UDFMeta {
+  type: ScriptExtensionType.UDF;
+  funcName: string;
+  udf: {
+    name: string;
+    deterministic?: boolean;
+  };
+}
 //#endregion
 //#region ../lib/const.d.ts
 declare enum MsgType {
@@ -150,6 +227,7 @@ declare abstract class BaseServerDatabase {
     xFunc: (...args: any[]) => any;
   }): any;
 }
+//# sourceMappingURL=interface.d.ts.map
 //#endregion
 //#region meta-table/base.d.ts
 interface MetaTable<T> {
@@ -191,6 +269,7 @@ declare class BaseTableImpl<T = any> {
     fields?: string[];
   }): Promise<T[]>;
 }
+//# sourceMappingURL=base.d.ts.map
 //#endregion
 //#region meta-table/doc.d.ts
 interface IDoc {
@@ -276,6 +355,7 @@ declare class DocTable extends BaseTableImpl<IDoc> implements BaseTable<IDoc> {
     msg: string;
   }>;
 }
+//# sourceMappingURL=doc.d.ts.map
 //#endregion
 //#region ../lib/storage/eidos-file-system.d.ts
 declare enum FileSystemType {
@@ -330,7 +410,7 @@ declare class EidosFileSystemManager {
   renameFile: (_paths: string[], newName: string) => Promise<void>;
 }
 //#endregion
-//#region ../lib/store/ITreeNode.d.ts
+//#region types/ITreeNode.d.ts
 declare enum TreeNodeType {
   Table = "table",
   Doc = "doc",
@@ -353,8 +433,9 @@ interface ITreeNode {
   created_at?: string;
   updated_at?: string;
 }
+//# sourceMappingURL=ITreeNode.d.ts.map
 //#endregion
-//#region ../../apps/web-app/components/table/view-filter-editor/interface.d.ts
+//#region types/IViewFilter.d.ts
 interface IFilterValue {
   operator: CompareOperator;
   operands: [field: string, value: string | number | boolean | Date | null | undefined];
@@ -364,18 +445,20 @@ interface IGroupFilterValue {
   operands: (IFilterValue | IGroupFilterValue)[];
 }
 type FilterValueType = IFilterValue | IGroupFilterValue;
+//# sourceMappingURL=IViewFilter.d.ts.map
 //#endregion
-//#region ../lib/store/IView.d.ts
+//#region types/IView.d.ts
 declare enum ViewTypeEnum {
   Grid = "grid",
   Gallery = "gallery",
   DocList = "doc_list",
   Kanban = "kanban",
 }
+type ViewType = ViewTypeEnum | `ext__${string}`;
 interface IView<T = any> {
   id: string;
   name: string;
-  type: ViewTypeEnum;
+  type: ViewTypeEnum | `ext__${string}`;
   table_id: string;
   query: string;
   fieldIds?: string[];
@@ -400,6 +483,7 @@ declare class DataChangeEventHandler {
     new: any;
   }>;
 }
+//# sourceMappingURL=DataChangeEventHandler.d.ts.map
 //#endregion
 //#region data-pipeline/DataChangeTrigger.d.ts
 type IRegisterTrigger = {
@@ -425,6 +509,7 @@ declare class LinkRelationUpdater {
   updateCells: () => Promise<void>;
   addCell: (tableName: string, tableColumnName: string, rowId: string) => void;
 }
+//# sourceMappingURL=LinkRelationUpdater.d.ts.map
 //#endregion
 //#region data-pipeline/TableFullTextSearch.d.ts
 declare class TableFullTextSearch {
@@ -453,6 +538,7 @@ declare class TableFullTextSearch {
   hasFTS(tableName: string): Promise<boolean>;
   rebuildFTS(tableName: string): Promise<void>;
 }
+//# sourceMappingURL=TableFullTextSearch.d.ts.map
 //#endregion
 //#region data-pipeline/TableSemanticSearch.d.ts
 declare class TableSemanticSearch {
@@ -475,6 +561,7 @@ declare class TableSemanticSearch {
     results: any;
   }>;
 }
+//# sourceMappingURL=TableSemanticSearch.d.ts.map
 //#endregion
 //#region data-pipeline/UndoRedo.d.ts
 interface StackEntry {
@@ -556,6 +643,7 @@ declare class MessageTable extends BaseTableImpl<ChatMessage> implements BaseTab
   deleteByIds(messageIds: string[]): Promise<void>;
   clearMessages(chatId: string): Promise<void>;
 }
+//# sourceMappingURL=message.d.ts.map
 //#endregion
 //#region meta-table/chat.d.ts
 type Chat = {
@@ -575,6 +663,7 @@ declare class ChatTable extends BaseTableImpl<Chat> implements BaseTable<Chat> {
   } | null>;
   del(chatId: string): Promise<boolean>;
 }
+//# sourceMappingURL=chat.d.ts.map
 //#endregion
 //#region meta-table/column.d.ts
 /**
@@ -622,6 +711,7 @@ declare class ColumnTable extends BaseTableImpl implements BaseTable<IField> {
   static isColumnTypeChanged(oldType: FieldType, newType: FieldType): boolean;
   changeType(tableName: string, tableColumnName: string, newType: FieldType): Promise<void>;
 }
+//# sourceMappingURL=column.d.ts.map
 //#endregion
 //#region meta-table/embedding.d.ts
 interface IEmbedding {
@@ -640,79 +730,77 @@ declare class EmbeddingTable extends BaseTableImpl implements BaseTable<IEmbeddi
   set(id: string, data: Partial<IEmbedding>): Promise<boolean>;
   del(id: string): Promise<boolean>;
 }
+//# sourceMappingURL=embedding.d.ts.map
 //#endregion
 //#region meta-table/extension.d.ts
-type ExtensionStatus = "all" | "enabled" | "disabled";
-interface ICommand {
-  name: string;
-  description: string;
-  inputJSONSchema?: JsonSchema7ObjectType;
-  outputJSONSchema?: JsonSchema7ObjectType;
-  asTableAction?: boolean;
-  asTool?: boolean;
-}
-interface IPromptConfig {
-  model?: string;
-  actions?: string[];
-}
-interface IExtension {
-  id: string;
-  name: string;
-  type: "script" | "udf" | "prompt" | "block" | "app" | "m_block" | "doc_plugin" | "py_script" | "ext_node";
-  ext_node_type?: string;
-  ext_node_handle_block_id?: string;
-  description: string;
-  version: string;
-  code: string;
-  meta?: Record<string, any>;
-  icon?: string;
-  marketplace_id?: string;
-  ts_code?: string;
-  enabled?: boolean;
-  model?: string;
-  prompt_config?: IPromptConfig;
-  commands: ICommand[];
-  tables?: {
-    name: string;
-    fields: {
-      name: string;
-      type: string;
-    }[];
-  }[];
-  envs?: {
-    name: string;
-    type: string;
-    readonly?: boolean;
-  }[];
-  env_map?: {
-    [key: string]: string;
-  };
-  fields_map?: {
-    [tableName: string]: {
-      id: string;
-      name: string;
-      fieldsMap: {
-        [fieldName: string]: string;
-      };
-    };
-  };
-  bindings?: Record<string, {
-    type: 'table';
-    value: string;
-  }>;
-  dependencies?: string[];
-}
 declare class ExtensionTable extends BaseTableImpl<IExtension> implements BaseTable<IExtension> {
   name: string;
   createTableSql: string;
   JSONFields: string[];
+  getTableViews(): Promise<IExtension<TableViewMeta>[]>;
+  getTableViewExtensionInfoByExtType(viewType: string): Promise<IExtension<TableViewMeta>[]>;
+  getTableViewsInfo(): Promise<IExtension<TableViewMeta>[]>;
   del(id: string): Promise<boolean>;
   enable(id: string): Promise<boolean>;
   disable(id: string): Promise<boolean>;
-  updateEnvMap(id: string, env_map: {
-    [key: string]: string;
-  }): Promise<boolean>;
+  updateBindings(id: string, bindings: Record<string, {
+    type: string;
+    value: string;
+  }>): Promise<boolean>;
+  /**
+   * Get all block extensions by status
+   */
+  getBlockExtensions(status?: ExtensionStatus): Promise<IExtension[]>;
+  /**
+   * Get ExtNode extensions by status
+   */
+  getExtNodeExtensions(status?: ExtensionStatus): Promise<IExtension[]>;
+  /**
+   * Get ExtNode extensions by handler type
+   */
+  getExtNodeExtensionsByHandler(handler: string, status?: ExtensionStatus): Promise<IExtension[]>;
+  /**
+   * Get all script extensions by status
+   */
+  getScriptExtensions(status?: ExtensionStatus): Promise<IExtension[]>;
+  /**
+   * Get Tool extensions by status
+   */
+  getToolExtensions(status?: ExtensionStatus): Promise<IExtension[]>;
+  /**
+   * Get TableAction extensions by status
+   */
+  getTableActionExtensions(status?: ExtensionStatus): Promise<IExtension[]>;
+  /**
+   * Get UDF (User Defined Function) extensions by status
+   */
+  getUDFExtensions(status?: ExtensionStatus): Promise<IExtension[]>;
+  /**
+   * Get extension by slug
+   */
+  getExtensionBySlug(slug: string): Promise<IExtension | null>;
+  /**
+   * Get extensions by marketplace ID
+   */
+  getExtensionsByMarketplaceId(marketplaceId: string): Promise<IExtension[]>;
+  /**
+   * Get extensions by type and status
+   */
+  getExtensionsByType(type: "script" | "block", status?: ExtensionStatus): Promise<IExtension[]>;
+  /**
+   * Search extensions by name or description
+   */
+  searchExtensions(query: string, status?: ExtensionStatus): Promise<IExtension[]>;
+  /**
+   * Get extensions with bindings
+   */
+  getExtensionsWithBindings(status?: ExtensionStatus): Promise<IExtension[]>;
+  /**
+   * Get extension count by type and status
+   */
+  getExtensionCount(type?: "script" | "block", status?: ExtensionStatus): Promise<number>;
 }
+//# sourceMappingURL=extension.d.ts.map
 //#endregion
 //#region meta-table/extnode.d.ts
 interface IExtNode {
@@ -740,6 +828,7 @@ declare class ExtNodeTable extends BaseTableImpl<IExtNode> implements BaseTable<
   setText(id: string, text: string): Promise<boolean>;
   deleteExtNode(id: string): Promise<boolean>;
 }
+//# sourceMappingURL=extnode.d.ts.map
 //#endregion
 //#region meta-table/file.d.ts
 interface IFile {
@@ -794,6 +883,7 @@ declare class FileTable extends BaseTableImpl implements BaseTable<IFile> {
     publicUrl: string;
   }>;
 }
+//# sourceMappingURL=file.d.ts.map
 //#endregion
 //#region meta-table/reference.d.ts
 interface IReference {
@@ -816,6 +906,7 @@ declare class ReferenceTable extends BaseTableImpl implements BaseTable<IReferen
   createTableSql: string;
   getEffectedFields: (table_name: string, table_column_name: string) => Promise<IField[]>;
 }
+//# sourceMappingURL=reference.d.ts.map
 //#endregion
 //#region meta-table/tree.d.ts
 declare class TreeTable extends BaseTableImpl implements BaseTable<ITreeNode> {
@@ -848,6 +939,7 @@ declare class TreeTable extends BaseTableImpl implements BaseTable<ITreeNode> {
     targetDirection: "up" | "down";
   }): Promise<number>;
 }
+//# sourceMappingURL=tree.d.ts.map
 //#endregion
 //#region meta-table/view.d.ts
 declare class ViewTable extends BaseTableImpl implements BaseTable<IView> {
@@ -858,7 +950,7 @@ declare class ViewTable extends BaseTableImpl implements BaseTable<IView> {
   del(id: string): Promise<boolean>;
   deleteByTableId(table_id: string, db?: BaseServerDatabase): Promise<void>;
   updateQuery(id: string, query: string): Promise<void>;
-  createDefaultView(tableName: string, type?: ViewTypeEnum): Promise<IView<any>>;
+  createDefaultView(tableName: string, type?: ViewType): Promise<IView<any>>;
   isRowExistInQuery(table_id: string, rowId: string, query: string): Promise<boolean>;
   findRowIndexInQuery(table_id: string, rowId: string, query: string): Promise<number>;
   recompute(table_id: string, rowIds: string[]): Promise<any>;
@@ -889,6 +981,7 @@ declare class ViewTable extends BaseTableImpl implements BaseTable<IView> {
   reorderViews(viewIds: string[]): Promise<void>;
   private checkAndReorderIfNeeded;
 }
+//# sourceMappingURL=view.d.ts.map
 //#endregion
 //#region sdk/sql-data-view.d.ts
 declare class SqlDataView {
@@ -912,6 +1005,7 @@ declare class SqlDataView {
   }): Promise<void>;
   createDataView(id: string, createViewSql: string): Promise<boolean>;
 }
+//# sourceMappingURL=sql-data-view.d.ts.map
 //#endregion
 //#region sdk/index-manager.d.ts
 declare class IndexManager {
@@ -921,6 +1015,7 @@ declare class IndexManager {
   constructor(table: TableManager);
   createIndex(column: string, onStart?: () => void, onEnd?: () => void): Promise<void>;
 }
+//# sourceMappingURL=index-manager.d.ts.map
 //#endregion
 //#region sdk/rows.d.ts
 declare class RowsManager {
@@ -1012,6 +1107,7 @@ declare class RowsManager {
    */
   highlight(id: string): Promise<void>;
 }
+//# sourceMappingURL=rows.d.ts.map
 //#endregion
 //#region sdk/service/link.d.ts
 interface IRelation {
@@ -1121,6 +1217,7 @@ declare class LookupFieldService {
     rowIds?: string[];
   }) => Promise<void>;
 }
+//# sourceMappingURL=lookup.d.ts.map
 //#endregion
 //#region fields/select.d.ts
 type SelectOption = {
@@ -1145,6 +1242,7 @@ declare class MultiSelectFieldService {
   }) => Promise<void>;
   deleteSelectOption: (field: IField<SelectProperty>, option: string) => Promise<void>;
 }
+//# sourceMappingURL=multi-select.d.ts.map
 //#endregion
 //#region sdk/service/select.d.ts
 declare class SelectFieldService {
@@ -1164,6 +1262,7 @@ declare class SelectFieldService {
     color: string;
   }[]>;
 }
+//# sourceMappingURL=select.d.ts.map
 //#endregion
 //#region fields/text.d.ts
 interface TextProperty {
@@ -1203,6 +1302,7 @@ declare class TextFieldService {
     upToDatePercentage: number;
   }>;
 }
+//# sourceMappingURL=text.d.ts.map
 //#endregion
 //#region sdk/service/index.d.ts
 declare class FieldsManager {
@@ -1216,6 +1316,7 @@ declare class FieldsManager {
   get link(): LinkFieldService;
   get text(): TextFieldService;
 }
+//# sourceMappingURL=index.d.ts.map
 //#endregion
 //#region sdk/service/compute.d.ts
 declare class ComputeService {
@@ -1231,6 +1332,7 @@ declare class ComputeService {
     diffKeys: string[];
   }) => Promise<void>;
 }
+//# sourceMappingURL=compute.d.ts.map
 //#endregion
 //#region sdk/table.d.ts
 interface ITable {
@@ -1272,6 +1374,8 @@ declare class ThemeManager {
   applyTheme(name: string, css: string): Promise<void>;
   setCurrentTheme(name: string): Promise<void>;
 }
+//# sourceMappingURL=theme-manager.d.ts.map
+
 //#endregion
 //#region DataSpace.d.ts
 type EidosDatabase = BaseServerDatabase;
@@ -1434,7 +1538,7 @@ declare class DataSpace {
   addView(view: IView): Promise<IView<any>>;
   delView(viewId: string): Promise<boolean>;
   updateView(viewId: string, view: Partial<IView>): Promise<boolean>;
-  createDefaultView(tableName: string, type?: ViewTypeEnum): Promise<IView<any>>;
+  createDefaultView(tableName: string, type?: ViewType): Promise<IView<any>>;
   isRowExistInQuery(tableId: string, rowId: string, query: string): Promise<boolean>;
   getRecomputeRows(tableId: string, rowIds: string[]): Promise<any>;
   addField(data: IField): Promise<IField>;
@@ -1456,8 +1560,8 @@ declare class DataSpace {
   addAction(data: any): Promise<void>;
   listActions(): Promise<any[]>;
   addExtension(data: IExtension): Promise<void>;
-  listScripts(status?: ExtensionStatus): Promise<IExtension[]>;
-  getScript(id: string): Promise<IExtension | null>;
+  listScripts(status?: ExtensionStatus): Promise<IExtension<ExtensionMeta>[]>;
+  getScript(id: string): Promise<IExtension<ExtensionMeta> | null>;
   deleteExtension(id: string): Promise<void>;
   updateExtension(data: IExtension): Promise<void>;
   enableExtension(id: string): Promise<void>;
@@ -1608,6 +1712,7 @@ declare class DataSpace {
   }>;
   hasTableFTS(tableName: string): Promise<boolean>;
 }
+//# sourceMappingURL=DataSpace.d.ts.map
 //#endregion
 //#region index.d.ts
 interface EidosTable<T = Record<string, string>> {
@@ -1675,5 +1780,8 @@ interface Eidos {
     tableHighlightRow(tableId: string, rowId: string, fieldId?: string): void;
   };
 }
+//# sourceMappingURL=index.d.ts.map
+
 //#endregion
 export { DataSpace, Eidos, EidosTable };
+//# sourceMappingURL=index.d.ts.map

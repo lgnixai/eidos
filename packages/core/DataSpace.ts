@@ -5,10 +5,10 @@ import type {
 import {
   EidosFileSystemManager
 } from "@/lib/storage/eidos-file-system"
-import type { ITreeNode } from "@/packages/core/types/ITreeNode";
-import { TreeNodeType } from "@/packages/core/types/ITreeNode"
-import type { IView, ViewType } from "@/packages/core/types/IView";
-import { ViewTypeEnum } from "@/packages/core/types/IView"
+import type { ITreeNode } from "./types/ITreeNode";
+import { TreeNodeType } from "./types/ITreeNode"
+import type { IView, ViewType } from "./types/IView";
+import { ViewTypeEnum } from "./types/IView"
 import {
   extractIdFromShortId,
   getRawTableNameById,

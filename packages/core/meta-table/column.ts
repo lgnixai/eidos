@@ -8,7 +8,7 @@ import type { ILinkProperty } from "../fields/link"
 import { ColumnTableName } from "../sqlite/const"
 import { alterColumnType } from "../sqlite/sql-alter-column-type"
 import { findDependentFormulaFields, getFormulaFieldDeletionOrder, transformFormula2VirtualGeneratedField } from "../sqlite/sql-formula-parser"
-import type { IField } from "@/packages/core/types/IField"
+import type { IField } from "../types/IField"
 import { getColumnIndexName, getTableIdByRawTableName } from "@/lib/utils"
 
 import type { BaseServerDatabase } from "../sqlite/interface"

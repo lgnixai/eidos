@@ -1,4 +1,4 @@
-import { ViewTypeEnum } from "@/packages/core/types/IView"
+import { ViewTypeEnum } from "../types/IView"
 import type { DataSpace } from "../DataSpace"
 import { shortenId, uuidv7 } from "@/lib/utils"
 import type { IField } from "../types/IField"

@@ -2,82 +2,133 @@ import type { JsonSchema7ObjectType } from "zod-to-json-schema"
 
 export type ExtensionStatus = "all" | "enabled" | "disabled"
 
-export interface ICommand {
-    name: string
-    description: string
-    inputJSONSchema?: JsonSchema7ObjectType
-    outputJSONSchema?: JsonSchema7ObjectType
-    asTableAction?: boolean
-    asTool?: boolean
-}
 
-export interface IPromptConfig {
-    model?: string
-    actions?: string[]
-}
+export type BindingType = "table" | "secret" | "text"
 
-export interface TableViewInfo {
+export type ExtensionMeta =
+    | TableViewMeta
+    | ExtNodeMeta
+    | ToolMeta
+    | TableActionMeta
+    | UDFMeta
+
+export interface IExtension<T extends ExtensionMeta = ExtensionMeta> {
+    // system-generated id
     id: string
-    type: string
-    title: string
-    description: string
-}
-
-// aka extension
-export interface IExtension {
-    id: string
+    slug: string
     name: string
-    // block is static code stored in local file system
-    // m_block is mini or macro block, just a piece of code snippet stored in database
-    type: "script" | "udf" | "prompt" | "block" | "app" | "m_block" | "doc_plugin" | "py_script" | "ext_node"
-    // ext_node_type is the type of the ext_node
-    ext_node_type?: string
-    // block used to handle the ext_node
-    ext_node_handle_block_id?: string
+    type: "script" | "block"
     description: string
     version: string
     code: string
-    meta?: Record<string, any>
+    meta?: T
     // icon is a data uri of an image
     icon?: string
     // if the script is published to marketplace, it will have a marketplace_id
     marketplace_id?: string
     ts_code?: string
     enabled?: boolean
-    // for prompt
-    model?: string
-    prompt_config?: IPromptConfig
-    // for script
-    commands: ICommand[]
-    tables?: {
-        name: string
-        fields: {
-            name: string
-            type: string
-        }[]
-    }[]
-    envs?: {
-        name: string
-        type: string
-        readonly?: boolean
-    }[]
-    env_map?: {
-        [key: string]: string
-    }
-    fields_map?: {
-        [tableName: string]: {
-            id: string
-            name: string
-            fieldsMap: {
-                [fieldName: string]: string
-            }
-        }
-    }
-    // FIXME: there are too many fields in this table, we need to refactor it
     bindings?: Record<string, {
-        type: 'table'
+        type: BindingType
         value: string
     }>
-    // for py_script
-    dependencies?: string[]
-} 
+}
+
+
+export enum ScriptExtensionType {
+    TableAction = "tableAction",
+    Tool = "tool",
+    UDF = "udf",
+}
+
+export enum BlockExtensionType {
+    TableView = "tableView",
+    ExtNode = "extNode",
+}
+
+
+// Block Extension Meta Configurations
+export interface TableViewMeta {
+    type: BlockExtensionType.TableView
+    componentName: string
+    tableView: {
+        title: string
+        // the type of the view. built-in types are: grid, gallery, kanban.
+        type: string
+        description: string
+    }
+}
+
+export interface ExtNodeMeta {
+    type: BlockExtensionType.ExtNode
+    componentName: string
+    extNode: {
+        title: string
+        description: string
+        extHandler: string[]
+    }
+}
+
+
+
+// Script Extension Meta Configurations
+export interface ToolMeta {
+    type: ScriptExtensionType.Tool
+    funcName: string
+    tool: {
+        name: string
+        description: string
+        inputJSONSchema: JsonSchema7ObjectType
+        outputJSONSchema: JsonSchema7ObjectType
+    }
+}
+
+export interface TableActionMeta {
+    type: ScriptExtensionType.TableAction
+    funcName: string
+    action: {
+        name: string
+        description: string
+    }
+}
+
+export interface UDFMeta {
+    type: ScriptExtensionType.UDF
+    funcName: string
+    udf: {
+        name: string
+        deterministic?: boolean
+    }
+}
+
+
+
+// Context interfaces for different extension types
+export interface ITableViewContext {
+    tableId: string
+    viewId: string
+}
+
+export interface IExtNodeContext {
+    nodeId: string
+    type: string
+}
+
+export interface ITableActionContext {
+    tableId: string
+    viewId: string
+    rowId: string
+}
+
+// Block Extension interfaces
+export interface IBlockExtension extends Omit<IExtension, 'type' | 'meta'> {
+    type: "block"
+    meta: TableViewMeta | ExtNodeMeta
+}
+
+// Script Extension interfaces
+export interface IScriptExtension extends Omit<IExtension, 'type' | 'meta'> {
+    type: "script"
+    meta: ToolMeta | TableActionMeta | UDFMeta
+}
+

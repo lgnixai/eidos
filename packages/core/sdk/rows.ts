@@ -2,7 +2,7 @@ import { uuidv7 } from "uuidv7"
 
 import { MsgType } from "@/lib/const"
 import { FieldType } from "../fields/const"
-import type { IView } from "@/packages/core/types/IView"
+import type { IView } from "../types/IView"
 import type { IField } from "../types/IField"
 
 import { rewriteQueryWithOffsetAndLimit } from "../sqlite/sql-view-query"

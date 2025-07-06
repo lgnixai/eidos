@@ -7,7 +7,7 @@ This module provides utility functions to generate standardized meta table trigg
 ### 1. Generate INSERT and UPDATE Triggers (Default Behavior)
 
 ```typescript
-import { createTriggersForFields } from "@/packages/core/sqlite/sql-meta-table-trigger"
+import { createTriggersForFields } from "./sql-meta-table-trigger"
 
 // Generate complete INSERT and UPDATE triggers
 const triggers = createTriggersForFields('tree_table', [
@@ -34,14 +34,14 @@ createTableSql = `
 Suitable for tables that only need to listen to insert operations, such as Chat table:
 
 ```typescript
-import { createInsertTriggerForFields } from "@/packages/core/sqlite/sql-meta-table-trigger"
+import { createInsertTriggerForFields } from "./sql-meta-table-trigger"
 
 const insertTrigger = createInsertTriggerForFields('chat_table', [
   'id', 'title', 'user_id', 'project_id', 'created_at'
 ])
 
 // Or use operation parameter
-import { createTriggersForFields } from "@/packages/core/sqlite/sql-meta-table-trigger"
+import { createTriggersForFields } from "./sql-meta-table-trigger"
 
 const insertTrigger = createTriggersForFields('chat_table', [
   'id', 'title', 'user_id', 'project_id', 'created_at'
@@ -53,7 +53,7 @@ const insertTrigger = createTriggersForFields('chat_table', [
 Suitable for tables that only need to listen to update operations:
 
 ```typescript
-import { createUpdateTriggerForFields } from "@/packages/core/sqlite/sql-meta-table-trigger"
+import { createUpdateTriggerForFields } from "./sql-meta-table-trigger"
 
 const updateTrigger = createUpdateTriggerForFields('settings_table', [
   'id', 'key', 'value', 'updated_at'
@@ -70,7 +70,7 @@ const updateTrigger = createTriggersForFields('settings_table', [
 ### Custom Trigger Options
 
 ```typescript
-import { generateMetaTableTriggers } from "@/packages/core/sqlite/sql-meta-table-trigger"
+import { generateMetaTableTriggers } from "./sql-meta-table-trigger"
 
 const customTriggers = generateMetaTableTriggers({
   tableName: 'custom_table',

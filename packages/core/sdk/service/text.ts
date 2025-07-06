@@ -1,7 +1,7 @@
 import type { DataSpace } from "../../DataSpace"
 import type { TableManager } from "../table"
-import type { IField } from "@/packages/core/types/IField"
-import type { TextProperty } from "@/packages/core/fields/text"
+import type { IField } from "../../types/IField"
+import type { TextProperty } from "../../fields/text"
 
 
 export interface IVecMeta {

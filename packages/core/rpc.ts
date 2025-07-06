@@ -1,4 +1,4 @@
-import type { DataSpace } from "@/packages/core/DataSpace"
+import type { DataSpace } from "./DataSpace"
 
 export const workerStore: {
     currentCallUserId: string | null

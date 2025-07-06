@@ -1,4 +1,4 @@
-import type { BinaryOperator, CompareOperator } from "@/packages/core/fields/const"
+import type { BinaryOperator, CompareOperator } from "../fields/const"
 
 export interface IFilterValue {
   operator: CompareOperator

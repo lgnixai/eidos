@@ -1,8 +1,8 @@
 import { MsgType } from "@/lib/const"
 import { nonNullable } from "@/lib/utils"
-import type { IField } from "@/packages/core/types/IField"
-import type { SelectProperty } from "@/packages/core/fields/select";
-import { SelectField } from "@/packages/core/fields/select"
+import type { IField } from "../../types/IField"
+import type { SelectProperty } from "../../fields/select";
+import { SelectField } from "../../fields/select"
 
 import type { DataSpace } from "../../DataSpace"
 import type { TableManager } from "../table"

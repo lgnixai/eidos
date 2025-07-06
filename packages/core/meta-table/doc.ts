@@ -1,7 +1,7 @@
 import type { Email } from "postal-mime"
 
 import { MsgType } from "@/lib/const"
-import { DocTableName } from "@/packages/core/sqlite/const"
+import { DocTableName } from "../sqlite/const"
 
 import type { BaseTable} from "./base";
 import { BaseTableImpl } from "./base"
