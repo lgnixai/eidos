@@ -73,9 +73,9 @@ When the `type` property is set to `"action"`, scripts serve as table-level oper
 
 ```typescript
 interface ActionMeta {
-  type: "action"
+  type: "tableAction"
   funcName: string
-  action: {
+  tableAction: {
     name: string
     description: string
   }
@@ -93,9 +93,9 @@ Table action functions receive two parameters:
 
 ```ts
 export const meta = {
-  type: "action",
+  type: "tableAction",
   funcName: "toggleChecked",
-  action: {
+  tableAction: {
     name: "Toggle Checked Status",
     description: "Toggles the checked status of the selected record",
   },
@@ -147,14 +147,15 @@ Scalar UDFs operate on individual values and return a single result per invocati
 ```ts
 export const meta = {
   type: "udf",
-  funcName: "myAdd",
+  funcName: "add",
   udf: {
-    name: "add",
+    // add is a reserved word in SQL, so we use a different name
+    name: "myAdd",
     deterministic: true,
   },
 }
 
-function myAdd(a: number, b: number) {
+function add(a: number, b: number) {
   return a + b
 }
 ```

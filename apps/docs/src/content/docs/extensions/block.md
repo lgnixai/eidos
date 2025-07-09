@@ -77,6 +77,8 @@ interface TableViewMeta {
   componentName: string
   tableView: {
     title: string
+    // the type of the view. built-in types are: grid, gallery, kanban.
+    type: string
     description: string
   }
 }

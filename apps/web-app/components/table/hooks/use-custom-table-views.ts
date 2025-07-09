@@ -1,12 +1,12 @@
 import { useSqlite } from "@/hooks/use-sqlite"
-import type { IExtension, TableViewInfo } from "@/packages/core/types/IExtension"
+import type { IExtension, TableViewMeta } from "@/packages/core/types/IExtension"
 import { useEffect } from "react"
 import { useState } from "react"
 
 
 export const useTableViewInfoByExtType = (type?: string) => {
     const { sqlite } = useSqlite()
-    const [tableViews, setTableViews] = useState<IExtension[]>([])
+    const [tableViews, setTableViews] = useState<IExtension<TableViewMeta>[]>([])
     useEffect(() => {
         if (!type?.startsWith("ext__")) {
             return
@@ -21,7 +21,7 @@ export const useTableViewInfoByExtType = (type?: string) => {
 }
 
 export const useCustomTableViews = () => {
-    const [tableViews, setTableViews] = useState<TableViewInfo[]>([])
+    const [tableViews, setTableViews] = useState<IExtension<TableViewMeta>[]>([])
     const { sqlite } = useSqlite()
 
     useEffect(() => {

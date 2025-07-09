@@ -1,18 +1,18 @@
-import { ScriptTableName } from "@/packages/core/sqlite/const"
-import { createUpdateTriggerForFields } from "@/packages/core/sqlite/sql-meta-table-trigger"
+import { ScriptTableName } from "../sqlite/const";
+import { createUpdateTriggerForFields } from "../sqlite/sql-meta-table-trigger";
 import type {
-  IExtension,
-  TableViewInfo,
   ExtensionStatus,
-  ICommand,
-  IPromptConfig
-} from "@/packages/core/types/IExtension"
+  IExtension,
+  TableViewMeta,
+} from "../types/IExtension";
 
 import type { BaseTable } from "./base";
-import { BaseTableImpl } from "./base"
+import { BaseTableImpl } from "./base";
 
 // Re-export types for backward compatibility
-export type { IExtension, TableViewInfo, ExtensionStatus, ICommand, IPromptConfig }
+export type { ExtensionStatus, IExtension, TableViewMeta };
+
+
 
 export class ExtensionTable
   extends BaseTableImpl<IExtension>
@@ -21,54 +21,38 @@ export class ExtensionTable
   createTableSql = `
     CREATE TABLE IF NOT EXISTS ${this.name} (
         id TEXT PRIMARY KEY,
+        slug TEXT,
         name TEXT,
         description TEXT,
         type TEXT DEFAULT 'script',
-        ext_node_type TEXT,
-        ext_node_handle_block_id TEXT,
         version TEXT,
         code TEXT,
         ts_code TEXT,
         meta TEXT,
         icon TEXT,
         marketplace_id TEXT,
-        model TEXT,
-        prompt_config TEXT,
-        commands TEXT,
-        tables TEXT,
-        envs TEXT,
-        env_map TEXT,
-        fields_map TEXT,
         enabled BOOLEAN DEFAULT 0,
         bindings TEXT,
-        dependencies TEXT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
 
     ${createUpdateTriggerForFields(this.name, [
-    'id', 'type', 'name', 'code', 'enabled', 'ext_node_type', 'ext_node_handle_block_id', 'icon'
+    'id', 'slug', 'name', 'type', 'code', 'enabled', 'icon'
   ])}
 
 `
 
   JSONFields: string[] = [
-    "commands",
-    "tables",
-    "envs",
-    "env_map",
-    "fields_map",
-    "prompt_config",
-    "bindings",
-    "dependencies",
     "meta",
+    "bindings",
   ]
 
-  async getTableViews(): Promise<IExtension[]> {
+  async getTableViews(): Promise<IExtension<TableViewMeta>[]> {
     const sql = `
-      SELECT * FROM ${this.name} 
-      WHERE enabled = 1 
-      AND meta IS NOT NULL 
+      SELECT id, slug, name, description, type, version, meta, icon, marketplace_id, enabled, bindings, created_at, updated_at FROM ${this.name}
+      WHERE enabled = 1
+      AND meta IS NOT NULL
       AND meta != ''
       AND JSON_VALID(meta) = 1
       AND JSON_EXTRACT(meta, '$.type') = 'tableView'
@@ -77,11 +61,11 @@ export class ExtensionTable
     return res.map((item: any) => this.toJson(item))
   }
 
-  async getTableViewExtensionInfoByExtType(viewType: string): Promise<IExtension[]> {
+  async getTableViewExtensionInfoByExtType(viewType: string): Promise<IExtension<TableViewMeta>[]> {
     const sql = `
-      SELECT * FROM ${this.name} 
-      WHERE enabled = 1 
-      AND meta IS NOT NULL 
+      SELECT id, slug, name, description, type, version, meta, icon, marketplace_id, enabled, bindings, created_at, updated_at FROM ${this.name}
+      WHERE enabled = 1
+      AND meta IS NOT NULL
       AND meta != ''
       AND JSON_VALID(meta) = 1
       AND JSON_EXTRACT(meta, '$.tableView.type') = ?
@@ -90,35 +74,17 @@ export class ExtensionTable
     return res.map((item: any) => this.toJson(item))
   }
 
-  async getTableViewsInfo(): Promise<TableViewInfo[]> {
+  async getTableViewsInfo(): Promise<IExtension<TableViewMeta>[]> {
     const sql = `
-      SELECT 
-        id,
-        description,
-        CASE
-          WHEN meta IS NOT NULL AND meta != '' AND JSON_VALID(meta) = 1 
-          THEN JSON_EXTRACT(meta, '$.tableView.type')
-          ELSE NULL 
-        END as type,
-        CASE 
-          WHEN meta IS NOT NULL AND meta != '' AND JSON_VALID(meta) = 1 
-          THEN JSON_EXTRACT(meta, '$.tableView.title') 
-          ELSE NULL 
-        END as title
-      FROM ${this.name} 
-      WHERE enabled = 1 
-      AND meta IS NOT NULL 
+      SELECT id, slug, name, description, type, version, meta, icon, marketplace_id, enabled, bindings, created_at, updated_at FROM ${this.name}
+      WHERE enabled = 1
+      AND meta IS NOT NULL
       AND meta != ''
       AND JSON_VALID(meta) = 1
       AND JSON_EXTRACT(meta, '$.type') = 'tableView'
     `
     const res = await this.dataSpace.exec2(sql)
-    return res.map((row: any) => ({
-      id: row.id,
-      title: row.title,
-      type: row.type,
-      description: row.description,
-    }))
+    return res.map((item: any) => this.toJson(item))
   }
 
   async del(id: string): Promise<boolean> {
@@ -144,11 +110,287 @@ export class ExtensionTable
     return Promise.resolve(true)
   }
 
-  async updateEnvMap(id: string, env_map: { [key: string]: string }) {
-    this.dataSpace.exec2(`UPDATE ${this.name} SET env_map = ? WHERE id = ?`, [
-      JSON.stringify(env_map),
+  async updateBindings(id: string, bindings: Record<string, { type: string; value: string }>) {
+    this.dataSpace.exec2(`UPDATE ${this.name} SET bindings = ? WHERE id = ?`, [
+      JSON.stringify(bindings),
       id,
     ])
     return Promise.resolve(true)
+  }
+
+  // ========== Block Extension Query Methods ==========
+
+  /**
+   * Get all block extensions by status
+   */
+  async getBlockExtensions(status: ExtensionStatus = "enabled"): Promise<IExtension[]> {
+    const params: any[] = ['block']
+    let sql = `SELECT * FROM ${this.name} WHERE type = ?`
+
+    if (status === "enabled") {
+      sql += " AND enabled = ?"
+      params.push(1)
+    } else if (status === "disabled") {
+      sql += " AND enabled = ?"
+      params.push(0)
+    }
+    // status === "all" - no additional filter needed
+
+    const res = await this.dataSpace.exec2(sql, params)
+    return res.map((item: any) => this.toJson(item))
+  }
+
+  /**
+   * Get ExtNode extensions by status
+   */
+  async getExtNodeExtensions(status: ExtensionStatus = "enabled"): Promise<IExtension[]> {
+    const params: any[] = ['block', 'extNode']
+    let sql = `
+      SELECT * FROM ${this.name}
+      WHERE type = ?
+      AND meta IS NOT NULL
+      AND meta != ''
+      AND JSON_VALID(meta) = 1
+      AND JSON_EXTRACT(meta, '$.type') = ?
+    `
+
+    if (status === "enabled") {
+      sql += " AND enabled = ?"
+      params.push(1)
+    } else if (status === "disabled") {
+      sql += " AND enabled = ?"
+      params.push(0)
+    }
+
+    const res = await this.dataSpace.exec2(sql, params)
+    return res.map((item: any) => this.toJson(item))
+  }
+
+  /**
+   * Get ExtNode extensions by handler type
+   */
+  async getExtNodeExtensionsByHandler(handler: string, status: ExtensionStatus = "enabled"): Promise<IExtension[]> {
+    const params: any[] = ['block', 'extNode', `%"${handler}"%`]
+    let sql = `
+      SELECT * FROM ${this.name}
+      WHERE type = ?
+      AND meta IS NOT NULL
+      AND meta != ''
+      AND JSON_VALID(meta) = 1
+      AND JSON_EXTRACT(meta, '$.type') = ?
+      AND JSON_EXTRACT(meta, '$.extNode.extHandler') LIKE ?
+    `
+
+    if (status === "enabled") {
+      sql += " AND enabled = ?"
+      params.push(1)
+    } else if (status === "disabled") {
+      sql += " AND enabled = ?"
+      params.push(0)
+    }
+
+    const res = await this.dataSpace.exec2(sql, params)
+    return res.map((item: any) => this.toJson(item))
+  }
+
+  // ========== Script Extension Query Methods ==========
+
+  /**
+   * Get all script extensions by status
+   */
+  async getScriptExtensions(status: ExtensionStatus = "enabled"): Promise<IExtension[]> {
+    const params: any[] = ['script']
+    let sql = `SELECT * FROM ${this.name} WHERE type = ?`
+
+    if (status === "enabled") {
+      sql += " AND enabled = ?"
+      params.push(1)
+    } else if (status === "disabled") {
+      sql += " AND enabled = ?"
+      params.push(0)
+    }
+
+    const res = await this.dataSpace.exec2(sql, params)
+    return res.map((item: any) => this.toJson(item))
+  }
+
+  /**
+   * Get Tool extensions by status
+   */
+  async getToolExtensions(status: ExtensionStatus = "enabled"): Promise<IExtension[]> {
+    const params: any[] = ['script', 'tool']
+    let sql = `
+      SELECT * FROM ${this.name}
+      WHERE type = ?
+      AND meta IS NOT NULL
+      AND meta != ''
+      AND JSON_VALID(meta) = 1
+      AND JSON_EXTRACT(meta, '$.type') = ?
+    `
+
+    if (status === "enabled") {
+      sql += " AND enabled = ?"
+      params.push(1)
+    } else if (status === "disabled") {
+      sql += " AND enabled = ?"
+      params.push(0)
+    }
+
+    const res = await this.dataSpace.exec2(sql, params)
+    return res.map((item: any) => this.toJson(item))
+  }
+
+  /**
+   * Get TableAction extensions by status
+   */
+  async getTableActionExtensions(status: ExtensionStatus = "enabled"): Promise<IExtension[]> {
+    const params: any[] = ['script', 'tableAction']
+    let sql = `
+      SELECT * FROM ${this.name}
+      WHERE type = ?
+      AND meta IS NOT NULL
+      AND meta != ''
+      AND JSON_VALID(meta) = 1
+      AND JSON_EXTRACT(meta, '$.type') = ?
+    `
+
+    if (status === "enabled") {
+      sql += " AND enabled = ?"
+      params.push(1)
+    } else if (status === "disabled") {
+      sql += " AND enabled = ?"
+      params.push(0)
+    }
+
+    const res = await this.dataSpace.exec2(sql, params)
+    return res.map((item: any) => this.toJson(item))
+  }
+
+  /**
+   * Get UDF (User Defined Function) extensions by status
+   */
+  async getUDFExtensions(status: ExtensionStatus = "enabled"): Promise<IExtension[]> {
+    const params: any[] = ['script', 'udf']
+    let sql = `
+      SELECT * FROM ${this.name}
+      WHERE type = ?
+      AND meta IS NOT NULL
+      AND meta != ''
+      AND JSON_VALID(meta) = 1
+      AND JSON_EXTRACT(meta, '$.type') = ?
+    `
+
+    if (status === "enabled") {
+      sql += " AND enabled = ?"
+      params.push(1)
+    } else if (status === "disabled") {
+      sql += " AND enabled = ?"
+      params.push(0)
+    }
+
+    const res = await this.dataSpace.exec2(sql, params)
+    return res.map((item: any) => this.toJson(item))
+  }
+
+  // ========== General Query Methods ==========
+
+  /**
+   * Get extension by slug
+   */
+  async getExtensionBySlug(slug: string): Promise<IExtension | null> {
+    const sql = `SELECT * FROM ${this.name} WHERE slug = ?`
+    const res = await this.dataSpace.exec2(sql, [slug])
+    return res.length > 0 ? this.toJson(res[0]) : null
+  }
+
+  /**
+   * Get extensions by marketplace ID
+   */
+  async getExtensionsByMarketplaceId(marketplaceId: string): Promise<IExtension[]> {
+    const sql = `SELECT * FROM ${this.name} WHERE marketplace_id = ?`
+    const res = await this.dataSpace.exec2(sql, [marketplaceId])
+    return res.map((item: any) => this.toJson(item))
+  }
+
+  /**
+   * Get extensions by type and status
+   */
+  async getExtensionsByType(type: "script" | "block", status: ExtensionStatus = "enabled"): Promise<IExtension[]> {
+    const params: any[] = [type]
+    let sql = `SELECT * FROM ${this.name} WHERE type = ?`
+
+    if (status === "enabled") {
+      sql += " AND enabled = ?"
+      params.push(1)
+    } else if (status === "disabled") {
+      sql += " AND enabled = ?"
+      params.push(0)
+    }
+
+    const res = await this.dataSpace.exec2(sql, params)
+    return res.map((item: any) => this.toJson(item))
+  }
+
+  /**
+   * Search extensions by name or description
+   */
+  async searchExtensions(query: string, status: ExtensionStatus = "all"): Promise<IExtension[]> {
+    const searchPattern = `%${query}%`
+    const params: any[] = [searchPattern, searchPattern]
+    let sql = `SELECT * FROM ${this.name} WHERE (name LIKE ? OR description LIKE ?)`
+
+    if (status === "enabled") {
+      sql += " AND enabled = ?"
+      params.push(1)
+    } else if (status === "disabled") {
+      sql += " AND enabled = ?"
+      params.push(0)
+    }
+
+    const res = await this.dataSpace.exec2(sql, params)
+    return res.map((item: any) => this.toJson(item))
+  }
+
+  /**
+   * Get extensions with bindings
+   */
+  async getExtensionsWithBindings(status: ExtensionStatus = "enabled"): Promise<IExtension[]> {
+    const params: any[] = []
+    let sql = `SELECT * FROM ${this.name} WHERE bindings IS NOT NULL AND bindings != '' AND bindings != '{}'`
+
+    if (status === "enabled") {
+      sql += " AND enabled = ?"
+      params.push(1)
+    } else if (status === "disabled") {
+      sql += " AND enabled = ?"
+      params.push(0)
+    }
+
+    const res = await this.dataSpace.exec2(sql, params)
+    return res.map((item: any) => this.toJson(item))
+  }
+
+  /**
+   * Get extension count by type and status
+   */
+  async getExtensionCount(type?: "script" | "block", status: ExtensionStatus = "all"): Promise<number> {
+    const params: any[] = []
+    let sql = `SELECT COUNT(*) as count FROM ${this.name} WHERE 1=1`
+
+    if (type) {
+      sql += " AND type = ?"
+      params.push(type)
+    }
+
+    if (status === "enabled") {
+      sql += " AND enabled = ?"
+      params.push(1)
+    } else if (status === "disabled") {
+      sql += " AND enabled = ?"
+      params.push(0)
+    }
+
+    const res = await this.dataSpace.exec2(sql, params)
+    return res[0]?.count || 0
   }
 }

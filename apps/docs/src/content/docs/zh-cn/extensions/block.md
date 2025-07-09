@@ -77,12 +77,23 @@ interface TableViewMeta {
   componentName: string
   tableView: {
     title: string
+    // the type of the view. built-in types are: grid, gallery, kanban.
+    type: string
     description: string
   }
 }
 ```
 
-#### 5.1.3 实现示例
+#### 5.1.3 数据存储
+
+自定义扩展视图的类型信息存储在 `eidos__views` 表中，其中 `type` 字段采用 `ext__<type>` 的格式。例如：
+
+- 内置视图类型：`grid`、`gallery`、`kanban`
+- 自定义扩展视图类型：`ext__list`、`ext__timeline`、`ext__chart` 等
+
+这种命名约定确保了自定义扩展视图与内置视图类型的明确区分，避免命名冲突。
+
+#### 5.1.4 实现示例
 
 ```tsx
 export const meta = {
@@ -90,6 +101,7 @@ export const meta = {
   componentName: "MyListView",
   tableView: {
     title: "列表视图",
+    type: "list",
     description: "这是一个列表视图",
   },
 }

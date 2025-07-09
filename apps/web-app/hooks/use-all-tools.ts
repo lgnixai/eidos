@@ -1,36 +1,51 @@
 import type { Tool } from "ai"
-import { useMemo } from "react"
-import { useAllScripts } from "./use-all-scripts"
+import { useEffect, useMemo, useState } from "react"
+import type { IExtension, ToolMeta } from "@/packages/core/types/IExtension"
+import { useSqlite } from "./use-sqlite"
 import { createRecordsTool } from "./tools/table"
-
 
 const builtInTools = {
     createRecords: createRecordsTool,
 }
-export const useAllTools = () => {
-    const scripts = useAllScripts()
-    const commands = scripts.filter(script => script.commands && script.commands.length > 0)
-        .flatMap(script => script.commands.map(command => ({
-            ...command,
-            scriptId: script.id,
-            script: script
-        })))
-    const tools = commands.filter(command => command.asTool).map(command => ({
-        name: command.name,
-        description: command.description,
-        parameters: command.inputJSONSchema,
-        scriptId: command.scriptId,
-    }))
 
-    // use memo to avoid re-rendering
-    const _tools = useMemo(() => tools.reduce((acc, tool) => {
-        acc[tool.name] = {
-            description: tool.description,
-            parameters: tool.parameters,
-            id: `${tool.scriptId}.${tool.name}` as `${string}.${string}`,
+export const useAllTools = (): Record<string, Tool> => {
+    const { sqlite } = useSqlite()
+    const [toolExtensions, setToolExtensions] = useState<IExtension<ToolMeta>[]>([])
+
+    useEffect(() => {
+        if (!sqlite) {
+            return
         }
-        return acc
-    }, builtInTools as Record<string, Tool>), [tools])
+        const fetchToolExtensions = async () => {
+            try {
+                // Use the extension table's getToolExtensions method to get enabled tool extensions
+                const extensions = await sqlite.extension.getToolExtensions("enabled")
+                setToolExtensions(extensions as IExtension<ToolMeta>[])
+            } catch (error) {
+                console.error("Failed to fetch tool extensions:", error)
+                setToolExtensions([])
+            }
+        }
+        fetchToolExtensions()
+    }, [sqlite])
+
+    // Transform tool extensions into AI Tool format
+    const _tools = useMemo(() => {
+        const tools = toolExtensions.reduce((acc, extension) => {
+            if (extension.meta?.tool) {
+                const tool = extension.meta.tool
+                acc[tool.name] = {
+                    description: tool.description,
+                    parameters: tool.inputJSONSchema,
+                    id: `${extension.id}.${extension.meta.funcName}` as `${string}.${string}`,
+                }
+            }
+            return acc
+        }, {} as Record<string, Tool>)
+
+        // Merge with built-in tools
+        return { ...builtInTools, ...tools }
+    }, [toolExtensions])
 
     return _tools
 }

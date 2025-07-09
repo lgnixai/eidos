@@ -40,7 +40,6 @@ import { ActionCommandItems } from "./action"
 // import { ExtensionCommandItems } from "./extension"
 import { useCMDKGoto, useCMDKStore, useInput } from "./hooks"
 import { NodeCommandItems } from "./nodes"
-import { ScriptCommandItems } from "./script"
 import { SecondaryView } from "./secondary-view"
 import { SpaceCommandItems } from "./spaces"
 
@@ -186,22 +185,6 @@ export function CommandDialogDemo() {
               </>
             )}
 
-            {mode === "action" && (
-              <ScriptCommandItems
-                input={input}
-                setInput={setInput}
-                setCmdkOpen={setCmdkOpen}
-                mode={mode}
-              />
-            )}
-            {mode === "syscall" && (
-              <ActionCommandItems
-                input={input}
-                setInput={setInput}
-                setCmdkOpen={setCmdkOpen}
-                mode={mode}
-              />
-            )}
             <CommandSeparator />
             <CommandGroup heading={t("common.settings")}>
               <CommandItem onSelect={switchTheme}>

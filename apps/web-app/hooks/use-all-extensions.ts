@@ -9,9 +9,17 @@ export const useAllExtensions = (space: string) => {
 
   useEffect(() => {
     if (!sqlite) return
-    sqlite.listScripts("enabled").then((res) => {
-      setScripts(res)
-    })
+    const fetchExtensions = async () => {
+      try {
+        // Use the extension table's list method with proper status filtering
+        const res = await sqlite.extension.list({ enabled: true })
+        setScripts(res)
+      } catch (error) {
+        console.error("Failed to fetch extensions:", error)
+        setScripts([])
+      }
+    }
+    fetchExtensions()
   }, [space, sqlite])
 
   return scripts

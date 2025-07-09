@@ -12,15 +12,18 @@ export const useAllScripts = () => {
       return
     }
     const fetchScripts = async () => {
-      const scripts = await sqlite?.script.list({
-        type: "script",
-        enabled: true,
-      })
-      const pyScripts = await sqlite?.script.list({
-        type: "py_script",
-        enabled: true,
-      })
-      setScripts([...scripts, ...pyScripts])
+      try {
+        // Use the extension table instead of the deprecated script property
+        const scriptExtensions = await sqlite.extension.getScriptExtensions("enabled")
+        const pyScriptExtensions = await sqlite.extension.list({
+          type: "py_script",
+          enabled: true,
+        })
+        setScripts([...scriptExtensions, ...pyScriptExtensions])
+      } catch (error) {
+        console.error("Failed to fetch script extensions:", error)
+        setScripts([])
+      }
     }
     fetchScripts()
   }, [sqlite])

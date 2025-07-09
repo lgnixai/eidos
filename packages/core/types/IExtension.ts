@@ -86,7 +86,7 @@ export interface ToolMeta {
 export interface TableActionMeta {
     type: ScriptExtensionType.TableAction
     funcName: string
-    action: {
+    tableAction: {
         name: string
         description: string
     }
