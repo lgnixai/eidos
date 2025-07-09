@@ -1,8 +1,11 @@
 import { EidosDataEventChannelName, EidosMessageChannelName } from "@/lib/const";
 import type { EidosDatabase } from "@/packages/core/DataSpace";
 import { DataSpace } from "@/packages/core/DataSpace";
+import { ScriptTableName } from "@/packages/core/sqlite/const";
+import { extractUDF, validateUDFCode } from "@/packages/v3/code-tools/get-udf";
 import type { WebContents } from "electron";
 import { ipcMain } from "electron";
+import console from 'electron-log';
 import { EventEmitter } from 'events';
 import { getConfigManager } from "./config";
 import { embedding } from "./data-space-context";
@@ -11,7 +14,6 @@ import { getSpaceDbPath } from "./file-system/space";
 import { getResourcePath } from "./helper";
 import { win } from "./main";
 import { NodeServerDatabase } from "./sqlite-server";
-import console from 'electron-log';
 
 
 // --- START: Helper function to apply Graft Config to Environment --- 
@@ -78,16 +80,54 @@ function requestFromRenderer(webContents: WebContents, arg: any) {
 }
 
 async function initUDF(db: EidosDatabase) {
-    const scripts = await db.selectObjects(
-        `SELECT DISTINCT name, code FROM eidos__scripts WHERE type = 'udf' AND enabled = 1`
-    )
-    for (const script of scripts) {
-        const { code, name } = script
-        const dynamicFunc = new Function("return (" + code + ")")();
-        db.createFunction({
-            name,
-            xFunc: dynamicFunc
-        })
+    try {
+        // Query UDF extensions directly from database using the same SQL as getUDFExtensions
+        const sql = `
+            SELECT * FROM ${ScriptTableName}
+            WHERE type = ?
+            AND meta IS NOT NULL
+            AND meta != ''
+            AND JSON_VALID(meta) = 1
+            AND JSON_EXTRACT(meta, '$.type') = ?
+            AND enabled = ?
+        `;
+        const params = ['script', 'udf', 1];
+
+        const udfExtensions = await db.selectObjects(sql, params);
+
+        for (const extension of udfExtensions) {
+            const { code, name, id } = extension;
+
+            try {
+                // Validate UDF code format
+                const validation = validateUDFCode(code);
+                if (!validation.valid) {
+                    console.error(`UDF validation failed for ${name} (${id}):`, validation.errors);
+                    continue;
+                }
+
+                // Extract UDF using oxc-transform
+                const udfResult = extractUDF(code);
+                if (!udfResult) {
+                    console.error(`Failed to extract UDF for ${name} (${id})`);
+                    continue;
+                }
+
+                const { name: funcName, xFunc } = udfResult.createFunctionConfig;
+
+                // Create function using the extracted configuration
+                db.createFunction({
+                    name: funcName,
+                    xFunc: xFunc as any,
+                });
+                console.log(`Successfully loaded UDF: ${udfResult.createFunctionConfig.name} from extension ${name}`);
+
+            } catch (error) {
+                console.error(`Error loading UDF ${name} (${id}):`, error);
+            }
+        }
+    } catch (error) {
+        console.error('Error initializing UDFs:', error);
     }
 }
 
@@ -250,6 +290,7 @@ export class DataSpaceManager {
             draftDb: draftDataSpace,
             enableFTS: true
         });
+
 
         return this.dataSpace;
     }
