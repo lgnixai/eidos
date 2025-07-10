@@ -18,6 +18,7 @@ export function ModelTestButton({
     isEmbeddingLoading,
     isTranslationLoading,
     isCodingLoading,
+    isApplyCodeLoading,
   } = useModelTest()
   const { t } = useTranslation()
 
@@ -25,6 +26,7 @@ export function ModelTestButton({
     [TaskType.Embedding]: isEmbeddingLoading,
     [TaskType.Translation]: isTranslationLoading,
     [TaskType.Coding]: isCodingLoading,
+    [TaskType.ApplyCode]: isApplyCodeLoading,
   }[taskType]
 
   return (

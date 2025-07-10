@@ -60,8 +60,14 @@ export const useUDFs = () => {
   const { sqlite } = useSqlite()
   useEffect(() => {
     if (sqlite) {
-      sqlite.getUDFs().then((udfs) => {
-        setUdfs(udfs)
+      sqlite.extension.getUDFExtensions('enabled').then((udfs) => {
+        setUdfs(udfs.map(udf => {
+          return {
+            id: udf.id,
+            name: udf.meta!.udf!.name,
+            code: udf.code,
+          }
+        }))
       })
     }
   }, [sqlite])

@@ -1,8 +1,9 @@
-import { useContext, useEffect, useState } from "react"
+import { useContext, useState } from "react"
 import { ViewTypeEnum, type IView } from "@/packages/core/types/IView"
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 import {
+  FileQuestionIcon,
   LayoutGridIcon,
   LayoutListIcon,
   SquareKanbanIcon,
@@ -76,7 +77,7 @@ export const ViewItem = ({
   }
 
   const Icon = view.type.startsWith("ext__")
-    ? ViewIconMap[ViewTypeEnum.Grid]
+    ? FileQuestionIcon
     : ViewIconMap[view.type as ViewTypeEnum]
 
   const handleOpen = () => {

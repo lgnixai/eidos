@@ -133,6 +133,7 @@ describe('script-compiler', () => {
   describe('getCompileMethodByScriptType', () => {
     it('should return correct compile methods for different script types', () => {
       expect(getCompileMethodByScriptType('script')).toBe(scriptCodeCompile);
+      expect(getCompileMethodByScriptType('block')).toBeDefined(); // blockCodeCompile
       expect(getCompileMethodByScriptType('py_script')).toBeDefined(); // pythonCodeCompile
       expect(getCompileMethodByScriptType('doc_plugin')).toBeDefined(); // lexicalCodeCompile
       expect(getCompileMethodByScriptType('m_block')).toBeDefined(); // blockCodeCompile
@@ -143,14 +144,16 @@ describe('script-compiler', () => {
   describe('getCompileMethod', () => {
     it('should return compile method based on script object', () => {
       const scriptScript = { type: 'script' };
+      const blockScript = { type: 'block' };
       const pyScript = { type: 'py_script' };
       const docPlugin = { type: 'doc_plugin' };
-      const blockScript = { type: 'm_block' };
+      const legacyBlockScript = { type: 'm_block' };
 
       expect(getCompileMethod(scriptScript)).toBe(scriptCodeCompile);
+      expect(getCompileMethod(blockScript)).toBeDefined();
       expect(getCompileMethod(pyScript)).toBeDefined();
       expect(getCompileMethod(docPlugin)).toBeDefined();
-      expect(getCompileMethod(blockScript)).toBeDefined();
+      expect(getCompileMethod(legacyBlockScript)).toBeDefined();
     });
   });
 

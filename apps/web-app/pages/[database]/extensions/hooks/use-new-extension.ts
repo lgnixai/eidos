@@ -1,4 +1,5 @@
-import type { IExtension } from "@/packages/core/meta-table/extension"
+import type { IExtension } from "@/packages/core/types/IExtension"
+import { ScriptExtensionType, BlockExtensionType } from "@/packages/core/types/IExtension"
 import { useNavigate } from "react-router-dom"
 
 import { generateId } from "@/lib/utils"
@@ -6,116 +7,370 @@ import { useCurrentPathInfo } from "@/apps/web-app/hooks/use-current-pathinfo"
 
 import { useExtension } from "../../../../hooks/use-extension"
 import mblockTemplate from "./template/new-micro-block?raw"
-import docPluginTemplate from "./template/new-doc-plugin?raw"
-import pythonScriptTemplate from "./template/new-python-script.py?raw"
 export const useNewExtension = () => {
   const { addExtension } = useExtension()
   const router = useNavigate()
   const { space } = useCurrentPathInfo()
 
   const handleCreateNewExtension = async (
-    template: "script" | "udf" | "m_block" | "prompt" | "doc_plugin" | "py_script" | "ext_node" = "script"
+    template: "tool" | "udf" | "tableAction" | "tableView" | "extNode" = "tool"
   ) => {
     const newScriptId = generateId()
-    const newScript: IExtension = {
+
+    // Tool Script (LLM Tool)
+    const toolScript: IExtension = {
       id: newScriptId,
-      name: `New Script - ${newScriptId}`,
-      commands: [],
+      slug: `tool-${newScriptId}`,
+      name: `New Tool - ${newScriptId}`,
       type: "script",
-      description: "Script Description",
+      description: "Tool Description",
       version: "0.0.1",
-      ts_code: `export default async function (input: Input, context: Context) {
-    eidos.currentSpace.notify({
-        title: "hello eidos",
-        description: "this is a test"
-    })
+      code: `export const meta = {
+  type: "tool",
+  funcName: "hello",
+  tool: {
+    name: "hello",
+    description: "This is a hello world tool",
+    inputJSONSchema: {
+      type: "object",
+      properties: {
+        name: {
+          type: "string",
+        },
+      },
+    },
+    outputJSONSchema: {
+      type: "string",
+    },
+  },
+}
+
+function hello(name) {
+  return \`Hello, \${name}!\`
 }`,
-      code: `export default async function (input, context) {
-    eidos.currentSpace.notify({
-        title: "hello eidos",
-        description: "this is a test"
-    })
+      ts_code: `export const meta = {
+  type: "tool",
+  funcName: "hello",
+  tool: {
+    name: "hello",
+    description: "This is a hello world tool",
+    inputJSONSchema: {
+      type: "object",
+      properties: {
+        name: {
+          type: "string",
+        },
+      },
+    },
+    outputJSONSchema: {
+      type: "string",
+    },
+  },
+}
+
+function hello(name: string) {
+  return \`Hello, \${name}!\`
 }`,
+      meta: {
+        type: ScriptExtensionType.Tool,
+        funcName: "hello",
+        tool: {
+          name: "hello",
+          description: "This is a hello world tool",
+          inputJSONSchema: {
+            type: "object",
+            properties: {
+              name: {
+                type: "string",
+              },
+            },
+          },
+          outputJSONSchema: {
+            type: "object",
+            properties: {
+              result: {
+                type: "string",
+              },
+            },
+          },
+        },
+      },
     }
 
-    const newUDFScript: IExtension = {
+    // UDF Script (User-Defined Function)
+    const udfScript: IExtension = {
       id: newScriptId,
+      slug: `udf-${newScriptId}`,
       name: `myTwice`,
-      commands: [],
-      type: "udf",
+      type: "script",
       description: "twice the input",
       version: "0.0.1",
-      code: `function myTwice(arg) {
-    return arg + arg
+      code: `export const meta = {
+  type: "udf",
+  funcName: "myTwice",
+  udf: {
+    name: "myTwice",
+    deterministic: true,
+  },
+}
+
+function myTwice(arg) {
+  return arg + arg
 }`,
+      ts_code: `export const meta = {
+  type: "udf",
+  funcName: "myTwice",
+  udf: {
+    name: "myTwice",
+    deterministic: true,
+  },
+}
+
+function myTwice(arg: number) {
+  return arg + arg
+}`,
+      meta: {
+        type: ScriptExtensionType.UDF,
+        funcName: "myTwice",
+        udf: {
+          name: "myTwice",
+          deterministic: true,
+        },
+      },
     }
 
-    const promptScript: IExtension = {
+    // Table Action Script
+    const tableActionScript: IExtension = {
       id: newScriptId,
-      name: `New Prompt - ${newScriptId}`,
-      commands: [],
-      type: "prompt",
-      description: "Prompt Description",
+      slug: `table-action-${newScriptId}`,
+      name: `Toggle Checked`,
+      type: "script",
+      description: "Toggles the checked status of the selected record",
       version: "0.0.1",
-      code: `you are a helpful robot!`,
+      code: `export const meta = {
+  type: "tableAction",
+  funcName: "toggleChecked",
+  tableAction: {
+    name: "Toggle Checked Status",
+    description: "Toggles the checked status of the selected record",
+  },
+}
+
+async function toggleChecked(input, ctx) {
+  const { tableId, viewId, rowId } = ctx
+  await eidos.currentSpace.table(tableId).rows.update(rowId, {
+    checked: !input.checked,
+  })
+  return {
+    success: true,
+  }
+}`,
+      ts_code: `export const meta = {
+  type: "tableAction",
+  funcName: "toggleChecked",
+  tableAction: {
+    name: "Toggle Checked Status",
+    description: "Toggles the checked status of the selected record",
+  },
+}
+
+async function toggleChecked(
+  input: Record<string, any>,
+  ctx: {
+    tableId: string
+    viewId: string
+    rowId: string
+  }
+) {
+  const { tableId, viewId, rowId } = ctx
+  await eidos.currentSpace.table(tableId).rows.update(rowId, {
+    checked: !input.checked,
+  })
+  return {
+    success: true,
+  }
+}`,
+      meta: {
+        type: ScriptExtensionType.TableAction,
+        funcName: "toggleChecked",
+        tableAction: {
+          name: "Toggle Checked Status",
+          description: "Toggles the checked status of the selected record",
+        },
+      },
     }
 
-    const mBlockScript: IExtension = {
+    // Table View Block Extension
+    const tableViewBlock: IExtension = {
       id: newScriptId,
-      name: `New Micro Block - ${newScriptId}`,
-      commands: [],
-      type: "m_block",
-      description: "Micro Block Description",
+      slug: `table-view-${newScriptId}`,
+      name: `New Table View - ${newScriptId}`,
+      type: "block",
+      description: "Custom table view",
       version: "0.0.1",
+      code: `export const meta = {
+  type: "tableView",
+  componentName: "MyListView",
+  tableView: {
+    title: "List View",
+    type: "list",
+    description: "This is a list view",
+  },
+}
+
+import { useState, useEffect } from "react"
+
+const getRows = async (ctx) => {
+  const rows = await eidos.currentSpace.table(ctx.tableId).rows.query(
+    {},
+    {
+      viewId: ctx.viewId,
+    }
+  )
+  return rows
+}
+
+export function MyListView({ ctx }) {
+  const [rows, setRows] = useState([])
+
+  useEffect(() => {
+    getRows(ctx).then((rows) => {
+      setRows(rows)
+    })
+  }, [ctx])
+
+  return (
+    <div>
+      {rows.map((row) => (
+        <div key={row.id}>{row.title}</div>
+      ))}
+    </div>
+  )
+}`,
       ts_code: mblockTemplate,
-      // leave code empty, so it will be generated when first saved
-      code: ``,
+      meta: {
+        type: BlockExtensionType.TableView,
+        componentName: "MyListView",
+        tableView: {
+          title: "List View",
+          type: "list",
+          description: "This is a list view",
+        },
+      },
     }
 
-    const docPluginScript: IExtension = {
+    // Extension Node Block Extension
+    const extNodeBlock: IExtension = {
       id: newScriptId,
-      name: `New Doc Plugin - ${newScriptId}`,
-      commands: [],
-      type: "doc_plugin",
-      description: "Doc Plugin Description",
-      version: "0.0.1",
-      ts_code: docPluginTemplate,
-      // leave code empty, so it will be generated when first saved
-      code: ``,
-    }
-
-    const pythonScript: IExtension = {
-      id: newScriptId,
-      name: `New Python Script - ${newScriptId}`,
-      commands: [],
-      type: "py_script",
-      description: "Python Script Description",
-      version: "0.0.1",
-      code: pythonScriptTemplate,
-    }
-
-    const extNode: IExtension = {
-      id: newScriptId,
+      slug: `ext-node-${newScriptId}`,
       name: `New Ext Node - ${newScriptId}`,
-      commands: [],
-      type: "ext_node",
-      description: "Ext Node Description",
+      type: "block",
+      description: "Custom extension node",
       version: "0.0.1",
-      code: ``,
+      code: `export const meta = {
+  type: "extNode",
+  componentName: "MyExtNode",
+  extNode: {
+    title: "My Extension Node",
+    description: "This is a custom extension node",
+    extHandler: ["custom"],
+  },
+}
+
+import { useState, useEffect } from "react"
+
+export function MyExtNode({ ctx }) {
+  const [content, setContent] = useState("")
+
+  useEffect(() => {
+    eidos.currentSpace.extNode.getText(ctx.nodeId).then((text) => {
+      setContent(text || "")
+    })
+  }, [ctx])
+
+  const handleSave = async (newContent) => {
+    await eidos.currentSpace.extNode.setText(ctx.nodeId, newContent)
+    setContent(newContent)
+  }
+
+  return (
+    <div className="p-4">
+      <h1>Custom Extension Node</h1>
+      <textarea
+        value={content}
+        onChange={(e) => setContent(e.target.value)}
+        onBlur={(e) => handleSave(e.target.value)}
+        className="w-full h-64 p-2 border rounded"
+        placeholder="Enter your content here..."
+      />
+    </div>
+  )
+}`,
+      ts_code: `export const meta = {
+  type: "extNode",
+  componentName: "MyExtNode",
+  extNode: {
+    title: "My Extension Node",
+    description: "This is a custom extension node",
+    extHandler: ["custom"],
+  },
+}
+
+import { useState, useEffect } from "react"
+
+interface IExtNodeContext {
+  nodeId: string
+  type: string
+}
+
+export function MyExtNode({ ctx }: { ctx: IExtNodeContext }) {
+  const [content, setContent] = useState("")
+
+  useEffect(() => {
+    eidos.currentSpace.extNode.getText(ctx.nodeId).then((text) => {
+      setContent(text || "")
+    })
+  }, [ctx])
+
+  const handleSave = async (newContent: string) => {
+    await eidos.currentSpace.extNode.setText(ctx.nodeId, newContent)
+    setContent(newContent)
+  }
+
+  return (
+    <div className="p-4">
+      <h1>Custom Extension Node</h1>
+      <textarea
+        value={content}
+        onChange={(e) => setContent(e.target.value)}
+        onBlur={(e) => handleSave(e.target.value)}
+        className="w-full h-64 p-2 border rounded"
+        placeholder="Enter your content here..."
+      />
+    </div>
+  )
+}`,
+      meta: {
+        type: BlockExtensionType.ExtNode,
+        componentName: "MyExtNode",
+        extNode: {
+          title: "My Extension Node",
+          description: "This is a custom extension node",
+          extHandler: ["custom"],
+        },
+      },
     }
 
     const templateMap = {
-      script: newScript,
-      udf: newUDFScript,
-      prompt: promptScript,
-      m_block: mBlockScript,
-      doc_plugin: docPluginScript,
-      py_script: pythonScript,
-      ext_node: extNode,
+      tool: toolScript,
+      udf: udfScript,
+      tableAction: tableActionScript,
+      tableView: tableViewBlock,
+      extNode: extNodeBlock,
     }
 
-    const script = templateMap[template]
-    await addExtension(script)
+    const extension = templateMap[template]
+    await addExtension(extension)
     router(`/${space}/extensions/${newScriptId}`)
   }
 

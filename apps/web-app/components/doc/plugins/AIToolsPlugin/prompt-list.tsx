@@ -25,7 +25,6 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { toast } from "@/components/ui/use-toast"
 
 import { useBuiltInPrompts } from "./hooks/use-builtIn-prompts"
-import { useAllPrompts } from "@/apps/web-app/hooks/use-all-prompts"
 
 interface PromptListProps {
   onPromptSelect: (prompt: string, model?: string, isCustom?: boolean) => void
@@ -37,7 +36,6 @@ export function PromptList({
   onGenerateChart,
 }: PromptListProps) {
   const { findFirstAvailableModel, findAvailableModel } = useAiConfig()
-  const { prompts } = useAllPrompts()
   const builtInPrompts = useBuiltInPrompts()
   const { t } = useTranslation()
   const [customPrompt, setCustomPrompt] = useState<string>("")
@@ -67,10 +65,8 @@ export function PromptList({
         }}
         onKeyUp={(e) => {
           if (e.key === "Enter") {
-            const shouldRunCustomAction = !prompts.find((prompt) =>
-              prompt.name.includes(customPrompt)
-            )
-            if (shouldRunCustomAction && customPrompt.length) {
+            // Since we removed custom prompts, always run custom action if there's input
+            if (customPrompt.length) {
               runCustomAction(customPrompt)
             }
           }
@@ -159,18 +155,7 @@ export function PromptList({
               )
             })}
           </CommandGroup>
-          <CommandGroup heading="Custom Prompts">
-            {prompts.map((prompt) => (
-              <CommandItem
-                key={prompt.id}
-                onSelect={() => {
-                  onPromptSelect(prompt.code, prompt.model)
-                }}
-              >
-                <span>{prompt.name}</span>
-              </CommandItem>
-            ))}
-          </CommandGroup>
+
         </CommandList>
       </ScrollArea>
     </Command>

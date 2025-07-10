@@ -3,8 +3,6 @@ import type { IExtension } from "@/packages/core/meta-table/extension"
 import { useTranslation } from "react-i18next"
 import { useLoaderData, useNavigate, useRevalidator } from "react-router-dom"
 
-import { useCurrentPathInfo } from "@/apps/web-app/hooks/use-current-pathinfo"
-import { useExtension } from "@/apps/web-app/hooks/use-extension"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -26,10 +24,10 @@ import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/components/ui/use-toast"
+import { useCurrentPathInfo } from "@/apps/web-app/hooks/use-current-pathinfo"
+import { useExtension } from "@/apps/web-app/hooks/use-extension"
 
 import { BlockConfig } from "./block-config"
-import { ExtNodeConfig } from "./ext-node-config"
-import { PromptConfig } from "./prompt-config"
 import { ScriptConfig } from "./script-config"
 
 export const ExtensionConfig = () => {
@@ -277,12 +275,8 @@ export const ExtensionConfig = () => {
         </CardContent>
       </Card>
 
-      {script.type === "prompt" && <PromptConfig />}
-      {(script.type === "script" || script.type === "py_script") && (
-        <ScriptConfig />
-      )}
-      {script.type === "m_block" && <BlockConfig />}
-      {script.type === "ext_node" && <ExtNodeConfig />}
+      {script.type === "script" && <ScriptConfig />}
+      {script.type === "block" && <BlockConfig />}
 
       <Card className="border-destructive">
         <CardHeader>

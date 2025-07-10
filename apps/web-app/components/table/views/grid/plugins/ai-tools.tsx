@@ -1,5 +1,5 @@
 import { useCallback, useContext, useState } from "react"
-import type { IExtension } from "@/packages/core/meta-table/extension"
+import type { IExtension } from "@/packages/core/types/IExtension"
 import type { DataEditorProps, GridSelection } from "@glideapps/glide-data-grid"
 
 import { generateText } from "@/packages/ai/generate"
@@ -17,7 +17,6 @@ import {
 
 import { TableContext } from "../../../hooks"
 import { ScrollArea } from "../../../../ui/scroll-area"
-import { useAllPrompts } from "@/apps/web-app/hooks/use-all-prompts"
 
 export const AITools = ({
   close,
@@ -37,7 +36,6 @@ export const AITools = ({
   const [customPrompt, setCustomPrompt] = useState<string>("")
   const [searchFieldName, setSearchFieldName] = useState<string>("")
   const [selectedPrompt, setSelectedPrompt] = useState<IExtension | null>(null)
-  const { prompts } = useAllPrompts()
   const { getConfigByModel } = useAiConfig()
   const [step, setStep] = useState(0)
   const { space, tableName, viewId } = useContext(TableContext)
@@ -179,18 +177,7 @@ export const AITools = ({
             Press <kbd>ESC</kbd> to close.
           </CommandEmpty>
           <CommandGroup>
-            {prompts.map((prompt) => (
-              <CommandItem
-                key={prompt.id}
-                value={prompt.name}
-                onSelect={(currentValue) => {
-                  setSelectedPrompt(prompt)
-                  setStep(1)
-                }}
-              >
-                {prompt.name}
-              </CommandItem>
-            ))}
+            {/* Custom prompts are no longer supported */}
           </CommandGroup>
         </CommandList>
       </ScrollArea>

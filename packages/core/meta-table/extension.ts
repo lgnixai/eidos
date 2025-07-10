@@ -1,9 +1,10 @@
-import { ScriptTableName } from "../sqlite/const";
+import { ExtensionTableName } from "../sqlite/const";
 import { createUpdateTriggerForFields } from "../sqlite/sql-meta-table-trigger";
 import type {
   ExtensionStatus,
   IExtension,
   TableViewMeta,
+  UDFMeta,
 } from "../types/IExtension";
 
 import type { BaseTable } from "./base";
@@ -13,15 +14,14 @@ import { BaseTableImpl } from "./base";
 export type { ExtensionStatus, IExtension, TableViewMeta };
 
 
-
 export class ExtensionTable
   extends BaseTableImpl<IExtension>
   implements BaseTable<IExtension> {
-  name = ScriptTableName
+  name = ExtensionTableName
   createTableSql = `
     CREATE TABLE IF NOT EXISTS ${this.name} (
         id TEXT PRIMARY KEY,
-        slug TEXT,
+        slug TEXT UNIQUE,
         name TEXT,
         description TEXT,
         type TEXT DEFAULT 'script',
@@ -269,7 +269,7 @@ export class ExtensionTable
   /**
    * Get UDF (User Defined Function) extensions by status
    */
-  async getUDFExtensions(status: ExtensionStatus = "enabled"): Promise<IExtension[]> {
+  async getUDFExtensions(status: ExtensionStatus = "enabled"): Promise<IExtension<UDFMeta>[]> {
     const params: any[] = ['script', 'udf']
     let sql = `
       SELECT * FROM ${this.name}
@@ -301,6 +301,38 @@ export class ExtensionTable
     const sql = `SELECT * FROM ${this.name} WHERE slug = ?`
     const res = await this.dataSpace.exec2(sql, [slug])
     return res.length > 0 ? this.toJson(res[0]) : null
+  }
+
+  /**
+   * Check if a slug already exists
+   */
+  async slugExists(slug: string): Promise<boolean> {
+    const sql = `SELECT COUNT(*) as count FROM ${this.name} WHERE slug = ?`
+    const res = await this.dataSpace.exec2(sql, [slug])
+    return res[0]?.count > 0
+  }
+
+  /**
+   * Generate a unique slug based on a base slug
+   * If the base slug already exists, it will append a number to make it unique
+   */
+  async generateUniqueSlug(baseSlug: string): Promise<string> {
+    // Check if the base slug is already unique
+    const exists = await this.slugExists(baseSlug)
+    if (!exists) {
+      return baseSlug
+    }
+
+    // If not unique, try with incrementing numbers
+    let counter = 1
+    let newSlug = `${baseSlug}-${counter}`
+
+    while (await this.slugExists(newSlug)) {
+      counter++
+      newSlug = `${baseSlug}-${counter}`
+    }
+
+    return newSlug
   }
 
   /**
@@ -392,5 +424,47 @@ export class ExtensionTable
 
     const res = await this.dataSpace.exec2(sql, params)
     return res[0]?.count || 0
+  }
+
+  /**
+   * Override add method to ensure slug uniqueness
+   */
+  async add(data: Partial<IExtension>, db = this.dataSpace.db): Promise<IExtension> {
+    // If slug is provided, ensure it's unique
+    if (data.slug) {
+      data.slug = await this.generateUniqueSlug(data.slug)
+    }
+
+    return super.add(data, db)
+  }
+
+  /**
+   * Fix duplicate slugs in existing extensions
+   * This method should be called during migration to ensure all existing extensions have unique slugs
+   */
+  async fixDuplicateSlugs(): Promise<void> {
+    // Get all extensions grouped by slug to find duplicates
+    const sql = `
+      SELECT slug, COUNT(*) as count, GROUP_CONCAT(id) as ids
+      FROM ${this.name}
+      WHERE slug IS NOT NULL AND slug != ''
+      GROUP BY slug
+      HAVING count > 1
+    `
+    const duplicates = await this.dataSpace.exec2(sql)
+
+    for (const duplicate of duplicates) {
+      const ids = duplicate.ids.split(',')
+      const baseSlug = duplicate.slug
+
+      // Keep the first extension with the original slug, update the rest
+      for (let i = 1; i < ids.length; i++) {
+        const newSlug = await this.generateUniqueSlug(baseSlug)
+        await this.dataSpace.exec2(
+          `UPDATE ${this.name} SET slug = ? WHERE id = ?`,
+          [newSlug, ids[i]]
+        )
+      }
+    }
   }
 }

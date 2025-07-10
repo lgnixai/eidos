@@ -878,10 +878,10 @@ declare class FileTable extends BaseTableImpl implements BaseTable<IFile> {
    * @returns Uploaded file info
    */
   upload(fileData: ArrayBuffer | string,
-  // ArrayBuffer or base64 string
-  fileName: string, mimeType: string, parentPath?: string[]): Promise<IFile & {
-    publicUrl: string;
-  }>;
+    // ArrayBuffer or base64 string
+    fileName: string, mimeType: string, parentPath?: string[]): Promise<IFile & {
+      publicUrl: string;
+    }>;
 }
 //# sourceMappingURL=file.d.ts.map
 //#endregion

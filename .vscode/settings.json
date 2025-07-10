@@ -15,5 +15,8 @@
   "[typescript]": {
     "editor.defaultFormatter": "vscode.typescript-language-features"
   },
-  "oxc.enable": true
+  "oxc.enable": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.oxc": "always"
+  }
 }

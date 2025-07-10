@@ -1,7 +1,7 @@
 import { toast } from "@/components/ui/use-toast"
 import { useAiConfig } from "@/apps/web-app/hooks/use-ai-config"
 import { getProvider } from "@/packages/ai/helper"
-import type { LanguageModelV1} from "ai";
+import type { LanguageModelV1 } from "ai";
 import { embedMany, generateText } from "ai"
 import { useState } from "react"
 
@@ -9,6 +9,7 @@ export enum TaskType {
     Embedding = "Embedding",
     Translation = "Translation",
     Coding = "Coding",
+    ApplyCode = "ApplyCode",
 }
 
 export const useModelTest = () => {
@@ -17,6 +18,7 @@ export const useModelTest = () => {
         [TaskType.Embedding]: false,
         [TaskType.Translation]: false,
         [TaskType.Coding]: false,
+        [TaskType.ApplyCode]: false,
     })
 
     async function testModel(
@@ -114,6 +116,64 @@ export const useModelTest = () => {
                         })
                     }
                     break
+                case TaskType.ApplyCode:
+                    if (!model) return []
+
+                    try {
+                        const patchCode = await generateText({
+                            model: modelProvider(config.modelId) as LanguageModelV1,
+                            prompt: `You are a code patching assistant. Apply the following edit to the given code:
+
+<code>
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
+
+export function Counter() {
+  const [count, setCount] = useState(0)
+  
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <Button onClick={() => setCount(count + 1)}>
+        Click me
+      </Button>
+    </div>
+  )
+}
+</code>
+
+<update>
+Add a reset button that sets count back to 0, and add a disabled state when count is 0.
+</update>
+
+Return the complete modified code with the changes applied.`,
+                        })
+                        console.log(patchCode)
+
+                        // Simple validation to check if the response contains expected modifications
+                        if (patchCode.text.includes("export function Counter") &&
+                            patchCode.text.includes("Reset") &&
+                            (patchCode.text.includes("disabled") || patchCode.text.includes("count === 0"))) {
+                            toast({
+                                title: "Test Succeeded",
+                                description: `Tested ${modelType} model "${model}" successfully. Model can apply code modifications correctly.`
+                            })
+                        } else {
+                            toast({
+                                title: "Test Warning",
+                                description: `${modelType} model "${model}" responded but may not have applied the expected modifications.`,
+                                variant: "destructive",
+                            })
+                        }
+                    } catch (error) {
+                        console.error(error)
+                        toast({
+                            title: "Test Failed",
+                            description: `Failed to test ${modelType} model "${model}".`,
+                            variant: "destructive",
+                        })
+                    }
+                    break
             }
         } catch (error) {
             toast({
@@ -130,6 +190,7 @@ export const useModelTest = () => {
         testModel,
         isEmbeddingLoading: loadingStates[TaskType.Embedding],
         isTranslationLoading: loadingStates[TaskType.Translation],
-        isCodingLoading: loadingStates[TaskType.Coding]
+        isCodingLoading: loadingStates[TaskType.Coding],
+        isApplyCodeLoading: loadingStates[TaskType.ApplyCode]
     }
 }

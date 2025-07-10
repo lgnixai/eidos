@@ -88,7 +88,7 @@ export const AddViewDropdown = ({
                 {React.createElement(IconComponent, {
                   className: "h-4 w-4",
                 })}
-                <span>{view.title}</span>
+                <span>{view.meta?.tableView?.title}</span>
               </div>
             </DropdownMenuItem>
           )

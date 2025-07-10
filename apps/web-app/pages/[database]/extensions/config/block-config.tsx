@@ -3,10 +3,10 @@ import type { IExtension } from "@/packages/core/meta-table/extension"
 import { useLoaderData, useRevalidator } from "react-router-dom"
 
 import { useToast } from "@/components/ui/use-toast"
-
 import { useExtension } from "@/apps/web-app/hooks/use-extension"
-import { ExtensionBindings } from "./extension-bindings"
+
 import { EnvironmentVariables } from "./environment-variables"
+import { ExtensionBindings } from "./extension-bindings"
 
 export const BlockConfig = () => {
   const block = useLoaderData() as IExtension
@@ -58,7 +58,10 @@ export const BlockConfig = () => {
           updateWithToast(newEnvMap)
         }}
       />
-      <ExtensionBindings bindings={bindings} onUpdateBindings={handleUpdateBindings} />
+      <ExtensionBindings
+        bindings={bindings}
+        onUpdateBindings={handleUpdateBindings}
+      />
     </div>
   )
 }

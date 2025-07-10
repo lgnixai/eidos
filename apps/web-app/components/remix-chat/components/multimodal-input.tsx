@@ -14,7 +14,6 @@ import { sanitizeUIMessages } from "@/packages/ai/utils"
 import type { IExtension } from "@/packages/core/meta-table/extension"
 import type { Attachment, ChatRequestOptions, CreateMessage, Message } from "ai"
 import cx from "classnames"
-import { motion } from "framer-motion"
 import { toast } from "sonner"
 import { useLocalStorage, useWindowSize } from "usehooks-ts"
 
@@ -22,7 +21,6 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { AIModelSelect } from "@/components/ai-chat/ai-chat-model-select"
 import { useSqlite } from "@/apps/web-app/hooks/use-sqlite"
-import { getSuggestedActions } from "@/apps/web-app/pages/[database]/extensions/helper"
 
 import { ArrowUpIcon, PaperclipIcon, StopIcon } from "./icons"
 import { PreviewAttachment } from "./preview-attachment"
@@ -99,7 +97,6 @@ export function MultimodalInput({
       }px`
     }
   }
-  const suggestedActions = getSuggestedActions(type ?? "script")
 
   const [localStorageInput, setLocalStorageInput] = useLocalStorage("input", "")
 
@@ -265,35 +262,7 @@ export function MultimodalInput({
       {messages.length === 0 &&
         attachments.length === 0 &&
         uploadQueue.length === 0 && (
-          <div className="grid sm:grid-cols-2 gap-2 w-full">
-            {suggestedActions.map((suggestedAction, index) => (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 20 }}
-                transition={{ delay: 0.05 * index }}
-                key={`suggested-action-${suggestedAction.title}-${index}`}
-                className={index > 1 ? "hidden sm:block" : "block"}
-              >
-                <Button
-                  variant="ghost"
-                  onClick={async () => {
-                    // window.history.replaceState({}, "", `/chat/${chatId}`)
-                    append({
-                      role: "user",
-                      content: suggestedAction.action,
-                    })
-                  }}
-                  className="text-left border rounded-xl px-4 py-3.5 text-sm flex-1 gap-1 sm:flex-col w-full h-auto justify-start items-start"
-                >
-                  <span className="font-medium">{suggestedAction.title}</span>
-                  <span className="text-muted-foreground">
-                    {suggestedAction.label}
-                  </span>
-                </Button>
-              </motion.div>
-            ))}
-          </div>
+          <div className="grid sm:grid-cols-2 gap-2 w-full"></div>
         )}
 
       <input

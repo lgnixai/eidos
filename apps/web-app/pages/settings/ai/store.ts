@@ -23,6 +23,7 @@ const defaultAIConfig: AIFormValues = {
   embeddingModel: undefined,
   translationModel: undefined,
   codingModel: undefined,
+  applyCodeModel: undefined,
 }
 
 // Create a storage instance with backend synchronization

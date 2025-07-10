@@ -1,7 +1,7 @@
 import { EidosDataEventChannelName, EidosMessageChannelName } from "@/lib/const";
 import type { EidosDatabase } from "@/packages/core/DataSpace";
 import { DataSpace } from "@/packages/core/DataSpace";
-import { ScriptTableName } from "@/packages/core/sqlite/const";
+import { ExtensionTableName } from "@/packages/core/sqlite/const";
 import { extractUDF, validateUDFCode } from "@/packages/v3/code-tools/get-udf";
 import type { WebContents } from "electron";
 import { ipcMain } from "electron";
@@ -83,7 +83,7 @@ async function initUDF(db: EidosDatabase) {
     try {
         // Query UDF extensions directly from database using the same SQL as getUDFExtensions
         const sql = `
-            SELECT * FROM ${ScriptTableName}
+            SELECT * FROM ${ExtensionTableName}
             WHERE type = ?
             AND meta IS NOT NULL
             AND meta != ''

@@ -1,15 +1,14 @@
-import type { ICommand, IExtension } from "@/packages/core/meta-table/extension"
+import { useEffect, useState } from "react"
 import { RowsManager } from "@/packages/core/sdk/rows"
+import type {
+  IExtension,
+  TableActionMeta,
+} from "@/packages/core/types/IExtension"
 
-import { useAllExtensions } from "@/apps/web-app/hooks/use-all-extensions"
+import { ContextMenuItem } from "@/components/ui/context-menu"
 import { useCurrentPathInfo } from "@/apps/web-app/hooks/use-current-pathinfo"
+import { useSqlite } from "@/apps/web-app/hooks/use-sqlite"
 import { useCurrentUiColumns } from "@/apps/web-app/hooks/use-ui-columns"
-import {
-  ContextMenuItem,
-  ContextMenuSub,
-  ContextMenuSubContent,
-  ContextMenuSubTrigger,
-} from "@/components/ui/context-menu"
 
 import { useScriptFunction } from "../../../script-container/hook"
 
@@ -19,26 +18,45 @@ export const ScriptContextMenu = ({
   getRows: () => any[] | undefined
 }) => {
   const { space, tableId, viewId } = useCurrentPathInfo()
-  const scripts = useAllExtensions(space)
+  const { sqlite } = useSqlite(space)
   const { callFunction } = useScriptFunction()
   const { fieldRawColumnNameFieldMap } = useCurrentUiColumns()
+  const [tableActionScripts, setTableActionScripts] = useState<
+    IExtension<TableActionMeta>[]
+  >([])
+
+  useEffect(() => {
+    if (!sqlite) return
+
+    const fetchTableActionScripts = async () => {
+      try {
+        const scripts =
+          await sqlite.extension.getTableActionExtensions("enabled")
+        setTableActionScripts(scripts as IExtension<TableActionMeta>[])
+      } catch (error) {
+        console.error("Failed to fetch table action scripts:", error)
+        setTableActionScripts([])
+      }
+    }
+
+    fetchTableActionScripts()
+  }, [sqlite])
+
   const handleScriptActionCall = async (
-    action: IExtension,
-    command: ICommand
+    action: IExtension<TableActionMeta>
   ) => {
     const rows = getRows()
     if (!rows?.length) return
+
     for (const row of rows) {
       const rowJson = RowsManager.rawData2Json(row, fieldRawColumnNameFieldMap)
+
       await callFunction({
-        input: {
-          ...rowJson,
-          _id: row._id,
-        },
-        command: command.name,
+        input: rowJson,
+        command: action.meta!.funcName,
         context: {
-          tables: action.fields_map,
-          env: action.env_map || {},
+          tables: null, // Remove deprecated fields_map
+          env: action.bindings || {},
           currentNodeId: tableId,
           currentRowId: row._id,
           currentViewId: viewId,
@@ -49,34 +67,19 @@ export const ScriptContextMenu = ({
       })
     }
   }
+
   return (
     <>
-      {scripts.map((script) => {
-        const actionCommands = script.commands?.filter(
-          (cmd) => cmd.asTableAction
-        )
-        const hasActions = actionCommands && actionCommands.length > 0
-        if (!hasActions) {
-          return null
-        }
+      {tableActionScripts.map((script) => {
         return (
-          <ContextMenuSub key={script.id}>
-            <ContextMenuSubTrigger inset>{script.name}</ContextMenuSubTrigger>
-            <ContextMenuSubContent className="w-48">
-              {actionCommands.map((cmd) => {
-                return (
-                  <ContextMenuItem
-                    key={cmd.name}
-                    onClick={() => {
-                      handleScriptActionCall(script, cmd)
-                    }}
-                  >
-                    {cmd.name}
-                  </ContextMenuItem>
-                )
-              })}
-            </ContextMenuSubContent>
-          </ContextMenuSub>
+          <ContextMenuItem
+            key={script.id}
+            onClick={() => {
+              handleScriptActionCall(script)
+            }}
+          >
+            {script.meta!.tableAction.name}
+          </ContextMenuItem>
         )
       })}
     </>

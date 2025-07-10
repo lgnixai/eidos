@@ -112,28 +112,15 @@ export const callScriptById = async (id: string, input: Record<string, any>, sql
     if (!script) {
         throw new Error("Script not found")
     }
-    if (script.type === "py_script") {
-        return callPythonScript({
-            input,
-            code: script.code,
-            id,
-            context: {
-                tables: script.tables,
-                env: {},
-            },
-            command: cmd ?? 'main',
-            dependencies: script.dependencies,
-        })
-    } else if (script.type === "script") {
-        return callJavaScript({
-            input,
-            code: script.code,
-            id,
-            context: {
-                tables: script.tables,
-                env: {},
-            },
-            command: cmd ?? 'default',
-        }, scriptContainerRef)
-    }
+
+    return callJavaScript({
+        input,
+        code: script.code,
+        id,
+        context: {
+            tables: {},
+            env: {},
+        },
+        command: cmd ?? 'default',
+    }, scriptContainerRef)
 }

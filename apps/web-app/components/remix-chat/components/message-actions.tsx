@@ -1,14 +1,16 @@
-import type { Message } from "ai"
-import { PlayIcon, RefreshCwIcon } from "lucide-react"
 import { useMemo, useState } from "react"
+import { applyCode } from "@/packages/ai/generate"
+import type { Message } from "ai"
+import { PlayIcon, RefreshCwIcon, Loader2 } from "lucide-react"
 import { toast } from "sonner"
 import { useSWRConfig } from "swr"
 import { useCopyToClipboard } from "usehooks-ts"
 
-import { useEditorStore } from "@/apps/web-app/pages/[database]/extensions/stores/editor-store"
+import { getCodeFromMarkdown } from "@/lib/markdown"
+import { useCurrentExtension } from "@/hooks/use-current-node"
 import { Button } from "@/components/ui/button"
 import { TooltipProvider } from "@/components/ui/tooltip"
-import { getCodeFromMarkdown } from "@/lib/markdown"
+import { useEditorStore } from "@/apps/web-app/pages/[database]/extensions/stores/editor-store"
 
 import type { Vote } from "../interface"
 import { CopyIcon } from "./icons"
@@ -36,6 +38,8 @@ export function MessageActions({
   const [_, copyToClipboard] = useCopyToClipboard()
   const { setScriptCodeMap, setLayoutMode } = useEditorStore()
   const [isPreviewEnabled, setIsPreviewEnabled] = useState(false)
+  const [isApplying, setIsApplying] = useState(false)
+  const currentExtension = useCurrentExtension()
   const content = useMemo(
     () =>
       message.parts
@@ -50,7 +54,7 @@ export function MessageActions({
 
   const codeBlocks = getCodeFromMarkdown(content || message.content)
 
-  const handleApply = () => {
+  const handleApply = async () => {
     const indexJsxCode = codeBlocks.find(
       (code) =>
         code.lang === "jsx" ||
@@ -60,9 +64,22 @@ export function MessageActions({
         code.lang === "markdown"
     )?.code
     console.log("indexJsxCode", indexJsxCode)
+
     if (indexJsxCode) {
-      setScriptCodeMap(projectId, indexJsxCode)
-      setLayoutMode("code")
+      try {
+        setIsApplying(true)
+        const newCode = await applyCode({
+          originalCode: currentExtension?.ts_code || "",
+          updateSnippet: indexJsxCode,
+        })
+        setScriptCodeMap(projectId, newCode)
+        setLayoutMode("code")
+      } catch (error) {
+        console.error("Failed to apply code:", error)
+        toast.error("Failed to apply code")
+      } finally {
+        setIsApplying(false)
+      }
     }
   }
 
@@ -111,8 +128,13 @@ export function MessageActions({
               className="py-1 px-2 h-fit text-muted-foreground"
               variant="outline"
               onClick={handleApply}
+              disabled={isApplying}
             >
-              <PlayIcon className="w-4 h-4" />
+              {isApplying ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <PlayIcon className="w-4 h-4" />
+              )}
             </Button>
             {/* <Button
               className="py-1 px-2 h-fit text-muted-foreground"

@@ -8,6 +8,11 @@ export interface EidosTable<T = Record<string, string>> {
     fieldsMap: T
 }
 
+/**
+ * eidos is the entry of the sdk
+ *
+ * `eidos.currentSpace.table("tableId").rows.query()`
+ */
 export interface Eidos {
     space(spaceName: string): DataSpace
     currentSpace: DataSpace

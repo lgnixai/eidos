@@ -2,12 +2,7 @@
   "compilerOptions": {
     "target": "ESNext",
     "useDefineForClassFields": true,
-    "lib": [
-      "ES2020",
-      "DOM",
-      "DOM.Iterable",
-      "WebWorker"
-    ],
+    "lib": ["ES2020", "DOM", "DOM.Iterable", "WebWorker"],
     "module": "ESNext",
     "skipLibCheck": true,
     "allowJs": true,
@@ -26,27 +21,13 @@
     "noFallthroughCasesInSwitch": true,
     "baseUrl": ".",
     "paths": {
-      "@/locales/*": [
-        "./packages/locales/*"
-      ],
-      "@/worker/*": [
-        "./packages/worker/*"
-      ],
-      "@/lib/*": [
-        "./packages/lib/*"
-      ],
-      "@/components/*": [
-        "./apps/web-app/components/*"
-      ],
-      "@/hooks/*": [
-        "./apps/web-app/hooks/*"
-      ],
-      "@/styles/*": [
-        "./apps/web-app/styles/*"
-      ],
-      "@/*": [
-        "./*"
-      ]
+      "@/locales/*": ["./packages/locales/*"],
+      "@/worker/*": ["./packages/worker/*"],
+      "@/lib/*": ["./packages/lib/*"],
+      "@/components/*": ["./apps/web-app/components/*"],
+      "@/hooks/*": ["./apps/web-app/hooks/*"],
+      "@/styles/*": ["./apps/web-app/styles/*"],
+      "@/*": ["./*"]
     },
     "types": [
       "vite-plugin-pwa/react",

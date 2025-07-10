@@ -1,9 +1,9 @@
 import z from "zod"
 
 import { toast } from "@/components/ui/use-toast"
-import type { IExtension } from "@/packages/core/meta-table/extension"
-import { generateId, proxyURL } from "@/lib/utils"
+import { proxyURL } from "@/lib/utils"
 import eidosTypes from "@/packages/core/dist/index.d.ts?raw"
+import type { IExtension } from "@/packages/core/meta-table/extension"
 
 import { parse } from "comment-parser"
 
@@ -36,18 +36,15 @@ export const checkPromptEnable = (data: unknown) => {
 
 export const getEditorLanguage = (
   script: IExtension
-): "markdown" | "typescript" | "javascript" | "typescriptreact" | "python" => {
-  if (script.type === "prompt") {
-    return "markdown"
-  }
+): "typescript" | "javascript" | "typescriptreact" => {
 
-  if (script.type === "py_script") {
-    return "python"
-  }
-
-  if (script.type === "m_block" || script.type === "doc_plugin") {
+  if (script.type === "block") {
     return "typescriptreact"
   }
+  if (script.type === "script") {
+    return "typescript"
+  }
+
   if (script.ts_code) {
     return "typescript"
   }
@@ -105,24 +102,6 @@ export const getV0Block = async (link: string) => {
   return data.files[0]
 }
 
-export const getScriptFromV0 = async (link: string): Promise<IExtension> => {
-  const data = await getV0Block(link)
-  const newScriptId = generateId()
-
-  // path to name "path": "components/github-release-stats.tsx",
-  const name = data.path.split("/").pop()?.split(".")[0]
-  const script: IExtension = {
-    id: newScriptId,
-    name: name ?? "New Block " + newScriptId,
-    type: "m_block",
-    version: "0.0.1",
-    commands: [],
-    description: "A block from v0",
-    ts_code: data.content,
-    code: '',
-  }
-  return script
-}
 
 
 export const getDynamicPrompt = (bindings: IExtension["bindings"]) => {
@@ -148,58 +127,3 @@ declare global {
 
 
 
-
-export const getSuggestedActions = (type: IExtension["type"]) => {
-  switch (type) {
-    case "m_block":
-      return [
-        {
-          title: "Change all buttons",
-          label: "to red",
-          action: "Change all buttons to red",
-        },
-        {
-          title: "Show latest 10 issues",
-          label: "from mayneyao/eidos",
-          action: "Show latest 10 issues from mayneyao/eidos GitHub repository",
-        },
-      ]
-    case "script":
-      return [
-        {
-          title: "Show top 10 hacker news",
-          label: "in notification",
-          action: "Show top 10 hacker news in notification",
-        },
-      ]
-    case "py_script":
-      return [
-        {
-          title: "get the most popular repositories", //  
-          label: "in the past 7 days on GitHub",
-          action: `get the most popular GitHub repositories in the past 7 days.\n
-- use data as function name, return a list of repositories.\n
-- include the repository name, full name with owner, language, description, and the number of stars.\n
-- use requests library to get the data from GitHub API.`,
-        },
-      ]
-    case "doc_plugin":
-      return [
-        {
-          title: "Emoji converter",
-          label: "change :D to 🤣",
-          action: "Make a Emoji converter plugin, which can change all :D to 🤣",
-        },
-      ]
-    case "udf":
-      return [
-        {
-          title: "Extract Email Domain",
-          label: "from email address",
-          action: "extract the domain from an email address",
-        },
-      ]
-    default:
-      return []
-  }
-}

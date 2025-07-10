@@ -25,7 +25,6 @@ import {
   transformQuery,
 } from "./sqlite/sql-formula-parser"
 
-import type { Email } from "postal-mime"
 import { DataChangeEventHandler } from "./data-pipeline/DataChangeEventHandler"
 import { DataChangeTrigger } from "./data-pipeline/DataChangeTrigger"
 import { LinkRelationUpdater } from "./data-pipeline/LinkRelationUpdater"
@@ -314,19 +313,6 @@ export class DataSpace {
     })
   }
 
-  public async getUDFs() {
-    const scripts = await this.script.list({
-      type: 'udf',
-      enabled: true
-    })
-    return scripts.map((script) => {
-      return {
-        id: script.id,
-        name: script.name,
-        code: script.code
-      }
-    })
-  }
 
   // table change callback
   public async onTableChange(
@@ -1320,17 +1306,6 @@ export class DataSpace {
         data,
       },
     })
-  }
-
-  /**
-   * 往指定邮箱发送邮件时，会被 cloudflare worker 拦截，
-   * worker 再转发到 api-agent，最后 api-agent 调用 currentSpace.email() 方法
-   * @param email 
-   */
-  public email(email: Email) {
-    // 根据邮件内容转发给可以处理邮件的 script
-    // 1. find email handler script
-    // 2. call email handler script
   }
 
   // Add new public methods for FTS functionality

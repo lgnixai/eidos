@@ -46,99 +46,124 @@ export const ExtensionListItem = ({
   showReload,
   onReload,
 }: ExtensionListItemProps) => {
-  const Icon = IconMap[script.type] || IconMap.script
+  // Use meta.type for new architecture, fallback to script.type for compatibility
+  const iconType = script.meta?.type || script.type
+  const Icon = IconMap[iconType] || IconMap.script
   const iconIsDataUri = script.icon && script.icon.startsWith("data:image")
 
+  // Helper function to check if this is a block extension
+  const isBlockExtension = script.type === "block" ||
+    script.meta?.type === "tableView" ||
+    script.meta?.type === "extNode"
+
   return (
-    <div className="flex items-center justify-between border-b px-4 py-3 hover:bg-muted/50">
-      <Link
-        to={`/${space}/extensions/${script.id}`}
-        className="flex flex-1 items-center gap-3"
-      >
-        {iconIsDataUri ? (
-          <img
-            src={script.icon}
-            alt={script.name}
-            className="h-6 w-6 shrink-0 opacity-70 border rounded-md"
-          />
-        ) : (
-          <Icon size={24} className="opacity-60" />
-        )}
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="font-medium">{script.name}</span>
-            <Badge variant="outline" className="text-xs">
-              v{script.version}
-            </Badge>
-            <Badge variant="secondary" className="text-xs">
-              {script.type}
-            </Badge>
-            {script.type === "m_block" && isFavorite && (
-              <HeartIcon size={14} className="text-red-500 fill-current" />
-            )}
-          </div>
-          <div className="text-sm text-muted-foreground">
-            {script.description || "No description"}
+    <Link
+      to={`/${space}/extensions/${script.id}`}
+      className="block p-4 border border-border/60 rounded-lg hover:border-border hover:shadow-sm transition-all bg-card"
+    >
+      <div className="flex items-start justify-between">
+        <div className="flex items-start gap-3 flex-1 min-w-0">
+          {iconIsDataUri ? (
+            <img
+              src={script.icon}
+              alt={script.name}
+              className="h-10 w-10 rounded-md border flex-shrink-0"
+            />
+          ) : (
+            <div className="h-10 w-10 rounded-md border bg-muted/50 flex items-center justify-center flex-shrink-0">
+              <Icon size={20} className="text-muted-foreground" />
+            </div>
+          )}
+          
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1">
+              <h3 className="font-medium truncate">{script.name}</h3>
+              {isBlockExtension && isFavorite && (
+                <HeartIcon size={14} className="text-red-500 fill-current flex-shrink-0" />
+              )}
+            </div>
+            
+            <p className="text-sm text-muted-foreground mb-2 line-clamp-2">
+              {script.description || "No description available"}
+            </p>
+            
+            <div className="flex items-center gap-2">
+              <Badge variant="secondary" className="text-xs px-2 py-0.5">
+                {script.meta?.type || script.type}
+              </Badge>
+              <Badge variant="outline" className="text-xs px-2 py-0.5">
+                v{script.version}
+              </Badge>
+            </div>
           </div>
         </div>
-      </Link>
 
-      <div
-        className="flex items-center gap-2"
-        onClick={(e) => e.preventDefault()}
-      >
-        {showReload && (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8"
-            onClick={onReload}
-          >
-            <RefreshCwIcon size={16} />
-          </Button>
-        )}
-        <Switch
-          checked={script.enabled}
-          onCheckedChange={(checked) => onToggleEnabled(script, checked)}
-        />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-8 w-8">
-              <MoreVerticalIcon size={16} />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {script.type === "m_block" && (
-              <>
-                {onToggleFavorite && (
-                  <DropdownMenuItem onClick={() => onToggleFavorite(script)}>
-                    <HeartIcon 
-                      size={16} 
-                      className={`mr-2 ${isFavorite ? 'text-red-500 fill-current' : ''}`} 
-                    />
-                    {isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}
-                  </DropdownMenuItem>
-                )}
-                <DropdownMenuItem onClick={() => onAddToSidebar(script.id)}>
-                  <PanelRightIcon size={16} className="mr-2" />
-                  Add to Sidebar
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => onOpenStandalone(script.id)}>
-                  <ExternalLinkIcon size={16} className="mr-2" />
-                  Open Standalone
-                </DropdownMenuItem>
-              </>
-            )}
-            <DropdownMenuItem
-              className="text-destructive"
-              onClick={() => onDelete(script.id)}
+        <div
+          className="flex items-center gap-2 flex-shrink-0 ml-4"
+          onClick={(e) => e.preventDefault()}
+        >
+          {showReload && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+              onClick={onReload}
+              title="Reload extension"
             >
-              <Trash2Icon size={16} className="mr-2" />
-              Delete
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+              <RefreshCwIcon size={16} />
+            </Button>
+          )}
+          
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground">
+              {script.enabled ? "Enabled" : "Disabled"}
+            </span>
+            <Switch
+              checked={script.enabled}
+              onCheckedChange={(checked) => onToggleEnabled(script, checked)}
+              size="sm"
+            />
+          </div>
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-8 w-8">
+                <MoreVerticalIcon size={16} />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              {isBlockExtension && (
+                <>
+                  {onToggleFavorite && (
+                    <DropdownMenuItem onClick={() => onToggleFavorite(script)}>
+                      <HeartIcon
+                        size={16}
+                        className={`mr-2 ${isFavorite ? 'text-red-500 fill-current' : ''}`}
+                      />
+                      {isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuItem onClick={() => onAddToSidebar(script.id)}>
+                    <PanelRightIcon size={16} className="mr-2" />
+                    Add to sidebar
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => onOpenStandalone(script.id)}>
+                    <ExternalLinkIcon size={16} className="mr-2" />
+                    Open standalone
+                  </DropdownMenuItem>
+                </>
+              )}
+              <DropdownMenuItem
+                className="text-destructive focus:text-destructive"
+                onClick={() => onDelete(script.id)}
+              >
+                <Trash2Icon size={16} className="mr-2" />
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
-    </div>
+    </Link>
   )
 }

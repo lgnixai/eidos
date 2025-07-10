@@ -30,14 +30,8 @@ import { SyncStatusIndicator } from "../sync-status-indicator"
 
 export const NavStatus = () => {
   const { t } = useTranslation()
-  const {
-    isRightPanelOpen,
-    setIsRightPanelOpen,
-    isExtAppOpen,
-    setIsExtAppOpen,
-    apps,
-  } = useSpaceAppStore()
-  const { isGodMode } = useAppRuntimeStore()
+
+  const { isGodMode, setGodMode } = useAppRuntimeStore()
 
   const { connected } = useAPIAgent()
   const { runningCommand } = useAppRuntimeStore()
@@ -47,18 +41,21 @@ export const NavStatus = () => {
   const currentNode = useCurrentNode()
   const { pin, unpin } = useNodeTree()
 
+  const toggleGodMode = () => {
+    setGodMode(!isGodMode)
+  }
+
   return (
     <>
       {isGodMode && (
-        <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            data-eidos="eidos.utils.enableGodMode()"
-          >
-            <Wand2 className="h-4 w-4" />
-          </Button>
-        </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={toggleGodMode}
+          title={t("nav.status.creatorMode", "Creator Mode - Click to disable")}
+        >
+          <Wand2 className="h-4 w-4" />
+        </Button>
       )}
       {runningCommand && (
         <TooltipProvider>

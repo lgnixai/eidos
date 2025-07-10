@@ -16,18 +16,17 @@ import {
 import type { TextNode } from "lexical"
 
 import { useAIChatStore, } from "../../store"
-import { useAllPrompts } from "@/apps/web-app/hooks/use-all-prompts"
 
 // At most, 5 suggestions are shown in the popup.
 const SUGGESTION_LIST_LENGTH_LIMIT = 7
 
 function useMentionLookupService(mentionString: string | null) {
   const [results, setResults] = useState<Array<IExtension>>([])
-  const { prompts } = useAllPrompts()
 
   const _prompts = useMemo(() => {
-    return [{ name: "base", id: "base" } as IExtension, ...prompts]
-  }, [prompts])
+    // Only return base prompt since custom prompts are no longer supported
+    return [{ name: "base", id: "base" } as IExtension]
+  }, [])
 
   useEffect(() => {
     if (mentionString) {

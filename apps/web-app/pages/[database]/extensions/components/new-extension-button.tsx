@@ -1,4 +1,4 @@
-import { ChevronDownIcon } from "lucide-react"
+import { ChevronDownIcon, CodeIcon, ToyBrickIcon } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { Badge } from "@/components/ui/badge"
@@ -9,6 +9,9 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
@@ -39,80 +42,77 @@ export const NewExtensionButton = () => {
       <DropdownMenuContent className="overflow-visible" align="end">
         <DropdownMenuLabel>{t("extension.createNew")}</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem
-          className="group relative"
-          onClick={() => handleCreateNewExtension("m_block")}
-        >
-          {t("extension.microBlock")}{" "}
-          <ExtensionTooltip>
-            {t("extension.microBlockDescription")}
-          </ExtensionTooltip>
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          className="group relative"
-          onClick={() => handleCreateNewExtension()}
-        >
-          {t("extension.script")}
-          <ExtensionTooltip>
-            {t("extension.scriptDescription")}
-          </ExtensionTooltip>
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          className="group relative"
-          onClick={() => handleCreateNewExtension("ext_node")}
-        >
-          {t("extension.extNode")}
-          <Badge variant="default" className="bg-primary">
-            {t("common.badge.new")}
-          </Badge>
-          <ExtensionTooltip>
-            {t("extension.extNodeDescription")}
-          </ExtensionTooltip>
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          className="group relative"
-          onClick={() => handleCreateNewExtension("udf")}
-        >
-          {t("extension.udf")}{" "}
-          <Badge variant="secondary">{t("common.badge.alpha")}</Badge>
-          <ExtensionTooltip>
-            {t("extension.udfDescription")}
-            <br />
-            <span className="text-red-400">{t("extension.udfWarning")}</span>
-          </ExtensionTooltip>
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          className="group relative"
-          onClick={() => handleCreateNewExtension("prompt")}
-        >
-          {t("extension.prompt")}
-          <ExtensionTooltip>
-            {t("extension.promptDescription")}
-          </ExtensionTooltip>
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          className="group relative"
-          onClick={() => handleCreateNewExtension("doc_plugin")}
-        >
-          {t("extension.docPlugin")}
-          <Badge variant="secondary">{t("common.badge.alpha")}</Badge>
-          <ExtensionTooltip>
-            {t("extension.docPluginDescription")}
-          </ExtensionTooltip>
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          className="group relative"
-          onClick={() => handleCreateNewExtension("py_script")}
-        >
-          {t("extension.pythonScript")}{" "}
-          <Badge variant="secondary">{t("common.badge.alpha")}</Badge>
-          {/* <Badge variant="default" className="bg-primary">
-            {t("common.badge.new")}
-          </Badge> */}
-          <ExtensionTooltip>
-            {t("extension.pythonScriptDescription")}
-          </ExtensionTooltip>
-        </DropdownMenuItem>
+
+        {/* Script Extensions */}
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger className="flex items-center">
+            <CodeIcon className="mr-2 h-4 w-4" />
+            Script
+          </DropdownMenuSubTrigger>
+          <DropdownMenuSubContent className="overflow-visible">
+            <DropdownMenuItem
+              className="group relative"
+              onClick={() => handleCreateNewExtension("tool")}
+            >
+              {t("extension.tool")}
+              <ExtensionTooltip>
+                {t("extension.toolDescription")}
+              </ExtensionTooltip>
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              className="group relative"
+              onClick={() => handleCreateNewExtension("tableAction")}
+            >
+              {t("extension.tableAction")}
+              <ExtensionTooltip>
+                {t("extension.tableActionDescription")}
+              </ExtensionTooltip>
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              className="group relative"
+              onClick={() => handleCreateNewExtension("udf")}
+            >
+              {t("extension.udf")}{" "}
+              <Badge variant="secondary">{t("common.badge.alpha")}</Badge>
+              <ExtensionTooltip>
+                {t("extension.udfDescription")}
+                <br />
+                <span className="text-red-400">{t("extension.udfWarning")}</span>
+              </ExtensionTooltip>
+            </DropdownMenuItem>
+          </DropdownMenuSubContent>
+        </DropdownMenuSub>
+
+        {/* Block Extensions */}
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger className="flex items-center">
+            <ToyBrickIcon className="mr-2 h-4 w-4" />
+            Block
+          </DropdownMenuSubTrigger>
+          <DropdownMenuSubContent className="overflow-visible">
+            <DropdownMenuItem
+              className="group relative"
+              onClick={() => handleCreateNewExtension("tableView")}
+            >
+              {t("extension.tableView")}
+              <ExtensionTooltip>
+                {t("extension.tableViewDescription")}
+              </ExtensionTooltip>
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              className="group relative"
+              onClick={() => handleCreateNewExtension("extNode")}
+            >
+              {t("extension.extNode")}
+              <Badge variant="default" className="bg-primary">
+                {t("common.badge.new")}
+              </Badge>
+              <ExtensionTooltip>
+                {t("extension.extNodeDescription")}
+              </ExtensionTooltip>
+            </DropdownMenuItem>
+          </DropdownMenuSubContent>
+        </DropdownMenuSub>
       </DropdownMenuContent>
     </DropdownMenu>
   )

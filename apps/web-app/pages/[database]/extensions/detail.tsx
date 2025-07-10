@@ -3,7 +3,6 @@ import type { IExtension } from "@/packages/core/meta-table/extension"
 import { parseSync } from "@/packages/v3"
 import { extractConstant } from "@/packages/v3/code-tools/code-extractor"
 import { compileCode } from "@/packages/v3/compiler"
-import { compileLexicalCode } from "@/packages/v3/lexical-compiler"
 import { getCompileMethod } from "@/packages/v3/script-compiler"
 import { useLocalStorageState, useMount, useSize } from "ahooks"
 import { CodeIcon, EyeIcon, SettingsIcon } from "lucide-react"
@@ -53,17 +52,13 @@ export const ExtensionDetailPage = () => {
     script.code
   )
 
-  const shouldShowPreview =
-    script.type === "doc_plugin" ||
-    script.type === "m_block" ||
-    script.type === "prompt"
+  const shouldShowPreview = script.type === "block"
 
-  const shouldShowCode = script.type !== "ext_node"
+  const shouldShowCode = true
 
   useEffect(() => {
     if (currentDraftCode) {
-      const compileMethod =
-        script.type === "doc_plugin" ? compileLexicalCode : compileCode
+      const compileMethod = compileCode
       compileMethod(currentDraftCode).then((result) => {
         setCurrentCompiledDraftCode(result.code)
       })
@@ -117,42 +112,42 @@ export const ExtensionDetailPage = () => {
             : "Content updated.",
         })
       }
-      if (script.type === "script") {
-        const sandbox = new ScriptSandbox()
-        const ast = parseSync("index.ts", ts_code || code)
-        console.log(ast)
-        try {
-          const exportsCommands = await sandbox.extractExports(code)
-          if (exportsCommands) {
-            await updateExtension({
-              id: script.id,
-              commands: exportsCommands,
-            })
-          }
-        } finally {
-          sandbox.destroy()
-        }
-      }
-      if (script.type === "udf") {
-        const sandbox = new ScriptSandbox()
-        try {
-          const res = await sandbox.detectObjects(code)
-          const func = Object.values(res)[0] as Function
-          if (typeof func === "function") {
-            const name = func.name
-            const description = getDescriptionFromCode(code)
-            await updateExtension({
-              id: script.id,
-              name,
-              description,
-            })
-          }
-        } catch (error) {
-          console.error("error", error)
-        } finally {
-          sandbox.destroy()
-        }
-      }
+      // if (script.type === "script") {
+      //   const sandbox = new ScriptSandbox()
+      //   const ast = parseSync("index.ts", ts_code || code)
+      //   console.log(ast)
+      //   try {
+      //     const exportsCommands = await sandbox.extractExports(code)
+      //     if (exportsCommands) {
+      //       await updateExtension({
+      //         id: script.id,
+      //         commands: exportsCommands,
+      //       })
+      //     }
+      //   } finally {
+      //     sandbox.destroy()
+      //   }
+      // }
+      // if (script.type === "udf") {
+      //   const sandbox = new ScriptSandbox()
+      //   try {
+      //     const res = await sandbox.detectObjects(code)
+      //     const func = Object.values(res)[0] as Function
+      //     if (typeof func === "function") {
+      //       const name = func.name
+      //       const description = getDescriptionFromCode(code)
+      //       await updateExtension({
+      //         id: script.id,
+      //         name,
+      //         description,
+      //       })
+      //     }
+      //   } catch (error) {
+      //     console.error("error", error)
+      //   } finally {
+      //     sandbox.destroy()
+      //   }
+      // }
     },
     [revalidator, script, toast, updateExtension]
   )

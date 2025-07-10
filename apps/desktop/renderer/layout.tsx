@@ -2,14 +2,15 @@ import "@/styles/globals.css"
 import { useEffect } from "react"
 import { Outlet } from "react-router-dom"
 
+import { SidebarProvider } from "@/components/ui/sidebar"
 import { BlockUIDialog } from "@/components/block-ui-dialog"
 import { CommandDialogDemo } from "@/components/cmdk"
+import { GodModeTooltip } from "@/components/god-mode-tooltip"
 import { ShortCuts } from "@/components/keyboard-shortcuts/shortcuts"
 import { TailwindIndicator } from "@/components/tailwind-indicator"
 import { ThemeProvider } from "@/components/theme-provider"
 import { ThemeUpdater } from "@/components/theme-updater"
 import { Toaster } from "@/components/toaster"
-import { SidebarProvider } from "@/components/ui/sidebar"
 import { WindowControls } from "@/components/window-controls"
 import { useWorker } from "@/apps/web-app/hooks/use-worker"
 import { useAppStoreBase } from "@/apps/web-app/store/app-store"
@@ -47,6 +48,7 @@ export default function RootLayout() {
       <Toaster />
       <BlockUIDialog />
       <ThemeUpdater />
+      <GodModeTooltip />
     </ThemeProvider>
   )
 }

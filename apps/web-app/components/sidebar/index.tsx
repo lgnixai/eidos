@@ -130,7 +130,7 @@ export const SideBar = ({ className }: any) => {
                           {t("common.extensions")}
                         </Link>
                       </Button>
-                      {/* Micro Blocks Grid */}
+                      {/* Blocks Grid */}
                       <CurrentItemTree
                         title={t("common.pinned")}
                         allNodes={allNodes.filter((node) => node.is_pinned)}

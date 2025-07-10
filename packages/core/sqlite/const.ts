@@ -23,6 +23,8 @@ export const ActionTableName = `eidos__actions`
 // scripts
 export const ScriptTableName = `eidos__scripts`
 
+export const ExtensionTableName = `eidos__extensions`
+
 // store view
 export const ViewTableName = `eidos__views`
 

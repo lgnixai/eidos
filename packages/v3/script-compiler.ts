@@ -67,6 +67,7 @@ export function getCompileMethod(script: { type: string }) {
 }
 
 export function getCompileMethodByScriptType(scriptType: string) {
+    // Legacy support for old types
     if (scriptType === "py_script") {
         return pythonCodeCompile;
     }
@@ -76,8 +77,14 @@ export function getCompileMethodByScriptType(scriptType: string) {
     if (scriptType === "m_block") {
         return blockCodeCompile;
     }
+
+    // New architecture types
     if (scriptType === "script") {
         return scriptCodeCompile;
     }
+    if (scriptType === "block") {
+        return blockCodeCompile;
+    }
+
     return undefined
 }

@@ -10,35 +10,23 @@ import type { ITreeNode } from "@/packages/core/types/ITreeNode"
 import { getRawTableNameById, getTableIdByRawTableName } from "@/lib/utils"
 import systemPromptRaw from "./prompt.md?raw"
 
-import docPluginPrompt from "@/packages/v3/prompts/built-in-remix-prompt-for-doc-plugin.md?raw"
-import builtInRemixPromptForPrompt from "@/packages/v3/prompts/built-in-remix-prompt-for-prompt.md?raw"
-import pythonScriptPrompt from "@/packages/v3/prompts/built-in-remix-prompt-for-python-script.md?raw"
-import scriptPrompt from "@/packages/v3/prompts/built-in-remix-prompt-for-script.md?raw"
-import builtInRemixPromptForUDF from "@/packages/v3/prompts/built-in-remix-prompt-for-udf.md?raw"
-import builtInRemixPrompt from "@/packages/v3/prompts/built-in-remix-prompt.md?raw"
-import { useAllPrompts } from "@/apps/web-app/hooks/use-all-prompts"
+import extensionBlockPrompt from "@/packages/ai/prompts/extension-block.md?raw"
+import extensionScriptPrompt from "@/packages/ai/prompts/extension-script.md?raw"
 
-
-const getPromptByScriptType = (type?: string) => {
+export const getPromptByExtensionType = (type?: string) => {
     switch (type) {
         case "script":
-            return scriptPrompt
-        case "doc_plugin":
-            return docPluginPrompt
-        case "py_script":
-            return pythonScriptPrompt
-        case "udf":
-            return builtInRemixPromptForUDF
-        case "prompt":
-            return builtInRemixPromptForPrompt
+            return extensionScriptPrompt
+        case "block":
+        case "m_block":
+            return extensionBlockPrompt
         default:
-            return builtInRemixPrompt
+            return extensionScriptPrompt
     }
 }
 
 export const useAdditionalData = (
     contextNodes: ITreeNode[] = [],
-    task?: 'udf' | 'script' | 'prompt' | 'm_block' | 'py_script'
 ) => {
     const { space } = useCurrentPathInfo()
     const currentNode = useCurrentNode()
@@ -141,7 +129,7 @@ export const useSystemPrompt = (
         if (!extension?.type) {
             return null
         }
-        return getPromptByScriptType(extension?.type)
+        return getPromptByExtensionType(extension?.type)
     }, [extension?.type])
 
     // Memoize the extension data to prevent unnecessary re-renders
@@ -155,10 +143,12 @@ export const useSystemPrompt = (
         if (!basePrompt) {
             return
         }
-        getRemixPrompt(
-            extensionData.bindings,
-            extensionData.code,
-            basePrompt
+        getRemixPrompt(basePrompt, {
+            bindings: extensionData.bindings,
+            userCode: extensionData.code,
+            useSdk: true,
+            useUiGuide: true,
+        }
         ).then(setRemixPrompt)
     }, [
         extensionData.bindings,

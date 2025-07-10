@@ -1,20 +1,18 @@
-import { useMemo } from "react"
 import type { IExtension } from "@/packages/core/meta-table/extension"
-import { useQueryParam, StringParam, BooleanParam } from "use-query-params"
 import { useMount } from "ahooks"
 import {
+  ChevronDownIcon,
+  ChevronRightIcon,
   FileIcon,
-  FolderIcon,
   FunctionSquareIcon,
-  PencilRulerIcon,
-  SparkleIcon,
   SquareCodeIcon,
   ToyBrickIcon,
+  WrenchIcon,
 } from "lucide-react"
+import { useMemo, useState } from "react"
 import { useLoaderData, useRevalidator } from "react-router-dom"
+import { BooleanParam, StringParam, useQueryParam } from "use-query-params"
 
-import { EIDOS_SPACE_BASE_URL } from "@/lib/const"
-import { cn, getExtensionUrl } from "@/lib/utils"
 import { useCurrentPathInfo } from "@/apps/web-app/hooks/use-current-pathinfo"
 import { useExtension } from "@/apps/web-app/hooks/use-extension"
 import { useFavBlocks } from "@/apps/web-app/hooks/use-fav-blocks"
@@ -22,85 +20,166 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Separator } from "@/components/ui/separator"
 import { Switch } from "@/components/ui/switch"
-import { useToast } from "@/components/ui/use-toast"
+import { EIDOS_SPACE_BASE_URL } from "@/lib/const"
+import { cn, getExtensionUrl } from "@/lib/utils"
 
 import { useAppsStore, useSpaceAppStore } from "../store"
 import { ExtensionListItem } from "./components/extension-list-item"
 import { NewExtensionButton } from "./components/new-extension-button"
 import { useDirHandleStore, useLocalScript } from "./hooks/use-local-script"
 
-export const extensionTypes = [
-  {
-    id: "all",
-    name: "All Extensions",
-    icon: FolderIcon,
-  },
-  {
-    id: "m_block",
-    name: "Micro Blocks",
-    icon: ToyBrickIcon,
-  },
+interface ExtensionCategory {
+  id: string
+  name: string
+  icon: typeof ToyBrickIcon
+  items: ExtensionType[]
+}
+
+interface ExtensionType {
+  id: string
+  name: string
+  icon: typeof SquareCodeIcon
+  category: "script" | "block"
+}
+
+export const extensionCategories: ExtensionCategory[] = [
   {
     id: "script",
-    name: "Scripts",
+    name: "Script",
     icon: SquareCodeIcon,
+    items: [
+      {
+        id: "tool",
+        name: "Tools",
+        icon: WrenchIcon,
+        category: "script",
+      },
+      {
+        id: "tableAction",
+        name: "Table Actions",
+        icon: FunctionSquareIcon,
+        category: "script",
+      },
+      {
+        id: "udf",
+        name: "UDFs",
+        icon: FunctionSquareIcon,
+        category: "script",
+      },
+    ],
   },
   {
-    id: "ext_node",
-    name: "Ext Nodes",
-    icon: FileIcon,
-  },
-  {
-    id: "udf",
-    name: "UDFs",
-    icon: FunctionSquareIcon,
-  },
-  {
-    id: "prompt",
-    name: "Prompts",
-    icon: SparkleIcon,
-  },
-  {
-    id: "doc_plugin",
-    name: "Doc Plugins",
-    icon: PencilRulerIcon,
-  },
-  {
-    id: "py_script",
-    name: "Python Scripts",
-    icon: SquareCodeIcon,
+    id: "block",
+    name: "Block",
+    icon: ToyBrickIcon,
+    items: [
+      {
+        id: "tableView",
+        name: "Table Views",
+        icon: ToyBrickIcon,
+        category: "block",
+      },
+      {
+        id: "extNode",
+        name: "Extension Nodes",
+        icon: FileIcon,
+        category: "block",
+      },
+    ],
   },
 ]
 
-export const IconMap = Object.fromEntries(
-  extensionTypes.map(({ id, icon }) => [id, icon])
-) as Record<string, (typeof extensionTypes)[number]["icon"]>
+// Create a flat map for easier lookup
+export const extensionTypesMap = extensionCategories.reduce(
+  (acc, category) => {
+    category.items.forEach((item) => {
+      acc[item.id] = item
+    })
+    return acc
+  },
+  {} as Record<string, ExtensionType>
+)
+
+// Export IconMap for extension types
+export const IconMap = {
+  // New architecture types
+  script: SquareCodeIcon,
+  block: ToyBrickIcon,
+  // Meta types
+  tool: WrenchIcon,
+  tableAction: FunctionSquareIcon,
+  udf: FunctionSquareIcon,
+  tableView: ToyBrickIcon,
+  extNode: FileIcon,
+  // Fallback
+  ...Object.fromEntries(
+    Object.entries(extensionTypesMap).map(([id, type]) => [id, type.icon])
+  ),
+} as Record<string, typeof SquareCodeIcon>
+
+// Tree folder state management
+interface FolderState {
+  scripts: boolean
+  blocks: boolean
+}
 
 export const ScriptPage = () => {
   const scripts = useLoaderData() as IExtension[]
   const { space } = useCurrentPathInfo()
-  
+
   const [filter, setFilter] = useQueryParam("filter", StringParam)
   const [searchTerm, setSearchTerm] = useQueryParam("searchTerm", StringParam)
-  const [showEnabledOnly, setShowEnabledOnly] = useQueryParam("showEnabledOnly", BooleanParam)
+  const [showEnabledOnly, setShowEnabledOnly] = useQueryParam(
+    "showEnabledOnly",
+    BooleanParam
+  )
 
-  // Set default values
-  const currentFilter = filter || "all"
+  // Tree folder state
+  const [folderState, setFolderState] = useState<FolderState>({
+    scripts: true,
+    blocks: true,
+  })
+
+  // Set default values - default to scripts folder
+  const currentFilter = filter || "scripts"
   const currentSearchTerm = searchTerm || ""
   const currentShowEnabledOnly = showEnabledOnly || false
 
   const handleSetFilter = (value: string) => {
-    setFilter(value === "all" ? undefined : value)
+    setFilter(value === "scripts" ? undefined : value)
   }
-  
+
   const handleSetSearchTerm = (value: string) => {
     setSearchTerm(value || undefined)
   }
-  
+
   const handleSetShowEnabledOnly = (value: boolean) => {
     setShowEnabledOnly(value || undefined)
+  }
+
+  const toggleFolder = (folder: keyof FolderState) => {
+    setFolderState((prev) => ({
+      ...prev,
+      [folder]: !prev[folder],
+    }))
+  }
+
+  // Helper functions for categorizing extensions
+  const isScriptType = (script: IExtension) => {
+    return (
+      script.type === "script" &&
+      script.meta?.type &&
+      ["tool", "tableAction", "udf"].includes(script.meta.type)
+    )
+  }
+
+  const isBlockType = (script: IExtension) => {
+    return (
+      script.type === "block" &&
+      script.meta?.type &&
+      ["tableView", "extNode"].includes(script.meta.type)
+    )
   }
 
   const _scripts = scripts
@@ -109,9 +188,14 @@ export const ScriptPage = () => {
     let filtered = _scripts
 
     // Apply type filter
-    if (currentFilter !== "all") {
+    if (currentFilter === "scripts") {
+      filtered = filtered.filter(isScriptType)
+    } else if (currentFilter === "blocks") {
+      filtered = filtered.filter(isBlockType)
+    } else {
+      // Filter for specific meta type
       filtered = filtered.filter(
-        (script) => script.type.toLowerCase() === currentFilter.toLowerCase()
+        (script) => script.meta?.type === currentFilter
       )
     }
 
@@ -120,7 +204,9 @@ export const ScriptPage = () => {
       filtered = filtered.filter(
         (script) =>
           script.name.toLowerCase().includes(currentSearchTerm.toLowerCase()) ||
-          script.description.toLowerCase().includes(currentSearchTerm.toLowerCase())
+          script.description
+            .toLowerCase()
+            .includes(currentSearchTerm.toLowerCase())
       )
     }
 
@@ -163,48 +249,25 @@ export const ScriptPage = () => {
 
     // Check if app already exists in sidebar
     if (apps.includes(app)) {
-      toast({
-        title: "Already in Sidebar",
-        description: `Micro block "${blockId}" is already in the sidebar.`,
-        variant: "default",
-      })
       return
     }
 
     addApp(app)
     setCurrentApp(app)
-    toast({
-      title: "Added to Sidebar",
-      description: `Micro block "${blockId}" has been added to the sidebar.`,
-    })
   }
 
   const handleOpenStandalone = (blockId: string) => {
-    // Open micro block in standalone mode (new window/tab)
+    // Open Block in standalone mode (new window/tab)
     const newUrl = getExtensionUrl(blockId, space)
     window.open(newUrl)
   }
 
   const handleToggleFavorite = (script: IExtension) => {
-    const wasFavorite = isFavorite(script.id)
-    
     toggleFavBlock({
       id: script.id,
       name: script.name,
       icon: script.icon,
     })
-    
-    if (wasFavorite) {
-      toast({
-        title: "Removed from Favorites", 
-        description: `Micro block "${script.name}" has been removed from favorites.`,
-      })
-    } else {
-      toast({
-        title: "Added to Favorites",
-        description: `Micro block "${script.name}" has been added to favorites.`,
-      })
-    }
   }
 
   const { dirHandle, scriptId } = useDirHandleStore()
@@ -213,31 +276,6 @@ export const ScriptPage = () => {
   const handleToggleEnabled = async (script: IExtension, checked: boolean) => {
     const { id } = script
     if (checked) {
-      if (
-        script.type === "block" &&
-        scripts.findIndex((script) => script.id === id) === -1
-      ) {
-        await addExtension({
-          id,
-          name: id.replace("block-", ""),
-          type: "block",
-          description: "Block",
-          version: "1.0.0",
-          code: "",
-          enabled: true,
-          commands: [],
-        })
-      }
-      if (
-        script.type === "app" &&
-        scripts.findIndex((script) => script.id === id) === -1
-      ) {
-        await addExtension({
-          ...script,
-          enabled: true,
-          commands: [],
-        })
-      }
       await enableExtension(id)
     } else {
       await disableExtension(id)
@@ -245,107 +283,242 @@ export const ScriptPage = () => {
     revalidator.revalidate()
   }
 
-  const { toast } = useToast()
   const storeURL = `${EIDOS_SPACE_BASE_URL}/extensions`
   const handleReload = async () => {
     const script = await reload()
     await updateExtension(script)
     revalidator.revalidate()
-    toast({
-      title: "Script Updated Successfully",
-    })
   }
+
+  // Helper function to get the current category name
+  const getCurrentCategoryName = () => {
+    if (currentFilter === "scripts") return "Scripts"
+    if (currentFilter === "blocks") return "Blocks"
+
+    for (const category of extensionCategories) {
+      const item = category.items.find((item) => item.id === currentFilter)
+      if (item) {
+        return item.name
+      }
+    }
+    return "Extensions"
+  }
+
   return (
     <div className="flex h-full overflow-hidden">
-      {/* Left Sidebar */}
-      <div className="w-64 flex-shrink-0 border-r p-4">
+      {/* Left Sidebar - Tree Style */}
+      <div className="w-56 flex-shrink-0 border-r bg-muted/20">
         <ScrollArea className="h-full">
-          {extensionTypes.map((type) => {
-            const Icon = type.icon
-            const isActive = currentFilter === type.id
-            const count =
-              type.id === "all"
-                ? _scripts.length
-                : _scripts.filter((s) => s.type === type.id).length
-
-            return (
+          <div className="p-2 space-y-1">
+            {/* Scripts Folder */}
+            <div>
               <button
-                key={type.id}
                 className={cn(
-                  "flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors",
-                  isActive
+                  "flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors",
+                  currentFilter === "scripts"
                     ? "bg-primary text-primary-foreground"
                     : "hover:bg-muted"
                 )}
-                onClick={() => handleSetFilter(type.id)}
+                onClick={() => {
+                  toggleFolder("scripts")
+                  handleSetFilter("scripts")
+                }}
               >
-                <Icon size={18} />
-                <span className="flex-1 text-left">{type.name}</span>
-                <span className="text-xs opacity-60">{count}</span>
+                {folderState.scripts ? (
+                  <ChevronDownIcon size={16} />
+                ) : (
+                  <ChevronRightIcon size={16} />
+                )}
+                <SquareCodeIcon size={16} />
+                <span className="flex-1 text-left">Scripts</span>
+                <span className="text-xs opacity-70">
+                  {_scripts.filter(isScriptType).length}
+                </span>
               </button>
-            )
-          })}
+
+              {folderState.scripts && (
+                <div className="space-y-1">
+                  {extensionCategories
+                    .find((cat) => cat.id === "script")
+                    ?.items.map((type) => {
+                      const TypeIcon = type.icon
+                      const isActive = currentFilter === type.id
+                      const count = _scripts.filter(
+                        (s) => s.meta?.type === type.id
+                      ).length
+
+                      if (count === 0) return null
+
+                      return (
+                        <button
+                          key={type.id}
+                          className={cn(
+                            "flex w-full items-center gap-2 rounded-md py-1.5 text-sm transition-colors",
+                            "pl-9 pr-3",
+                            isActive
+                              ? "bg-primary text-primary-foreground"
+                              : "hover:bg-muted"
+                          )}
+                          onClick={() => handleSetFilter(type.id)}
+                        >
+                          <TypeIcon size={16} />
+                          <span className="flex-1 text-left">{type.name}</span>
+                          <span className="text-xs opacity-70">{count}</span>
+                        </button>
+                      )
+                    })}
+                </div>
+              )}
+            </div>
+
+            {/* Blocks Folder */}
+            <div>
+              <button
+                className={cn(
+                  "flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors",
+                  currentFilter === "blocks"
+                    ? "bg-primary text-primary-foreground"
+                    : "hover:bg-muted"
+                )}
+                onClick={() => {
+                  toggleFolder("blocks")
+                  handleSetFilter("blocks")
+                }}
+              >
+                {folderState.blocks ? (
+                  <ChevronDownIcon size={16} />
+                ) : (
+                  <ChevronRightIcon size={16} />
+                )}
+                <ToyBrickIcon size={16} />
+                <span className="flex-1 text-left">Blocks</span>
+                <span className="text-xs opacity-70">
+                  {_scripts.filter(isBlockType).length}
+                </span>
+              </button>
+
+              {folderState.blocks && (
+                <div className="space-y-1">
+                  {extensionCategories
+                    .find((cat) => cat.id === "block")
+                    ?.items.map((type) => {
+                      const TypeIcon = type.icon
+                      const isActive = currentFilter === type.id
+                      const count = _scripts.filter(
+                        (s) => s.meta?.type === type.id
+                      ).length
+
+                      if (count === 0) return null
+
+                      return (
+                        <button
+                          key={type.id}
+                          className={cn(
+                            "flex w-full items-center gap-2 rounded-md py-1.5 text-sm transition-colors",
+                            "pl-9 pr-3", // 对齐主文件夹的主图标位置
+                            isActive
+                              ? "bg-primary text-primary-foreground"
+                              : "hover:bg-muted"
+                          )}
+                          onClick={() => handleSetFilter(type.id)}
+                        >
+                          <TypeIcon size={16} />
+                          <span className="flex-1 text-left">{type.name}</span>
+                          <span className="text-xs opacity-70">{count}</span>
+                        </button>
+                      )
+                    })}
+                </div>
+              )}
+            </div>
+          </div>
         </ScrollArea>
       </div>
 
       {/* Right Content Area */}
-      <div className="flex-1">
-        <div className="flex items-center justify-between p-4">
-          <div className="text-lg font-semibold">
-            {extensionTypes.find((t) => t.id === currentFilter)?.name ||
-              "All Extensions"}
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-2">
-              <Label
-                className="text-sm text-muted-foreground"
-                htmlFor="enabled-only"
-              >
-                Enabled Only
-              </Label>
-              <Switch
-                id="enabled-only"
-                checked={currentShowEnabledOnly}
-                onCheckedChange={handleSetShowEnabledOnly}
-              />
+      <div className="flex-1 flex flex-col">
+        {/* Header */}
+        <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <div className="flex items-center justify-between p-4">
+            <div>
+              <h1 className="text-xl font-semibold">
+                {getCurrentCategoryName()}
+              </h1>
             </div>
-            <Input
-              className="h-[32px] w-[200px]"
-              placeholder="Search extension..."
-              value={currentSearchTerm}
-              onChange={(e) => handleSetSearchTerm(e.target.value)}
-            />
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => window.open(storeURL, "_blank")}
-            >
-              Install
-            </Button>
-            <NewExtensionButton />
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
+                <Switch
+                  id="enabled-only"
+                  checked={currentShowEnabledOnly}
+                  onCheckedChange={handleSetShowEnabledOnly}
+                />
+                <Label
+                  className="text-sm text-muted-foreground"
+                  htmlFor="enabled-only"
+                >
+                  Enabled only
+                </Label>
+              </div>
+              <Input
+                className="h-9 w-64"
+                placeholder="Search extensions..."
+                value={currentSearchTerm}
+                onChange={(e) => handleSetSearchTerm(e.target.value)}
+              />
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => window.open(storeURL, "_blank")}
+              >
+                Install
+              </Button>
+              <NewExtensionButton />
+            </div>
           </div>
         </div>
-        <Separator />
-        <ScrollArea className="h-[calc(100vh-120px)]">
-          <div className="divide-y">
-            {filterExts.map((script) => (
-              <ExtensionListItem
-                key={script.id}
-                script={script}
-                space={space}
-                onDelete={handleDelete}
-                onToggleEnabled={handleToggleEnabled}
-                onAddToSidebar={handleAddToSidebar}
-                onOpenStandalone={handleOpenStandalone}
-                onToggleFavorite={script.type === "m_block" ? handleToggleFavorite : undefined}
-                isFavorite={script.type === "m_block" ? isFavorite(script.id) : undefined}
-                showReload={Boolean(dirHandle) && scriptId === script.id}
-                onReload={handleReload}
-              />
-            ))}
-            {filterExts.length === 0 && (
-              <div className="flex h-32 items-center justify-center text-sm text-muted-foreground">
-                No extensions found
+
+        {/* Content */}
+        <ScrollArea className="flex-1">
+          <div className="p-4">
+            {filterExts.length > 0 ? (
+              <div className="grid gap-3">
+                {filterExts.map((script) => (
+                  <ExtensionListItem
+                    key={script.id}
+                    script={script}
+                    space={space}
+                    onDelete={handleDelete}
+                    onToggleEnabled={handleToggleEnabled}
+                    onAddToSidebar={handleAddToSidebar}
+                    onOpenStandalone={handleOpenStandalone}
+                    onToggleFavorite={
+                      isBlockType(script) ? handleToggleFavorite : undefined
+                    }
+                    isFavorite={
+                      isBlockType(script) ? isFavorite(script.id) : undefined
+                    }
+                    showReload={Boolean(dirHandle) && scriptId === script.id}
+                    onReload={handleReload}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center h-64 text-center">
+                <div className="text-muted-foreground text-sm">
+                  {currentSearchTerm
+                    ? "No extensions match your search"
+                    : "No extensions found"}
+                </div>
+                {currentSearchTerm && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleSetSearchTerm("")}
+                    className="mt-2"
+                  >
+                    Clear search
+                  </Button>
+                )}
               </div>
             )}
           </div>

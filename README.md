@@ -34,9 +34,9 @@
 
   <details>
   <summary>
-    Micro block: UI components for customized data display and interaction.
+    Block: UI components for customized data display and interaction.
   </summary>
-    <img src="./static/assets/images/eidos-extension-micro-block.webp" alt="extension micro block" />
+    <img src="./static/assets/images/eidos-extension-micro-block.webp" alt="edios block extension" />
   </details>
   <details>
   <summary>

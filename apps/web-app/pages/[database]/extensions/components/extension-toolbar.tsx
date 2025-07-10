@@ -8,9 +8,7 @@ import { useTranslation } from "react-i18next"
 import { useLoaderData, useRevalidator } from "react-router-dom"
 
 import { isDesktopMode } from "@/lib/env"
-import { useAppRuntimeStore } from "@/apps/web-app/store/runtime-store"
 import { getExtensionUrl, isUuid } from "@/lib/utils"
-import { openCursor } from "@/lib/web/schema"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/components/ui/use-toast"
 import { usePlayground } from "@/apps/desktop/renderer/hooks/usePlayground"
@@ -18,7 +16,6 @@ import { useCurrentPathInfo } from "@/apps/web-app/hooks/use-current-pathinfo"
 import { useScriptCall } from "@/apps/web-app/hooks/use-script-call"
 
 import { useExtension } from "../../../../hooks/use-extension"
-import { useRemixPrompt } from "../hooks/use-remix-prompt"
 import { useEditorStore } from "../stores/editor-store"
 import { CheckForUpdatesButton } from "./check-for-updates-button"
 import { ShareExtensionButton } from "./share-extension-button"
@@ -89,43 +86,8 @@ export const ExtensionToolbar = () => {
       }
     },
   })
-  const { getRemixPrompt } = useRemixPrompt()
 
   const { isRemixMode, setIsRemixMode } = useEditorStore()
-
-  const handleRemixCode = useCallback(() => {
-    setIsRemixMode(!isRemixMode)
-  }, [isRemixMode, setIsRemixMode])
-
-  const { scriptContainerRef } = useAppRuntimeStore()
-
-  const handleOpenInCursor = useCallback(async () => {
-    const remixPrompt = await getRemixPrompt(script.bindings)
-    initializePlayground(space, script.id, [
-      {
-        name: "index.jsx",
-        content: script.ts_code || script.code,
-      },
-      {
-        name: ".cursorrules",
-        content: remixPrompt,
-      },
-    ]).then((path) => {
-      if (!path) {
-        return
-      }
-      const url = openCursor(path)
-      window.open(url, "_blank")
-    })
-  }, [
-    space,
-    script.id,
-    script.bindings,
-    script.ts_code,
-    script.code,
-    getRemixPrompt,
-    initializePlayground,
-  ])
 
   const handleRunScript = useCallback(async () => {
     if (!script.code) {
@@ -206,14 +168,14 @@ export const ExtensionToolbar = () => {
         {/* {t("extension.toolbar.copy")} */}
       </Button>
 
-      {(script.type === "script" || script.type === "py_script") && (
+      {script.type === "script" && (
         <Button variant="ghost" size="sm" onClick={handleRunScript}>
           <Play className="h-4 w-4" />
           {/* {t("extension.toolbar.run")} */}
         </Button>
       )}
 
-      {script.type === "m_block" && (
+      {script.type === "block" && (
         <Button
           variant="ghost"
           size="sm"

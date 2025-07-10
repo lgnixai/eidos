@@ -1,9 +1,12 @@
-import { zodResolver } from "@hookform/resolvers/zod"
 import { useEffect } from "react"
+import { aiFormSchema, type AIFormValues } from "@/packages/ai/config"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { useLocation } from "react-router-dom"
 
+import { Button } from "@/components/ui/button"
+import { toast } from "@/components/ui/use-toast"
 import { AIModelSelect } from "@/components/ai-chat/ai-chat-model-select"
 import {
   Form,
@@ -14,10 +17,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/react-hook-form/form"
-import { Button } from "@/components/ui/button"
-import { toast } from "@/components/ui/use-toast"
-import type { AIFormValues} from "@/packages/ai/config";
-import { aiFormSchema } from "@/packages/ai/config"
 
 import { TaskType } from "./hooks"
 import { ModelTestButton } from "./model-test-button"
@@ -41,9 +40,6 @@ export function AITaskConfigForm() {
   function onSubmit(data: AIFormValues) {
     setAiConfig(data)
     // data.token = "sk-**********"
-    toast({
-      title: t("settings.ai.configUpdated"),
-    })
   }
   function updateModels(models: string[]) {
     form.setValue("localModels", models)
@@ -185,6 +181,37 @@ export function AITaskConfigForm() {
                 </div>
                 <FormDescription>
                   {t("settings.ai.codingModelDescription")}
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="applyCodeModel"
+            render={({ field }) => (
+              <FormItem>
+                <div className="flex justify-between items-center">
+                  <FormLabel className="w-1/3">
+                    {t("settings.ai.applyCodeModel")}
+                  </FormLabel>
+                  <div className="w-2/3 flex space-x-2">
+                    <FormControl className="flex-grow">
+                      <AIModelSelect
+                        value={field.value ?? ""}
+                        onValueChange={field.onChange}
+                        onlyLocal={false}
+                        localModels={aiConfig.localModels}
+                      />
+                    </FormControl>
+                    <ModelTestButton
+                      taskType={TaskType.ApplyCode}
+                      modelValue={field.value}
+                    />
+                  </div>
+                </div>
+                <FormDescription>
+                  {t("settings.ai.applyCodeModelDescription")}
                 </FormDescription>
                 <FormMessage />
               </FormItem>

@@ -6,16 +6,15 @@ import { useTranslation } from "react-i18next"
 import { useWindowSize } from "usehooks-ts"
 
 import { EIDOS_CHAT_PROJECT_ID } from "@/lib/const"
-import { useAppStore } from "@/apps/web-app/store/app-store"
 import { cn, uuidv7 } from "@/lib/utils"
-import { useAiConfig } from "@/apps/web-app/hooks/use-ai-config"
-import { useAIFunctions } from "@/apps/web-app/hooks/use-ai-functions"
-import { useAllPrompts } from "@/apps/web-app/hooks/use-all-prompts"
-import { useCurrentExtension } from "@/apps/web-app/hooks/use-current-node"
-import { useCurrentPathInfo } from "@/apps/web-app/hooks/use-current-pathinfo"
 import { Button } from "@/components/ui/button"
 import { toast } from "@/components/ui/use-toast"
+import { useAiConfig } from "@/apps/web-app/hooks/use-ai-config"
+import { useAIFunctions } from "@/apps/web-app/hooks/use-ai-functions"
+import { useCurrentExtension } from "@/apps/web-app/hooks/use-current-node"
+import { useCurrentPathInfo } from "@/apps/web-app/hooks/use-current-pathinfo"
 import { useExperimentConfigStore } from "@/apps/web-app/pages/settings/experiment/store"
+import { useAppStore } from "@/apps/web-app/store/app-store"
 
 import type { UIBlock } from "../remix-chat/components/block"
 import {
@@ -28,8 +27,7 @@ import { Switch } from "../ui/switch"
 import { AIChatAttachments } from "./ai-chat-attachments"
 import { AIModelSelect } from "./ai-chat-model-select"
 import { AIContextNodes } from "./ai-context-nodes"
-import type { AIInputEditorRef } from "./ai-input-editor";
-import { AIInputEditor } from "./ai-input-editor"
+import { AIInputEditor, type AIInputEditorRef } from "./ai-input-editor"
 import { AIToolsConfig, useFilteredTools, useMaxSteps } from "./ai-tools-config"
 import { useAIChatData } from "./hooks/use-ai-chat-data"
 import { useAttachments } from "./hooks/use-attachments"
@@ -45,7 +43,7 @@ export default function Chat() {
   const aiInputEditorRef = useRef<AIInputEditorRef>(null)
   const currentExtension = useCurrentExtension()
 
-  const { prompts } = useAllPrompts()
+  // Custom prompts are no longer supported
   const { experiment } = useExperimentConfigStore()
 
   const [withSpaceData, setWithSpaceData] = useState(experiment.enableRAG)
@@ -75,14 +73,6 @@ export default function Chat() {
     () => !aiModel?.length || !systemPrompt?.length,
     [aiModel, systemPrompt]
   )
-
-  useEffect(() => {
-    const prompt = prompts.find((item) => item.id === currentSysPrompt)
-    if (prompt) {
-      const model = prompt.model ?? prompt.prompt_config?.model
-      model && setAIModel(model)
-    }
-  }, [currentSysPrompt, prompts, setAIModel, systemPrompt])
 
   const { getConfigByModel, textModelConfig } = useAiConfig()
 
