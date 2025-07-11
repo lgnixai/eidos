@@ -9,9 +9,6 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
@@ -44,75 +41,69 @@ export const NewExtensionButton = () => {
         <DropdownMenuSeparator />
 
         {/* Script Extensions */}
-        <DropdownMenuSub>
-          <DropdownMenuSubTrigger className="flex items-center">
-            <CodeIcon className="mr-2 h-4 w-4" />
-            Script
-          </DropdownMenuSubTrigger>
-          <DropdownMenuSubContent className="overflow-visible">
-            <DropdownMenuItem
-              className="group relative"
-              onClick={() => handleCreateNewExtension("tool")}
-            >
-              {t("extension.tool")}
-              <ExtensionTooltip>
-                {t("extension.toolDescription")}
-              </ExtensionTooltip>
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              className="group relative"
-              onClick={() => handleCreateNewExtension("tableAction")}
-            >
-              {t("extension.tableAction")}
-              <ExtensionTooltip>
-                {t("extension.tableActionDescription")}
-              </ExtensionTooltip>
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              className="group relative"
-              onClick={() => handleCreateNewExtension("udf")}
-            >
-              {t("extension.udf")}{" "}
-              <Badge variant="secondary">{t("common.badge.alpha")}</Badge>
-              <ExtensionTooltip>
-                {t("extension.udfDescription")}
-                <br />
-                <span className="text-red-400">{t("extension.udfWarning")}</span>
-              </ExtensionTooltip>
-            </DropdownMenuItem>
-          </DropdownMenuSubContent>
-        </DropdownMenuSub>
+        <DropdownMenuLabel className="flex items-center text-xs text-muted-foreground">
+          <CodeIcon className="mr-2 h-3 w-3" />
+          Script
+        </DropdownMenuLabel>
+        <DropdownMenuItem
+          className="group relative"
+          onClick={() => handleCreateNewExtension("tool")}
+        >
+          {t("extension.tool")}
+          <ExtensionTooltip>
+            {t("extension.toolDescription")}
+          </ExtensionTooltip>
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          className="group relative"
+          onClick={() => handleCreateNewExtension("tableAction")}
+        >
+          {t("extension.tableAction")}
+          <ExtensionTooltip>
+            {t("extension.tableActionDescription")}
+          </ExtensionTooltip>
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          className="group relative"
+          onClick={() => handleCreateNewExtension("udf")}
+        >
+          {t("extension.udf")}{" "}
+          <Badge variant="secondary">{t("common.badge.alpha")}</Badge>
+          <ExtensionTooltip>
+            {t("extension.udfDescription")}
+            <br />
+            <span className="text-red-400">{t("extension.udfWarning")}</span>
+          </ExtensionTooltip>
+        </DropdownMenuItem>
+
+        <DropdownMenuSeparator />
 
         {/* Block Extensions */}
-        <DropdownMenuSub>
-          <DropdownMenuSubTrigger className="flex items-center">
-            <ToyBrickIcon className="mr-2 h-4 w-4" />
-            Block
-          </DropdownMenuSubTrigger>
-          <DropdownMenuSubContent className="overflow-visible">
-            <DropdownMenuItem
-              className="group relative"
-              onClick={() => handleCreateNewExtension("tableView")}
-            >
-              {t("extension.tableView")}
-              <ExtensionTooltip>
-                {t("extension.tableViewDescription")}
-              </ExtensionTooltip>
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              className="group relative"
-              onClick={() => handleCreateNewExtension("extNode")}
-            >
-              {t("extension.extNode")}
-              <Badge variant="default" className="bg-primary">
-                {t("common.badge.new")}
-              </Badge>
-              <ExtensionTooltip>
-                {t("extension.extNodeDescription")}
-              </ExtensionTooltip>
-            </DropdownMenuItem>
-          </DropdownMenuSubContent>
-        </DropdownMenuSub>
+        <DropdownMenuLabel className="flex items-center text-xs text-muted-foreground">
+          <ToyBrickIcon className="mr-2 h-3 w-3" />
+          Block
+        </DropdownMenuLabel>
+        <DropdownMenuItem
+          className="group relative"
+          onClick={() => handleCreateNewExtension("tableView")}
+        >
+          {t("extension.tableView")}
+          <ExtensionTooltip>
+            {t("extension.tableViewDescription")}
+          </ExtensionTooltip>
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          className="group relative"
+          onClick={() => handleCreateNewExtension("extNode")}
+        >
+          {t("extension.extNode")}
+          <Badge variant="default" className="bg-primary">
+            {t("common.badge.new")}
+          </Badge>
+          <ExtensionTooltip>
+            {t("extension.extNodeDescription")}
+          </ExtensionTooltip>
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   )

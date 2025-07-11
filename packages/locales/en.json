@@ -191,7 +191,7 @@
     "extension.details": "Details",
     "extension.docPlugin": "Doc Plugin",
     "extension.docPluginDescription": "Customize document content and behavior",
-    "extension.extNode": "External Node",
+    "extension.extNode": "Extension Node",
     "extension.extNodeDescription": "Create a custom node type. Supports custom rendering and interactions.",
     "extension.microBlock": "Block",
     "extension.microBlockDescription": "UI components for customized data display and interaction. Can be referenced in documents, covers, and right panels",
