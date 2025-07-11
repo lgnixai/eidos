@@ -143,7 +143,7 @@ interface ToolMeta {
 interface TableActionMeta {
   type: ScriptExtensionType.TableAction;
   funcName: string;
-  action: {
+  tableAction: {
     name: string;
     description: string;
   };
@@ -774,11 +774,20 @@ declare class ExtensionTable extends BaseTableImpl<IExtension> implements BaseTa
   /**
    * Get UDF (User Defined Function) extensions by status
    */
-  getUDFExtensions(status?: ExtensionStatus): Promise<IExtension[]>;
+  getUDFExtensions(status?: ExtensionStatus): Promise<IExtension<UDFMeta>[]>;
   /**
    * Get extension by slug
    */
   getExtensionBySlug(slug: string): Promise<IExtension | null>;
+  /**
+   * Check if a slug already exists
+   */
+  slugExists(slug: string): Promise<boolean>;
+  /**
+   * Generate a unique slug based on a base slug
+   * If the base slug already exists, it will append a number to make it unique
+   */
+  generateUniqueSlug(baseSlug: string): Promise<string>;
   /**
    * Get extensions by marketplace ID
    */
@@ -799,6 +808,15 @@ declare class ExtensionTable extends BaseTableImpl<IExtension> implements BaseTa
    * Get extension count by type and status
    */
   getExtensionCount(type?: "script" | "block", status?: ExtensionStatus): Promise<number>;
+  /**
+   * Override add method to ensure slug uniqueness
+   */
+  add(data: Partial<IExtension>, db?: BaseServerDatabase): Promise<IExtension>;
+  /**
+   * Fix duplicate slugs in existing extensions
+   * This method should be called during migration to ensure all existing extensions have unique slugs
+   */
+  fixDuplicateSlugs(): Promise<void>;
 }
 //# sourceMappingURL=extension.d.ts.map
 //#endregion
@@ -878,10 +896,10 @@ declare class FileTable extends BaseTableImpl implements BaseTable<IFile> {
    * @returns Uploaded file info
    */
   upload(fileData: ArrayBuffer | string,
-    // ArrayBuffer or base64 string
-    fileName: string, mimeType: string, parentPath?: string[]): Promise<IFile & {
-      publicUrl: string;
-    }>;
+  // ArrayBuffer or base64 string
+  fileName: string, mimeType: string, parentPath?: string[]): Promise<IFile & {
+    publicUrl: string;
+  }>;
 }
 //# sourceMappingURL=file.d.ts.map
 //#endregion
@@ -1482,11 +1500,6 @@ declare class DataSpace {
   private setCacheSize;
   private initUDF;
   private initMetaTable;
-  getUDFs(): Promise<{
-    id: string;
-    name: string;
-    code: string;
-  }[]>;
   onTableChange(space: string, tableName: string, toDeleteColumns?: string[]): Promise<void>;
   addEmbedding(embedding: IEmbedding): Promise<IEmbedding>;
   table(id: string): TableManager;
@@ -1689,12 +1702,6 @@ declare class DataSpace {
     description: string;
   }): void;
   blockUIMsg(msg: string | null, data?: Record<string, any>): void;
-  /**
-   * 往指定邮箱发送邮件时，会被 cloudflare worker 拦截，
-   * worker 再转发到 api-agent，最后 api-agent 调用 currentSpace.email() 方法
-   * @param email
-   */
-  email(email: Email): void;
   createTableFTS(tableName: string, temporary?: boolean): Promise<void>;
   searchTableFTS(tableName: string, query: string, viewId: string, page?: number, pageSize?: number): Promise<{
     results: {
@@ -1720,6 +1727,11 @@ interface EidosTable<T = Record<string, string>> {
   name: string;
   fieldsMap: T;
 }
+/**
+ * eidos is the entry of the sdk
+ *
+ * `eidos.currentSpace.table("tableId").rows.query()`
+ */
 interface Eidos {
   space(spaceName: string): DataSpace;
   currentSpace: DataSpace;
