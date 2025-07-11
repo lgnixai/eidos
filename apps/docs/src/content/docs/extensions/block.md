@@ -155,7 +155,7 @@ interface ExtNodeMeta {
   extNode: {
     title: string
     description: string
-    extHandler: string[]
+    type: string
   }
 }
 ```
@@ -173,7 +173,7 @@ export const meta = {
   extNode: {
     title: "Excalidraw",
     description: "This is a excalidraw node",
-    extHandler: ["excalidraw"],
+    type: "excalidraw",
   },
 }
 

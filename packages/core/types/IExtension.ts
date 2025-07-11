@@ -65,7 +65,8 @@ export interface ExtNodeMeta {
     extNode: {
         title: string
         description: string
-        extHandler: string[]
+        // extended type of the node
+        type: string
     }
 }
 

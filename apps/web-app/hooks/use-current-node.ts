@@ -42,9 +42,12 @@ export const useCurrentExtNodeHandleBlockId = () => {
   const { extNodes } = useAllExtNodes()
   if (!node) return null
   if (!node.type.startsWith("ext__")) return null
-  const extNode = extNodes.find((extNode) => extNode.ext_node_type === node.type.split('ext__')[1])
+  const nodeType = node.type.split('ext__')[1]
+  const extNode = extNodes.find((extNode) =>
+    extNode.meta?.extNode?.type === nodeType
+  )
   if (!extNode) return null
-  return extNode.ext_node_handle_block_id
+  return extNode.id
 }
 
 /**

@@ -1,17 +1,17 @@
 import { useSqlite } from "@/apps/web-app/hooks/use-sqlite"
-import type { EidosDataEventChannelMsg} from "@/lib/const";
+import type { EidosDataEventChannelMsg } from "@/lib/const";
 import { DataUpdateSignalType, EidosDataEventChannelMsgType, EidosDataEventChannelName } from "@/lib/const"
-import { ScriptTableName } from "@/packages/core/sqlite/const"
-import type { IExtension } from "@/packages/core/meta-table/extension"
+import { ExtensionTableName } from "@/packages/core/sqlite/const"
+import type { IExtension, ExtNodeMeta } from "@/packages/core/types/IExtension"
 import { useCallback, useEffect } from "react"
 import { create } from "zustand"
 
 
 
 const useExtNodeStore = create<{
-    extNodes: IExtension[]
+    extNodes: IExtension<ExtNodeMeta>[]
     loading: boolean
-    setExtNodes: (nodes: IExtension[]) => void
+    setExtNodes: (nodes: IExtension<ExtNodeMeta>[]) => void
     setLoading: (loading: boolean) => void
 }>((set) => ({
     extNodes: [],
@@ -27,13 +27,8 @@ export const useSyncExtNodes = () => {
     const reload = useCallback(async () => {
         setLoading(true)
         if (!sqlite) return
-        const nodes = await sqlite.extension.list({
-            type: "ext_node",
-            enabled: true,
-        }, {
-            fields: ["id", "name", "icon", "ext_node_type", "ext_node_handle_block_id", "enabled", "created_at", "updated_at"]
-        })
-        setExtNodes(nodes)
+        const nodes = await sqlite.extension.getExtNodeExtensions("enabled")
+        setExtNodes(nodes as IExtension<ExtNodeMeta>[])
         setLoading(false)
     }, [sqlite, setExtNodes, setLoading])
 
@@ -49,7 +44,12 @@ export const useSyncExtNodes = () => {
             const { type, payload } = ev.data
             if (type === EidosDataEventChannelMsgType.MetaTableUpdateSignalType) {
                 const { table, _new, _old, type: updateType } = payload
-                if (table !== ScriptTableName || (_old?.type !== "ext_node" || _new?.type !== "ext_node")) return
+                if (table !== ExtensionTableName) return
+
+                // Check if it's a block extension with extNode meta
+                const isExtNodeExtension = (_old?.type === "block" && _old?.meta?.type === "extNode") ||
+                    (_new?.type === "block" && _new?.meta?.type === "extNode")
+                if (!isExtNodeExtension) return
 
                 switch (updateType) {
                     case DataUpdateSignalType.Insert:
@@ -85,11 +85,8 @@ export const useAllExtNodes = () => {
     const reload = useCallback(async () => {
         setLoading(true)
         if (!sqlite) return
-        const nodes = await sqlite.extension.list({
-            type: "ext_node",
-            enabled: true,
-        })
-        setExtNodes(nodes)
+        const nodes = await sqlite.extension.getExtNodeExtensions("enabled")
+        setExtNodes(nodes as IExtension<ExtNodeMeta>[])
         setLoading(false)
     }, [sqlite, setExtNodes, setLoading])
 

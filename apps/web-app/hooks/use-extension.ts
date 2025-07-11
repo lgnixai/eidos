@@ -1,55 +1,44 @@
-import type { IExtension } from "@/packages/core/meta-table/extension"
+import type { IExtension } from "@/packages/core/types/IExtension"
 import { useCallback, useEffect, useState } from "react"
 
 import { useSqlite } from "@/apps/web-app/hooks/use-sqlite"
-
-import { checkPromptEnable } from "../pages/[database]/extensions/helper"
 
 export const useExtension = () => {
   const { sqlite } = useSqlite()
   const [installLoading, setInstallLoading] = useState(false)
 
-  const addExtension = useCallback(async (script: IExtension) => {
+  const addExtension = useCallback(async (extension: IExtension) => {
     if (!sqlite) return
-    await sqlite.addExtension(script)
-    console.log("addExtension", script)
+    await sqlite.extension.add(extension)
+    console.log("addExtension", extension)
   }, [sqlite])
 
   const deleteExtension = useCallback(async (id: string) => {
     if (!sqlite) return
-    await sqlite.deleteExtension(id)
+    await sqlite.extension.del(id)
     console.log("deleteExtension", id)
   }, [sqlite])
 
-  const updateExtension = useCallback(async (script: Partial<IExtension>) => {
-    if (!sqlite || !script.id) return
-    const { version, ...rest } = script
-    if (!version) {
-      await sqlite.script.set(script.id, rest)
-    } else {
-      await sqlite.script.set(script.id, script)
-    }
-    console.log("updateExtension", script)
+  const updateExtension = useCallback(async (extension: Partial<IExtension>) => {
+    if (!sqlite || !extension.id) return
+    await sqlite.extension.set(extension.id, extension)
+    console.log("updateExtension", extension)
   }, [sqlite])
 
-  const installExtension = async (script: IExtension) => {
+  const installExtension = async (extension: IExtension) => {
     setInstallLoading(true)
-    script && (await addExtension(script))
+    extension && (await addExtension(extension))
     setInstallLoading(false)
   }
   const enableExtension = useCallback(async (id: string) => {
     if (!sqlite) return
-    const data = await sqlite.script.get(id)
-    if (data?.type === "prompt") {
-      checkPromptEnable(data)
-    }
-    await sqlite.enableExtension(id)
+    await sqlite.extension.enable(id)
     console.log("enableExtension", id)
   }, [sqlite])
 
   const disableExtension = useCallback(async (id: string) => {
     if (!sqlite) return
-    await sqlite.disableExtension(id)
+    await sqlite.extension.disable(id)
     console.log("disableExtension", id)
   }, [sqlite])
 
@@ -66,15 +55,15 @@ export const useExtension = () => {
 
 export const useExtensionById = (id?: string) => {
   const { sqlite } = useSqlite()
-  const [script, setScript] = useState<IExtension | null>(null)
+  const [extension, setExtension] = useState<IExtension | null>(null)
   useEffect(() => {
     if (!sqlite || !id) return
-    const fetchScript = async () => {
-      const script = await sqlite.script.get(id)
-      setScript(script)
+    const fetchExtension = async () => {
+      const extension = await sqlite.extension.get(id)
+      setExtension(extension)
     }
-    fetchScript()
+    fetchExtension()
   }, [sqlite, id])
   if (!id) return null
-  return script
+  return extension
 }

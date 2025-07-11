@@ -273,7 +273,7 @@ export function MyListView({ ctx }) {
   extNode: {
     title: "My Extension Node",
     description: "This is a custom extension node",
-    extHandler: ["custom"],
+    type: "custom",
   },
 }
 
@@ -312,7 +312,7 @@ export function MyExtNode({ ctx }) {
   extNode: {
     title: "My Extension Node",
     description: "This is a custom extension node",
-    extHandler: ["custom"],
+    type: "custom",
   },
 }
 
@@ -356,7 +356,7 @@ export function MyExtNode({ ctx }: { ctx: IExtNodeContext }) {
         extNode: {
           title: "My Extension Node",
           description: "This is a custom extension node",
-          extHandler: ["custom"],
+          type: "custom",
         },
       },
     }

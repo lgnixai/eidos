@@ -1,12 +1,7 @@
+import { TreeNodeType, type ITreeNode } from "@/packages/core/types/ITreeNode"
 import { Plus } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
-import type { ITreeNode} from "@/packages/core/types/ITreeNode";
-import { TreeNodeType } from "@/packages/core/types/ITreeNode"
-import { useAllExtNodes } from "@/apps/web-app/hooks/use-all-ext-nodes"
-import { useCurrentPathInfo } from "@/apps/web-app/hooks/use-current-pathinfo"
-import { useGoto } from "@/apps/web-app/hooks/use-goto"
-import { useSqlite } from "@/apps/web-app/hooks/use-sqlite"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -15,6 +10,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { useAllExtNodes } from "@/apps/web-app/hooks/use-all-ext-nodes"
+import { useCurrentPathInfo } from "@/apps/web-app/hooks/use-current-pathinfo"
+import { useGoto } from "@/apps/web-app/hooks/use-goto"
+import { useSqlite } from "@/apps/web-app/hooks/use-sqlite"
 
 export const CreateNodeTrigger = ({ parent_id }: { parent_id?: string }) => {
   const { space } = useCurrentPathInfo()
@@ -48,10 +47,13 @@ export const CreateNodeTrigger = ({ parent_id }: { parent_id?: string }) => {
   }
 
   const handleCreateExtNode = async (type: ITreeNode["type"]) => {
-    const extNode = extNodes.find((node) => node.ext_node_type === type)
-    if (!extNode || !extNode.ext_node_type) return
+    const nodeType = type.startsWith("ext__") ? type.split("ext__")[1] : type
+    const extNode = extNodes.find(
+      (node) => node.meta?.extNode?.type === nodeType
+    )
+    if (!extNode) return
     console.log("creating ", extNode)
-    const extNodeId = await createExtNode(extNode.ext_node_type, parent_id)
+    const extNodeId = await createExtNode(nodeType, parent_id)
     console.log("extNodeId", extNodeId)
     if (!extNodeId) return
     goto(space, extNodeId)
@@ -116,16 +118,19 @@ export const CreateNodeTrigger = ({ parent_id }: { parent_id?: string }) => {
           </span>
         </DropdownMenuItem>
         {extNodes.length > 0 && <DropdownMenuSeparator />}
-        {extNodes.map((node) => (
-          <DropdownMenuItem
-            key={node.id}
-            onClick={() => {
-              handleCreateNode(node.ext_node_type! as `ext__${string}`)
-            }}
-          >
-            {t("node.menu.newExtNode", { name: node.name })}
-          </DropdownMenuItem>
-        ))}
+        {extNodes.map((node) => {
+          const firstHandler = node.meta?.extNode?.type
+          return (
+            <DropdownMenuItem
+              key={node.id}
+              onClick={() => {
+                handleCreateExtNode(`ext__${firstHandler}` as `ext__${string}`)
+              }}
+            >
+              {t("node.menu.newExtNode", { name: node.name })}
+            </DropdownMenuItem>
+          )
+        })}
       </DropdownMenuContent>
     </DropdownMenu>
   )

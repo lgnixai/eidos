@@ -12,8 +12,13 @@ export const useTableViewInfoByExtType = (type?: string) => {
             return
         }
         const fetchTableViews = async () => {
-            const tableViews = await sqlite?.extension.getTableViewExtensionInfoByExtType(type.split("__")[1])
-            setTableViews(tableViews || [])
+            // Get all table view extensions and filter by type
+            const allTableViews = await sqlite?.extension.getBlockExtensions("enabled")
+            const filteredTableViews = allTableViews?.filter(ext =>
+                ext.meta?.type === "tableView" &&
+                ext.meta?.tableView?.type === type.split("__")[1]
+            ) as IExtension<TableViewMeta>[] || []
+            setTableViews(filteredTableViews)
         }
         fetchTableViews()
     }, [sqlite, type])
@@ -26,8 +31,12 @@ export const useCustomTableViews = () => {
 
     useEffect(() => {
         const fetchTableViews = async () => {
-            const tableViews = await sqlite?.extension.getTableViewsInfo()
-            setTableViews(tableViews || [])
+            // Get all block extensions and filter for table views
+            const allBlockExtensions = await sqlite?.extension.getBlockExtensions("enabled")
+            const tableViewExtensions = allBlockExtensions?.filter(ext =>
+                ext.meta?.type === "tableView"
+            ) as IExtension<TableViewMeta>[] || []
+            setTableViews(tableViewExtensions)
         }
         fetchTableViews()
     }, [sqlite])

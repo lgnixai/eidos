@@ -43,7 +43,7 @@ Block extensions are lightweight, single-file UI components that provide custom 
     extNode: {
       title: "Excalidraw",
       description: "This is a excalidraw node",
-      extHandler: ["excalidraw"],
+      type: "excalidraw",
     },
   }
   ```

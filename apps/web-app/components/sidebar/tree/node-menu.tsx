@@ -1,5 +1,5 @@
-import type { MouseEventHandler} from "react";
-import { useRef, useState } from "react"
+import { useRef, useState, type MouseEventHandler } from "react"
+import type { ITreeNode } from "@/packages/core/types/ITreeNode"
 import { useClickAway } from "ahooks"
 import {
   ClipboardPasteIcon,
@@ -20,12 +20,6 @@ import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 
 import { isInkServiceMode } from "@/lib/env"
-import type { ITreeNode } from "@/packages/core/types/ITreeNode"
-import { useAllExtNodes } from "@/apps/web-app/hooks/use-all-ext-nodes"
-import { useCurrentPathInfo } from "@/apps/web-app/hooks/use-current-pathinfo"
-import { useGoto } from "@/apps/web-app/hooks/use-goto"
-import { useNodeTree } from "@/apps/web-app/hooks/use-node-tree"
-import { useSqlite } from "@/apps/web-app/hooks/use-sqlite"
 import {
   ContextMenu,
   ContextMenuContent,
@@ -42,6 +36,11 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { useContextNodes } from "@/components/ai-chat/hooks/use-context-nodes"
+import { useAllExtNodes } from "@/apps/web-app/hooks/use-all-ext-nodes"
+import { useCurrentPathInfo } from "@/apps/web-app/hooks/use-current-pathinfo"
+import { useGoto } from "@/apps/web-app/hooks/use-goto"
+import { useNodeTree } from "@/apps/web-app/hooks/use-node-tree"
+import { useSqlite } from "@/apps/web-app/hooks/use-sqlite"
 import { useSpaceAppStore } from "@/apps/web-app/pages/[database]/store"
 
 import { NodeMoveInto } from "../../node-menu/move-into"
@@ -109,9 +108,12 @@ export function NodeItem({
   }
 
   const handleCreateExtNode = async (type: ITreeNode["type"]) => {
-    const extNode = extNodes.find((node) => node.ext_node_type === type)
+    const nodeType = type.startsWith("ext__") ? type.split("ext__")[1] : type
+    const extNode = extNodes.find(
+      (node) => node.meta?.extNode?.type === nodeType
+    )
     if (!extNode) return
-    const extNodeId = await createExtNode(extNode.ext_node_type!, node.id)
+    const extNodeId = await createExtNode(nodeType, node.id)
     if (!extNodeId) return
     goto(space, extNodeId)
   }
@@ -261,19 +263,22 @@ export function NodeItem({
               {t("node.menu.newNestedFolder")}
             </ContextMenuItem>
             {extNodes.length > 0 && <ContextMenuSeparator />}
-            {extNodes.map((extNode) => (
-              <ContextMenuItem
-                key={extNode.ext_node_type}
-                onClick={() =>
-                  handleCreateExtNode(
-                    extNode.ext_node_type! as `ext__${string}`
-                  )
-                }
-              >
-                <FileIcon className="pr-2" />
-                {extNode.name}
-              </ContextMenuItem>
-            ))}
+            {extNodes.map((extNode) => {
+              const firstHandler = extNode.meta?.extNode?.type
+              return (
+                <ContextMenuItem
+                  key={extNode.id}
+                  onClick={() =>
+                    handleCreateExtNode(
+                      `ext__${firstHandler}` as `ext__${string}`
+                    )
+                  }
+                >
+                  <FileIcon className="pr-2" />
+                  {extNode.name}
+                </ContextMenuItem>
+              )
+            })}
           </>
         )}
         {node.type === "table" && (

@@ -169,8 +169,8 @@ export class ExtensionTable
   /**
    * Get ExtNode extensions by handler type
    */
-  async getExtNodeExtensionsByHandler(handler: string, status: ExtensionStatus = "enabled"): Promise<IExtension[]> {
-    const params: any[] = ['block', 'extNode', `%"${handler}"%`]
+  async getExtNodeExtensionsByHandlerType(type: string, status: ExtensionStatus = "enabled"): Promise<IExtension[]> {
+    const params: any[] = ['block', 'extNode', `%"${type}"%`]
     let sql = `
       SELECT * FROM ${this.name}
       WHERE type = ?
@@ -178,7 +178,7 @@ export class ExtensionTable
       AND meta != ''
       AND JSON_VALID(meta) = 1
       AND JSON_EXTRACT(meta, '$.type') = ?
-      AND JSON_EXTRACT(meta, '$.extNode.extHandler') LIKE ?
+      AND JSON_EXTRACT(meta, '$.extNode.type') LIKE ?
     `
 
     if (status === "enabled") {
