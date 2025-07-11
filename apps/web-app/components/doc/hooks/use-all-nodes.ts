@@ -1,7 +1,7 @@
 import { useMemo } from "react"
 
 import { getAllNodes } from "../nodes"
-import type { ExtBlock} from "./use-ext-blocks";
+import type { ExtBlock } from "./use-ext-blocks";
 import { useEnabledExtBlocks, useExtBlocks } from "./use-ext-blocks"
 import { BuiltInBlocks } from "../blocks"
 
@@ -16,5 +16,6 @@ export const useAllEditorNodes = () => {
 export const useLoadingExtBlocks = () => {
   const { scripts: allEnabledExtBlocks, loading } = useEnabledExtBlocks()
   const extBlocks = ((window as any).__DOC_EXT_BLOCKS as ExtBlock[]) || []
-  return loading || allEnabledExtBlocks.length !== extBlocks.length
+  // return loading || allEnabledExtBlocks.length !== extBlocks.length
+  return false
 }

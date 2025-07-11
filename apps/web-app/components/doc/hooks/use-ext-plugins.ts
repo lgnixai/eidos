@@ -9,6 +9,7 @@ import * as LexicalUtils from "@lexical/utils"
 import * as Lexical from "lexical"
 import * as React from "react"
 import { useState } from "react"
+import type { IExtension } from "@/packages/core/types/IExtension"
 
 
 const SCRIPT_ELEMENT_ID = "doc-ext-plugin-loader"
@@ -21,7 +22,8 @@ export const useEnabledExtDocPlugins = (disableExtPlugins = false) => {
     useEffect(() => {
         if (!sqlite || disableExtPlugins) return
         sqlite?.listScripts("enabled").then((res) => {
-            const scripts = res.filter((script) => script.type === "doc_plugin" && script.enabled)
+            // const scripts = res.filter((script) => script.type === "doc_plugin" && script.enabled)
+            const scripts: IExtension[] = []
             setLoading(true)
                 ; (window as any)["__REACT"] = React
                 ; (window as any)["__LEXICAL"] = Lexical

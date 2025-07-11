@@ -23,11 +23,11 @@ import DragDropPaste from "./DragDropPaste"
 import AdvancedListPlugin from "./DraggableBlockPlugin/advanced-list"
 import FloatingLinkEditorPlugin from "./FloatingLinkEditorPlugin"
 import ListMaxIndentLevelPlugin from "./ListMaxIndentLevelPlugin"
+import { PrettierPlugin } from "./PrettierPlugin"
 import { ShortcutPlugin } from "./ShortcutPlugin"
 import TableCellResizer from "./TableCellResizer"
 import TableHoverActionsPlugin from "./TableHoverActionsPlugin"
 import { allTransformers } from "./const"
-import { PrettierPlugin } from "./PrettierPlugin"
 
 export const AllPlugins = ({
   disableExtPlugins = false,
@@ -35,9 +35,10 @@ export const AllPlugins = ({
   disableExtPlugins?: boolean
 }) => {
   const extBlocks = useExtBlocks()
-  const { loading } = useEnabledExtDocPlugins(disableExtPlugins)
-  const extPlugins =
-    disableExtPlugins || loading ? [] : (window as any).__DOC_EXT_PLUGINS
+  // const { loading } = useEnabledExtDocPlugins(disableExtPlugins)
+  // const extPlugins =
+  // disableExtPlugins || loading ? [] : (window as any).__DOC_EXT_PLUGINS
+  const extPlugins: any[] = []
 
   useEffect(() => {
     ;(window as any).__DOC_EXT_PLUGINS = []

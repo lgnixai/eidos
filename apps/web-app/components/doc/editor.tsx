@@ -1,9 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from "react"
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin"
-import type {
-  InitialConfigType} from "@lexical/react/LexicalComposer";
 import {
   LexicalComposer,
+  type InitialConfigType,
 } from "@lexical/react/LexicalComposer"
 import { ContentEditable } from "@lexical/react/LexicalContentEditable"
 import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary"
@@ -78,12 +77,7 @@ export function InnerEditor(props: EditorProps) {
         console.error(error)
       },
       // Any custom nodes go here
-      nodes: [
-        ...getAllNodes(),
-        ...(((window as any).__DOC_EXT_BLOCKS as ExtBlock[]) || []).map(
-          (block) => block.node
-        ),
-      ],
+      nodes: [...getAllNodes()],
       editable: props.isEditable,
     }
   }, [props.isEditable, props.namespace])
