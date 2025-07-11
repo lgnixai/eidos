@@ -177,19 +177,15 @@ export const meta = {
   },
 }
 
-interface IExtNodeContext {
-  nodeId: string
-  type: string
-}
-
-export function MyExcalidraw({ ctx }: { ctx: IExtNodeContext }) {
+export function MyExcalidraw() {
   const [initialData, setInitialData] = useState("")
 
+  const nodeId = window.location.pathname.split("/").pop()
   useEffect(() => {
-    eidos.currentSpace.extNode.getText(ctx.nodeId).then((text) => {
+    eidos.currentSpace.extNode.getText(nodeId).then((text) => {
       setInitialData(JSON.parse(text))
     })
-  }, [ctx])
+  }, [nodeId])
 
   return <Excalidraw initialData={initialData} />
 }
@@ -210,13 +206,7 @@ export const loader = async () => {
   }
 }
 
-export function MyExtNode({
-  ctx,
-  text,
-}: {
-  ctx: IExtNodeContext
-  text: string
-}) {
+export function MyExtNode({ text }: { text: string }) {
   return <div>{text}</div>
 }
 ```
@@ -237,7 +227,7 @@ export const meta = {
   componentName: "MyDocument",
 }
 
-export function MyDocument({ ctx }: { ctx: IExtNodeContext }) {
+export function MyDocument() {
   if (ctx.type !== "document") {
     return <div>Not a document</div>
   }

@@ -110,11 +110,6 @@ export interface ITableViewContext {
     viewId: string
 }
 
-export interface IExtNodeContext {
-    nodeId: string
-    type: string
-}
-
 export interface ITableActionContext {
     tableId: string
     viewId: string

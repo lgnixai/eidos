@@ -1,13 +1,11 @@
-import type { BaseTable} from "./base";
-import { BaseTableImpl } from "./base"
-import { DataSpace } from "../DataSpace"
-import { ExtNodeTableName } from "../sqlite/const"
+import { ExtNodeTableName } from "../sqlite/const";
+import type { BaseTable } from "./base";
+import { BaseTableImpl } from "./base";
 
 export interface IExtNode {
   id: string
   blob?: Buffer
   text?: string
-  path?: string
   type: string
   created_at?: string
   updated_at?: string
@@ -20,7 +18,6 @@ export class ExtNodeTable extends BaseTableImpl<IExtNode> implements BaseTable<I
     id TEXT PRIMARY KEY,
     blob BLOB,
     text TEXT,
-    path TEXT,
     type TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -61,18 +58,11 @@ export class ExtNodeTable extends BaseTableImpl<IExtNode> implements BaseTable<I
     return extNode?.text || null
   }
 
-  async getPath(id: string): Promise<string | null> {
-    const extNode = await this.get(id)
-    return extNode?.path || null
-  }
 
   async setBlob(id: string, blob: Buffer): Promise<boolean> {
     return this.set(id, { blob })
   }
 
-  async setPath(id: string, path: string): Promise<boolean> {
-    return this.set(id, { path })
-  }
 
   async setType(id: string, type: string): Promise<boolean> {
     return this.set(id, { type })

@@ -267,7 +267,10 @@ export function MyListView({ ctx }) {
       type: "block",
       description: "Custom extension node",
       version: "0.0.1",
-      code: `export const meta = {
+      code: ``,
+      ts_code: `import { useState, useEffect } from "react"
+
+export const meta = {
   type: "extNode",
   componentName: "MyExtNode",
   extNode: {
@@ -277,69 +280,24 @@ export function MyListView({ ctx }) {
   },
 }
 
-import { useState, useEffect } from "react"
-
-export function MyExtNode({ ctx }) {
+export function MyExtNode() {
   const [content, setContent] = useState("")
+  const nodeId = window.location.pathname.split('/')[1]
 
   useEffect(() => {
-    eidos.currentSpace.extNode.getText(ctx.nodeId).then((text) => {
+    eidos.currentSpace.extNode.getText(nodeId).then((text) => {
       setContent(text || "")
     })
-  }, [ctx])
+  }, [nodeId])
 
   const handleSave = async (newContent) => {
-    await eidos.currentSpace.extNode.setText(ctx.nodeId, newContent)
+    await eidos.currentSpace.extNode.setText(nodeId, newContent)
     setContent(newContent)
   }
 
   return (
     <div className="p-4">
-      <h1>Custom Extension Node</h1>
-      <textarea
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-        onBlur={(e) => handleSave(e.target.value)}
-        className="w-full h-64 p-2 border rounded"
-        placeholder="Enter your content here..."
-      />
-    </div>
-  )
-}`,
-      ts_code: `export const meta = {
-  type: "extNode",
-  componentName: "MyExtNode",
-  extNode: {
-    title: "My Extension Node",
-    description: "This is a custom extension node",
-    type: "custom",
-  },
-}
-
-import { useState, useEffect } from "react"
-
-interface IExtNodeContext {
-  nodeId: string
-  type: string
-}
-
-export function MyExtNode({ ctx }: { ctx: IExtNodeContext }) {
-  const [content, setContent] = useState("")
-
-  useEffect(() => {
-    eidos.currentSpace.extNode.getText(ctx.nodeId).then((text) => {
-      setContent(text || "")
-    })
-  }, [ctx])
-
-  const handleSave = async (newContent: string) => {
-    await eidos.currentSpace.extNode.setText(ctx.nodeId, newContent)
-    setContent(newContent)
-  }
-
-  return (
-    <div className="p-4">
-      <h1>Custom Extension Node</h1>
+      <h1>Custom Extension Node [{nodeId}]</h1>
       <textarea
         value={content}
         onChange={(e) => setContent(e.target.value)}
