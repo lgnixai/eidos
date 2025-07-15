@@ -5,7 +5,6 @@ import { twMerge } from "tailwind-merge";
 import { uuidv7 } from "uuidv7";
 export { uuidv7 } from "uuidv7";
 import { v4 as uuidv4 } from "uuid"
-import { isDesktopMode } from "./env";
 import { EIDOS_PROXY_URL } from "./const";
 
 export { uuidv4 }

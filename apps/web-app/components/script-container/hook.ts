@@ -17,6 +17,7 @@ export const useScriptFunction = () => {
     bindings?: Record<string, any>
     dependencies?: string[]
     type?: string
+    space: string
   }) => {
     const { command = "default" } = props
     setRunningCommand(command)

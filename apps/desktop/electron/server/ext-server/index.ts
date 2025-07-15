@@ -6,7 +6,6 @@ import sw from './js/sw.js?raw';
 import tailwindRaw from './js/tailwind-raw.js?raw';
 
 import { ScriptSandboxHandler } from '@/packages/sandbox/script-sandbox';
-import { ProxyHandler } from '@/packages/sandbox/proxy-handler';
 import fs from 'fs';
 import type { Context } from 'hono';
 import type { BlankEnv } from 'hono/types';
@@ -45,27 +44,7 @@ export const interceptExtensionRequest = (dist: string, port: number) => async (
     if (url.pathname.startsWith('/tailwind-raw.js')) {
         return new Response(tailwindRaw, { headers })
     }
-    // Check for proxy domain: proxy.eidos.localhost
-    const proxyMatch = hostname.match(/^proxy\.eidos\.localhost$/);
-
-    if (proxyMatch) {
-        console.log('interceptProxyRequest', c.req.url);
-
-        const proxyHandler = new ProxyHandler();
-
-        // Handle CORS preflight requests
-        if (c.req.method === 'OPTIONS') {
-            return await proxyHandler.handleOptionsRequest(c);
-        }
-
-        // Handle status endpoint
-        if (url.pathname === '/status') {
-            return await proxyHandler.getProxyStatus(c);
-        }
-
-        // Handle proxy requests
-        return await proxyHandler.handleProxyRequest(url, c);
-    }
+    // Proxy requests are handled in server.ts, skip them here
 
     // Check for sandbox domain: sandbox.<spaceId>.eidos.localhost
     const sandboxMatch = hostname.match(/^sandbox\.(.*)\.eidos\.localhost$/);
@@ -74,9 +53,23 @@ export const interceptExtensionRequest = (dist: string, port: number) => async (
         const spaceId = sandboxMatch[1];
         console.log('interceptSandboxRequest', c.req.url);
 
-        const sandboxHandler = new ScriptSandboxHandler();
+        // Create script code provider function
+        const getScriptCode = async (spaceId: string, scriptId: string): Promise<string | null> => {
+            try {
+                const dataSpace = await getOrSetDataSpace(spaceId);
+                const extension = await dataSpace.script.get(scriptId);
+                return extension?.code || null;
+            } catch (error) {
+                log(`Error getting script code for ${scriptId} in space ${spaceId}: ${error}`);
+                return null;
+            }
+        };
+
+        const sandboxHandler = new ScriptSandboxHandler(getScriptCode);
         return await sandboxHandler.handleSandboxRequest(spaceId, url, c);
     }
+
+
 
     // Regex to match <extensionId>.ext.<spaceId>.eidos.localhost
     // myext.ext.25-w19.eidos.localhost

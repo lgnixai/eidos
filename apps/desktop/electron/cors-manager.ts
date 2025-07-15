@@ -49,6 +49,12 @@ export class CorsManager {
 
         session.defaultSession.webRequest.onHeadersReceived(filter, (details, callback) => {
             const url = new URL(details.url);
+            // Skip proxy.eidos.localhost as it handles its own CORS
+            if (url.hostname === 'proxy.eidos.localhost') {
+                callback({ responseHeaders: details.responseHeaders });
+                return;
+            }
+
             if (allDomains.some(domain => url.hostname.endsWith(domain.replace('*.', '')))) {
                 callback({
                     responseHeaders: {

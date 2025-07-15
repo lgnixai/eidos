@@ -5,24 +5,27 @@
   }
 
   // Replace window.fetch with proxy-enabled fetch
-  const originalFetch = window.fetch;
+  const originalFetch = window.fetch
 
-  window.fetch = async function(input, init = {}) {
-    const url = typeof input === 'string' ? input : input.url;
+  window.fetch = async function (input, init = {}) {
+    const url = typeof input === "string" ? input : input.url
 
     // Check if this is a cross-origin request that needs proxying
     try {
-      const requestUrl = new URL(url, window.location.href);
-      const currentOrigin = window.location.origin;
-      const requestOrigin = requestUrl.origin;
+      const requestUrl = new URL(url, window.location.href)
+      const currentOrigin = window.location.origin
+      const requestOrigin = requestUrl.origin
 
       // If it's a same-origin request or already going through our proxy, use original fetch
-      if (requestOrigin === currentOrigin || requestUrl.hostname === 'proxy.eidos.localhost') {
-        return originalFetch(input, init);
+      if (
+        requestOrigin === currentOrigin ||
+        requestUrl.hostname === "proxy.eidos.localhost"
+      ) {
+        return originalFetch(input, init)
       }
 
       // For cross-origin requests, use our proxy
-      const proxyUrl = `http://proxy.eidos.localhost:13127/?url=${encodeURIComponent(url)}`;
+      const proxyUrl = `http://proxy.eidos.localhost:13127/?url=${encodeURIComponent(url)}`
 
       // Forward the request through proxy
       return originalFetch(proxyUrl, {
@@ -30,15 +33,17 @@
         headers: {
           ...init.headers,
           // Preserve original headers but let proxy handle CORS
-        }
-      });
-
+        },
+      })
     } catch (error) {
       // If URL parsing fails, fall back to original fetch
-      console.warn('Failed to parse URL for proxy, using original fetch:', error);
-      return originalFetch(input, init);
+      console.warn(
+        "Failed to parse URL for proxy, using original fetch:",
+        error
+      )
+      return originalFetch(input, init)
     }
-  };
+  }
 
   const makeSpaceProxy = (space, bindings = {}) => {
     return new Proxy(
@@ -405,23 +410,17 @@
   )
 
   let modules = {}
-  async function loadScriptFunction(code) {
-    const blob = new Blob([code], { type: "text/javascript" })
-    const url = URL.createObjectURL(blob)
-    const module = await import(url)
-    return module
-  }
 
   window.addEventListener("message", async (event) => {
     const { type, data } = event.data
     const port = event.ports[0]
     if (type === "ScriptFunctionCall") {
-      const { input, context, code, command, bindings } = data
+      const { input, context, code, command, bindings, id, space } = data
       for (const key in bindings) {
         window.__EIDOS_BINDINGS__ = bindings
       }
       try {
-        const module = await loadScriptFunction(code)
+        const module = await await import(`/${id}.js`)
         const res = await module[command](input, context)
         port.postMessage({
           type: "ScriptFunctionCallResponse",

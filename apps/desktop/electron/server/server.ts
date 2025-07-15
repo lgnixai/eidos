@@ -12,6 +12,15 @@ import { ProxyHandler } from '@/packages/sandbox/proxy-handler';
 const app = new Hono();
 
 app.use('*', async (c, next) => {
+    const url = new URL(c.req.url);
+    const hostname = url.hostname;
+
+    // Skip CORS handling for proxy requests - they handle their own CORS
+    if (hostname === 'proxy.eidos.localhost') {
+        await next();
+        return;
+    }
+
     const requestOrigin = c.req.header('Origin');
     let isAllowedOrigin = false;
 
@@ -71,8 +80,6 @@ export function startServer({ dist, port }: { dist: string, port: number }) {
 
         // Check if this is a proxy request
         if (hostname === 'proxy.eidos.localhost') {
-            log(`Handling proxy request: ${url.toString()}`);
-
             // Handle CORS preflight requests
             if (c.req.method === 'OPTIONS') {
                 return await proxyHandler.handleOptionsRequest(c);

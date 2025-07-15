@@ -61,6 +61,7 @@ export const ScriptContextMenu = ({
         },
         code: action.code,
         id: action.id,
+        space: space,
       })
     }
   }

@@ -7,7 +7,6 @@ import { LexicalNestedComposer } from "@lexical/react/LexicalNestedComposer"
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin"
 import { $getNodeByKey, type LexicalEditor, type NodeKey } from "lexical"
 
-import { DOMAINS } from "@/lib/const"
 import { proxyURL } from "@/lib/utils"
 
 import { $isImageNode } from "./node"

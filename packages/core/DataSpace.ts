@@ -236,6 +236,10 @@ export class DataSpace {
     this.tableSemanticSearch = new TableSemanticSearch(this)
   }
 
+  public async getSpaceName() {
+    return this.dbName
+  }
+
   public semanticSearch = async (params: {
     tableName: string,
     query: string,

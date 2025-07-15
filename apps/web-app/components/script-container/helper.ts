@@ -38,6 +38,7 @@ export const callJavaScript = (
         command: string
         id: string
         bindings?: Record<string, any>
+        space: string
     },
     scriptContainerRef: any
 ): Promise<any> => {
@@ -90,6 +91,8 @@ export const callPythonScript = (props: IPythonScriptCallProps): Promise<any> =>
 
 export const callScriptById = async (id: string, input: Record<string, any>, sqlite: DataSpace, scriptContainerRef: any, cmd?: string) => {
     const script = await sqlite.getScript(id)
+
+    const spaceName = await sqlite.getSpaceName()
     if (!script) {
         throw new Error("Script not found")
     }
@@ -102,5 +105,6 @@ export const callScriptById = async (id: string, input: Record<string, any>, sql
 
         },
         command: cmd ?? 'default',
+        space: spaceName
     }, scriptContainerRef)
 }
