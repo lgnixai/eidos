@@ -23,10 +23,8 @@ export const useEnabledExtBlocks = () => {
   const { sqlite } = useSqlite()
   useEffect(() => {
     if (!sqlite) return
-    sqlite?.listScripts("enabled").then((res) => {
-      setScripts(
-        res.filter((script) => script.type === "block" && script.enabled)
-      )
+    sqlite?.extension.getBlockExtensions("enabled").then((res) => {
+      setScripts(res)
       setLoading(false)
     })
   }, [space, sqlite])

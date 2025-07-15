@@ -156,7 +156,7 @@ function myTwice(arg: number) {
   },
 }
 
-async function toggleChecked(input, ctx) {
+export async function toggleChecked(input, ctx) {
   const { tableId, viewId, rowId } = ctx
   await eidos.currentSpace.table(tableId).rows.update(rowId, {
     checked: !input.checked,
@@ -174,7 +174,7 @@ async function toggleChecked(input, ctx) {
   },
 }
 
-async function toggleChecked(
+export async function toggleChecked(
   input: Record<string, any>,
   ctx: {
     tableId: string

@@ -101,7 +101,7 @@ export const meta = {
   },
 }
 
-async function toggleChecked(
+export async function toggleChecked(
   input: Record<string, any>,
   ctx: {
     tableId: string

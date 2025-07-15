@@ -13,7 +13,6 @@ import { TablePlugin } from "@lexical/react/LexicalTablePlugin"
 
 import { BuiltInBlocks } from "../blocks"
 import { useExtBlocks } from "../hooks/use-ext-blocks"
-import { useEnabledExtDocPlugins } from "../hooks/use-ext-plugins"
 import { AIToolsPlugin } from "./AIToolsPlugin"
 // import { AIToolsPlugin } from "./AIToolsPlugin"
 import AutoLinkPlugin from "./AutoLinkPlugin"

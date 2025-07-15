@@ -5,15 +5,22 @@ import appWrapperRaw from './js/app-wrapper.js?raw';
 import sw from './js/sw.js?raw';
 import tailwindRaw from './js/tailwind-raw.js?raw';
 
+import { ScriptSandboxHandler } from '@/packages/sandbox/script-sandbox';
 import fs from 'fs';
+import type { Context } from 'hono';
+import type { BlankEnv } from 'hono/types';
 import path from 'path';
 import { ServerBlock } from './server-block';
+
+
+
+type Ctx = Context<BlankEnv, "*", {}>;
 
 // curl http://287c3686-f1e1-4b10-965e-2daa35a422fc.ext.25-w19.eidos.localhost:13127/
 // Middleware to intercept <extensionId>.ext.<spaceId>.eidos.localhost requests
 
 // server static files from dist/compiled-ui at path /ui
-export const interceptExtensionRequest = (dist: string, port: number) => async (c: any, next: any) => {
+export const interceptExtensionRequest = (dist: string, port: number) => async (c: Ctx, next: any) => {
     const url = new URL(c.req.url);
     const hostname = url.hostname;
 
@@ -37,11 +44,20 @@ export const interceptExtensionRequest = (dist: string, port: number) => async (
     if (url.pathname.startsWith('/tailwind-raw.js')) {
         return new Response(tailwindRaw, { headers })
     }
+    // Check for sandbox domain first: sandbox.<spaceId>.eidos.localhost
+    const sandboxMatch = hostname.match(/^sandbox\.(.*)\.eidos\.localhost$/);
+
+    if (sandboxMatch) {
+        const spaceId = sandboxMatch[1];
+        console.log('interceptSandboxRequest', c.req.url);
+
+        const sandboxHandler = new ScriptSandboxHandler();
+        return await sandboxHandler.handleSandboxRequest(spaceId, url, c);
+    }
+
     // Regex to match <extensionId>.ext.<spaceId>.eidos.localhost
     // myext.ext.25-w19.eidos.localhost
     const match = hostname.match(/^([a-zA-Z0-9-]+)\.ext\.(.*)\.eidos\.localhost$/);
-
-
 
     if (match) {
         const extensionId = match[1];

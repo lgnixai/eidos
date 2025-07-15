@@ -1,33 +1,14 @@
 import { getPythonWorker } from "@/lib/python/worker";
 import type { DataSpace } from "@/packages/core/DataSpace";
-import sdkInjectScript from "./sdk-inject-script.html?raw";
+import type { ITableActionContext } from "@/packages/core/types/IExtension";
 
 
 export type IScriptInput = Record<string, any>
 
-export interface IScriptContext {
-    tables: any
-    env: Record<string, any>
-    currentNodeId?: string | null
-    currentRowId?: string | null
-    currentViewId?: string | null
-    currentViewQuery?: string | null
-    callFromTableAction?: boolean
-}
+export type IScriptContext = Record<string, any> | ITableActionContext
 
-export const makeSdkInjectScript = ({
-    bindings,
-    space,
-}: {
-    bindings?: Record<string, { type: "table"; value: string }>
-    space: string
-}) => {
-    let res = sdkInjectScript.replace("${{currentSpace}}", space)
-    if (bindings) {
-        res = `<script>window.__EIDOS_BINDINGS__ = ${JSON.stringify(bindings)}</script>` + res
-    }
-    return res
-}
+
+
 
 export interface IPythonScriptCallProps {
     input: Record<string, any>
@@ -118,8 +99,7 @@ export const callScriptById = async (id: string, input: Record<string, any>, sql
         code: script.code,
         id,
         context: {
-            tables: {},
-            env: {},
+
         },
         command: cmd ?? 'default',
     }, scriptContainerRef)

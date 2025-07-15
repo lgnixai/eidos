@@ -55,12 +55,9 @@ export const ScriptContextMenu = ({
         input: rowJson,
         command: action.meta!.funcName,
         context: {
-          tables: null, // Remove deprecated fields_map
-          env: action.bindings || {},
-          currentNodeId: tableId,
-          currentRowId: row._id,
-          currentViewId: viewId,
-          callFromTableAction: true,
+          tableId,
+          viewId,
+          rowId: row._id,
         },
         code: action.code,
         id: action.id,

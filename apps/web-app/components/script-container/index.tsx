@@ -1,13 +1,11 @@
 import { useEffect, useRef } from "react"
 
-import { useAppRuntimeStore } from "@/apps/web-app/store/runtime-store"
 import { useCurrentPathInfo } from "@/apps/web-app/hooks/use-current-pathinfo"
 import {
   ExtensionSourceType,
   useExtMsg,
 } from "@/apps/web-app/pages/extensions/hooks/use-ext-msg"
-
-import sdkInjectScript from "./sdk-inject-script.html?raw"
+import { useAppRuntimeStore } from "@/apps/web-app/store/runtime-store"
 
 // ScriptContainer used to run script in iframe
 export const ScriptContainer = () => {
@@ -23,11 +21,6 @@ export const ScriptContainer = () => {
   }, [handleMsg])
   const { space } = useCurrentPathInfo()
 
-  const sdkInjectScriptContent = sdkInjectScript.replace(
-    "${{currentSpace}}",
-    space
-  )
-
   useEffect(() => {
     if (iframeRef.current) {
       setScriptContainerRef(iframeRef)
@@ -37,20 +30,7 @@ export const ScriptContainer = () => {
   return (
     <iframe
       ref={iframeRef}
-      srcDoc={`
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Eidos Script Container</title>
-    ${sdkInjectScriptContent}
-  </head>
-  <body>
-    <p id="message">Loading...</p>
-  </body>
-</html>
-
-`}
+      src={`http://sandbox.${space}.eidos.localhost:13127/`}
       sandbox="allow-scripts allow-popups"
       allow="autoplay"
       width="0"

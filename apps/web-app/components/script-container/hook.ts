@@ -1,6 +1,6 @@
-import { useAppRuntimeStore } from "@/apps/web-app/store/runtime-store"
-import type { IScriptContext, IScriptInput} from "./helper";
-import { callJavaScript, callPythonScript } from "./helper"
+import { useAppRuntimeStore } from "@/apps/web-app/store/runtime-store";
+import type { IScriptContext, IScriptInput } from "./helper";
+import { callJavaScript } from "./helper";
 
 
 
@@ -22,10 +22,7 @@ export const useScriptFunction = () => {
     setRunningCommand(command)
 
     try {
-      const result = props.type === "py_script"
-        ? await callPythonScript(props)
-        : await callJavaScript(props, scriptContainerRef)
-
+      const result = await callJavaScript(props, scriptContainerRef)
       setRunningCommand(null)
       return result
     } catch (error) {

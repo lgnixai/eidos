@@ -30,17 +30,18 @@ export class CorsManager {
     private updateCorsSettings() {
         const securityConfig = getConfigManager().get('security');
         const domains = securityConfig.crossOriginDomains || [];
+        const allDomains = [...domains, '*.eidos.localhost'];
 
         session.defaultSession.webRequest.onBeforeSendHeaders({ urls: ['*://*/*'] }, null);
         session.defaultSession.webRequest.onHeadersReceived({ urls: ['*://*/*'] }, null);
 
-        if (domains.length === 0) return;
+        if (allDomains.length === 0) return;
 
-        const filter = { urls: domains.map(domain => `*://${domain}/*`) };
+        const filter = { urls: allDomains.map(domain => `*://${domain}/*`) };
 
         session.defaultSession.webRequest.onBeforeSendHeaders(filter, (details, callback) => {
             const url = new URL(details.url);
-            if (domains.includes(url.hostname)) {
+            if (allDomains.some(domain => url.hostname.endsWith(domain.replace('*.', '')))) {
                 details.requestHeaders['Origin'] = '';
             }
             callback({ requestHeaders: details.requestHeaders });
@@ -48,7 +49,7 @@ export class CorsManager {
 
         session.defaultSession.webRequest.onHeadersReceived(filter, (details, callback) => {
             const url = new URL(details.url);
-            if (domains.includes(url.hostname)) {
+            if (allDomains.some(domain => url.hostname.endsWith(domain.replace('*.', '')))) {
                 callback({
                     responseHeaders: {
                         ...details.responseHeaders,

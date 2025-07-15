@@ -3,7 +3,7 @@ import { SpaceFileSystem } from '@/lib/storage/space';
 import { contextBridge, ipcRenderer } from 'electron';
 import { getOriginPrivateDirectory } from 'native-file-system-adapter';
 
-import type { AppConfig} from './config/index';
+import type { AppConfig } from './config/index';
 import { ConfigManager } from './config/index';
 import type { PlaygroundFile } from './file-system/playground';
 import nodeAdapter from './lib/node-adapter';
@@ -172,8 +172,35 @@ async function main() {
     },
     getApiAgentStatus: () => ipcRenderer.invoke('get-api-agent-status'),
 
-    fetch(url: string, options: RequestInit = {}) {
-      return ipcRenderer.invoke('fetch', url, options);
+    fetch(url: string, options: RequestInit = {}): Promise<Response> {
+      return ipcRenderer.invoke('fetch', url, options).then((data: any) => {
+        // Create a simple Response-like object
+        return {
+          ok: data.ok,
+          status: data.status,
+          statusText: data.statusText,
+          headers: new Headers(data.headers),
+          url: data.url,
+
+          async text() {
+            return new TextDecoder().decode(data.body);
+          },
+
+          async json() {
+            const text = new TextDecoder().decode(data.body);
+            return JSON.parse(text);
+          },
+
+          async blob() {
+            const contentType = data.headers['content-type'] || 'application/octet-stream';
+            return new Blob([data.body], { type: contentType });
+          },
+
+          async arrayBuffer() {
+            return data.body;
+          }
+        } as Response;
+      });
     }
   })
 

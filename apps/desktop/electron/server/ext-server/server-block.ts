@@ -5,12 +5,13 @@ import type { IExtension } from "@/packages/core/meta-table/extension";
 import vm from 'vm';
 import { getOrSetDataSpace } from "../../data-space";
 import { getIndexHtml } from "./ext-html";
-import { makeSdkInjectScript, presetThemes, twConfig } from "./helper";
+import { presetThemes, twConfig } from "./helper";
 
 
-import type { ConfigManager} from "@/apps/desktop/electron/config";
+import type { ConfigManager } from "@/apps/desktop/electron/config";
 import { getConfigManager } from "@/apps/desktop/electron/config";
 import { uiComponentsDependencies } from "./ui-deps";
+import { makeSdkInjectScript } from "@/packages/sandbox/helper";
 
 
 export class ServerBlock {

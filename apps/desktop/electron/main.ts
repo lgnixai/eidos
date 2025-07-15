@@ -386,47 +386,17 @@ ipcMain.handle('close-data-space', async () => {
     return closeDataSpace();
 });
 
-ipcMain.handle('fetch', async (event, url, options) => {
-    try {
-        const res = await fetch(url, options);
-        let data;
-        const contentType = res.headers.get('content-type');
+// Simple fetch proxy - just forward to Node.js fetch (no CORS restrictions)
+ipcMain.handle('fetch', async (_, url, options) => {
+    const res = await fetch(url, options);
+    const body = await res.arrayBuffer();
 
-        if (contentType && contentType.includes('application/json')) {
-            data = await res.json();
-        } else if (contentType && contentType.startsWith('text/')) {
-            data = await res.text();
-        } else {
-            // Default or handle other types like blob/arrayBuffer if needed
-            // For now, let's try text as a fallback or indicate unsupported type
-            try {
-                data = await res.text(); // Attempt to read as text
-            } catch (parseError) {
-                console.error('Failed to parse response body:', parseError);
-                electronLog.error('Failed to parse response body:', parseError);
-                data = null; // Or indicate error in data field
-            }
-        }
-
-        // Return a serializable object
-        return {
-            ok: res.ok,
-            status: res.status,
-            statusText: res.statusText,
-            headers: Object.fromEntries(res.headers.entries()), // Convert Headers object to plain object
-            data: data
-        };
-    } catch (error) {
-        console.error('Fetch error in main process:', error);
-        electronLog.error('Fetch error in main process:', error);
-        // Return a serializable error structure
-        return {
-            ok: false,
-            status: 500, // Or determine status based on error type
-            statusText: 'Internal Server Error',
-            headers: {},
-            data: null,
-            error: error instanceof Error ? error.message : 'Unknown fetch error'
-        };
-    }
+    return {
+        ok: res.ok,
+        status: res.status,
+        statusText: res.statusText,
+        headers: Object.fromEntries(res.headers.entries()),
+        url: res.url,
+        body: body
+    };
 });

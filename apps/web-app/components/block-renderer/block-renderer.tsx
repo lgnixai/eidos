@@ -5,6 +5,7 @@ import React, {
   useRef,
   useState,
 } from "react"
+import { makeSdkInjectScript } from "@/packages/sandbox/helper"
 import {
   generateImportMap,
   getAllLibs,
@@ -19,7 +20,6 @@ import { useCurrentPathInfo } from "@/apps/web-app/hooks/use-current-pathinfo"
 import { useThemeStore } from "@/apps/web-app/store/theme-store"
 
 import { LogoLoading } from "../loading"
-import { makeSdkInjectScript } from "../script-container/helper"
 import { twConfig } from "./tailwind-config"
 import tailwindRaw from "./tailwind-raw.js?raw"
 import themeRawCode from "./theme-raw.css?raw"

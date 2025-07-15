@@ -1,5 +1,6 @@
 import type {
-  EidosDataEventChannelMsg} from "@/lib/const";
+  EidosDataEventChannelMsg
+} from "@/lib/const";
 import {
   DataUpdateSignalType,
   EidosDataEventChannelMsgType
