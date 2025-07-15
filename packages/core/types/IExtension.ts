@@ -12,6 +12,14 @@ export type ExtensionMeta =
     | TableActionMeta
     | UDFMeta
 
+
+export type IBinding = {
+    type: BindingType
+    value: string
+}
+
+export type IBindings = Record<string, IBinding>
+
 export interface IExtension<T extends ExtensionMeta = ExtensionMeta> {
     // system-generated id
     id: string
@@ -28,10 +36,7 @@ export interface IExtension<T extends ExtensionMeta = ExtensionMeta> {
     marketplace_id?: string
     ts_code?: string
     enabled?: boolean
-    bindings?: Record<string, {
-        type: BindingType
-        value: string
-    }>
+    bindings?: IBindings
 }
 
 

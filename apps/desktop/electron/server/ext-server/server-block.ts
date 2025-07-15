@@ -1,7 +1,7 @@
-import { extractFunction } from "@/packages/v3/code-tools/code-extractor";
-import { generateImportMap, getAllLibs } from "@/packages/v3/code-tools/get-deps";
 import type { DataSpace } from '@/packages/core/DataSpace';
 import type { IExtension } from "@/packages/core/meta-table/extension";
+import { extractFunction } from "@/packages/v3/code-tools/code-extractor";
+import { generateImportMap, getAllLibs } from "@/packages/v3/code-tools/get-deps";
 import vm from 'vm';
 import { getOrSetDataSpace } from "../../data-space";
 import { getIndexHtml } from "./ext-html";
@@ -10,8 +10,9 @@ import { presetThemes, twConfig } from "./helper";
 
 import type { ConfigManager } from "@/apps/desktop/electron/config";
 import { getConfigManager } from "@/apps/desktop/electron/config";
-import { uiComponentsDependencies } from "./ui-deps";
+import type { IBindings } from "@/packages/core/types/IExtension";
 import { makeSdkInjectScript } from "@/packages/sandbox/helper";
+import { uiComponentsDependencies } from "./ui-deps";
 
 
 export class ServerBlock {
@@ -70,6 +71,20 @@ export class ServerBlock {
         return ''
     }
 
+    static getEnvMap(bindings?: IBindings) {
+
+        const envMap: Record<string, string> = {}
+        if (!bindings) {
+            return envMap
+        }
+        // exclude table bindings
+        Object.entries(bindings).forEach(([key, value]) => {
+            if (value.type === "secret" || value.type === "text") {
+                envMap[key] = value.value
+            }
+        })
+        return envMap
+    }
     async run(spaceId: string, extension: IExtension | null, url: string) {
         const dataSpace = await getOrSetDataSpace(spaceId);
         const start = performance.now()
@@ -91,7 +106,7 @@ export class ServerBlock {
             "lucide-react"
         )
         uiLibs.push("toast", "toaster", "use-toast")
-        const envString = extension?.env_map ? JSON.stringify(extension.env_map) : "{}"
+        const envString = JSON.stringify(ServerBlock.getEnvMap(extension?.bindings))
         const defaultPropsString = JSON.stringify({})
         const { importMapScript, cssLoaderScript } = await generateImportMap(thirdPartyLibs, uiLibs, cssLibs)
         // // Placeholder for BlockRenderer server-side logic

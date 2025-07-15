@@ -8,6 +8,7 @@ import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin"
 import { $getNodeByKey, type LexicalEditor, type NodeKey } from "lexical"
 
 import { DOMAINS } from "@/lib/const"
+import { proxyURL } from "@/lib/utils"
 
 import { $isImageNode } from "./node"
 
@@ -32,7 +33,7 @@ export const getDisplayURL = (url: string) => {
     if (urlObj.host === window.location.host) {
       return url
     }
-    return DOMAINS.IMAGE_PROXY + "/?url=" + url
+    return proxyURL(url)
   } catch (error) {
     return url
   }

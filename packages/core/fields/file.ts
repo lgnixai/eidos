@@ -3,6 +3,7 @@ import { getFilePreviewImage, getFileType } from "@/packages/lib/mime/mime"
 
 import { BaseField } from "./base"
 import { CompareOperator, FieldType, GridCellKind } from "./const"
+import { EIDOS_PROXY_URL } from "@/lib/const"
 
 export type FileProperty = {
   proxyUrl?: string
@@ -21,7 +22,7 @@ export class FileField extends BaseField<FileCell, FileProperty, string> {
 
   static getDefaultFieldProperty() {
     return {
-      proxyUrl: "https://proxy.eidos.space/?url=",
+      proxyUrl: EIDOS_PROXY_URL,
     }
   }
 

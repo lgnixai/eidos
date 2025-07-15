@@ -7,6 +7,7 @@ import { getOrSetDataSpace } from '../data-space';
 import { getFileFromPath, getSpaceFileFromPath } from '../file-system/space';
 import { serveStatic } from './server-static';
 import { interceptExtensionRequest } from './ext-server';
+import { ProxyHandler } from '@/packages/sandbox/proxy-handler';
 
 const app = new Hono();
 
@@ -60,6 +61,35 @@ const handleStaticFile = async (c: any) => {
 }
 
 export function startServer({ dist, port }: { dist: string, port: number }) {
+
+    // Proxy handler for proxy.eidos.localhost requests
+    const proxyHandler = new ProxyHandler();
+
+    app.use('*', async (c, next) => {
+        const url = new URL(c.req.url);
+        const hostname = url.hostname;
+
+        // Check if this is a proxy request
+        if (hostname === 'proxy.eidos.localhost') {
+            log(`Handling proxy request: ${url.toString()}`);
+
+            // Handle CORS preflight requests
+            if (c.req.method === 'OPTIONS') {
+                return await proxyHandler.handleOptionsRequest(c);
+            }
+
+            // Handle status endpoint
+            if (url.pathname === '/status') {
+                return await proxyHandler.getProxyStatus(c);
+            }
+
+            // Handle proxy requests
+            return await proxyHandler.handleProxyRequest(url, c);
+        }
+
+        // Continue to next middleware if not a proxy request
+        await next();
+    });
 
     // New middleware to intercept *.eidos.localhost requests
     app.use('*', interceptExtensionRequest(dist, port));

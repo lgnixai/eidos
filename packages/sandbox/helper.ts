@@ -1,12 +1,12 @@
 import sdkInjectScript from "./sdk-inject-script.html?raw";
-
+import type { IBindings } from "@/packages/core/types/IExtension";
 
 
 export const makeSdkInjectScript = ({
     bindings,
     space,
 }: {
-    bindings?: Record<string, { type: "table"; value: string }>
+    bindings?: IBindings
     space: string
 }) => {
     let res = sdkInjectScript.replace("${{currentSpace}}", space)

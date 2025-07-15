@@ -4,6 +4,42 @@
     timeout: 30000, // HTTP request timeout in milliseconds
   }
 
+  // Replace window.fetch with proxy-enabled fetch
+  const originalFetch = window.fetch;
+
+  window.fetch = async function(input, init = {}) {
+    const url = typeof input === 'string' ? input : input.url;
+
+    // Check if this is a cross-origin request that needs proxying
+    try {
+      const requestUrl = new URL(url, window.location.href);
+      const currentOrigin = window.location.origin;
+      const requestOrigin = requestUrl.origin;
+
+      // If it's a same-origin request or already going through our proxy, use original fetch
+      if (requestOrigin === currentOrigin || requestUrl.hostname === 'proxy.eidos.localhost') {
+        return originalFetch(input, init);
+      }
+
+      // For cross-origin requests, use our proxy
+      const proxyUrl = `http://proxy.eidos.localhost:13127/?url=${encodeURIComponent(url)}`;
+
+      // Forward the request through proxy
+      return originalFetch(proxyUrl, {
+        ...init,
+        headers: {
+          ...init.headers,
+          // Preserve original headers but let proxy handle CORS
+        }
+      });
+
+    } catch (error) {
+      // If URL parsing fails, fall back to original fetch
+      console.warn('Failed to parse URL for proxy, using original fetch:', error);
+      return originalFetch(input, init);
+    }
+  };
+
   const makeSpaceProxy = (space, bindings = {}) => {
     return new Proxy(
       {},

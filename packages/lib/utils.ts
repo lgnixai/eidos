@@ -5,6 +5,8 @@ import { twMerge } from "tailwind-merge";
 import { uuidv7 } from "uuidv7";
 export { uuidv7 } from "uuidv7";
 import { v4 as uuidv4 } from "uuid"
+import { isDesktopMode } from "./env";
+import { EIDOS_PROXY_URL } from "./const";
 
 export { uuidv4 }
 
@@ -211,7 +213,7 @@ export const proxyURL = (url?: string) => {
   if (!url) {
     return ""
   }
-  return `https://proxy.eidos.space?url=${url}`
+  return EIDOS_PROXY_URL + url
 }
 
 
@@ -319,9 +321,9 @@ export const serializePropsToUrl = (props: Record<string, any>, url: string) => 
       urlObj.searchParams.set(key, '')
       return
     }
-    
+
     const valueType = typeof value
-    
+
     if (valueType === 'string' || valueType === 'number' || valueType === 'boolean') {
       urlObj.searchParams.set(key, String(value))
     } else if (valueType === 'object' || Array.isArray(value)) {
@@ -338,13 +340,13 @@ export const serializePropsToUrl = (props: Record<string, any>, url: string) => 
 export const deserializePropsFromUrl = (url: string | URL): Record<string, any> => {
   const urlObj = typeof url === 'string' ? new URL(url) : url
   const props: Record<string, any> = {}
-  
+
   urlObj.searchParams.forEach((value, key) => {
     if (!value) {
       props[key] = value
       return
     }
-    
+
     // Check if the value has our JSON prefix
     if (value.startsWith('__JSON__:')) {
       const jsonString = value.substring(9) // Remove '__JSON__:' prefix
@@ -365,16 +367,16 @@ export const deserializePropsFromUrl = (url: string | URL): Record<string, any> 
         props[key] = null
       } else if (value === 'undefined') {
         props[key] = undefined
-             } else if (!isNaN(Number(value)) && value.trim() !== '' && !isNaN(parseFloat(value))) {
-         // Check if it's a number (integer or float)
-         const numValue = Number(value)
-         props[key] = Number.isInteger(numValue) ? parseInt(value, 10) : numValue
+      } else if (!isNaN(Number(value)) && value.trim() !== '' && !isNaN(parseFloat(value))) {
+        // Check if it's a number (integer or float)
+        const numValue = Number(value)
+        props[key] = Number.isInteger(numValue) ? parseInt(value, 10) : numValue
       } else {
         // Keep as string
         props[key] = value
       }
     }
   })
-  
+
   return props
 }

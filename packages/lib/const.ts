@@ -1,3 +1,5 @@
+import { isDesktopMode } from "./env"
+
 export enum MsgType {
   // msg window => worker
   SetConfig = "SetConfig",
@@ -77,7 +79,6 @@ export const EidosProtocolUrlChannelName = "eidos-protocol-url"
 // TODO: replace hard-coded link
 export const DOMAINS = {
   HOME: "https://eidos.space",
-  IMAGE_PROXY: "https://proxy.eidos.space",
   LINK_PREVIEW: "https://link-preview.eidos.space",
   WIKI: "https://wiki.eidos.space",
   DOWNLOAD: "https://eidos.space/download",
@@ -101,3 +102,5 @@ export enum CustomEventType {
 export const EIDOS_SPACE_BASE_URL = process.env.NODE_ENV === "production" ? "https://eidos.space" : "http://localhost:4321";
 
 export const EIDOS_CHAT_PROJECT_ID = "EIDOS_CHAT"
+
+export const EIDOS_PROXY_URL = isDesktopMode ? "http://proxy.eidos.localhost:13127/?url=" : "https://proxy.eidos.space/?url="
