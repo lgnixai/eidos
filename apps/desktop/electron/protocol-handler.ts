@@ -1,6 +1,7 @@
 import { EidosProtocolUrlChannelName } from '@/lib/const';
 import type { BrowserWindow } from 'electron';
 import { log } from 'electron-log';
+import { shell } from 'electron';
 
 export interface ProtocolUrlPayload {
     url: string;
@@ -121,10 +122,10 @@ export class ProtocolHandler {
                 standaloneBlockUrl.searchParams.append(key, value);
             });
 
-            // Open the URL in a new window using shell.openExternal or window.open
-            console.log('Opening standalone block URL in new window:', standaloneBlockUrl.toString());
-            this.mainWindow.webContents.executeJavaScript(`window.open('${standaloneBlockUrl.toString()}', '_blank')`);
-
+            // Open the URL in a new window using shell.openExternal
+            console.log('Opening standalone block URL in default browser:', standaloneBlockUrl.toString());
+            shell.openExternal(standaloneBlockUrl.toString());
+            
             // Focus the main window
             if (this.mainWindow.isMinimized()) {
                 this.mainWindow.restore();
@@ -135,4 +136,4 @@ export class ProtocolHandler {
             throw error;
         }
     }
-} 
+}
