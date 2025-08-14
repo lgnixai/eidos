@@ -20,6 +20,7 @@ import { ToyBrickIcon } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Link, useNavigate, useParams } from "react-router-dom"
 
+import { useExtensionByIdOrSlug } from "@/hooks/use-extension"
 import {
   ContextMenu,
   ContextMenuContent,
@@ -29,12 +30,30 @@ import {
 import { useCurrentPathInfo } from "@/apps/web-app/hooks/use-current-pathinfo"
 import { useFavBlocks } from "@/apps/web-app/hooks/use-fav-blocks"
 
+import { IconRenderer } from "../ui/icon-picker"
+
 interface SortableItemProps {
   id: string
   mblock: any
   space: string
   onRemoveFav: (blockId: string, e: React.MouseEvent) => void
   isCurrentBlock?: boolean
+}
+
+const BlockIcon = ({ id }: { id: string }) => {
+  const extension = useExtensionByIdOrSlug(id)
+
+  if (!extension || !extension.icon) return null
+  if (extension.icon.startsWith("data:image")) {
+    return (
+      <img
+        src={extension.icon}
+        alt="block icon"
+        className="w-6 h-6 rounded object-cover"
+      />
+    )
+  }
+  return <IconRenderer name={extension.icon as any} />
 }
 
 const SortableItem = ({
@@ -62,7 +81,6 @@ const SortableItem = ({
   }
 
   const handleClick = (e: React.MouseEvent) => {
-    // 如果正在拖拽，不处理点击
     if (isDragging) {
       e.preventDefault()
       e.stopPropagation()
@@ -88,15 +106,7 @@ const SortableItem = ({
 
               {/* Icon container */}
               <div className="relative z-10 pointer-events-none">
-                {mblock.icon && mblock.icon.startsWith("data:image") ? (
-                  <img
-                    src={mblock.icon}
-                    alt={mblock.name}
-                    className="w-6 h-6 rounded object-cover"
-                  />
-                ) : (
-                  <ToyBrickIcon className="w-6 h-6 text-gray-600 dark:text-gray-400" />
-                )}
+                <BlockIcon id={mblock.id} />
               </div>
             </div>
           </div>

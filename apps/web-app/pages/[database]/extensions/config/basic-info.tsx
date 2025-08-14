@@ -11,6 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { IconPicker } from "@/components/ui/icon-picker"
 import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
@@ -66,6 +67,16 @@ export const BasicInfo = () => {
         variant: "destructive",
       })
     }
+  }
+
+  // Function to handle icon selection
+  const handleIconSelect = (iconName: string) => {
+    setFormData({ ...formData, icon: iconName })
+  }
+
+  // Function to clear the selected icon
+  const handleClearIcon = () => {
+    setFormData({ ...formData, icon: "" })
   }
 
   return (
@@ -136,77 +147,17 @@ export const BasicInfo = () => {
             <label htmlFor="icon" className="text-sm font-medium">
               {t("common.icon")}
             </label>
-            <div className="col-span-3">
-              <label
-                htmlFor="icon-file-input"
-                className="cursor-pointer flex items-center justify-center w-16 h-16 border rounded hover:bg-accent"
-              >
-                {formData.icon && formData.icon.startsWith("data:image/") ? (
-                  <img
-                    src={formData.icon}
-                    alt="Icon Preview"
-                    className="h-full w-full object-contain p-1"
-                  />
-                ) : (
-                  <span className="text-xs text-muted-foreground p-1 text-center">
-                    {t("extension.config.selectIconPlaceholder")}
-                  </span>
-                )}
-              </label>
-              <input
-                id="icon-file-input"
-                type="file"
-                accept=".svg"
-                className="hidden"
-                onChange={(e) => {
-                  const file = e.target.files?.[0]
-                  if (file) {
-                    if (file.type === "image/svg+xml") {
-                      if (file.size > 512 * 1024) {
-                        // 512KB limit
-                        toast({
-                          title: "File Too Large",
-                          description:
-                            "Please select an icon file smaller than 512KB.",
-                          variant: "destructive",
-                        })
-                        if (e.target) {
-                          e.target.value = ""
-                        }
-                        return
-                      }
-                      const reader = new FileReader()
-                      reader.onloadend = () => {
-                        setFormData({
-                          ...formData,
-                          icon: `data:image/svg+xml,${encodeURIComponent(
-                            reader.result as string
-                          )}`,
-                        })
-                      }
-                      reader.onerror = () => {
-                        toast({
-                          title: "Failed to read file",
-                          description:
-                            "An error occurred while reading the file.",
-                          variant: "destructive",
-                        })
-                      }
-                      reader.readAsText(file) // Read as text for SVG
-                    } else {
-                      toast({
-                        title: "Invalid File Type",
-                        description: "Please select an SVG file.",
-                        variant: "destructive",
-                      })
-                      // Reset the input if the file is not an SVG
-                      if (e.target) {
-                        e.target.value = ""
-                      }
-                    }
-                  }
-                }}
+            <div className="col-span-3 flex items-center gap-2">
+              <IconPicker
+                categorized={false}
+                onValueChange={handleIconSelect}
+                value={formData.icon as any}
               />
+              {formData.icon && (
+                <Button variant="outline" size="sm" onClick={handleClearIcon}>
+                  {t("common.clear")}
+                </Button>
+              )}
             </div>
           </div>
           <div className="grid grid-cols-4 items-center gap-2">

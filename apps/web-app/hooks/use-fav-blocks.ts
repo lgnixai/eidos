@@ -85,7 +85,7 @@ const useFavBlocksStore = create<FavBlocksStore>()(
       }
     }),
     {
-      name: "eidos_fav_blocks"
+      name: "eidos-fav-blocks"
     }
   )
 )

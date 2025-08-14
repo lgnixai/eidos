@@ -307,11 +307,6 @@ export const ExtensionSidebar = ({ className }: ExtensionSidebarProps) => {
                       <ContextMenuTrigger className="w-full">
                         {renamingExtension?.id === extension.id ? (
                           <div className="flex items-center gap-2 rounded-sm px-2 py-1 text-sm transition-colors w-full text-foreground bg-muted/80">
-                            {extension.icon && (
-                              <span className="text-base leading-none flex-shrink-0">
-                                {extension.icon}
-                              </span>
-                            )}
                             <span
                               ref={
                                 renamingExtension?.id === extension.id
@@ -392,11 +387,11 @@ export const ExtensionSidebar = ({ className }: ExtensionSidebarProps) => {
                               // Let other keys (like Enter alone) work normally for navigation
                             }}
                           >
-                            {extension.icon && (
+                            {/* {extension.icon && (
                               <span className="text-base leading-none flex-shrink-0">
                                 {extension.icon}
                               </span>
-                            )}
+                            )} */}
                             <span className="flex-1 truncate">
                               {extension.slug}.
                               {extension.type === "script" ? "ts" : "tsx"}

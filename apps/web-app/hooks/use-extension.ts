@@ -2,6 +2,9 @@ import type { IExtension } from "@/packages/core/types/IExtension"
 import { useCallback, useEffect, useState } from "react"
 
 import { useSqlite } from "@/apps/web-app/hooks/use-sqlite"
+import type { EidosDataEventChannelMsg } from "@/lib/const";
+import { DataUpdateSignalType, EidosDataEventChannelMsgType, EidosDataEventChannelName } from "@/lib/const"
+import { ExtensionTableName } from "@/packages/core/sqlite/const"
 
 export const useExtension = () => {
   const { sqlite } = useSqlite()
@@ -64,6 +67,38 @@ export const useExtensionByIdOrSlug = (id?: string) => {
     }
     fetchExtension()
   }, [sqlite, id])
+
+
+  useEffect(() => {
+    const bc = new BroadcastChannel(EidosDataEventChannelName)
+
+    const handler = async (ev: MessageEvent<EidosDataEventChannelMsg>) => {
+      const { type, payload } = ev.data
+      if (type === EidosDataEventChannelMsgType.MetaTableUpdateSignalType) {
+        const { table, _new, _old, type: updateType } = payload
+        if (table !== ExtensionTableName) return
+        try {
+          switch (updateType) {
+            case DataUpdateSignalType.Update:
+              if (_new?.id === id) {
+                setExtension(_new as unknown as IExtension)
+              }
+              break
+            default:
+              break
+          }
+        } finally {
+        }
+      }
+    }
+
+    bc.addEventListener("message", handler)
+    return () => {
+      bc.removeEventListener("message", handler)
+      bc.close()
+    }
+  }, [])
+
   if (!id) return null
   return extension
 }
