@@ -14,11 +14,19 @@ Handles script execution in isolated sandbox environments using webview containe
 
 ### ProxyHandler
 
-Provides a secure proxy service for cross-origin requests with built-in security filtering.
+Provides a secure proxy service for cross-origin requests using Hono's official proxy helper with built-in security filtering.
 
 - **Domain Pattern**: `proxy.eidos.localhost`
 - **Purpose**: Handle cross-origin requests securely
-- **Features**: URL validation, CORS support, security filtering
+- **Engine**: Hono Official Proxy Helper v2.0
+- **Features**: 
+  - Native streaming performance
+  - Automatic encoding handling
+  - Optimized binary data support
+  - URL validation
+  - CORS support
+  - Security filtering
+  - Better `arrayBuffer()` handling
 
 ## Automatic Fetch Proxy
 
