@@ -4,6 +4,8 @@ import {
   ArrowUpDownIcon,
   PanelLeftCloseIcon,
   PencilLineIcon,
+  PinIcon,
+  PinOffIcon,
   PlusIcon,
   SearchIcon,
   Trash2Icon,
@@ -30,6 +32,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { useToast } from "@/components/ui/use-toast"
 import { useAllExtensions } from "@/apps/web-app/hooks/use-all-extensions"
 import { useCurrentPathInfo } from "@/apps/web-app/hooks/use-current-pathinfo"
+import { useFavBlocks } from "@/apps/web-app/hooks/use-fav-blocks"
 
 import { useExtensionSidebarStore } from "../stores/sidebar-store"
 import { NewExtensionButton } from "./new-extension-button"
@@ -50,6 +53,7 @@ export const ExtensionSidebar = ({ className }: ExtensionSidebarProps) => {
     deleteExtension,
     renameExtension,
   } = useAllExtensions()
+  const { isFavorite, toggleFavBlock } = useFavBlocks()
   const [searchTerm, setSearchTerm] = useState("")
   const [sortBy, setSortBy] = useState<SortOption>("name")
   const [showSearch, setShowSearch] = useState(false)
@@ -397,10 +401,33 @@ export const ExtensionSidebar = ({ className }: ExtensionSidebarProps) => {
                               {extension.slug}.
                               {extension.type === "script" ? "ts" : "tsx"}
                             </span>
+
+                            {/* show pin icon if it is pinned */}
+                            {isFavorite(extension.id) && (
+                              <PinIcon className="mr-2 h-4 w-4" />
+                            )}
                           </Link>
                         )}
                       </ContextMenuTrigger>
                       <ContextMenuContent className="w-48">
+                        {extension.type === "block" && (
+                          <ContextMenuItem
+                            onSelect={() => {
+                              toggleFavBlock({
+                                id: extension.id,
+                                name: extension.name,
+                                icon: extension.icon,
+                              })
+                            }}
+                          >
+                            {isFavorite(extension.id) ? (
+                              <PinOffIcon className="mr-2 h-4 w-4" />
+                            ) : (
+                              <PinIcon className="mr-2 h-4 w-4" />
+                            )}
+                            {isFavorite(extension.id) ? "Unpin" : "Pin"}
+                          </ContextMenuItem>
+                        )}
                         <ContextMenuItem
                           onSelect={() =>
                             handleRenameExtension(extension.id, extension.slug)
