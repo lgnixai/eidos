@@ -188,7 +188,13 @@ export function getExtLibs(code: string): string[] {
     return extLibs;
 }
 
-export function getAllLibs(code: string, uiComponentsDependencies: Record<string, { thirdPartyLibs: string[], uiLibs: string[] }>, processedComponents = new Set<string>()) {
+export async function getAllLibs(
+    code: string,
+    uiComponentsDependencies: Record<string, { thirdPartyLibs: string[], uiLibs: string[] }>,
+    getLocalLibCode?: (localLibPath: string) => Promise<string | null>,
+    processedComponents = new Set<string>(),
+    processedLocalLibs = new Set<string>()
+) {
     if (!code) return {
         thirdPartyLibs: [],
         uiLibs: [],
@@ -239,6 +245,46 @@ export function getAllLibs(code: string, uiComponentsDependencies: Record<string
                     if (!allFoundUiLibNames.has(transitiveUiLibName)) {
                         allFoundUiLibNames.add(transitiveUiLibName);
                         queue.push(transitiveUiLibName);
+                    }
+                });
+            }
+        }
+    }
+
+    // Phase 3: Recursively process local library dependencies
+    if (getLocalLibCode) {
+        const localLibsQueue = Array.from(localLibsSet);
+
+        while (localLibsQueue.length > 0) {
+            const localLibPath = localLibsQueue.shift();
+
+            if (!localLibPath || processedLocalLibs.has(localLibPath)) {
+                continue;
+            }
+            processedLocalLibs.add(localLibPath);
+
+            // Get the local library code
+            const localLibCode = await getLocalLibCode(localLibPath);
+            if (localLibCode) {
+                // Recursively get dependencies from this local library
+                const localLibDeps = await getAllLibs(
+                    localLibCode,
+                    uiComponentsDependencies,
+                    getLocalLibCode,
+                    processedComponents,
+                    processedLocalLibs
+                );
+
+                // Merge dependencies from local library
+                localLibDeps.thirdPartyLibs.forEach(lib => thirdPartyLibsMasterSet.add(lib));
+                localLibDeps.uiLibs.forEach(uiLib => allFoundUiLibNames.add(uiLib));
+                localLibDeps.cssLibs.forEach(cssLib => cssLibsSet.add(cssLib));
+
+                // Add new local libs to the queue for processing
+                localLibDeps.localLibs.forEach(newLocalLib => {
+                    if (!localLibsSet.has(newLocalLib) && !processedLocalLibs.has(newLocalLib)) {
+                        localLibsSet.add(newLocalLib);
+                        localLibsQueue.push(newLocalLib);
                     }
                 });
             }

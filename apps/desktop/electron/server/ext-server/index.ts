@@ -99,7 +99,7 @@ export const interceptExtensionRequest = (dist: string, port: number) => async (
                     headers
                 });
             }
-            const serverBlock = new ServerBlock()
+            const serverBlock = new ServerBlock(dataSpace)
             const html = await serverBlock.run(spaceId, extension, url.toString())
             const htmlResponseHeaders = new Headers();
             // Allow this page to frame content from any http://localhost:* origin and any http://*.eidos.localhost:* origin and any eidos://* origin

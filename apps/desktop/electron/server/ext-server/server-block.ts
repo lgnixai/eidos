@@ -17,9 +17,12 @@ import { uiComponentsDependencies } from "./ui-deps";
 
 export class ServerBlock {
     private configManager: ConfigManager
+    private dataSpace: DataSpace
     constructor(
+        dataSpace: DataSpace
     ) {
         this.configManager = getConfigManager()
+        this.dataSpace = dataSpace
     }
 
     runServerAction = async (code: string, dataSpace: DataSpace, url: string) => {
@@ -95,7 +98,14 @@ export class ServerBlock {
         const code = extension?.ts_code || ""
         const compiledCode = extension?.code || ""
 
-        const { thirdPartyLibs, uiLibs, cssLibs, localLibs } = getAllLibs(code, uiComponentsDependencies)
+        const { thirdPartyLibs, uiLibs, cssLibs, localLibs } = await getAllLibs(code, uiComponentsDependencies, async (localLibPath) => {
+            const libName = localLibPath.split('/').pop()
+            if (libName) {
+                const extension = await this.dataSpace.extension.getExtensionBySlugOrId(libName)
+                return extension?.ts_code || ""
+            }
+            return null
+        })
         const res = await this.handleServerAction(code, dataSpace, url)
         console.log("server action result", res)
         // // preload some libs
