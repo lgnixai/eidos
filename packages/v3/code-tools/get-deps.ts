@@ -96,7 +96,7 @@ export async function generateImportMap(
     // map localLibs to sandbox.<spaceId>.eidos.localhost:13127/<lib>.js
     localLibs.forEach((dep) => {
         const libName = dep.split('/').pop();
-        imports[dep] = `http://sandbox.${spaceId}.eidos.localhost:13127/${libName}.js`;
+        imports[dep] = `http://sandbox.${spaceId}.eidos.localhost:13127/${libName}.js?no-rewrite=1`;
     });
 
     thirdPartyLibs.forEach((dep) => {

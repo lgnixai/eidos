@@ -14,7 +14,7 @@ type Ctx = Context<BlankEnv, "*", {}>;
 /**
  * Rewrite external library imports to use esm.sh URLs
  */
-function rewriteExternalImports(code: string, externalLibs: string[]): string {
+function rewriteExternalImports(code: string, externalLibs: string[], excludeLibs: string[] = []): string {
     if (!externalLibs.length) {
         return code;
     }
@@ -62,6 +62,12 @@ function rewriteExternalImports(code: string, externalLibs: string[]): string {
 
             // Check if this package is in our external libs list
             if (extLibsSet.has(packageName)) {
+                // Skip rewriting if this package is in the exclude list
+                if (excludeLibs.includes(packageName)) {
+                    console.log(`Skipping rewrite for excluded package: ${packageName}`);
+                    return match;
+                }
+                
                 const esmUrl = `https://esm.sh/${packageName}`;
                 console.log(`Rewriting ${type} import: ${packageName} -> ${esmUrl}`);
                 return match.replace(packageName, esmUrl);
@@ -137,11 +143,30 @@ export class ScriptSandboxHandler {
             const deps = getExtLibs(compiledCode)
             log(`External dependencies found for ${scriptId}:`, deps);
 
-            // Rewrite external imports to use esm.sh URLs
-            const rewrittenCode = rewriteExternalImports(compiledCode, deps);
+            // Check if no-rewrite parameter is present
+            const noRewrite = url.searchParams.get('no-rewrite') === '1';
+            
+            // Parse external parameter to get list of libraries to exclude from rewriting
+            const externalParam = url.searchParams.get('external');
+            const excludeLibs = externalParam ? externalParam.split(',').map(lib => lib.trim()) : [];
+            
+            if (excludeLibs.length > 0) {
+                log(`Excluding libraries from rewrite: ${excludeLibs.join(', ')}`);
+            }
+            
+            // Rewrite external imports to use esm.sh URLs (unless no-rewrite=1)
+            const rewrittenCode = noRewrite ? compiledCode : rewriteExternalImports(compiledCode, deps, excludeLibs);
 
             if (deps.length > 0) {
-                log(`Rewritten imports for ${scriptId}. Original length: ${compiledCode.length}, New length: ${rewrittenCode.length}`);
+                if (noRewrite) {
+                    log(`Skipped rewriting imports for ${scriptId} due to no-rewrite=1 parameter`);
+                } else {
+                    const excludedCount = excludeLibs.length;
+                    const logMessage = excludedCount > 0 
+                        ? `Rewritten imports for ${scriptId} (excluded ${excludedCount} libraries). Original length: ${compiledCode.length}, New length: ${rewrittenCode.length}`
+                        : `Rewritten imports for ${scriptId}. Original length: ${compiledCode.length}, New length: ${rewrittenCode.length}`;
+                    log(logMessage);
+                }
             }
 
             const headers = new Headers();
