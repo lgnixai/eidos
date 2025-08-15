@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react"
 import { useVirtualList } from "ahooks"
 import {
   ArrowUpDownIcon,
+  CopyIcon,
   PanelLeftCloseIcon,
   PencilLineIcon,
   PinIcon,
@@ -430,6 +431,19 @@ export const ExtensionSidebar = ({ className }: ExtensionSidebarProps) => {
                         >
                           <PencilLineIcon className="mr-2 h-4 w-4" />
                           Rename
+                        </ContextMenuItem>
+                        <ContextMenuItem
+                          onSelect={() => {
+                            const slug = `${extension.slug}`
+                            navigator.clipboard.writeText(slug)
+                            toast({
+                              title: "Slug copied to clipboard",
+                              description: slug,
+                            })
+                          }}
+                        >
+                          <CopyIcon className="mr-2 h-4 w-4" />
+                          Copy Slug
                         </ContextMenuItem>
                         <ContextMenuItem
                           onSelect={() => handleDeleteExtension(extension.id)}
