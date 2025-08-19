@@ -45,9 +45,11 @@ interface IconPickerProps
   modal?: boolean
 }
 
-export const IconRenderer = React.memo(({ name }: { name: IconName }) => {
-  return <Icon name={name} />
-})
+export const IconRenderer = React.memo(
+  ({ name, className }: { name: IconName; className?: string }) => {
+    return <Icon name={name} className={className} />
+  }
+)
 IconRenderer.displayName = "IconRenderer"
 
 const IconsColumnSkeleton = () => {

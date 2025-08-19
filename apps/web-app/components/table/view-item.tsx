@@ -1,14 +1,7 @@
 import { useContext, useState } from "react"
-import { ViewTypeEnum, type IView } from "@/packages/core/types/IView"
+import { type IView } from "@/packages/core/types/IView"
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
-import {
-  FileQuestionIcon,
-  LayoutGridIcon,
-  LayoutListIcon,
-  SquareKanbanIcon,
-  Table2Icon,
-} from "lucide-react"
 import ReactDOM from "react-dom"
 import { useTranslation } from "react-i18next"
 
@@ -34,6 +27,7 @@ import { TABLE_CONTENT_ELEMENT_ID } from "./helper"
 import { TableContext } from "./hooks"
 import { useViewLoadingStore } from "./hooks/use-view-loading"
 import { ViewEditor } from "./view-editor/view-editor"
+import { ViewIcon } from "./view-icon"
 
 interface IViewItemProps {
   view: IView
@@ -43,12 +37,7 @@ interface IViewItemProps {
   disabledDelete?: boolean
 }
 
-export const ViewIconMap = {
-  [ViewTypeEnum.Grid]: Table2Icon,
-  [ViewTypeEnum.Gallery]: LayoutGridIcon,
-  [ViewTypeEnum.DocList]: LayoutListIcon,
-  [ViewTypeEnum.Kanban]: SquareKanbanIcon,
-}
+
 
 export const ViewItem = ({
   view,
@@ -75,10 +64,6 @@ export const ViewItem = ({
     transform: CSS.Transform.toString(transform),
     transition,
   }
-
-  const Icon = view.type.startsWith("ext__")
-    ? FileQuestionIcon
-    : ViewIconMap[view.type as ViewTypeEnum]
 
   const handleOpen = () => {
     if (isActive && !isReadOnly) {
@@ -116,7 +101,11 @@ export const ViewItem = ({
                       {...listeners}
                       className="flex items-center"
                     >
-                      <Icon className="h-4 w-4 cursor-grab active:cursor-grabbing" />
+                      <ViewIcon 
+                        viewType={view.type} 
+                        className="h-4 w-4 cursor-grab active:cursor-grabbing"
+                        showCursor={true}
+                      />
                     </div>
                     <span className="select-none">{view.name}</span>
                   </div>
@@ -168,7 +157,11 @@ export const ViewItem = ({
           >
             <div className="flex items-center gap-1">
               <div {...attributes} {...listeners} className="flex items-center">
-                <Icon className="h-4 w-4 cursor-grab active:cursor-grabbing" />
+                <ViewIcon 
+                  viewType={view.type} 
+                  className="h-4 w-4 cursor-grab active:cursor-grabbing"
+                  showCursor={true}
+                />
               </div>
               <span className="select-none">{view.name}</span>
             </div>

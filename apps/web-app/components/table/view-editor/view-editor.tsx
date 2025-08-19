@@ -21,8 +21,8 @@ import {
 import { Button } from "../../ui/button"
 import { useViewOperation } from "../hooks"
 import { useViewCount } from "../hooks/use-view-count"
-import { ViewIconMap } from "../view-item"
 import { ViewLayout } from "./view-layout"
+import { Table2Icon, LayoutGridIcon, SquareKanbanIcon } from "lucide-react"
 
 const formSchema = z.object({
   name: z.string(),
@@ -115,7 +115,7 @@ export const ViewEditor = ({ setEditDialogOpen, view }: IViewEditorProps) => {
                       isActive={field.value === "grid"}
                       title={t("table.view.grid")}
                       viewType={ViewTypeEnum.Grid}
-                      icon={ViewIconMap[ViewTypeEnum.Grid]}
+                      icon={Table2Icon}
                     ></ViewLayout>
                     <ViewLayout
                       onClick={() => {
@@ -127,7 +127,7 @@ export const ViewEditor = ({ setEditDialogOpen, view }: IViewEditorProps) => {
                       isActive={field.value === "gallery"}
                       title={t("table.view.gallery")}
                       viewType={ViewTypeEnum.Gallery}
-                      icon={ViewIconMap[ViewTypeEnum.Gallery]}
+                      icon={LayoutGridIcon}
                     ></ViewLayout>
                     <ViewLayout
                       onClick={() => {
@@ -138,7 +138,7 @@ export const ViewEditor = ({ setEditDialogOpen, view }: IViewEditorProps) => {
                       isActive={field.value === "kanban"}
                       title={t("table.view.kanban")}
                       viewType={ViewTypeEnum.Kanban}
-                      icon={ViewIconMap[ViewTypeEnum.Kanban]}
+                      icon={SquareKanbanIcon}
                     ></ViewLayout>
                     {/* <ViewLayout
                       viewId={view.id}
