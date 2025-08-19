@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react"
 import { useVirtualList } from "ahooks"
 import {
   ArrowUpDownIcon,
+  CheckIcon,
   CopyIcon,
   PanelLeftCloseIcon,
   PencilLineIcon,
@@ -31,7 +32,11 @@ import {
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { useToast } from "@/components/ui/use-toast"
-import { useAllExtensions } from "@/apps/web-app/hooks/use-all-extensions"
+import {
+  useAllExtensions,
+  type ExtensionSortField,
+  type ExtensionSortOrder,
+} from "@/apps/web-app/hooks/use-all-extensions"
 import { useCurrentPathInfo } from "@/apps/web-app/hooks/use-current-pathinfo"
 import { useFavBlocks } from "@/apps/web-app/hooks/use-fav-blocks"
 
@@ -42,8 +47,6 @@ interface ExtensionSidebarProps {
   className?: string
 }
 
-type SortOption = "name" | "created" | "updated"
-
 export const ExtensionSidebar = ({ className }: ExtensionSidebarProps) => {
   const { space } = useCurrentPathInfo()
   const { scriptId } = useParams()
@@ -53,15 +56,21 @@ export const ExtensionSidebar = ({ className }: ExtensionSidebarProps) => {
     extensions: allExtensions,
     deleteExtension,
     renameExtension,
+    sortField,
+    sortOrder,
+    updateSort,
+    searchTerm,
+    updateSearch,
   } = useAllExtensions()
   const { isFavorite, toggleFavBlock } = useFavBlocks()
-  const [searchTerm, setSearchTerm] = useState("")
-  const [sortBy, setSortBy] = useState<SortOption>("name")
   const [showSearch, setShowSearch] = useState(false)
   const [renamingExtension, setRenamingExtension] = useState<{
     id: string
     currentSlug: string
   } | null>(null)
+
+  const containerRef = useRef<HTMLDivElement>(null)
+  const wrapperRef = useRef<HTMLDivElement>(null)
   const [newSlug, setNewSlug] = useState("")
   const [isRenaming, setIsRenaming] = useState(false)
   const editableRef = useRef<HTMLSpanElement>(null)
@@ -141,54 +150,30 @@ export const ExtensionSidebar = ({ className }: ExtensionSidebarProps) => {
     setNewSlug("")
     setIsRenaming(false)
   }
-  // Filter and sort extensions
-  const filteredExtensions = useMemo(() => {
-    let filtered = allExtensions
 
-    // Filter by search term
-    if (searchTerm.trim()) {
-      filtered = filtered.filter(
-        (ext) =>
-          ext.slug.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          ext.description?.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    }
+  // Handle sort changes
+  const handleSortChange = (
+    field: ExtensionSortField,
+    order: ExtensionSortOrder
+  ) => {
+    updateSort(field, order)
+  }
 
-    // Sort extensions
-    const sorted = [...filtered].sort((a, b) => {
-      switch (sortBy) {
-        case "name":
-          return a.name.localeCompare(b.name)
-        case "created":
-          // Extensions have created_at from the database schema
-          const aCreated = (a as any).created_at || "1970-01-01T00:00:00.000Z"
-          const bCreated = (b as any).created_at || "1970-01-01T00:00:00.000Z"
-          return new Date(bCreated).getTime() - new Date(aCreated).getTime() // newest first
-        case "updated":
-          // Extensions have updated_at from the database schema
-          const aUpdated = (a as any).updated_at || "1970-01-01T00:00:00.000Z"
-          const bUpdated = (b as any).updated_at || "1970-01-01T00:00:00.000Z"
-          return new Date(bUpdated).getTime() - new Date(aUpdated).getTime() // newest first
-        default:
-          return 0
-      }
-    })
+  // Handle search changes
+  const handleSearchChange = (term: string) => {
+    updateSearch(term)
+  }
 
-    return sorted
-  }, [allExtensions, searchTerm, sortBy])
-
-  const [list, scrollTo] = useVirtualList(filteredExtensions, {
-    containerTarget: () =>
-      document.querySelector("[data-radix-scroll-area-viewport]"),
-    wrapperTarget: () => document.querySelector("[data-virtual-list-wrapper]"),
+  const [list, scrollTo] = useVirtualList(allExtensions, {
+    containerTarget: containerRef,
+    wrapperTarget: wrapperRef,
     itemHeight: 32,
     overscan: 5,
   })
-
   // Handle scrolling to focused extension
   useEffect(() => {
-    if (focusedExtensionId && filteredExtensions.length > 0) {
-      const extensionIndex = filteredExtensions.findIndex(
+    if (focusedExtensionId && allExtensions.length > 0) {
+      const extensionIndex = allExtensions.findIndex(
         (ext) => ext.id === focusedExtensionId
       )
 
@@ -201,7 +186,7 @@ export const ExtensionSidebar = ({ className }: ExtensionSidebarProps) => {
         }, 100)
       }
     }
-  }, [focusedExtensionId, filteredExtensions, scrollTo, setFocusedExtensionId])
+  }, [focusedExtensionId, allExtensions, scrollTo, setFocusedExtensionId])
 
   // Don't render if sidebar is closed
   if (!isSidebarOpen) {
@@ -236,15 +221,84 @@ export const ExtensionSidebar = ({ className }: ExtensionSidebarProps) => {
                   <ArrowUpDownIcon className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="center" className="w-32">
-                <DropdownMenuItem onClick={() => setSortBy("name")}>
-                  A-Z
+              <DropdownMenuContent align="start" className="w-48">
+                <DropdownMenuItem
+                  onClick={() => handleSortChange("slug", "ASC")}
+                  className={cn(
+                    sortField === "slug" && sortOrder === "ASC" && "bg-accent"
+                  )}
+                >
+                  <span className="flex-1 whitespace-nowrap">Slug A-Z</span>
+                  {sortField === "slug" && sortOrder === "ASC" && (
+                    <CheckIcon className="h-4 w-4" />
+                  )}
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSortBy("created")}>
-                  Created Time
+                <DropdownMenuItem
+                  onClick={() => handleSortChange("slug", "DESC")}
+                  className={cn(
+                    sortField === "slug" && sortOrder === "DESC" && "bg-accent"
+                  )}
+                >
+                  <span className="flex-1 whitespace-nowrap">Slug Z-A</span>
+                  {sortField === "slug" && sortOrder === "DESC" && (
+                    <CheckIcon className="h-4 w-4" />
+                  )}
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSortBy("updated")}>
-                  Updated Time
+                <DropdownMenuItem
+                  onClick={() => handleSortChange("created_at", "DESC")}
+                  className={cn(
+                    sortField === "created_at" &&
+                      sortOrder === "DESC" &&
+                      "bg-accent"
+                  )}
+                >
+                  <span className="flex-1 whitespace-nowrap">Newest First</span>
+                  {sortField === "created_at" && sortOrder === "DESC" && (
+                    <CheckIcon className="h-4 w-4" />
+                  )}
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => handleSortChange("created_at", "ASC")}
+                  className={cn(
+                    sortField === "created_at" &&
+                      sortOrder === "ASC" &&
+                      "bg-accent"
+                  )}
+                >
+                  <span className="flex-1 whitespace-nowrap">Oldest First</span>
+                  {sortField === "created_at" && sortOrder === "ASC" && (
+                    <CheckIcon className="h-4 w-4" />
+                  )}
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => handleSortChange("updated_at", "DESC")}
+                  className={cn(
+                    sortField === "updated_at" &&
+                      sortOrder === "DESC" &&
+                      "bg-accent"
+                  )}
+                >
+                  <span className="flex-1 whitespace-nowrap">
+                    Recently Updated
+                  </span>
+                  {sortField === "updated_at" && sortOrder === "DESC" && (
+                    <CheckIcon className="h-4 w-4" />
+                  )}
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => handleSortChange("updated_at", "ASC")}
+                  className={cn(
+                    sortField === "updated_at" &&
+                      sortOrder === "ASC" &&
+                      "bg-accent"
+                  )}
+                >
+                  <span className="flex-1 whitespace-nowrap">
+                    Least Updated
+                  </span>
+                  {sortField === "updated_at" && sortOrder === "ASC" && (
+                    <CheckIcon className="h-4 w-4" />
+                  )}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -278,7 +332,7 @@ export const ExtensionSidebar = ({ className }: ExtensionSidebarProps) => {
             <Input
               placeholder="Search extensions..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => handleSearchChange(e.target.value)}
               className="pl-8 h-8 text-sm"
               autoFocus
             />
@@ -287,200 +341,196 @@ export const ExtensionSidebar = ({ className }: ExtensionSidebarProps) => {
       </div>
 
       <div className="flex-1 min-h-0">
-        <ScrollArea className="h-full">
-          <div data-virtual-list-container className="p-1">
-            <div data-virtual-list-wrapper>
-              {list.map((item) => {
-                const extension = item.data
-                const isActive = extension.id === scriptId
+        <ScrollArea className="h-full" ref={containerRef}>
+          <div ref={wrapperRef} className="h-full p-1">
+            {list.map((item) => {
+              const extension = item.data
+              const isActive = extension.id === scriptId
 
-                return (
-                  <div
-                    key={extension.slug}
-                    style={{
-                      height: 32,
-                      display: "flex",
-                      alignItems: "center",
-                      marginBottom: 2,
-                    }}
-                  >
-                    <ContextMenu>
-                      <ContextMenuTrigger className="w-full">
-                        {renamingExtension?.id === extension.id ? (
-                          <div className="flex items-center gap-2 rounded-sm px-2 py-1 text-sm transition-colors w-full text-foreground bg-muted/80">
-                            <span
-                              ref={
-                                renamingExtension?.id === extension.id
-                                  ? editableRef
-                                  : null
-                              }
-                              contentEditable={true}
-                              suppressContentEditableWarning={true}
-                              className="flex-1 outline-none cursor-text"
-                              data-extension-id={extension.id}
-                              tabIndex={0}
-                              spellCheck={false}
-                              onKeyDown={(e) => {
-                                if (e.key === "Enter") {
-                                  e.preventDefault()
-                                  e.stopPropagation()
-                                  const newText =
-                                    e.currentTarget.textContent || ""
-                                  setNewSlug(newText)
-                                  handleConfirmRename()
-                                } else if (e.key === "Escape") {
-                                  e.preventDefault()
-                                  e.stopPropagation()
-                                  // Reset content to original value
-                                  e.currentTarget.textContent =
-                                    renamingExtension?.currentSlug || ""
-                                  handleCancelRename()
-                                }
-                                // For all other keys, let the default behavior happen (typing)
-                              }}
-                              onBlur={(e) => {
-                                const newText =
-                                  e.currentTarget.textContent || ""
-                                setNewSlug(newText)
-                                if (!isRenaming) {
-                                  handleConfirmRename()
-                                }
-                              }}
-                              onInput={(e) => {
-                                // Update React state as user types, but don't interfere with contentEditable
-                                const newText =
-                                  e.currentTarget.textContent || ""
-                                setNewSlug(newText)
-                              }}
-                            >
-                              {/* Initial content set by useEffect, then controlled by user input */}
-                            </span>
-                            <span className="text-xs text-muted-foreground flex-shrink-0">
-                              .{extension.type === "script" ? "ts" : "tsx"}
-                            </span>
-                          </div>
-                        ) : (
-                          <Link
-                            to={`/${space}/extensions/${extension.id}`}
-                            className={cn(
-                              "flex items-center gap-2 rounded-sm px-2 py-1 text-sm transition-colors w-full text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20",
-                              isActive ? "bg-muted/80" : "hover:bg-muted/80"
-                            )}
+              return (
+                <div
+                  key={extension.slug}
+                  style={{
+                    height: 32,
+                    display: "flex",
+                    alignItems: "center",
+                    marginBottom: 2,
+                  }}
+                >
+                  <ContextMenu>
+                    <ContextMenuTrigger className="w-full">
+                      {renamingExtension?.id === extension.id ? (
+                        <div className="flex items-center gap-2 rounded-sm px-2 py-1 text-sm transition-colors w-full text-foreground bg-muted/80">
+                          <span
+                            ref={
+                              renamingExtension?.id === extension.id
+                                ? editableRef
+                                : null
+                            }
+                            contentEditable={true}
+                            suppressContentEditableWarning={true}
+                            className="flex-1 outline-none cursor-text"
+                            data-extension-id={extension.id}
+                            tabIndex={0}
+                            spellCheck={false}
                             onKeyDown={(e) => {
-                              // Keyboard shortcuts for rename:
-                              // - Enter: Trigger rename (primary shortcut)
-                              // - F2: Trigger rename (Windows/VS Code pattern)
                               if (e.key === "Enter") {
                                 e.preventDefault()
                                 e.stopPropagation()
-                                handleRenameExtension(
-                                  extension.id,
-                                  extension.slug
-                                )
-                              } else if (e.key === "F2") {
+                                const newText =
+                                  e.currentTarget.textContent || ""
+                                setNewSlug(newText)
+                                handleConfirmRename()
+                              } else if (e.key === "Escape") {
                                 e.preventDefault()
                                 e.stopPropagation()
-                                handleRenameExtension(
-                                  extension.id,
-                                  extension.slug
-                                )
+                                // Reset content to original value
+                                e.currentTarget.textContent =
+                                  renamingExtension?.currentSlug || ""
+                                handleCancelRename()
                               }
-                              // Let other keys (like Enter alone) work normally for navigation
+                              // For all other keys, let the default behavior happen (typing)
+                            }}
+                            onBlur={(e) => {
+                              const newText = e.currentTarget.textContent || ""
+                              setNewSlug(newText)
+                              if (!isRenaming) {
+                                handleConfirmRename()
+                              }
+                            }}
+                            onInput={(e) => {
+                              // Update React state as user types, but don't interfere with contentEditable
+                              const newText = e.currentTarget.textContent || ""
+                              setNewSlug(newText)
                             }}
                           >
-                            {/* {extension.icon && (
+                            {/* Initial content set by useEffect, then controlled by user input */}
+                          </span>
+                          <span className="text-xs text-muted-foreground flex-shrink-0">
+                            .{extension.type === "script" ? "ts" : "tsx"}
+                          </span>
+                        </div>
+                      ) : (
+                        <Link
+                          to={`/${space}/extensions/${extension.id}`}
+                          className={cn(
+                            "flex items-center gap-2 rounded-sm px-2 py-1 text-sm transition-colors w-full text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20",
+                            isActive ? "bg-muted/80" : "hover:bg-muted/80"
+                          )}
+                          onKeyDown={(e) => {
+                            // Keyboard shortcuts for rename:
+                            // - Enter: Trigger rename (primary shortcut)
+                            // - F2: Trigger rename (Windows/VS Code pattern)
+                            if (e.key === "Enter") {
+                              e.preventDefault()
+                              e.stopPropagation()
+                              handleRenameExtension(
+                                extension.id,
+                                extension.slug
+                              )
+                            } else if (e.key === "F2") {
+                              e.preventDefault()
+                              e.stopPropagation()
+                              handleRenameExtension(
+                                extension.id,
+                                extension.slug
+                              )
+                            }
+                            // Let other keys (like Enter alone) work normally for navigation
+                          }}
+                        >
+                          {/* {extension.icon && (
                               <span className="text-base leading-none flex-shrink-0">
                                 {extension.icon}
                               </span>
                             )} */}
-                            <span className="flex-1 truncate">
-                              {extension.slug}.
-                              {extension.type === "script" ? "ts" : "tsx"}
-                            </span>
+                          <span className="flex-1 truncate">
+                            {extension.slug}.
+                            {extension.type === "script" ? "ts" : "tsx"}
+                          </span>
 
-                            {/* show pin icon if it is pinned */}
-                            {isFavorite(extension.id) && (
-                              <PinIcon className="mr-2 h-4 w-4" />
-                            )}
-                          </Link>
-                        )}
-                      </ContextMenuTrigger>
-                      <ContextMenuContent className="w-48">
-                        {extension.type === "block" && (
-                          <ContextMenuItem
-                            onSelect={() => {
-                              toggleFavBlock({
-                                id: extension.id,
-                                name: extension.name,
-                                icon: extension.icon,
-                              })
-                            }}
-                          >
-                            {isFavorite(extension.id) ? (
-                              <PinOffIcon className="mr-2 h-4 w-4" />
-                            ) : (
-                              <PinIcon className="mr-2 h-4 w-4" />
-                            )}
-                            {isFavorite(extension.id) ? "Unpin" : "Pin"}
-                          </ContextMenuItem>
-                        )}
-                        <ContextMenuItem
-                          onSelect={() =>
-                            handleRenameExtension(extension.id, extension.slug)
-                          }
-                        >
-                          <PencilLineIcon className="mr-2 h-4 w-4" />
-                          Rename
-                        </ContextMenuItem>
+                          {/* show pin icon if it is pinned */}
+                          {isFavorite(extension.id) && (
+                            <PinIcon className="mr-2 h-4 w-4" />
+                          )}
+                        </Link>
+                      )}
+                    </ContextMenuTrigger>
+                    <ContextMenuContent className="w-48">
+                      {extension.type === "block" && (
                         <ContextMenuItem
                           onSelect={() => {
-                            const slug = `${extension.slug}`
-                            navigator.clipboard.writeText(slug)
-                            toast({
-                              title: "Slug copied to clipboard",
-                              description: slug,
+                            toggleFavBlock({
+                              id: extension.id,
+                              name: extension.name,
+                              icon: extension.icon,
                             })
                           }}
                         >
-                          <CopyIcon className="mr-2 h-4 w-4" />
-                          Copy Slug
+                          {isFavorite(extension.id) ? (
+                            <PinOffIcon className="mr-2 h-4 w-4" />
+                          ) : (
+                            <PinIcon className="mr-2 h-4 w-4" />
+                          )}
+                          {isFavorite(extension.id) ? "Unpin" : "Pin"}
                         </ContextMenuItem>
-                        <ContextMenuItem
-                          onSelect={() => handleDeleteExtension(extension.id)}
-                          className="text-destructive focus:text-destructive"
-                        >
-                          <Trash2Icon className="mr-2 h-4 w-4" />
-                          Delete
-                        </ContextMenuItem>
-                      </ContextMenuContent>
-                    </ContextMenu>
-                  </div>
-                )
-              })}
-
-              {filteredExtensions.length === 0 && (
-                <div className="flex flex-col items-center justify-center py-6 px-2 text-center">
-                  <div className="text-muted-foreground text-xs mb-2">
-                    {searchTerm
-                      ? "No matching extensions"
-                      : "No extensions found"}
-                  </div>
-                  {!searchTerm && (
-                    <button
-                      onClick={() =>
-                        window.open(
-                          `${EIDOS_SPACE_BASE_URL}/extensions`,
-                          "_blank"
-                        )
-                      }
-                      className="text-xs text-primary hover:underline"
-                    >
-                      Browse Store
-                    </button>
-                  )}
+                      )}
+                      <ContextMenuItem
+                        onSelect={() =>
+                          handleRenameExtension(extension.id, extension.slug)
+                        }
+                      >
+                        <PencilLineIcon className="mr-2 h-4 w-4" />
+                        Rename
+                      </ContextMenuItem>
+                      <ContextMenuItem
+                        onSelect={() => {
+                          const slug = `${extension.slug}`
+                          navigator.clipboard.writeText(slug)
+                          toast({
+                            title: "Slug copied to clipboard",
+                            description: slug,
+                          })
+                        }}
+                      >
+                        <CopyIcon className="mr-2 h-4 w-4" />
+                        Copy Slug
+                      </ContextMenuItem>
+                      <ContextMenuItem
+                        onSelect={() => handleDeleteExtension(extension.id)}
+                        className="text-destructive focus:text-destructive"
+                      >
+                        <Trash2Icon className="mr-2 h-4 w-4" />
+                        Delete
+                      </ContextMenuItem>
+                    </ContextMenuContent>
+                  </ContextMenu>
                 </div>
-              )}
-            </div>
+              )
+            })}
+
+            {allExtensions.length === 0 && (
+              <div className="flex flex-col items-center justify-center py-6 px-2 text-center">
+                <div className="text-muted-foreground text-xs mb-2">
+                  {searchTerm
+                    ? "No matching extensions"
+                    : "No extensions found"}
+                </div>
+                {!searchTerm && (
+                  <button
+                    onClick={() =>
+                      window.open(
+                        `${EIDOS_SPACE_BASE_URL}/extensions`,
+                        "_blank"
+                      )
+                    }
+                    className="text-xs text-primary hover:underline"
+                  >
+                    Browse Store
+                  </button>
+                )}
+              </div>
+            )}
           </div>
         </ScrollArea>
       </div>

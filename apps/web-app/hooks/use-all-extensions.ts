@@ -6,11 +6,17 @@ import type { IExtension } from "@/packages/core/types/IExtension"
 import { useCallback, useEffect } from "react"
 import { create } from "zustand"
 
+export type ExtensionSortField = "slug" | "created_at" | "updated_at"
+export type ExtensionSortOrder = "ASC" | "DESC"
+
 const useExtensionStore = create<{
   extensions: IExtension[]
   loading: boolean
   syncing: boolean
   error: string | null
+  sortField: ExtensionSortField
+  sortOrder: ExtensionSortOrder
+  searchTerm: string
   setExtensions: (extensions: IExtension[]) => void
   addExtension: (extension: IExtension) => void
   updateExtension: (extension: IExtension) => void
@@ -19,6 +25,8 @@ const useExtensionStore = create<{
   setLoading: (loading: boolean) => void
   setSyncing: (syncing: boolean) => void
   setError: (error: string | null) => void
+  setSort: (field: ExtensionSortField, order: ExtensionSortOrder) => void
+  setSearchTerm: (term: string) => void
   reload?: () => Promise<void>
   setReload: (reload: () => Promise<void>) => void
 }>((set, get) => ({
@@ -26,6 +34,9 @@ const useExtensionStore = create<{
   loading: false,
   syncing: false,
   error: null,
+  sortField: "created_at",
+  sortOrder: "ASC",
+  searchTerm: "",
   setExtensions: (extensions) => set({ extensions }),
   addExtension: (extension) => set((state) => {
     // Check if extension already exists to prevent duplicates
@@ -33,7 +44,7 @@ const useExtensionStore = create<{
     if (existingIndex !== -1) {
       // If exists, update it instead of adding
       return {
-        extensions: state.extensions.map(ext => 
+        extensions: state.extensions.map(ext =>
           ext.id === extension.id ? extension : ext
         )
       }
@@ -53,7 +64,7 @@ const useExtensionStore = create<{
     if (existingIndex !== -1) {
       // Update existing extension
       return {
-        extensions: state.extensions.map(ext => 
+        extensions: state.extensions.map(ext =>
           ext.id === extension.id ? extension : ext
         )
       }
@@ -70,22 +81,52 @@ const useExtensionStore = create<{
   setLoading: (loading) => set({ loading }),
   setSyncing: (syncing) => set({ syncing }),
   setError: (error) => set({ error }),
+  setSort: (field, order) => set({ sortField: field, sortOrder: order }),
+  setSearchTerm: (term) => set({ searchTerm: term }),
   setReload: (reload) => set({ reload }),
 }))
 
 export const useSyncExtensions = () => {
   const { sqlite } = useSqlite()
-  const { setExtensions, upsertExtension, removeExtension, setLoading, setSyncing, setError, setReload } = useExtensionStore()
+  const {
+    setExtensions,
+    upsertExtension,
+    removeExtension,
+    setLoading,
+    setSyncing,
+    setError,
+    setReload,
+    sortField,
+    sortOrder,
+    searchTerm
+  } = useExtensionStore()
 
   const reload = useCallback(async () => {
     setLoading(true)
     setError(null)
     if (!sqlite) return
     try {
-      // Get all extensions (enabled and disabled) for directory tree
-      const res = await sqlite.extension.list({}, {
-        fields: ["id", "slug", "name", "icon", "type", "enabled", "created_at", "updated_at"]
+      // Build query with search filter
+      const query: any = {}
+      if (searchTerm.trim()) {
+        query.slug = { contains: searchTerm.trim() }
+      }
+
+      const res = await sqlite.extension.findMany({
+        where: query,
+        select: {
+          id: true,
+          slug: true,
+          name: true,
+          icon: true,
+          type: true,
+          enabled: true,
+          created_at: true,
+          updated_at: true
+        },
+        orderBy: { [sortField]: sortOrder.toLowerCase() as 'asc' | 'desc' }
       })
+
       setExtensions(res)
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Failed to fetch extensions"
@@ -95,7 +136,7 @@ export const useSyncExtensions = () => {
     } finally {
       setLoading(false)
     }
-  }, [sqlite, setExtensions, setLoading, setError])
+  }, [sqlite, setExtensions, setLoading, setError, sortField, sortOrder, searchTerm])
 
   // Register reload function in store
   useEffect(() => {
@@ -149,7 +190,18 @@ export const useSyncExtensions = () => {
 
 export const useAllExtensions = () => {
   const { sqlite } = useSqlite()
-  const { extensions, loading, syncing, error, reload } = useExtensionStore()
+  const {
+    extensions,
+    loading,
+    syncing,
+    error,
+    reload,
+    sortField,
+    sortOrder,
+    searchTerm,
+    setSort,
+    setSearchTerm
+  } = useExtensionStore()
 
   useSyncExtensions()
 
@@ -197,6 +249,14 @@ export const useAllExtensions = () => {
     }
   }, [sqlite, extensions])
 
+  const updateSort = useCallback((field: ExtensionSortField, order: ExtensionSortOrder) => {
+    setSort(field, order)
+  }, [setSort])
+
+  const updateSearch = useCallback((term: string) => {
+    setSearchTerm(term)
+  }, [setSearchTerm])
+
   return {
     extensions,
     reload,
@@ -204,6 +264,11 @@ export const useAllExtensions = () => {
     syncing,
     error,
     deleteExtension,
-    renameExtension
+    renameExtension,
+    sortField,
+    sortOrder,
+    searchTerm,
+    updateSort,
+    updateSearch
   }
 }

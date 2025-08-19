@@ -37,6 +37,8 @@ export interface IExtension<T extends ExtensionMeta = ExtensionMeta> {
     ts_code?: string
     enabled?: boolean
     bindings?: IBindings
+    created_at?: string
+    updated_at?: string
 }
 
 

@@ -27,11 +27,20 @@ export const useSyncMblocks = () => {
     const reload = useCallback(async () => {
         setLoading(true)
         if (!sqlite) return
-        const mblocks = await sqlite.extension.list({
-            type: "block",
-            enabled: true,
-        }, {
-            fields: ["id", "name", "icon", "type", "enabled", "created_at", "updated_at"]
+        const mblocks = await sqlite.extension.findMany({
+            where: {
+                type: "block",
+                enabled: true,
+            },
+            select: {
+                id: true,
+                name: true,
+                icon: true,
+                type: true,
+                enabled: true,
+                created_at: true,
+                updated_at: true
+            }
         })
         setMblocks(mblocks)
         setLoading(false)
@@ -99,11 +108,20 @@ export const useAllMblocks = () => {
     const reload = useCallback(async () => {
         setLoading(true)
         if (!sqlite) return
-        const mblocks = await sqlite.extension.list({
-            type: "block",
-            enabled: true,
-        }, {
-            fields: ["id", "name", "icon", "type", "enabled", "created_at", "updated_at"]
+        const mblocks = await sqlite.extension.findMany({
+            where: {
+                type: "block",
+                enabled: true,
+            },
+            select: {
+                id: true,
+                name: true,
+                icon: true,
+                type: true,
+                enabled: true,
+                created_at: true,
+                updated_at: true
+            } as any
         })
         setMblocks(mblocks)
         setLoading(false)
