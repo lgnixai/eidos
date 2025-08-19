@@ -1,24 +1,24 @@
 import type { IExtension } from "@/packages/core/types/IExtension"
-import { ScriptExtensionType, BlockExtensionType } from "@/packages/core/types/IExtension"
 import { useNavigate } from "react-router-dom"
 
-import { generateIdV7 } from "@/lib/utils"
 import { useCurrentPathInfo } from "@/apps/web-app/hooks/use-current-pathinfo"
+import { generateIdV7 } from "@/lib/utils"
 
 import { useExtension } from "@/apps/web-app/hooks/use-extension"
 import { useExtensionSidebarStore } from "../stores/sidebar-store"
 
 // Script templates
+import emptyScriptTemplate from "./templates/script/empty.ts?raw"
+import tableActionTemplate from "./templates/script/table-action.ts?raw"
 import toolTemplate from "./templates/script/tool.ts?raw"
 import udfTemplate from "./templates/script/udf.ts?raw"
-import tableActionTemplate from "./templates/script/table-action.ts?raw"
-import emptyScriptTemplate from "./templates/script/empty.ts?raw"
 
 // Block templates
-import tableViewTemplate from "./templates/block/table-view.tsx?raw"
-import extNodeTemplate from "./templates/block/ext-node.tsx?raw"
-import emptyBlockTemplate from "./templates/block/empty.tsx?raw"
+import { extractConstant } from "@/packages/v3/code-tools/code-extractor"
 import { blockCodeCompile, scriptCodeCompile } from "@/packages/v3/script-compiler"
+import emptyBlockTemplate from "./templates/block/empty.tsx?raw"
+import extNodeTemplate from "./templates/block/ext-node.tsx?raw"
+import tableViewTemplate from "./templates/block/table-view.tsx?raw"
 
 
 
@@ -45,30 +45,8 @@ export const useNewExtension = () => {
       version: "0.0.1",
       code: await scriptCodeCompile(toolTemplate),
       ts_code: toolTemplate,
-      meta: {
-        type: ScriptExtensionType.Tool,
-        funcName: "hello",
-        tool: {
-          name: "hello",
-          description: "This is a hello world tool",
-          inputJSONSchema: {
-            type: "object",
-            properties: {
-              name: {
-                type: "string",
-              },
-            },
-          },
-          outputJSONSchema: {
-            type: "object",
-            properties: {
-              result: {
-                type: "string",
-              },
-            },
-          },
-        },
-      },
+      meta: await extractConstant(toolTemplate, "meta")
+      ,
     }
 
     // UDF Script (User-Defined Function)
@@ -81,14 +59,7 @@ export const useNewExtension = () => {
       version: "0.0.1",
       code: await scriptCodeCompile(udfTemplate),
       ts_code: udfTemplate,
-      meta: {
-        type: ScriptExtensionType.UDF,
-        funcName: "myTwice",
-        udf: {
-          name: "myTwice",
-          deterministic: true,
-        },
-      },
+      meta: await extractConstant(udfTemplate, "meta")
     }
 
     // Table Action Script
@@ -101,14 +72,7 @@ export const useNewExtension = () => {
       version: "0.0.1",
       code: await scriptCodeCompile(tableActionTemplate),
       ts_code: tableActionTemplate,
-      meta: {
-        type: ScriptExtensionType.TableAction,
-        funcName: "toggleChecked",
-        tableAction: {
-          name: "Toggle Checked Status",
-          description: "Toggles the checked status of the selected record",
-        },
-      },
+      meta: await extractConstant(tableActionTemplate, "meta")
     }
 
     // Table View Block Extension
@@ -121,15 +85,7 @@ export const useNewExtension = () => {
       version: "0.0.1",
       code: await blockCodeCompile(tableViewTemplate),
       ts_code: tableViewTemplate,
-      meta: {
-        type: BlockExtensionType.TableView,
-        componentName: "MyListView",
-        tableView: {
-          title: "List View",
-          type: "list",
-          description: "This is a list view",
-        },
-      },
+      meta: await extractConstant(tableViewTemplate, "meta")
     }
 
     // Extension Node Block Extension
@@ -142,15 +98,7 @@ export const useNewExtension = () => {
       version: "0.0.1",
       code: await blockCodeCompile(extNodeTemplate),
       ts_code: extNodeTemplate,
-      meta: {
-        type: BlockExtensionType.ExtNode,
-        componentName: "MyExtNode",
-        extNode: {
-          title: "My Extension Node",
-          description: "This is a custom extension node",
-          type: "custom",
-        },
-      },
+      meta: await extractConstant(extNodeTemplate, "meta")
     }
 
     // Empty Script Extension
@@ -191,10 +139,10 @@ export const useNewExtension = () => {
 
     const extension = templateMap[template]
     await addExtension(extension)
-    
+
     // Set the focused extension ID to scroll to it in the sidebar
     setFocusedExtensionId(newScriptId)
-    
+
     router(`/${space}/extensions/${newScriptId}`)
   }
 
