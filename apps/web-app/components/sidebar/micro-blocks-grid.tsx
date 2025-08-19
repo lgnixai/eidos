@@ -43,7 +43,8 @@ interface SortableItemProps {
 const BlockIcon = ({ id }: { id: string }) => {
   const extension = useExtensionByIdOrSlug(id)
 
-  if (!extension || !extension.icon) return null
+  if (!extension) return null
+  if (!extension.icon) return <ToyBrickIcon className="w-6 h-6" />
   if (extension.icon.startsWith("data:image")) {
     return (
       <img
