@@ -125,7 +125,7 @@ export const BasicInfo = () => {
               value={formData.slug}
               className="col-span-3"
               onChange={(e) =>
-                setFormData({ ...formData, slug: e.target.value })
+                setFormData({ ...formData, slug: e.target.value.trim() })
               }
               placeholder="Enter unique slug identifier"
             />
