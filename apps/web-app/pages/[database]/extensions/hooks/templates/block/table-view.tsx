@@ -11,6 +11,7 @@ export const meta = {
 }
 
 const getRows = async (ctx: { tableId: string; viewId?: string }) => {
+  // @ts-ignore - eidos is injected at runtime
   const rows = await eidos.currentSpace.table(ctx.tableId).rows.query(
     {},
     {
@@ -21,20 +22,32 @@ const getRows = async (ctx: { tableId: string; viewId?: string }) => {
 }
 
 export function MyListView() {
-  const [rows, setRows] = useState([])
+  const [rows, setRows] = useState<any[]>([])
 
-  const tableId = window.location.pathname.split("/")[1]
+  // Get tableId and viewId from URL path
+  // URL structure: <extid>.block.<spaceId>.eidos.localhost:13127/<tableid>/<viewid>
+  const pathParts = window.location.pathname.split("/")
+  const tableId = pathParts[pathParts.length - 2]
+  const viewId = pathParts[pathParts.length - 1]
+
   useEffect(() => {
-    getRows({ tableId }).then((rows) => {
-      setRows(rows)
-    })
-  }, [tableId])
+    if (tableId) {
+      getRows({ tableId, viewId }).then((rows) => {
+        setRows(rows)
+      })
+    }
+  }, [tableId, viewId])
 
   return (
-    <div>
-      {rows.map((row) => (
-        <div key={row.id}>{row.title}</div>
-      ))}
+    <div className="p-4">
+      <h2 className="text-lg font-semibold mb-4">Custom List View</h2>
+      <div className="space-y-2">
+        {rows.map((row) => (
+          <div key={row.id} className="p-3 border rounded-lg hover:bg-gray-50">
+            {row.title || row.name || row.id}
+          </div>
+        ))}
+      </div>
     </div>
   )
 }

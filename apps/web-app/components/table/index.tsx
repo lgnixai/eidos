@@ -5,7 +5,7 @@ import { getTableIdByRawTableName } from "@/lib/utils"
 import { useSqliteTableSubscribe } from "@/apps/web-app/hooks/use-sqlite-table-subscribe"
 import { useUiColumns } from "@/apps/web-app/hooks/use-ui-columns"
 
-import { BlockRenderer } from "../block-renderer/block-renderer"
+import { ExtTableViewBlockApp } from "../block-renderer/ext-table-view-block-app"
 import { FieldEditor } from "./fields"
 import { TABLE_CONTENT_ELEMENT_ID } from "./helper"
 import { TableContext, useCurrentView, useUDFs } from "./hooks"
@@ -45,7 +45,6 @@ export const Table = ({
   const extView = useTableViewInfoByExtType(currentView?.type)
   const isView = tableName.startsWith("vw_")
   const isExtView = currentView?.type?.startsWith("ext__")
-  console.log("currentView", currentView, extView)
   const { updateUiColumns } = useUiColumns(tableName, space)
   useEffect(() => {
     updateUiColumns(tableName)
@@ -112,18 +111,11 @@ export const Table = ({
             />
           )}
           {isExtView && extView && (
-            <BlockRenderer
-              blockId={extView?.id ?? ""}
-              code={extView?.ts_code ?? ""}
-              compiledCode={extView?.code ?? ""}
-              rerenderOnDefaultPropsChange
-              defaultProps={{
-                ctx: {
-                  viewId: currentView?.id,
-                  tableId: getTableIdByRawTableName(tableName),
-                },
-              }}
-              height={"100%"}
+            <ExtTableViewBlockApp
+              space={space}
+              blockId={extView?.id ?? null}
+              tableId={getTableIdByRawTableName(tableName)}
+              viewId={currentView?.id || ""}
             />
           )}
           <FieldEditor

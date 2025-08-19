@@ -84,32 +84,32 @@ export const BlockRenderer = React.forwardRef<
       if (!code.length || isDesktopMode) {
         return
       }
-      const { thirdPartyLibs, uiLibs, localLibs, cssLibs } = getAllLibs(
-        code,
-        uiComponentsDependencies
+      getAllLibs(code, uiComponentsDependencies).then(
+        ({ thirdPartyLibs, uiLibs, localLibs, cssLibs }) => {
+          // preload some libs
+          thirdPartyLibs.push(
+            "@radix-ui/react-icons",
+            "@radix-ui/react-toast",
+            "class-variance-authority",
+            "lucide-react"
+          )
+          uiLibs.push("toast", "toaster", "use-toast")
+          setDependencies(thirdPartyLibs)
+          setUiComponents(uiLibs)
+          generateImportMap(
+            {
+              thirdPartyLibs,
+              uiLibs,
+              cssLibs,
+              localLibs,
+            },
+            space
+          ).then(({ importMapScript }) => {
+            setImportMap(importMapScript)
+            setIsLoading(false)
+          })
+        }
       )
-      // preload some libs
-      thirdPartyLibs.push(
-        "@radix-ui/react-icons",
-        "@radix-ui/react-toast",
-        "class-variance-authority",
-        "lucide-react"
-      )
-      uiLibs.push("toast", "toaster", "use-toast")
-      setDependencies(thirdPartyLibs)
-      setUiComponents(uiLibs)
-      generateImportMap(
-        {
-          thirdPartyLibs,
-          uiLibs,
-          cssLibs,
-          localLibs,
-        },
-        space
-      ).then(({ importMapScript }) => {
-        setImportMap(importMapScript)
-        setIsLoading(false)
-      })
     }, [code])
 
     const envString = env ? JSON.stringify(env) : "{}"
