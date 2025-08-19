@@ -1,6 +1,7 @@
 import { autoUpdater } from 'electron-updater';
 import type { BrowserWindow } from 'electron';
 import log from 'electron-log';
+import { getConfigManager } from './config';
 
 export class AppUpdater {
     constructor(private mainWindow: BrowserWindow) {
@@ -53,6 +54,19 @@ export class AppUpdater {
     }
 
     public checkForUpdates() {
+        const configManager = getConfigManager();
+        const isAutoUpdateEnabled = configManager.isAutoUpdateEnabled();
+        
+        if (isAutoUpdateEnabled) {
+            log.info('Auto-update is enabled, checking for updates...');
+            autoUpdater.checkForUpdatesAndNotify();
+        } else {
+            log.info('Auto-update is disabled, skipping update check.');
+        }
+    }
+
+    public checkForUpdatesManually() {
+        log.info('Manual update check requested, checking for updates...');
         autoUpdater.checkForUpdatesAndNotify();
     }
 

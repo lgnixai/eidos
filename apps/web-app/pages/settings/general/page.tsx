@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next"
 
 import { Separator } from "@/components/ui/separator"
 import { ProfileForm } from "@/apps/web-app/pages/settings/general/profile-form"
+import { AutoUpdateForm } from "@/apps/web-app/pages/settings/general/auto-update-form"
 
 // import { AccountSection } from "./account-section"
 
@@ -18,6 +19,8 @@ export default function SettingsGeneralPage() {
       </div>
       <Separator />
       <ProfileForm />
+      <Separator />
+      <AutoUpdateForm />
       {/* <Separator />
       <AccountSection /> */}
     </div>

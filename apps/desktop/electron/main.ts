@@ -241,7 +241,7 @@ app.on('window-all-closed', () => {
 
 
 ipcMain.handle('check-for-updates', () => {
-    appUpdater.checkForUpdates();
+    appUpdater.checkForUpdatesManually();
 });
 
 ipcMain.handle('quit-and-install', () => {
