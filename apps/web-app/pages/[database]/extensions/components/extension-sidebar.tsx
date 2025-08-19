@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
+import { useKeyPress } from "ahooks"
 import { cn } from "@/lib/utils"
 import { useToast } from "@/components/ui/use-toast"
 import { useAllExtensions } from "@/apps/web-app/hooks/use-all-extensions"
@@ -35,6 +36,12 @@ export const ExtensionSidebar = ({ className }: ExtensionSidebarProps) => {
     isSidebarOpen,
     toggleSidebar,
   } = useExtensionSidebarStore()
+
+  // Keyboard shortcut: Shift + Cmd/Ctrl + F to toggle search
+  useKeyPress(["shift.ctrl.f", "shift.meta.f"], (e) => {
+    e.preventDefault()
+    setShowSearch(!showSearch)
+  })
 
   // Handle extension deletion with navigation
   const handleDeleteExtension = async (id: string) => {
