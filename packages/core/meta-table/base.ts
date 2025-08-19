@@ -1,4 +1,5 @@
 import type { DataSpace } from "../DataSpace"
+import { SqlQueryBuilder, type FindManyOptions } from "../sqlite/sql-query-builder"
 
 export interface MetaTable<T> {
   add(data: T): Promise<T>
@@ -144,5 +145,33 @@ export class BaseTableImpl<T = any> {
     return res.map((item) => {
       return this.toJson(item)
     })
+  }
+
+  public async findMany(
+    options: FindManyOptions<T> = {}
+  ): Promise<T[]> {
+    const { sql, params } = SqlQueryBuilder.buildFindMany(
+      this.name,
+      options
+    )
+
+    // Execute main query
+    const data = await this.dataSpace.exec2(sql, params)
+    const transformedData = data.map((item: any) => this.toJson(item))
+
+    return transformedData
+  }
+
+  public async count(
+    options: Omit<FindManyOptions<T>, 'select' | 'orderBy' | 'skip' | 'take'> = {}
+  ): Promise<number> {
+    const { countSql, countParams } = SqlQueryBuilder.buildFindMany(
+      this.name,
+      options
+    )
+
+    // Execute count query
+    const countResult = await this.dataSpace.exec2(countSql, countParams)
+    return countResult[0]?.count || 0
   }
 }
