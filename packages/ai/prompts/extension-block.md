@@ -29,8 +29,33 @@ Block extensions are lightweight, single-file UI components that provide custom 
     },
   }
   ```
-- **Context Interface**: `{ tableId: string, viewId: string }`
+- **URL Access**: Get `tableId` and `viewId` from `window.location.pathname`
 - **Data Access**: Use `eidos.currentSpace.table(tableId).rows.query({}, { viewId })`
+
+**Implementation Example:**
+
+```tsx
+export function MyTableView() {
+  const [rows, setRows] = useState([])
+
+  // Extract tableId and viewId from URL pathname
+  const pathParts = window.location.pathname.split("/")
+  const tableId = pathParts[pathParts.length - 2]
+  const viewId = pathParts[pathParts.length - 1]
+
+  useEffect(() => {
+    eidos.currentSpace.table(tableId).rows.query({}, { viewId }).then(setRows)
+  }, [tableId, viewId])
+
+  return (
+    <div>
+      {rows.map((row) => (
+        <div key={row.id}>{row.title}</div>
+      ))}
+    </div>
+  )
+}
+```
 
 ### 2. Extension Node Types (`type: "extNode"`)
 
@@ -47,8 +72,25 @@ Block extensions are lightweight, single-file UI components that provide custom 
     },
   }
   ```
-- **Context Interface**: `{ nodeId: string, type: string }`
+- **URL Access**: Get `nodeId` from `window.location.pathname`
 - **Data Access**: Use `eidos.currentSpace.extNode.getText(nodeId)`
+
+**Implementation Example:**
+
+```tsx
+export function MyExtNode() {
+  const [data, setData] = useState("")
+
+  // Extract nodeId from URL pathname
+  const nodeId = window.location.pathname.split("/").pop()
+
+  useEffect(() => {
+    eidos.currentSpace.extNode.getText(nodeId).then(setData)
+  }, [nodeId])
+
+  return <div>{data}</div>
+}
+```
 
 ### 3. Default Component Override (`type: "document"`)
 
@@ -65,9 +107,12 @@ Block extensions are lightweight, single-file UI components that provide custom 
 
 ### Meta Object Requirements
 
-- **Conditional Export**: Only export `meta` when specific extension functionality is needed
-- **Component Naming**: `meta.componentName` MUST match the actual exported component
-- **No Meta Behavior**: Without `meta`, component runs as regular React component
+- **Meta Export Rule**: Only export `meta` when:
+  - User explicitly requests a specific extension type (tableView, extNode, document)
+  - User code already contains an exported `meta` object that needs preservation
+- **Default Behavior**: If no specific extension type is requested and no existing meta is found, implement a generic React component without exporting meta
+- **Component Naming**: When exporting `meta`, `meta.componentName` MUST match the actual exported component
+- **No Meta Behavior**: Without `meta`, component runs as regular React component within the Eidos environment
 
 ### Data Retrieval Strategies
 
@@ -75,11 +120,11 @@ Block extensions are lightweight, single-file UI components that provide custom 
 - **Server-Side**: Export `loader` function for publishable extensions
 - **Error Handling**: Implement proper error boundaries and loading states
 
-### Context Handling
+### URL Parameter Handling
 
-- **Table Views**: Receive `{ ctx }` prop with `tableId` and `viewId`
-- **Extension Nodes**: Receive `{ ctx }` prop with `nodeId` and `type`
-- **Validation**: Always validate context type and handle edge cases
+- **Table Views**: Extract `tableId` and `viewId` from `window.location.pathname`
+- **Extension Nodes**: Extract `nodeId` from `window.location.pathname`
+- **Validation**: Always validate URL parameters and handle edge cases
 
 ## Security & Best Practices
 
@@ -91,11 +136,12 @@ Block extensions are lightweight, single-file UI components that provide custom 
 
 ## Code Generation Strategy
 
-1. **Analyze Requirements**: Determine which extension type best fits user needs
-2. **Generate Meta**: Create appropriate meta configuration if needed
-3. **Implement Component**: Write React component with proper context handling
-4. **Add Data Logic**: Implement data fetching with Eidos SDK
-5. **Style & Polish**: Apply responsive design and proper styling
+1. **Analyze Requirements**: Determine if user explicitly requests a specific extension type
+2. **Check Existing Code**: Look for existing `meta` exports in user code that need preservation
+3. **Meta Decision**: Only export `meta` if extension type is requested OR existing meta exists
+4. **Implement Component**: Write React component (with or without meta based on step 3)
+5. **Add Data Logic**: Implement data fetching with Eidos SDK if needed
+6. **Style & Polish**: Apply responsive design and proper styling
 
 ---
 
