@@ -1,20 +1,22 @@
 import { useContext, useEffect, useMemo, useRef, useState } from "react"
+import { FieldType } from "@/packages/core/fields/const"
+import type { IGridViewProperties, IView } from "@/packages/core/types/IView"
 import { useClickAway } from "ahooks"
 import {
   ArrowDownWideNarrowIcon,
   ArrowLeftToLine,
   ArrowRightToLine,
   ArrowUpNarrowWideIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  PlusIcon,
   Settings2,
   Trash2,
 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useLayer } from "react-laag"
 
-import { FieldType } from "@/packages/core/fields/const"
-import type { IGridViewProperties, IView } from "@/packages/core/types/IView"
 import { cn } from "@/lib/utils"
-import { useTableFields } from "@/apps/web-app/hooks/use-table"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -31,6 +33,7 @@ import {
   useCurrentView,
   useViewOperation,
 } from "@/components/table/hooks"
+import { useTableFields } from "@/apps/web-app/hooks/use-table"
 
 import { useColumns } from "../views/grid/hooks/use-col"
 import { useTableAppStore } from "../views/grid/store"
@@ -49,8 +52,10 @@ export const FieldEditorDropdown = (props: IFieldEditorDropdownProps) => {
     menu,
     setMenu,
     setIsFieldPropertiesEditorOpen,
+    setIsAddFieldEditorOpen,
     currentUiColumn,
     setCurrentUiColumn,
+    setFieldInsertPosition,
   } = useTableAppStore()
 
   const { isView } = useContext(TableContext)
@@ -64,7 +69,7 @@ export const FieldEditorDropdown = (props: IFieldEditorDropdownProps) => {
     tableName: tableName,
     viewId: props.view?.id,
   })
-  const { addSort, freezeColumn } = useViewOperation()
+  const { addSort, freezeColumn, updateView } = useViewOperation()
   const inputRef = useRef<HTMLInputElement>(null)
   const { fields } = useTableFields(tableName)
   const { showColumns } = useColumns(fields, props.view)
@@ -158,6 +163,28 @@ export const FieldEditorDropdown = (props: IFieldEditorDropdownProps) => {
     setMenu(undefined)
   }
 
+  const handleAddFieldLeft = () => {
+    if (currentUiColumn && currentView) {
+      const currentPosition =
+        props.view?.order_map?.[currentUiColumn.table_column_name] ?? 0
+
+      setFieldInsertPosition(currentPosition)
+      setIsAddFieldEditorOpen(true)
+      setMenu(undefined)
+    }
+  }
+
+  const handleAddFieldRight = () => {
+    if (currentUiColumn && currentView) {
+      const currentPosition =
+        props.view?.order_map?.[currentUiColumn.table_column_name] ?? 0
+
+      setFieldInsertPosition(currentPosition + 1)
+      setIsAddFieldEditorOpen(true)
+      setMenu(undefined)
+    }
+  }
+
   useClickAway(
     () => {
       setMenu(undefined)
@@ -205,6 +232,16 @@ export const FieldEditorDropdown = (props: IFieldEditorDropdownProps) => {
                 <ArrowDownWideNarrowIcon className="mr-2 h-4 w-4" />
                 {t("table.sortDescending")}
               </CommonMenuItem>
+
+              <CommonMenuItem className="pl-4" onClick={handleAddFieldLeft}>
+                <ChevronLeftIcon className="mr-2 h-4 w-4" />
+                {t("table.insertLeft")}
+              </CommonMenuItem>
+              <CommonMenuItem className="pl-4" onClick={handleAddFieldRight}>
+                <ChevronRightIcon className="mr-2 h-4 w-4" />
+                {t("table.insertRight")}
+              </CommonMenuItem>
+
               <CommonMenuItem className="pl-4" onClick={handleFreezeColumn}>
                 {showResetFreezeColumn ? (
                   <ArrowLeftToLine className="mr-2 h-4 w-4" />

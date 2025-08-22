@@ -127,16 +127,17 @@ export const useTableOperation = (tableName: string, databaseName: string) => {
   const addField = async (
     fieldName: string,
     fieldType: FieldType,
-    property?: any
+    property?: any,
+    tableColumnName?: string
   ) => {
     if (sqlite) {
-      const tableColumnName = generateColumnName()
+      const finalTableColumnName = tableColumnName || generateColumnName()
       const FieldClass = allFieldTypesMap[fieldType]
       const field = {
         name: fieldName,
         type: fieldType,
         table_name: tableName,
-        table_column_name: tableColumnName,
+        table_column_name: finalTableColumnName,
         property: property || FieldClass.getDefaultFieldProperty(),
       }
       await sqlite.addField(field)

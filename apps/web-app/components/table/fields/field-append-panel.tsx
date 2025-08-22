@@ -40,6 +40,8 @@ import {
 export function FieldAppendPanel({
   addField,
   uiColumns,
+  insertPosition,
+  onFieldCreated,
 }: {
   addField: (
     fieldName: string,
@@ -48,6 +50,8 @@ export function FieldAppendPanel({
     tableColumnName?: string
   ) => Promise<void>
   uiColumns: IField[]
+  insertPosition?: number
+  onFieldCreated?: (fieldName: string, position: number) => void
 }) {
   const { t } = useTranslation()
   const [currentField, setCurrentField] = React.useState<IField>()
@@ -169,6 +173,11 @@ export function FieldAppendPanel({
         currentField.property,
         currentField.table_column_name
       ).then(() => {
+        // 如果指定了插入位置，调用回调函数
+        if (insertPosition !== undefined && onFieldCreated) {
+          onFieldCreated(currentField.table_column_name, insertPosition)
+        }
+        
         setIsAddFieldEditorOpen(false)
         setCurrentField(undefined)
       })

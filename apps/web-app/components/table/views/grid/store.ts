@@ -35,6 +35,9 @@ interface ITableAppState {
   currentUiColumn?: IField
   setCurrentUiColumn: (currentUiColumn?: IField) => void
 
+  fieldInsertPosition?: number
+  setFieldInsertPosition: (position?: number) => void
+
   // const [currentPreviewIndex, setCurrentPreviewIndex] = useState(-1)
   currentPreviewIndex: number
   setCurrentPreviewIndex: (currentPreviewIndex: number) => void
@@ -77,6 +80,9 @@ export const useTableAppStore = create<ITableAppState>()((set) => ({
 
   currentUiColumn: undefined,
   setCurrentUiColumn: (currentUiColumn) => set({ currentUiColumn }),
+
+  fieldInsertPosition: undefined,
+  setFieldInsertPosition: (position) => set({ fieldInsertPosition: position }),
 
   currentPreviewIndex: -1,
   setCurrentPreviewIndex: (currentPreviewIndex) => set({ currentPreviewIndex }),
