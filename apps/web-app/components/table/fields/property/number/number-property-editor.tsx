@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { ChevronsUpDown } from "lucide-react"
 import { useTheme } from "next-themes"
+import { useTranslation } from "react-i18next"
 
 import type { NumberProperty } from "@/packages/core/fields/number"
 import { SelectField } from "@/packages/core/fields/select"
@@ -30,6 +31,7 @@ interface IFieldPropertyEditorProps {
 }
 
 export const NumberPropertyEditor = (props: IFieldPropertyEditorProps) => {
+  const { t } = useTranslation()
   const [format, setFormat] = useState<NumberProperty["format"]>(
     props.uiColumn.property?.format ?? "number"
   )
@@ -119,7 +121,7 @@ export const NumberPropertyEditor = (props: IFieldPropertyEditorProps) => {
         </Popover>
       </div> */}
 
-      <Label>Show as</Label>
+      <Label>{t("table.propertyEditor.number.showAs")}</Label>
       <div className="flex gap-2">
         <div
           className={`rounded-md cursor-pointer p-2 border flex-1 flex flex-col items-center justify-center h-20 ${
@@ -133,7 +135,7 @@ export const NumberPropertyEditor = (props: IFieldPropertyEditorProps) => {
           }}
         >
           <span className="text-2xl font-bold">42</span>
-          <span>Number</span>
+          <span>{t("table.propertyEditor.number.number")}</span>
         </div>
         <div
           className={`rounded-md cursor-pointer p-2 border flex-1 flex flex-col items-center justify-center h-20 ${
@@ -163,14 +165,14 @@ export const NumberPropertyEditor = (props: IFieldPropertyEditorProps) => {
             />
             <circle cx="14" cy="12" r="3" fill="currentColor" />
           </svg>
-          <span>Bar</span>
+          <span>{t("table.propertyEditor.number.bar")}</span>
         </div>
       </div>
 
       {showAs === "bar" && (
         <>
           <div className="flex items-center justify-between">
-            <Label>Color</Label>
+            <Label>{t("table.propertyEditor.number.color")}</Label>
             <Popover open={openColor} onOpenChange={setOpenColor}>
               <PopoverTrigger asChild>
                 <Button
@@ -195,8 +197,8 @@ export const NumberPropertyEditor = (props: IFieldPropertyEditorProps) => {
               </PopoverTrigger>
               <PopoverContent className="click-outside-ignore w-[200px] p-0">
                 <Command>
-                  <CommandInput placeholder="Search color..." />
-                  <CommandEmpty>No color found.</CommandEmpty>
+                  <CommandInput placeholder={t("table.propertyEditor.number.searchColor")} />
+                  <CommandEmpty>{t("table.propertyEditor.number.noColorFound")}</CommandEmpty>
                   <CommandGroup>
                     <CommandList>
                       {colors.map((colorOption) => (
@@ -228,7 +230,7 @@ export const NumberPropertyEditor = (props: IFieldPropertyEditorProps) => {
           </div>
 
           <div className="flex items-center justify-between">
-            <Label>Divide by</Label>
+            <Label>{t("table.propertyEditor.number.divideBy")}</Label>
             <Input
               type="number"
               className="w-[200px]"
@@ -242,7 +244,7 @@ export const NumberPropertyEditor = (props: IFieldPropertyEditorProps) => {
           </div>
 
           <div className="flex items-center justify-between">
-            <Label>Show number</Label>
+            <Label>{t("table.propertyEditor.number.showNumber")}</Label>
             <Switch
               checked={showNumber}
               onCheckedChange={(checked) => {

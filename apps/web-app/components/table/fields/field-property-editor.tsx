@@ -128,7 +128,7 @@ export const FieldPropertyEditor = ({
               />
             </div>
             <div className="flex items-center justify-between">
-              <Label>Database Column</Label>
+              <Label>{t("table.fieldConfiguration.databaseColumn")}</Label>
               <div className="w-[200px] rounded border bg-muted px-2 py-1 text-sm text-muted-foreground">
                 {currentField.table_column_name}
               </div>
