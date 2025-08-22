@@ -148,6 +148,11 @@ export const validateSqliteColumnName = (
     return { isValid: false, error: `Column name cannot be an Eidos reserved field: ${columnName}` }
   }
 
+  // Check if column name contains spaces in the middle
+  if (/\s/.test(columnName)) {
+    return { isValid: false, error: 'Column name cannot contain spaces' }
+  }
+
   // Check if column name already exists (case-insensitive)
   if (existingColumns && existingColumns.some(col => col.toLowerCase() === columnName.toLowerCase())) {
     return { isValid: false, error: `Column name already exists: ${columnName}` }
