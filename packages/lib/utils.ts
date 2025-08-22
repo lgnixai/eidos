@@ -80,6 +80,209 @@ export const generateColumnName = () => {
   return `cl_${Math.random().toString(36).substring(2, 6)}`
 }
 
+/**
+ * SQLite reserved keywords that cannot be used as column names
+ * Source: https://www.sqlite.org/lang_keywords.html
+ * Total: 147 keywords (as of 2022-11-26)
+ * 
+ * Note: SQLite supports Unicode identifiers including Chinese characters, emojis, etc.
+ * The only restriction is that identifiers cannot start with a digit.
+ */
+export const SQLITE_RESERVED_KEYWORDS = [
+  'ABORT', 'ACTION', 'ADD', 'AFTER', 'ALL', 'ALTER', 'ALWAYS', 'ANALYZE', 'AND', 'AS', 'ASC', 'ATTACH', 'AUTOINCREMENT',
+  'BEFORE', 'BEGIN', 'BETWEEN', 'BY', 'CASCADE', 'CASE', 'CAST', 'CHECK', 'COLLATE', 'COLUMN', 'COMMIT', 'CONFLICT', 'CONSTRAINT', 'CREATE', 'CROSS', 'CURRENT', 'CURRENT_DATE', 'CURRENT_TIME', 'CURRENT_TIMESTAMP',
+  'DATABASE', 'DEFAULT', 'DEFERRABLE', 'DEFERRED', 'DELETE', 'DESC', 'DETACH', 'DISTINCT', 'DO', 'DROP',
+  'EACH', 'ELSE', 'END', 'ESCAPE', 'EXCEPT', 'EXCLUDE', 'EXCLUSIVE', 'EXISTS', 'EXPLAIN',
+  'FAIL', 'FILTER', 'FIRST', 'FOLLOWING', 'FOR', 'FOREIGN', 'FROM', 'FULL', 'GENERATED', 'GLOB', 'GROUP', 'GROUPS',
+  'HAVING',
+  'IF', 'IGNORE', 'IMMEDIATE', 'IN', 'INDEX', 'INDEXED', 'INITIALLY', 'INNER', 'INSERT', 'INSTEAD', 'INTERSECT', 'INTO', 'IS', 'ISNULL',
+  'JOIN',
+  'KEY',
+  'LAST', 'LEFT', 'LIKE', 'LIMIT',
+  'MATCH', 'MATERIALIZED', 'NATURAL', 'NO', 'NOT', 'NOTHING', 'NOTNULL', 'NULL', 'NULLS',
+  'OF', 'OFFSET', 'ON', 'OR', 'ORDER', 'OTHERS', 'OUTER', 'OVER',
+  'PARTITION', 'PLAN', 'PRAGMA', 'PRECEDING', 'PRIMARY', 'QUERY', 'RAISE', 'RANGE', 'RECURSIVE', 'REFERENCES', 'REGEXP', 'REINDEX', 'RELEASE', 'RENAME', 'REPLACE', 'RESTRICT', 'RETURNING', 'RIGHT', 'ROLLBACK', 'ROW', 'ROWS',
+  'SAVEPOINT', 'SELECT', 'SET', 'TABLE', 'TEMP', 'TEMPORARY', 'THEN', 'TIES', 'TO', 'TRANSACTION', 'TRIGGER',
+  'UNBOUNDED', 'UNION', 'UNIQUE', 'UPDATE', 'USING',
+  'VACUUM', 'VALUES', 'VIEW', 'VIRTUAL',
+  'WHEN', 'WHERE', 'WINDOW', 'WITH', 'WITHOUT'
+] // Total: 147 keywords (verified against https://www.sqlite.org/lang_keywords.html)
+
+/**
+ * Eidos system reserved field names that cannot be used as user-defined field names
+ * These are system fields that are automatically created and managed by Eidos
+ */
+export const EIDOS_RESERVED_FIELDS = [
+  '_id',                    // Primary key field
+  '_created_time',          // Creation timestamp
+  '_last_edited_time',      // Last edit timestamp  
+  '_created_by',            // Creator user
+  '_last_edited_by',        // Last editor user
+  'title'                   // Default title field
+]
+
+/**
+ * Validates if a column name is legal for SQLite and doesn't conflict with Eidos reserved fields
+ * This is for database column names (table_column_name) that must follow SQLite standards
+ * SQLite supports Unicode identifiers including Chinese characters
+ * @param columnName The column name to validate
+ * @param existingColumns Optional array of existing column names to check for duplicates
+ * @returns An object with validation result and error message if invalid
+ */
+export const validateSqliteColumnName = (
+  columnName: string, 
+  existingColumns?: string[]
+): { isValid: boolean; error?: string } => {
+  // Check if empty
+  if (!columnName || columnName.trim() === '') {
+    return { isValid: false, error: 'Column name cannot be empty' }
+  }
+
+  // Check if it's a SQLite reserved keyword (case-insensitive)
+  if (SQLITE_RESERVED_KEYWORDS.includes(columnName.toUpperCase())) {
+    return { isValid: false, error: `Column name cannot be a SQLite reserved keyword: ${columnName}` }
+  }
+
+  // Check if it's an Eidos reserved field name (case-sensitive)
+  if (EIDOS_RESERVED_FIELDS.includes(columnName)) {
+    return { isValid: false, error: `Column name cannot be an Eidos reserved field: ${columnName}` }
+  }
+
+  // Check if column name already exists (case-insensitive)
+  if (existingColumns && existingColumns.some(col => col.toLowerCase() === columnName.toLowerCase())) {
+    return { isValid: false, error: `Column name already exists: ${columnName}` }
+  }
+
+  // Check length (SQLite has a limit of 63 characters for identifiers)
+  if (columnName.length > 63) {
+    return { isValid: false, error: 'Column name cannot exceed 63 characters' }
+  }
+
+  // SQLite supports Unicode identifiers, so we don't need strict character restrictions
+  // Just ensure it's not empty and doesn't start with a digit
+  if (/^\d/.test(columnName)) {
+    return { isValid: false, error: 'Column name cannot start with a digit' }
+  }
+
+  return { isValid: true }
+}
+
+/**
+ * Generates a valid SQLite column name with optional prefix
+ * Ensures the generated name doesn't conflict with SQLite reserved keywords or Eidos reserved fields
+ * @param prefix Optional prefix for the column name
+ * @returns A valid column name that doesn't conflict with reserved keywords or reserved fields
+ */
+export const generateValidSqliteColumnName = (prefix: string = 'cl'): string => {
+  let attempts = 0
+  const maxAttempts = 100
+
+  while (attempts < maxAttempts) {
+    const randomSuffix = Math.random().toString(36).substring(2, 6)
+    const columnName = `${prefix}_${randomSuffix}`
+
+    if (validateSqliteColumnName(columnName).isValid) {
+      return columnName
+    }
+
+    attempts++
+  }
+
+  // Fallback to a safe default
+  return `cl_${Date.now().toString(36)}`
+}
+
+/**
+ * Generates a database column name from a field name
+ * Converts user-friendly field names to valid SQLite column names
+ * @param fieldName The user-friendly field name
+ * @param existingColumns Optional array of existing column names to avoid duplicates
+ * @returns A valid SQLite column name
+ */
+export const generateColumnNameFromFieldName = (
+  fieldName: string, 
+  existingColumns?: string[]
+): string => {
+  if (!fieldName || fieldName.trim() === '') {
+    return generateValidSqliteColumnName()
+  }
+
+  // Convert to lowercase and replace spaces/special chars with underscores
+  let columnName = fieldName
+    .toLowerCase()
+    .trim()
+    .replace(/[\s\-\.\,\;\:\!\?\@\#\$\%\^\&\*\(\)\[\]\{\}\|\/\\]/g, '_') // Replace special chars with underscores
+    .replace(/_{2,}/g, '_') // Replace multiple underscores with single
+    .replace(/^_+|_+$/g, '') // Remove leading/trailing underscores
+
+  // Ensure it starts with a letter or underscore
+  if (/^\d/.test(columnName)) {
+    columnName = `f_${columnName}`
+  }
+
+  // If empty after processing, generate a default
+  if (!columnName) {
+    return generateValidSqliteColumnName()
+  }
+
+  // Truncate if too long (SQLite limit is 63 characters)
+  if (columnName.length > 63) {
+    columnName = columnName.substring(0, 60) + '_'
+  }
+
+  // Ensure it's not a reserved keyword or Eidos reserved field
+  if (SQLITE_RESERVED_KEYWORDS.includes(columnName.toUpperCase()) || 
+      EIDOS_RESERVED_FIELDS.includes(columnName)) {
+    columnName = `f_${columnName}`
+  }
+
+  // Check for duplicates and add suffix if needed
+  if (existingColumns) {
+    let finalColumnName = columnName
+    let counter = 1
+    
+    while (existingColumns.some(col => col.toLowerCase() === finalColumnName.toLowerCase())) {
+      finalColumnName = `${columnName}_${counter}`
+      counter++
+      
+      // Prevent infinite loop
+      if (counter > 100) {
+        return generateValidSqliteColumnName()
+      }
+    }
+    
+    return finalColumnName
+  }
+
+  return columnName
+}
+
+/**
+ * Validates if a field name is legal for Eidos (doesn't conflict with reserved fields)
+ * This is different from column name validation - field names are what users see in the UI
+ * Field names don't need to follow SQLite standards since they're only for display
+ * @param fieldName The field name to validate
+ * @returns An object with validation result and error message if invalid
+ */
+export const validateEidosFieldName = (fieldName: string): { isValid: boolean; error?: string } => {
+  // Check if empty
+  if (!fieldName || fieldName.trim() === '') {
+    return { isValid: false, error: 'Field name cannot be empty' }
+  }
+
+  // Check if it's an Eidos reserved field name (case-sensitive)
+  if (EIDOS_RESERVED_FIELDS.includes(fieldName)) {
+    return { isValid: false, error: `Field name cannot be an Eidos reserved field: ${fieldName}` }
+  }
+
+  // Check length (reasonable limit for display names)
+  if (fieldName.length > 100) {
+    return { isValid: false, error: 'Field name cannot exceed 100 characters' }
+  }
+
+  return { isValid: true }
+}
+
 export const getRawDocNameById = (id: string) => {
   return `doc_${id}`
 }

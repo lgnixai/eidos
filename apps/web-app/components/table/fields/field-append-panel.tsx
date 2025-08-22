@@ -1,6 +1,7 @@
 import * as React from "react"
+import { FieldType } from "@/packages/core/fields/const"
+import type { IField } from "@/packages/core/types/IField"
 import { useClickAway } from "ahooks"
-import { useTranslation } from "react-i18next"
 import {
   BaselineIcon,
   CalendarDaysIcon,
@@ -17,12 +18,18 @@ import {
   TextSearchIcon,
   UserIcon,
 } from "lucide-react"
+import { useTranslation } from "react-i18next"
 
-import { FieldType } from "@/packages/core/fields/const"
-import type { IField } from "@/packages/core/types/IField"
-import { cn, generateColumnName } from "@/lib/utils"
-import { useCurrentPathInfo } from "@/apps/web-app/hooks/use-current-pathinfo"
+import {
+  cn,
+  generateColumnNameFromFieldName,
+  generateValidSqliteColumnName,
+  validateSqliteColumnName,
+} from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { useCurrentPathInfo } from "@/apps/web-app/hooks/use-current-pathinfo"
 
 import { useTableAppStore } from "../views/grid/store"
 import {
@@ -37,7 +44,8 @@ export function FieldAppendPanel({
   addField: (
     fieldName: string,
     fieldType: FieldType,
-    property?: any
+    property?: any,
+    tableColumnName?: string
   ) => Promise<void>
   uiColumns: IField[]
 }) {
@@ -50,7 +58,11 @@ export function FieldAppendPanel({
     { name: t("table.field.text"), value: FieldType.Text, icon: BaselineIcon },
     { name: t("table.field.number"), value: FieldType.Number, icon: HashIcon },
     { name: t("table.field.select"), value: FieldType.Select, icon: TagIcon },
-    { name: t("table.field.multiSelect"), value: FieldType.MultiSelect, icon: TagsIcon },
+    {
+      name: t("table.field.multiSelect"),
+      value: FieldType.MultiSelect,
+      icon: TagsIcon,
+    },
     {
       name: t("table.field.checkbox"),
       value: FieldType.Checkbox,
@@ -58,7 +70,11 @@ export function FieldAppendPanel({
     },
     { name: t("table.field.rating"), value: FieldType.Rating, icon: StarIcon },
     { name: t("table.field.url"), value: FieldType.URL, icon: Link2Icon },
-    { name: t("table.field.date"), value: FieldType.Date, icon: CalendarDaysIcon },
+    {
+      name: t("table.field.date"),
+      value: FieldType.Date,
+      icon: CalendarDaysIcon,
+    },
     { name: t("table.field.file"), value: FieldType.File, icon: ImageIcon },
     {
       name: t("table.field.formula"),
@@ -122,29 +138,40 @@ export function FieldAppendPanel({
       }
       newFieldName = `${newFieldName} ${i}`
     }
-    // link field need to fill more property
-    if (field.value === FieldType.Link) {
-      setCurrentField({
-        name: newFieldName,
-        type: field.value,
-        table_column_name: generateColumnName(),
-        table_name: tableName!,
-        property: {},
-      })
-    } else {
-      addField(newFieldName, field.value).then(() =>
-        setIsAddFieldEditorOpen(false)
-      )
-    }
+    // All fields now need to configure table_column_name first
+    setCurrentField({
+      name: newFieldName,
+      type: field.value,
+      table_column_name: generateColumnNameFromFieldName(
+        newFieldName,
+        uiColumns.map(col => col.table_column_name)
+      ),
+      table_name: tableName!,
+      property: {},
+    })
   }
 
   const handleSaveField = () => {
     if (currentField) {
+      // Validate column name before saving
+      const columnNameValidation = validateSqliteColumnName(
+        currentField.table_column_name,
+        uiColumns.map(col => col.table_column_name)
+      )
+      if (!columnNameValidation.isValid) {
+        console.error('Invalid column name:', columnNameValidation.error)
+        return
+      }
+      
       addField(
         currentField.name,
         currentField.type,
-        currentField.property
-      ).then(() => setIsAddFieldEditorOpen(false))
+        currentField.property,
+        currentField.table_column_name
+      ).then(() => {
+        setIsAddFieldEditorOpen(false)
+        setCurrentField(undefined)
+      })
     }
   }
 
@@ -179,12 +206,103 @@ export function FieldAppendPanel({
       )}
     >
       {currentField ? (
-        <Editor
-          uiColumn={currentField!}
-          onPropertyChange={handleUpdateField}
-          onSave={handleSaveField}
-          isCreateNew
-        />
+        <div className="flex flex-col h-full">
+          {/* Field Basic Configuration */}
+          <div className="flex-none p-4 border-b">
+            <div className="mb-4">
+              <h3 className="text-base font-semibold text-foreground mb-1">
+                {t("table.fieldConfiguration.title")}
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                {t("table.fieldConfiguration.description")}
+              </p>
+            </div>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-foreground">
+                  {t("table.fieldConfiguration.fieldName")}
+                </Label>
+                <p className="text-xs text-muted-foreground">
+                  {t("table.fieldConfiguration.fieldNameDescription")}
+                </p>
+                <Input
+                  value={currentField.name}
+                  onChange={(e) => {
+                    const newFieldName = e.target.value
+                    // Generate table_column_name from field name
+                    const generatedColumnName =
+                      generateColumnNameFromFieldName(newFieldName)
+                    setCurrentField({
+                      ...currentField,
+                      name: newFieldName,
+                      table_column_name: generatedColumnName,
+                    })
+                  }}
+                  className="w-full text-sm"
+                  placeholder={t("table.fieldConfiguration.fieldNamePlaceholder")}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-foreground">
+                  {t("table.fieldConfiguration.databaseColumn")}
+                </Label>
+                <p className="text-xs text-muted-foreground">
+                  {t("table.fieldConfiguration.databaseColumnDescription")}
+                </p>
+                <Input
+                  value={currentField.table_column_name}
+                  onChange={(e) => {
+                    setCurrentField({
+                      ...currentField,
+                      table_column_name: e.target.value,
+                    })
+                  }}
+                  className="w-full text-sm"
+                  placeholder={t("table.fieldConfiguration.databaseColumnPlaceholder")}
+                />
+                {(() => {
+                  const validation = validateSqliteColumnName(
+                    currentField.table_column_name,
+                    uiColumns.map(col => col.table_column_name)
+                  )
+                  if (validation.isValid) {
+                    return (
+                      <span className="text-green-500 text-xs block">
+                        {t("table.fieldConfiguration.validColumnName")}
+                      </span>
+                    )
+                  } else {
+                    return (
+                      <span className="text-red-500 text-xs block">
+                        {t("table.fieldConfiguration.errorPrefix")} {validation.error}
+                      </span>
+                    )
+                  }
+                })()}
+              </div>
+            </div>
+          </div>
+
+          {/* <Editor
+            uiColumn={currentField!}
+            onPropertyChange={handleUpdateField}
+            onSave={handleSaveField}
+            isCreateNew
+          /> */}
+          <div className="flex-none p-4 border-t">
+            <Button 
+              onClick={handleSaveField} 
+              className="w-full"
+              disabled={!validateSqliteColumnName(
+                currentField.table_column_name,
+                uiColumns.map(col => col.table_column_name)
+              ).isValid}
+            >
+              {t("table.fieldConfiguration.createField")}
+            </Button>
+          </div>
+        </div>
       ) : (
         <div>
           <h2 className="relative px-6 text-lg font-semibold tracking-tight">
