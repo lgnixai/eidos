@@ -164,10 +164,8 @@ export const FieldEditorDropdown = (props: IFieldEditorDropdownProps) => {
   }
 
   const handleAddFieldLeft = () => {
-    if (currentUiColumn && currentView) {
-      const currentPosition =
-        props.view?.order_map?.[currentUiColumn.table_column_name] ?? 0
-
+    if (currentUiColumn && currentView && menu) {
+      const currentPosition = menu.col
       setFieldInsertPosition(currentPosition)
       setIsAddFieldEditorOpen(true)
       setMenu(undefined)
@@ -175,10 +173,8 @@ export const FieldEditorDropdown = (props: IFieldEditorDropdownProps) => {
   }
 
   const handleAddFieldRight = () => {
-    if (currentUiColumn && currentView) {
-      const currentPosition =
-        props.view?.order_map?.[currentUiColumn.table_column_name] ?? 0
-
+    if (currentUiColumn && currentView && menu) {
+      const currentPosition = menu.col
       setFieldInsertPosition(currentPosition + 1)
       setIsAddFieldEditorOpen(true)
       setMenu(undefined)
