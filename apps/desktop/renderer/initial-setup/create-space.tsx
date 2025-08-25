@@ -136,11 +136,9 @@ export function CreateSpaceGuide() {
       <div key={index} className={`ml-${level * 4}`}>
         <div className="flex items-center gap-2 py-1">
           {item.icon}
-          <span className="text-sm text-gray-700 dark:text-gray-300 font-mono">
-            {item.name}
-          </span>
+          <span className="text-sm text-foreground font-mono">{item.name}</span>
           {item.description && (
-            <span className="text-xs text-gray-500 ml-2">
+            <span className="text-xs text-muted-foreground ml-2">
               ← {item.description}
             </span>
           )}
@@ -158,7 +156,7 @@ export function CreateSpaceGuide() {
       <div className="max-w-3xl mx-auto">
         {/* Main Card */}
         <div
-          className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 overflow-hidden"
+          className="bg-background rounded-3xl shadow-2xl border border-border overflow-hidden"
           style={{ viewTransitionName: "setup-card" } as React.CSSProperties}
         >
           <div className="px-6 pt-6 pb-4">
@@ -168,11 +166,11 @@ export function CreateSpaceGuide() {
                 { viewTransitionName: "setup-header" } as React.CSSProperties
               }
             >
-              <PlusCircle className="w-12 h-12 mx-auto mb-4 text-blue-600 dark:text-blue-400" />
-              <h1 className="text-2xl font-semibold text-gray-900 dark:text-white mb-2">
+              <PlusCircle className="w-12 h-12 mx-auto mb-4 text-primary" />
+              <h1 className="text-2xl font-semibold text-foreground mb-2">
                 {t("space.select.createSpace", "Create Your First Space")}
               </h1>
-              <p className="text-gray-600 dark:text-gray-400 text-base">
+              <p className="text-muted-foreground text-base">
                 {t(
                   "space.create.description",
                   "A space is your personal workspace where you can organize documents, data, and files. Each space is completely independent and secure."
@@ -185,17 +183,17 @@ export function CreateSpaceGuide() {
           <div className="px-6 pb-6">
             <div className="flex gap-8">
               <div className="flex-[3]">
-                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                <h3 className="text-lg font-medium text-foreground mb-4">
                   {t("space.create.preview", "Space Structure Preview")}
                 </h3>
-                <div className="bg-gray-50 dark:bg-gray-900 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
+                <div className="bg-muted/50 rounded-xl p-4 border border-border">
                   <div className="font-mono text-sm">
                     {renderStructure(spaceStructure)}
                   </div>
                 </div>
               </div>
               <div className="flex-[2]">
-                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                <h3 className="text-lg font-medium text-foreground mb-4">
                   {t("space.create.setup", "Setup Your Space")}
                 </h3>
                 <Form {...form}>
@@ -205,7 +203,7 @@ export function CreateSpaceGuide() {
                       name="spaceName"
                       render={({ field }) => (
                         <FormItem>
-                          <Label className="text-gray-700 dark:text-gray-300 font-medium">
+                          <Label className="text-foreground font-medium">
                             {t("space.select.spaceName", "Space Name")}
                           </Label>
                           <FormControl>
@@ -229,7 +227,7 @@ export function CreateSpaceGuide() {
                         size="lg"
                         onClick={onCreateSpace}
                         disabled={isLoading}
-                        className="flex-1 h-12 text-base font-medium bg-blue-600 hover:bg-blue-700 text-white shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                        className="flex-1 h-12 text-base font-medium bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                       >
                         {isLoading ? (
                           <div className="flex items-center gap-2">

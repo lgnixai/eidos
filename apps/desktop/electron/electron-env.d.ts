@@ -38,7 +38,7 @@ interface Window {
         openFolder: (folder: string) => Promise<void>
         isDataFolderSet: boolean
         isNeverCreatedSpace: boolean
-        checkIsDataFolderSet: () => boolean
+        checkIsDataFolderSet: () => Promise<boolean>
         checkIsNeverCreatedSpace: () => Promise<boolean>
         reloadApp: () => Promise<void>
         minimizeWindow: () => void

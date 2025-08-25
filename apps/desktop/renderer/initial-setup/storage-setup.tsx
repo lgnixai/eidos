@@ -167,6 +167,17 @@ export function InitialStorageSetup() {
     try {
       // Set the data folder using the same method as desktop settings
       await window.eidos.config.set("dataFolder", data.dataFolder)
+      const isDataFolderSet = await window.eidos.checkIsDataFolderSet()
+      if (!isDataFolderSet) {
+        toast({
+          title: t ? t("common.error") : "Error",
+          description: t
+            ? t("settings.storage.failedToSetDataFolder")
+            : "Failed to complete setup",
+          variant: "destructive",
+        })
+        return
+      }
       navigateWithTransition("/create-space")
     } catch (error) {
       console.error("Failed to set data folder:", error)
@@ -186,11 +197,11 @@ export function InitialStorageSetup() {
   const getThemeIcon = (themeValue: string) => {
     switch (themeValue) {
       case "dark":
-        return <Moon className="w-4 h-4 text-gray-500" />
+        return <Moon className="w-4 h-4 text-muted-foreground" />
       case "light":
-        return <Sun className="w-4 h-4 text-gray-500" />
+        return <Sun className="w-4 h-4 text-muted-foreground" />
       default:
-        return <Sun className="w-4 h-4 text-gray-500" />
+        return <Sun className="w-4 h-4 text-muted-foreground" />
     }
   }
 
@@ -199,7 +210,7 @@ export function InitialStorageSetup() {
       <div className="max-w-lg mx-auto">
         {/* Main Card */}
         <div
-          className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 overflow-hidden"
+          className="bg-card rounded-3xl shadow-2xl border overflow-hidden"
           style={{ viewTransitionName: "setup-card" } as React.CSSProperties}
         >
           <div className="px-6 pt-6 pb-4">
@@ -209,13 +220,13 @@ export function InitialStorageSetup() {
                 { viewTransitionName: "setup-header" } as React.CSSProperties
               }
             >
-              <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center">
-                <FolderOpen className="w-8 h-8 text-white" />
+              <div className="w-16 h-16 mx-auto mb-4 bg-primary rounded-2xl flex items-center justify-center">
+                <FolderOpen className="w-8 h-8 text-primary-foreground" />
               </div>
-              <h1 className="text-2xl font-semibold text-gray-900 dark:text-white mb-2">
+              <h1 className="text-2xl font-semibold text-card-foreground mb-2">
                 {t ? t("setup.title") : "Welcome to Eidos"}
               </h1>
-              <p className="text-gray-600 dark:text-gray-400 text-base">
+              <p className="text-muted-foreground text-base">
                 {t
                   ? t("setup.subtitle")
                   : "Let's set up your data storage and preferences to get started"}
@@ -233,25 +244,23 @@ export function InitialStorageSetup() {
                   name="dataFolder"
                   render={({ field }) => (
                     <FormItem>
-                      <label className="text-gray-700 dark:text-gray-300 font-medium">
-                        {t ? t("settings.storage.dataFolder") : "Data Folder"}
-                      </label>
+                      <label className="text-card-foreground font-medium"></label>
                       <FormControl>
                         <div className="flex items-stretch gap-2">
                           {/* Path Display */}
                           <div className="flex-1 min-w-0 relative">
-                            <div className="px-3 py-1 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg h-full flex items-center">
+                            <div className="px-3 py-1 bg-muted border rounded-lg h-full flex items-center">
                               {dataFolder ? (
                                 <div className="flex-1 min-w-0">
                                   <div
-                                    className="font-mono text-xs text-gray-700 dark:text-gray-300 truncate"
+                                    className="font-mono text-xs text-card-foreground truncate"
                                     title={dataFolder}
                                   >
                                     {dataFolder}
                                   </div>
                                 </div>
                               ) : (
-                                <span className="text-gray-500 text-sm">
+                                <span className="text-muted-foreground text-sm">
                                   {t
                                     ? t("settings.storage.selectDataFolder")
                                     : "No folder selected"}
@@ -266,7 +275,7 @@ export function InitialStorageSetup() {
                               type="button"
                               onClick={handleSelectDataFolder}
                               size="sm"
-                              className="px-4 bg-blue-600 hover:bg-blue-700 text-white whitespace-nowrap"
+                              className="px-4 whitespace-nowrap"
                             >
                               {t ? t("common.select") : "Select"}
                             </Button>
@@ -288,7 +297,7 @@ export function InitialStorageSetup() {
                         </div>
                       </FormControl>
 
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                      <p className="text-xs text-muted-foreground mt-2">
                         {t
                           ? t("setup.dataFolder.description")
                           : "Choose where to store your Eidos data. You can change this later in settings."}
@@ -305,9 +314,7 @@ export function InitialStorageSetup() {
                     name="language"
                     render={({ field }) => (
                       <FormItem>
-                        <label className="text-gray-700 dark:text-gray-300 font-medium">
-                          {t ? t("settings.appearance.language") : "Language"}
-                        </label>
+                        <label className="text-card-foreground font-medium"></label>
                         <FormControl>
                           <Select
                             onValueChange={field.onChange}
@@ -332,9 +339,7 @@ export function InitialStorageSetup() {
                     name="theme"
                     render={({ field }) => (
                       <FormItem>
-                        <label className="text-gray-700 dark:text-gray-300 font-medium">
-                          {t ? t("settings.appearance.theme") : "Theme"}
-                        </label>
+                        <label className="text-card-foreground font-medium"></label>
                         <FormControl>
                           <Select
                             onValueChange={field.onChange}
@@ -370,7 +375,7 @@ export function InitialStorageSetup() {
                     onClick={onSubmit}
                     size="lg"
                     disabled={isLoading || !dataFolder}
-                    className="w-full h-12 text-base font-medium bg-blue-600 hover:bg-blue-700 text-white shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                    className="w-full h-12 text-base font-medium shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                   >
                     {isLoading ? (
                       <div className="flex items-center gap-2">

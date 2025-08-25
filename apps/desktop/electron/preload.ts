@@ -4,7 +4,6 @@ import { contextBridge, ipcRenderer } from 'electron';
 import { getOriginPrivateDirectory } from 'native-file-system-adapter';
 
 import type { AppConfig } from './config/index';
-import { ConfigManager } from './config/index';
 import type { PlaygroundFile } from './file-system/playground';
 import nodeAdapter from './lib/node-adapter';
 import type { ApiAgentStatus } from './server/api-agent';
@@ -12,11 +11,9 @@ import type { ApiAgentStatus } from './server/api-agent';
 type IpcListener = (event: Electron.IpcRendererEvent, ...args: any[]) => void;
 
 async function main() {
-  const userConfigPath = (await ipcRenderer.invoke('get-user-config-path'));
   const userDataPath = (await ipcRenderer.invoke('get-app-data-folder'));
   const openTabs = await ipcRenderer.invoke('get-open-tabs') as string[]
   const dirHandle = await getOriginPrivateDirectory(nodeAdapter, userDataPath)
-  const configManager = new ConfigManager(userConfigPath);
 
   const listenerMap = new Map<string, Map<string, IpcListener>>();
   let listenerIdCounter = 0;
@@ -30,8 +27,9 @@ async function main() {
     return (await spaceFileSystem.list()).length === 0
   }
 
-  const checkIsDataFolderSet = () => {
-    return !!configManager.get('dataFolder')
+  const checkIsDataFolderSet = async () => {
+    const dataFolder = await ipcRenderer.invoke('get-config', 'dataFolder')
+    return !!dataFolder
   }
 
 
@@ -133,7 +131,7 @@ async function main() {
       get: (key: keyof AppConfig) => ipcRenderer.invoke('get-config', key),
       set: (key: keyof AppConfig, value: any) => ipcRenderer.invoke('set-config', key, value),
     },
-    isDataFolderSet: checkIsDataFolderSet(),
+    isDataFolderSet: await checkIsDataFolderSet(),
     isNeverCreatedSpace: await checkIsNeverCreatedSpace(),
     checkIsDataFolderSet: checkIsDataFolderSet,
     checkIsNeverCreatedSpace: checkIsNeverCreatedSpace,

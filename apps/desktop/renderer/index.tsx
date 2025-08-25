@@ -68,8 +68,8 @@ const router = createBrowserRouter([
       {
         path: "/",
         element: <LandingPage />,
-        loader: ({ params }) => {
-          if (!window.eidos.checkIsDataFolderSet()) {
+        loader: async ({ params }) => {
+          if (!(await window.eidos.checkIsDataFolderSet())) {
             console.log(
               "redirect to initial-setup",
               window.eidos.checkIsDataFolderSet()
@@ -169,7 +169,7 @@ const router = createBrowserRouter([
         element: <DesktopSpaceLayout />,
         loader: async ({ params }) => {
           // check the space is exist
-          if (!window.eidos.checkIsDataFolderSet()) {
+          if (!(await window.eidos.checkIsDataFolderSet())) {
             return redirect("/initial-setup")
           }
           const spaceNames = await window.eidos.spaceFileSystem.list()
