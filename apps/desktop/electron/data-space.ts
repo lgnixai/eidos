@@ -81,6 +81,17 @@ function requestFromRenderer(webContents: WebContents, arg: any) {
 
 async function initUDF(db: EidosDatabase) {
     try {
+        // Check if ExtensionTableName table exists before querying it
+        const tableExists = await db.selectObjects(
+            `SELECT name FROM sqlite_master WHERE type='table' AND name=?`,
+            [ExtensionTableName]
+        );
+        
+        if (tableExists.length === 0) {
+            console.warn(`Extension table ${ExtensionTableName} does not exist. Skipping UDF initialization.`);
+            return;
+        }
+        
         // Query UDF extensions directly from database using the same SQL as getUDFExtensions
         const sql = `
             SELECT * FROM ${ExtensionTableName}

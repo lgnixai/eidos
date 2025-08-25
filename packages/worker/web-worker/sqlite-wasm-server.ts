@@ -6,6 +6,7 @@ import { logger } from "@/lib/env"
 import { EidosDataEventChannelName } from "@/lib/const"
 import type { BaseServerDatabase } from "@/packages/core/sqlite/interface"
 import { DataSpace } from "../../core/DataSpace"
+import { ExtensionTableName } from "@/packages/core/sqlite/const"
 
 const log = logger.info
 const error = logger.error
@@ -201,9 +202,21 @@ export class SqliteServer {
 
     async function createUDF(db: BaseServerDatabase) {
       const globalKv = new Map()
+      
+      // Check if ExtensionTableName table exists before querying it
+      const tableExists = await db.selectObjects(
+        `SELECT name FROM sqlite_master WHERE type='table' AND name=?`,
+        [ExtensionTableName]
+      )
+      
+      if (tableExists.length === 0) {
+        console.warn(`Extension table ${ExtensionTableName} does not exist. Skipping UDF creation.`)
+        return
+      }
+      
       // udf
       const scripts = await db.selectObjects(
-        `SELECT DISTINCT name, code FROM eidos__scripts WHERE type = 'udf' AND enabled = 1`
+        `SELECT DISTINCT name, code FROM ${ExtensionTableName} WHERE type = 'udf' AND enabled = 1`
       )
       scripts.forEach((script) => {
         const { code, name } = script
