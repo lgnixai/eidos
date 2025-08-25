@@ -16,6 +16,7 @@ import { AppUpdater } from './updater';
 import { createWindow } from './window-manager/createWindow';
 import { WorkerManager } from './worker-manager';
 import console from 'electron-log';
+import { fetchAvailableModels } from '@/packages/ai/helper';
 
 
 process.on('uncaughtException', (error) => {
@@ -403,4 +404,14 @@ ipcMain.handle('fetch', async (_, url, options) => {
         url: res.url,
         body: body
     };
+});
+
+ipcMain.handle('fetch-available-models', async (event, apiKey: string, providerType: string, baseUrl?: string) => {
+    try {
+        const models = await fetchAvailableModels(apiKey, providerType as any, baseUrl);
+        return { success: true, models };
+    } catch (error) {
+        console.error('Error fetching available models:', error);
+        return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
+    }
 });

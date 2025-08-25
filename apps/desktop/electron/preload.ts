@@ -190,6 +190,10 @@ async function main() {
     },
     getApiAgentStatus: () => ipcRenderer.invoke('get-api-agent-status'),
 
+    // AI helper functions
+    fetchAvailableModels: (apiKey: string, providerType: string, baseUrl?: string) => 
+      ipcRenderer.invoke('fetch-available-models', apiKey, providerType, baseUrl),
+
     fetch(url: string, options: RequestInit = {}): Promise<Response> {
       return ipcRenderer.invoke('fetch', url, options).then((data: any) => {
         // Create a simple Response-like object

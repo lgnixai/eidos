@@ -18,6 +18,7 @@ import {
   LLM_PROVIDER_INFO,
   fetchAvailableModels,
 } from "@/packages/ai/helper"
+import { isDesktopMode } from "@/lib/env"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -201,11 +202,17 @@ export const LLMProviderForm = ({
       setAvailableModels([])
 
       try {
-        const models = await fetchAvailableModels(
-          apiKey || "key for ollama",
-          providerType,
-          baseUrl
-        )
+        const models = isDesktopMode 
+          ? await window.eidos.fetchAvailableModels(
+              apiKey || "key for ollama",
+              providerType,
+              baseUrl
+            ).then(result => result.success ? (result.models || []) : [])
+          : await fetchAvailableModels(
+              apiKey || "key for ollama",
+              providerType,
+              baseUrl
+            )
         setAvailableModels(models)
       } catch (error) {
         console.error(error)
