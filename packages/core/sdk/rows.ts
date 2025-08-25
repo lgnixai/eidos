@@ -10,6 +10,7 @@ import type { DataSpace } from "../DataSpace"
 import type { TableManager } from "./table"
 import { getFieldInstance } from "../fields"
 import { workerStore } from "../rpc"
+import { SqlQueryBuilder, type FindManyOptions } from "../sqlite/sql-query-builder"
 
 export class RowsManager {
   dataSpace: DataSpace
@@ -161,6 +162,7 @@ export class RowsManager {
   }
 
   /**
+   * @deprecated Use findMany instead. This method will be removed in a future version.
    * @param filter a filter object, the key is field name, the value is field value
    * @param options
    * @returns
@@ -453,5 +455,49 @@ export class RowsManager {
         rowId: id,
       },
     })
+  }
+
+  /**
+   * Find many rows with advanced query options
+   * @param options Query options including where, orderBy, skip, take, select
+   * @returns Array of transformed rows
+   */
+  public async findMany(
+    options: FindManyOptions<Record<string, any>> = {}
+  ): Promise<Record<string, any>[]> {
+    const { sql, params } = SqlQueryBuilder.buildFindMany(
+      this.table.rawTableName,
+      options
+    )
+
+    // Execute main query
+    const data = await this.dataSpace.exec2(sql, params)
+
+    return data;
+    // Transform raw data to readable format
+    const { fieldRawColumnNameFieldMap } = await this.getFieldMap()
+    const transformedData = data.map((item: any) =>
+      RowsManager.rawData2Json(item, fieldRawColumnNameFieldMap)
+    )
+
+    return transformedData
+  }
+
+  /**
+   * Count rows with advanced query options
+   * @param options Query options excluding select, orderBy, skip, take
+   * @returns Count of matching rows
+   */
+  public async count(
+    options: Omit<FindManyOptions<Record<string, any>>, 'select' | 'orderBy' | 'skip' | 'take'> = {}
+  ): Promise<number> {
+    const { countSql, countParams } = SqlQueryBuilder.buildFindMany(
+      this.table.rawTableName,
+      options
+    )
+
+    // Execute count query
+    const countResult = await this.dataSpace.exec2(countSql, countParams)
+    return countResult[0]?.count || 0
   }
 }

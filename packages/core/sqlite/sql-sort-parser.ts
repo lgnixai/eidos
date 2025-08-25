@@ -1,16 +1,22 @@
 import type {
   ExprRef,
   OrderByStatement,
-  SelectFromStatement} from "pgsql-ast-parser";
+  SelectFromStatement
+} from "pgsql-ast-parser";
 import {
   astMapper,
   parseFirst,
   toSql,
 } from "pgsql-ast-parser"
 
-import type { OrderByItem } from "@/components/table/view-sort-editor"
 
 import type { IField } from "../types/IField"
+
+
+export type OrderByItem = {
+  column: string
+  order: string | "ASC" | "DESC"
+}
 
 export const getSortColumns = (query: string) => {
   const ast = parseFirst(query) as SelectFromStatement

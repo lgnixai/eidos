@@ -85,6 +85,11 @@ type ILookupContext = {
 type ExtensionStatus = "all" | "enabled" | "disabled";
 type BindingType = "table" | "secret" | "text";
 type ExtensionMeta = TableViewMeta | ExtNodeMeta | ToolMeta | TableActionMeta | UDFMeta;
+type IBinding = {
+  type: BindingType;
+  value: string;
+};
+type IBindings = Record<string, IBinding>;
 interface IExtension<T extends ExtensionMeta = ExtensionMeta> {
   id: string;
   slug: string;
@@ -98,10 +103,9 @@ interface IExtension<T extends ExtensionMeta = ExtensionMeta> {
   marketplace_id?: string;
   ts_code?: string;
   enabled?: boolean;
-  bindings?: Record<string, {
-    type: BindingType;
-    value: string;
-  }>;
+  bindings?: IBindings;
+  created_at?: string;
+  updated_at?: string;
 }
 declare enum ScriptExtensionType {
   TableAction = "tableAction",
@@ -127,7 +131,7 @@ interface ExtNodeMeta {
   extNode: {
     title: string;
     description: string;
-    extHandler: string[];
+    type: string;
   };
 }
 interface ToolMeta {
@@ -229,6 +233,25 @@ declare abstract class BaseServerDatabase {
 }
 //# sourceMappingURL=interface.d.ts.map
 //#endregion
+//#region sqlite/sql-query-builder.d.ts
+interface FindManyOptions<T = any> {
+  where?: Partial<T> | WhereCondition<T>;
+  orderBy?: OrderByOption<T> | OrderByOption<T>[];
+  skip?: number;
+  take?: number;
+  select?: Partial<Record<keyof T, boolean>>;
+  include?: Partial<Record<keyof T, boolean>>;
+}
+interface WhereCondition<T = any> {
+  AND?: (WhereCondition<T> | Partial<T>)[];
+  OR?: (WhereCondition<T> | Partial<T>)[];
+  NOT?: WhereCondition<T> | Partial<T>;
+  [key: string]: any;
+}
+interface OrderByOption<T = any> {
+  [key: string]: 'asc' | 'desc' | undefined;
+}
+//#endregion
 //#region meta-table/base.d.ts
 interface MetaTable<T> {
   add(data: T): Promise<T>;
@@ -268,6 +291,8 @@ declare class BaseTableImpl<T = any> {
     order?: "ASC" | "DESC";
     fields?: string[];
   }): Promise<T[]>;
+  findMany(options?: FindManyOptions<T>): Promise<T[]>;
+  count(options?: Omit<FindManyOptions<T>, 'select' | 'orderBy' | 'skip' | 'take'>): Promise<number>;
 }
 //# sourceMappingURL=base.d.ts.map
 //#endregion
@@ -733,20 +758,37 @@ declare class EmbeddingTable extends BaseTableImpl implements BaseTable<IEmbeddi
 //# sourceMappingURL=embedding.d.ts.map
 //#endregion
 //#region meta-table/extension.d.ts
+/**
+ * Extension statistics interface
+ */
+interface ExtensionStats {
+  scripts: {
+    total: number;
+    tool: number;
+    tableAction: number;
+    udf: number;
+    others: number;
+  };
+  blocks: {
+    total: number;
+    tableView: number;
+    extNode: number;
+    others: number;
+  };
+  total: number;
+}
 declare class ExtensionTable extends BaseTableImpl<IExtension> implements BaseTable<IExtension> {
   name: string;
   createTableSql: string;
   JSONFields: string[];
+  static isUDFExtension(extension: IExtension): boolean;
   getTableViews(): Promise<IExtension<TableViewMeta>[]>;
   getTableViewExtensionInfoByExtType(viewType: string): Promise<IExtension<TableViewMeta>[]>;
   getTableViewsInfo(): Promise<IExtension<TableViewMeta>[]>;
   del(id: string): Promise<boolean>;
   enable(id: string): Promise<boolean>;
   disable(id: string): Promise<boolean>;
-  updateBindings(id: string, bindings: Record<string, {
-    type: string;
-    value: string;
-  }>): Promise<boolean>;
+  updateBindings(id: string, bindings: IBindings): Promise<boolean>;
   /**
    * Get all block extensions by status
    */
@@ -758,7 +800,7 @@ declare class ExtensionTable extends BaseTableImpl<IExtension> implements BaseTa
   /**
    * Get ExtNode extensions by handler type
    */
-  getExtNodeExtensionsByHandler(handler: string, status?: ExtensionStatus): Promise<IExtension[]>;
+  getExtNodeExtensionsByHandlerType(type: string, status?: ExtensionStatus): Promise<IExtension[]>;
   /**
    * Get all script extensions by status
    */
@@ -779,6 +821,7 @@ declare class ExtensionTable extends BaseTableImpl<IExtension> implements BaseTa
    * Get extension by slug
    */
   getExtensionBySlug(slug: string): Promise<IExtension | null>;
+  getExtensionBySlugOrId(idOrSlug: string): Promise<IExtension | null>;
   /**
    * Check if a slug already exists
    */
@@ -809,6 +852,18 @@ declare class ExtensionTable extends BaseTableImpl<IExtension> implements BaseTa
    */
   getExtensionCount(type?: "script" | "block", status?: ExtensionStatus): Promise<number>;
   /**
+   * Get comprehensive extension statistics
+   */
+  getExtensionStats(status?: ExtensionStatus): Promise<ExtensionStats>;
+  /**
+   * Get count for a specific extension meta type
+   */
+  getExtensionCountByMetaType(extensionType: "script" | "block", metaType: string, status?: ExtensionStatus): Promise<number>;
+  /**
+   * Get extensions by meta type (including "others" for empty extensions)
+   */
+  getExtensionsByMetaType(extensionType: "script" | "block", metaType: string, status?: ExtensionStatus): Promise<IExtension[]>;
+  /**
    * Override add method to ensure slug uniqueness
    */
   add(data: Partial<IExtension>, db?: BaseServerDatabase): Promise<IExtension>;
@@ -825,7 +880,6 @@ interface IExtNode {
   id: string;
   blob?: Buffer;
   text?: string;
-  path?: string;
   type: string;
   created_at?: string;
   updated_at?: string;
@@ -839,9 +893,7 @@ declare class ExtNodeTable extends BaseTableImpl<IExtNode> implements BaseTable<
   getExtNode(id: string): Promise<IExtNode | null>;
   getBlob(id: string): Promise<Buffer | null>;
   getText(id: string): Promise<string | null>;
-  getPath(id: string): Promise<string | null>;
   setBlob(id: string, blob: Buffer): Promise<boolean>;
-  setPath(id: string, path: string): Promise<boolean>;
   setType(id: string, type: string): Promise<boolean>;
   setText(id: string, text: string): Promise<boolean>;
   deleteExtNode(id: string): Promise<boolean>;
@@ -1124,6 +1176,18 @@ declare class RowsManager {
    * @param id row id
    */
   highlight(id: string): Promise<void>;
+  /**
+   * Find many rows with advanced query options
+   * @param options Query options including where, orderBy, skip, take, select
+   * @returns Array of transformed rows
+   */
+  findMany(options?: FindManyOptions<Record<string, any>>): Promise<Record<string, any>[]>;
+  /**
+   * Count rows with advanced query options
+   * @param options Query options excluding select, orderBy, skip, take
+   * @returns Count of matching rows
+   */
+  count(options?: Omit<FindManyOptions<Record<string, any>>, 'select' | 'orderBy' | 'skip' | 'take'>): Promise<number>;
 }
 //# sourceMappingURL=rows.d.ts.map
 //#endregion
@@ -1454,6 +1518,7 @@ declare class DataSpace {
     isUDFWithCtx?: boolean;
     enableFTS?: boolean;
   });
+  getSpaceName(): Promise<string>;
   semanticSearch: (params: {
     tableName: string;
     query: string;
@@ -1574,7 +1639,7 @@ declare class DataSpace {
   listActions(): Promise<any[]>;
   addExtension(data: IExtension): Promise<void>;
   listScripts(status?: ExtensionStatus): Promise<IExtension<ExtensionMeta>[]>;
-  getScript(id: string): Promise<IExtension<ExtensionMeta> | null>;
+  getScript(idOrSlug: string): Promise<IExtension<ExtensionMeta> | null>;
   deleteExtension(id: string): Promise<void>;
   updateExtension(data: IExtension): Promise<void>;
   enableExtension(id: string): Promise<void>;

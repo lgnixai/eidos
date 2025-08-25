@@ -1,8 +1,8 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from "react"
+import type { OrderByItem } from "@/packages/core/sqlite/sql-sort-parser"
 import { XIcon } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
-import { useUiColumns } from "@/apps/web-app/hooks/use-ui-columns"
 import { Button } from "@/components/ui/button"
 import {
   Select,
@@ -11,15 +11,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { useUiColumns } from "@/apps/web-app/hooks/use-ui-columns"
 
 import { FieldSelector } from "./fields/field-selector"
 import { TableContext, useCurrentView } from "./hooks"
 import { useViewQuery } from "./hooks/use-view-query"
-
-export type OrderByItem = {
-  column: string
-  order: string | "ASC" | "DESC"
-}
 
 interface IViewEditorProps {
   onSortChange?: (sort: OrderByItem[]) => void
