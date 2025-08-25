@@ -1,10 +1,9 @@
 import { useState } from "react"
-import { ChevronsUpDown } from "lucide-react"
-
 import type { ILinkProperty } from "@/packages/core/fields/link"
 import type { IField } from "@/packages/core/types/IField"
-import { generateColumnName } from "@/lib/utils"
-import { useAllNodes } from "@/apps/web-app/hooks/use-nodes"
+import { ChevronsUpDown } from "lucide-react"
+
+import { cn, generateColumnName } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
   Command,
@@ -20,12 +19,14 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import { useAllNodes } from "@/apps/web-app/hooks/use-nodes"
 
 interface IFieldPropertyEditorProps {
   uiColumn: IField<ILinkProperty>
   onPropertyChange: (property: ILinkProperty) => void
   onSave?: () => void
   isCreateNew?: boolean
+  showSaveButton?: boolean
 }
 
 export const LinkPropertyEditor = (props: IFieldPropertyEditorProps) => {
@@ -48,7 +49,9 @@ export const LinkPropertyEditor = (props: IFieldPropertyEditorProps) => {
   if (!props.isCreateNew) return null
 
   return (
-    <div className="flex flex-col gap-2 p-2">
+    <div
+      className={cn("flex flex-col gap-2", props.isCreateNew && "px-4 py-2")}
+    >
       <div className="flex items-center justify-between">
         <Label>Table</Label>
         <Popover open={open} onOpenChange={setOpen}>
@@ -89,7 +92,7 @@ export const LinkPropertyEditor = (props: IFieldPropertyEditorProps) => {
           </PopoverContent>
         </Popover>
       </div>
-      {props.isCreateNew && <Button onClick={props.onSave}>Save</Button>}
+      {props.showSaveButton && <Button onClick={props.onSave}>Save</Button>}
     </div>
   )
 }

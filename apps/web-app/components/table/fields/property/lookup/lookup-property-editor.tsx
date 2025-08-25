@@ -1,20 +1,25 @@
 import { useMemo, useState } from "react"
-
 import { FieldType } from "@/packages/core/fields/const"
 import type { ILinkProperty } from "@/packages/core/fields/link"
 import type { ILookupProperty } from "@/packages/core/fields/lookup"
 import type { IField } from "@/packages/core/types/IField"
-import { useSqlite } from "@/apps/web-app/hooks/use-sqlite"
-import { useCurrentUiColumns, useUiColumns } from "@/apps/web-app/hooks/use-ui-columns"
+
+import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { FieldSelector } from "@/components/table/fields/field-selector"
+import { useSqlite } from "@/apps/web-app/hooks/use-sqlite"
+import {
+  useCurrentUiColumns,
+  useUiColumns,
+} from "@/apps/web-app/hooks/use-ui-columns"
 
 interface IFieldPropertyEditorProps {
   uiColumn: IField<ILookupProperty>
   onPropertyChange: (property: any) => void
   onSave?: () => void
   isCreateNew?: boolean
+  showSaveButton?: boolean
 }
 
 export const LookupPropertyEditor = (props: IFieldPropertyEditorProps) => {
@@ -38,6 +43,7 @@ export const LookupPropertyEditor = (props: IFieldPropertyEditorProps) => {
   const { uiColumns: linkTableFields } = useUiColumns(
     linkField?.property.linkTableName
   )
+
   const allowedLookupTargetFields = useMemo(() => {
     // lookup target table is current table
     if (linkField?.property.linkTableName === props.uiColumn.table_name) {
@@ -65,7 +71,7 @@ export const LookupPropertyEditor = (props: IFieldPropertyEditorProps) => {
   }
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className={cn("flex flex-col gap-2", props.isCreateNew && "p-4")}>
       <div className="flex items-center justify-between">
         <Label>Link Field</Label>
         <FieldSelector
@@ -87,7 +93,7 @@ export const LookupPropertyEditor = (props: IFieldPropertyEditorProps) => {
           }}
         />
       </div>
-      {props.isCreateNew && <Button onClick={props.onSave}>Save</Button>}
+      {props.showSaveButton && <Button onClick={props.onSave}>Save</Button>}
     </div>
   )
 }

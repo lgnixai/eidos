@@ -148,7 +148,7 @@ export function FieldAppendPanel({
       type: field.value,
       table_column_name: generateColumnNameFromFieldName(
         newFieldName,
-        uiColumns.map(col => col.table_column_name)
+        uiColumns.map((col) => col.table_column_name)
       ),
       table_name: tableName!,
       property: {},
@@ -160,24 +160,23 @@ export function FieldAppendPanel({
       // Validate column name before saving
       const columnNameValidation = validateSqliteColumnName(
         currentField.table_column_name,
-        uiColumns.map(col => col.table_column_name)
+        uiColumns.map((col) => col.table_column_name)
       )
       if (!columnNameValidation.isValid) {
-        console.error('Invalid column name:', columnNameValidation.error)
+        console.error("Invalid column name:", columnNameValidation.error)
         return
       }
-      
+
       addField(
         currentField.name,
         currentField.type,
         currentField.property,
         currentField.table_column_name
       ).then(() => {
-        // 如果指定了插入位置，调用回调函数
         if (insertPosition !== undefined && onFieldCreated) {
           onFieldCreated(currentField.table_column_name, insertPosition)
         }
-        
+
         setIsAddFieldEditorOpen(false)
         setCurrentField(undefined)
       })
@@ -248,7 +247,9 @@ export function FieldAppendPanel({
                     })
                   }}
                   className="w-full text-sm"
-                  placeholder={t("table.fieldConfiguration.fieldNamePlaceholder")}
+                  placeholder={t(
+                    "table.fieldConfiguration.fieldNamePlaceholder"
+                  )}
                 />
               </div>
 
@@ -268,12 +269,14 @@ export function FieldAppendPanel({
                     })
                   }}
                   className="w-full text-sm"
-                  placeholder={t("table.fieldConfiguration.databaseColumnPlaceholder")}
+                  placeholder={t(
+                    "table.fieldConfiguration.databaseColumnPlaceholder"
+                  )}
                 />
                 {(() => {
                   const validation = validateSqliteColumnName(
                     currentField.table_column_name,
-                    uiColumns.map(col => col.table_column_name)
+                    uiColumns.map((col) => col.table_column_name)
                   )
                   if (validation.isValid) {
                     return (
@@ -284,7 +287,8 @@ export function FieldAppendPanel({
                   } else {
                     return (
                       <span className="text-red-500 text-xs block">
-                        {t("table.fieldConfiguration.errorPrefix")} {validation.error}
+                        {t("table.fieldConfiguration.errorPrefix")}{" "}
+                        {validation.error}
                       </span>
                     )
                   }
@@ -293,20 +297,24 @@ export function FieldAppendPanel({
             </div>
           </div>
 
-          {/* <Editor
-            uiColumn={currentField!}
-            onPropertyChange={handleUpdateField}
-            onSave={handleSaveField}
-            isCreateNew
-          /> */}
-          <div className="flex-none p-4 border-t">
-            <Button 
-              onClick={handleSaveField} 
+          {(currentField.type === FieldType.Link ||
+            currentField.type === FieldType.Lookup) && (
+            <Editor
+              uiColumn={currentField!}
+              onPropertyChange={handleUpdateField}
+              isCreateNew
+            />
+          )}
+          <div className="flex-none p-2 border-t">
+            <Button
+              onClick={handleSaveField}
               className="w-full"
-              disabled={!validateSqliteColumnName(
-                currentField.table_column_name,
-                uiColumns.map(col => col.table_column_name)
-              ).isValid}
+              disabled={
+                !validateSqliteColumnName(
+                  currentField.table_column_name,
+                  uiColumns.map((col) => col.table_column_name)
+                ).isValid
+              }
             >
               {t("table.fieldConfiguration.createField")}
             </Button>
