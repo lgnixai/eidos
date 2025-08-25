@@ -10,16 +10,18 @@ import type { DataSpace } from "@/packages/core/DataSpace"
 
 const getBindingsPrompt = async (bindings: Record<string, { type: "table", value: string }>, sqlite: DataSpace | null) => {
     let bindingsPrompt = `
-If a table is named MY_TABLE, you can use \`eidos.currentSpace.MY_TABLE.rows.query\` to query the table directly.
+If a table is named MY_TABLE, you can use \`eidos.currentSpace.MY_TABLE.rows.findMany\` to query the table directly.
+
+**Important**: In the \`where\` clause of findMany, you must use the **Database Column Name** (not the Field Name) for filtering.
 
 here are some tables you can use:
 `
     for (const [key, value] of Object.entries(bindings ?? {})) {
         const fields = await sqlite?.column.list({ table_name: getRawTableNameById(value.value) })
         bindingsPrompt += `### ${key}\n`
-        bindingsPrompt += `| Field | Type | Value Type | Example |\n|--------|------|------------|------|\n`
+        bindingsPrompt += `| Field Name | Database Column Name | Type | Value Type | Example |\n|------------|---------------------|------|------------|------|\n`
         fields?.forEach((field) => {
-            bindingsPrompt += `| ${field.name} | ${field.type} | ${FIELD_VALUE_TYPE_MAP[field.type].valueType} | ${FIELD_VALUE_TYPE_MAP[field.type].example} |\n`
+            bindingsPrompt += `| ${field.name} | ${field.table_column_name} | ${field.type} | ${FIELD_VALUE_TYPE_MAP[field.type].valueType} | ${FIELD_VALUE_TYPE_MAP[field.type].example} |\n`
         })
         bindingsPrompt += '\n'
     }

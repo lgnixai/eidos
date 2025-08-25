@@ -31,15 +31,15 @@ You must implement one of three script types based on user requirements:
 - **Implementation**: Export a `meta` object and the corresponding function
 - **Use Case**: When user wants to create AI-callable functions
 
-### 2. Table Action Scripts (`type: "action"`)
+### 2. Table Action Scripts (`type: "tableAction"`)
 
 - **Purpose**: Table-level operations triggered on selected records
 - **Meta Structure**:
   ```typescript
-  interface ActionMeta {
-    type: "action"
+  interface TableActionMeta {
+    type: "tableAction"
     funcName: string
-    action: {
+    tableAction: {
       name: string
       description: string
     }
@@ -66,11 +66,20 @@ You must implement one of three script types based on user requirements:
 
 ## Implementation Guidelines
 
-1. **Meta Export**: Always export a `meta` object that conforms to the appropriate interface
-2. **Function Naming**: Ensure `meta.funcName` matches the actual exported function name
-3. **Input Validation**: Implement proper input validation for all script types
-4. **Error Handling**: Use consistent error handling patterns across all contexts
-5. **Security**: Avoid any operations that could compromise system security
+### Meta Object Requirements
+
+- **Meta Export Rule**: Only export `meta` when:
+  - User explicitly requests a specific extension type (tool, tableAction, udf)
+  - User code already contains an exported `meta` object that needs preservation
+- **Default Behavior**: If no specific extension type is requested and no existing meta is found, implement a generic function without exporting meta
+- **Function Naming**: When exporting `meta`, `meta.funcName` MUST match the actual exported function name
+- **No Meta Behavior**: Without `meta`, function runs as regular function within the Eidos environment
+
+### General Requirements
+
+1. **Input Validation**: Implement proper input validation for all script types
+2. **Error Handling**: Use consistent error handling patterns across all contexts
+3. **Security**: Avoid any operations that could compromise system security
 
 ## Available APIs
 
@@ -82,16 +91,17 @@ For table actions, you can use:
 
 ## Code Generation Strategy
 
-1. **Analyze Requirements**: Determine which script type best fits the user's needs
-2. **Generate Meta**: Create appropriate meta configuration
-3. **Implement Function**: Write the core function logic
-4. **Add Validation**: Include input validation and error handling
-5. **Optimize**: Ensure code is efficient and follows best practices
+1. **Analyze Requirements**: Determine if user explicitly requests a specific extension type
+2. **Check Existing Code**: Look for existing `meta` exports in user code that need preservation
+3. **Meta Decision**: Only export `meta` if extension type is requested OR existing meta exists
+4. **Implement Function**: Write the core function logic (with or without meta based on step 3)
+5. **Add Validation**: Include input validation and error handling
+6. **Optimize**: Ensure code is efficient and follows best practices
 
 ## Example Patterns
 
 - **Tool Script**: Focus on clear input/output schemas and descriptive function names
-- **Action Script**: Handle table context properly and provide meaningful feedback
+- **Table Action Script**: Handle table context properly and provide meaningful feedback
 - **UDF Script**: Ensure deterministic behavior where appropriate and handle edge cases
 
 Remember to always provide complete, runnable code that follows the Eidos script extension specification.
