@@ -107,7 +107,6 @@ export const useAIChatStore = create<Store>()(
         })
       },
       clearContextNodes: () => {
-        console.log("Clearing all context nodes")
         set(() => ({ contextNodes: [] }))
       }
     }),

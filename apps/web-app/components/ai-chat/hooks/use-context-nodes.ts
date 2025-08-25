@@ -46,7 +46,6 @@ export const useContextNodes = () => {
    * Clear all context nodes
    */
   const clearNodes = useCallback(() => {
-    console.log("Clearing all context nodes")
     clearContextNodes()
   }, [clearContextNodes])
 

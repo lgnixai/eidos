@@ -1,4 +1,5 @@
 import { useSqlite } from "@/apps/web-app/hooks/use-sqlite"
+import { useExtensionSidebarStore } from "@/apps/web-app/pages/[database]/extensions/stores/sidebar-store"
 import type { EidosDataEventChannelMsg } from "@/lib/const";
 import { DataUpdateSignalType, EidosDataEventChannelMsgType, EidosDataEventChannelName } from "@/lib/const"
 import { ExtensionTableName } from "@/packages/core/sqlite/const"
@@ -14,8 +15,6 @@ const useExtensionStore = create<{
   loading: boolean
   syncing: boolean
   error: string | null
-  sortField: ExtensionSortField
-  sortOrder: ExtensionSortOrder
   searchTerm: string
   setExtensions: (extensions: IExtension[]) => void
   addExtension: (extension: IExtension) => void
@@ -25,17 +24,14 @@ const useExtensionStore = create<{
   setLoading: (loading: boolean) => void
   setSyncing: (syncing: boolean) => void
   setError: (error: string | null) => void
-  setSort: (field: ExtensionSortField, order: ExtensionSortOrder) => void
   setSearchTerm: (term: string) => void
-  reload?: () => Promise<void>
-  setReload: (reload: () => Promise<void>) => void
-}>((set, get) => ({
+  reload?: (sortField?: ExtensionSortField, sortOrder?: ExtensionSortOrder, searchTerm?: string) => Promise<void>
+  setReload: (reload: (sortField?: ExtensionSortField, sortOrder?: ExtensionSortOrder, searchTerm?: string) => Promise<void>) => void
+}>((set) => ({
   extensions: [],
   loading: false,
   syncing: false,
   error: null,
-  sortField: "created_at",
-  sortOrder: "ASC",
   searchTerm: "",
   setExtensions: (extensions) => set({ extensions }),
   addExtension: (extension) => set((state) => {
@@ -81,7 +77,6 @@ const useExtensionStore = create<{
   setLoading: (loading) => set({ loading }),
   setSyncing: (syncing) => set({ syncing }),
   setError: (error) => set({ error }),
-  setSort: (field, order) => set({ sortField: field, sortOrder: order }),
   setSearchTerm: (term) => set({ searchTerm: term }),
   setReload: (reload) => set({ reload }),
 }))
@@ -96,19 +91,16 @@ export const useSyncExtensions = () => {
     setSyncing,
     setError,
     setReload,
-    sortField,
-    sortOrder,
-    searchTerm
   } = useExtensionStore()
 
-  const reload = useCallback(async () => {
+  const reload = useCallback(async (sortField?: ExtensionSortField, sortOrder?: ExtensionSortOrder, searchTerm?: string) => {
     setLoading(true)
     setError(null)
     if (!sqlite) return
     try {
       // Build query with search filter
       const query: any = {}
-      if (searchTerm.trim()) {
+      if (searchTerm?.trim()) {
         query.slug = { contains: searchTerm.trim() }
       }
 
@@ -124,7 +116,7 @@ export const useSyncExtensions = () => {
           created_at: true,
           updated_at: true
         },
-        orderBy: { [sortField]: sortOrder.toLowerCase() as 'asc' | 'desc' }
+        orderBy: { [sortField || "created_at"]: (sortOrder || "ASC").toLowerCase() as 'asc' | 'desc' }
       })
 
       setExtensions(res)
@@ -136,16 +128,14 @@ export const useSyncExtensions = () => {
     } finally {
       setLoading(false)
     }
-  }, [sqlite, setExtensions, setLoading, setError, sortField, sortOrder, searchTerm])
+  }, [sqlite, setExtensions, setLoading, setError])
 
   // Register reload function in store
   useEffect(() => {
     setReload(reload)
   }, [reload, setReload])
 
-  useEffect(() => {
-    reload()
-  }, [reload])
+  // Initial load - removed as it's now handled in useAllExtensions
 
   useEffect(() => {
     const bc = new BroadcastChannel(EidosDataEventChannelName)
@@ -190,20 +180,32 @@ export const useSyncExtensions = () => {
 
 export const useAllExtensions = () => {
   const { sqlite } = useSqlite()
+  const { sortField, sortOrder, setSort } = useExtensionSidebarStore()
   const {
     extensions,
     loading,
     syncing,
     error,
     reload,
-    sortField,
-    sortOrder,
     searchTerm,
-    setSort,
     setSearchTerm
   } = useExtensionStore()
 
   useSyncExtensions()
+
+  // Reload data when sort criteria change
+  useEffect(() => {
+    if (reload) {
+      reload(sortField, sortOrder, searchTerm)
+    }
+  }, [sortField, sortOrder, reload, searchTerm])
+
+  // Reload data when search term changes
+  useEffect(() => {
+    if (reload) {
+      reload(sortField, sortOrder, searchTerm)
+    }
+  }, [searchTerm, reload, sortField, sortOrder])
 
   const deleteExtension = useCallback(async (id: string) => {
     if (!sqlite) return false
@@ -268,7 +270,6 @@ export const useAllExtensions = () => {
     sortField,
     sortOrder,
     searchTerm,
-    updateSort,
     updateSearch
   }
 }

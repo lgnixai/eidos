@@ -7,20 +7,17 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { cn } from "@/lib/utils"
-import {
-  useAllExtensions,
-  type ExtensionSortField,
-  type ExtensionSortOrder,
-} from "@/apps/web-app/hooks/use-all-extensions"
+import { useExtensionSidebarStore } from "@/apps/web-app/pages/[database]/extensions/stores/sidebar-store"
+import type { ExtensionSortField, ExtensionSortOrder } from "@/apps/web-app/pages/[database]/extensions/stores/sidebar-store"
 
 export const ExtensionSortDropdown = () => {
-  const { sortField, sortOrder, updateSort } = useAllExtensions()
+  const { sortField, sortOrder, setSort } = useExtensionSidebarStore()
 
   const handleSortChange = (
     field: ExtensionSortField,
     order: ExtensionSortOrder
   ) => {
-    updateSort(field, order)
+    setSort(field, order)
   }
 
   return (
