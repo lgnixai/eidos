@@ -82,6 +82,10 @@ export const useAiConfig = () => {
     return aiConfig.codingModel
   }, [aiConfig])
 
+  const applyCodeModel = useMemo(() => {
+    return aiConfig.applyCodeModel
+  }, [aiConfig])
+
   const textModel = useMemo(() => {
     return aiConfig.translationModel || findFirstAvailableModel()
   }, [aiConfig])
@@ -111,6 +115,7 @@ export const useAiConfig = () => {
     findFirstAvailableModel,
     findAvailableModel,
     codingModel,
+    applyCodeModel,
     textModel,
     embeddingModel,
     textModelConfig,

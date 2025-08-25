@@ -30,23 +30,15 @@ export const generateText = async ({
 export const applyCode = async ({
   originalCode,
   updateSnippet,
+  model,
 }: {
   originalCode: string
   updateSnippet: string
+  model: any
 }) => {
-  const openai = createOpenAI({
-    apiKey: 'sk-cixKQTIh5HTyb2iBfdga0HZ9-wPbRp1GeUKzW16XDpWrdN4_',
-    baseURL: 'https://api.morphllm.com/v1',
-    // headers: {
-    //   "HTTP-Referer": "https://eidos.space",
-    //   "X-Title": "Eidos",
-    // }
-  })
-  const model = openai("auto")
   const res = await _generateText({
     model,
     messages: [{ role: "user", content: `<code>${originalCode}</code><update>${updateSnippet}</update>` }],
-
   })
   return res.text
 }

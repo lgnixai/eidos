@@ -1,16 +1,17 @@
 import { useMemo, useState } from "react"
 import { applyCode } from "@/packages/ai/generate"
 import type { Message } from "ai"
-import { PlayIcon, RefreshCwIcon, Loader2 } from "lucide-react"
-import { toast } from "sonner"
+import { Loader2, PlayIcon, RefreshCwIcon } from "lucide-react"
 import { useSWRConfig } from "swr"
 import { useCopyToClipboard } from "usehooks-ts"
 
 import { getCodeFromMarkdown } from "@/lib/markdown"
+import { useAiConfig } from "@/hooks/use-ai-config"
 import { useCurrentExtension } from "@/hooks/use-current-node"
 import { Button } from "@/components/ui/button"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { useEditorStore } from "@/apps/web-app/pages/[database]/extensions/stores/editor-store"
+import { toast } from "@/components/ui/use-toast"
 
 import type { Vote } from "../interface"
 import { CopyIcon } from "./icons"
@@ -40,6 +41,7 @@ export function MessageActions({
   const [isPreviewEnabled, setIsPreviewEnabled] = useState(false)
   const [isApplying, setIsApplying] = useState(false)
   const currentExtension = useCurrentExtension()
+  const { getLLModel, applyCodeModel, findFirstAvailableModel } = useAiConfig()
   const content = useMemo(
     () =>
       message.parts
@@ -66,17 +68,31 @@ export function MessageActions({
     console.log("indexJsxCode", indexJsxCode)
 
     if (indexJsxCode) {
+      if (!applyCodeModel) {
+        console.log("applyCodeModel", applyCodeModel)
+        toast({
+          title: "Please configure an apply code model in AI settings first",
+          variant: "destructive",
+        })
+        return
+      }
+
       try {
         setIsApplying(true)
+        const model = getLLModel(applyCodeModel)
         const newCode = await applyCode({
           originalCode: currentExtension?.ts_code || "",
           updateSnippet: indexJsxCode,
+          model,
         })
         setScriptCodeMap(projectId, newCode)
         setLayoutMode("code")
       } catch (error) {
         console.error("Failed to apply code:", error)
-        toast.error("Failed to apply code")
+        toast({
+          title: "Failed to apply code",
+          variant: "destructive",
+        })
       } finally {
         setIsApplying(false)
       }
@@ -117,7 +133,9 @@ export function MessageActions({
           variant="outline"
           onClick={async () => {
             await copyToClipboard(message.content as string)
-            toast.success("Copied to clipboard!")
+            toast({
+              title: "Copied to clipboard!",
+            })
           }}
         >
           <CopyIcon />
