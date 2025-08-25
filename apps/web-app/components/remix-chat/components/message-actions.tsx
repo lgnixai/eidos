@@ -10,8 +10,8 @@ import { useAiConfig } from "@/hooks/use-ai-config"
 import { useCurrentExtension } from "@/hooks/use-current-node"
 import { Button } from "@/components/ui/button"
 import { TooltipProvider } from "@/components/ui/tooltip"
-import { useEditorStore } from "@/apps/web-app/pages/[database]/extensions/stores/editor-store"
 import { toast } from "@/components/ui/use-toast"
+import { useEditorStore } from "@/apps/web-app/pages/[database]/extensions/stores/editor-store"
 
 import type { Vote } from "../interface"
 import { CopyIcon } from "./icons"
@@ -60,6 +60,7 @@ export function MessageActions({
     const indexJsxCode = codeBlocks.find(
       (code) =>
         code.lang === "jsx" ||
+        code.lang === "tsx" ||
         code.lang === "typescript" ||
         code.lang === "python" ||
         code.lang === "javascript" ||
