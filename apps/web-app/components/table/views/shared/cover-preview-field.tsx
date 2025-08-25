@@ -31,7 +31,7 @@ interface PreviewButtonProps {
 
 const PreviewButton = ({ item, handleItemClick }: PreviewButtonProps) => {
   const getIcon = () => {
-    if (item.value === "content") return <FileText className="mr-2 h-4 w-4" />
+    if (item.value === "__CONTENT__") return <FileText className="mr-2 h-4 w-4" />
     if (item.type === "field") return <ImageIcon className="mr-2 h-4 w-4" />
     if (item.type === "mblock") return <ToyBrickIcon className="mr-2 h-4 w-4" />
     return <BanIcon className="mr-2 h-4 w-4" />
@@ -102,7 +102,7 @@ export const CoverPreviewField = ({
         label: t(`table.view.${namespace}.coverPreview.none`),
       },
       {
-        value: "content",
+        value: "__CONTENT__",
         label: t(`table.view.${namespace}.coverPreview.content`),
       },
     ],

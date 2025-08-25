@@ -54,7 +54,9 @@ export const GalleryCard = ({
   )
   const coverField = isView
     ? _coverField
-    : properties?.coverPreview?.startsWith("cl_")
+    : properties?.coverPreview && 
+      properties.coverPreview !== "__CONTENT__" && 
+      !properties.coverPreview.startsWith("block://")
       ? _coverField
       : undefined
 

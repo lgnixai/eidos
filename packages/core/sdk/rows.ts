@@ -11,6 +11,7 @@ import type { TableManager } from "./table"
 import { getFieldInstance } from "../fields"
 import { workerStore } from "../rpc"
 import { SqlQueryBuilder, type FindManyOptions } from "../sqlite/sql-query-builder"
+import { EIDOS_RESERVED_FIELDS } from "@/lib/utils"
 
 export class RowsManager {
   dataSpace: DataSpace
@@ -33,7 +34,8 @@ export class RowsManager {
       const data: Record<string, any> = {}
       Object.entries(row).forEach(([key, value]) => {
         const field = fieldMap[key]
-        if (key.startsWith("cl_") && field) {
+        if (field) {
+          // Convert database column name to readable field name
           const readableFieldName = field.name
           data[readableFieldName] = value
         } else {
@@ -109,8 +111,9 @@ export class RowsManager {
       const rawColumnName = options?.useFieldId
         ? key
         : fieldNameRawColumnNameMap[key]
-      if (key === "_id" || (key.startsWith("cl_") && key.length > 7)) {
-        // pass
+      // Check if it's a reserved field that should be passed through
+      if (EIDOS_RESERVED_FIELDS.includes(key)) {
+        // pass - these are system reserved fields
       } else if (!rawColumnName) {
         // delete key
         delete data[key]
@@ -125,7 +128,8 @@ export class RowsManager {
 
     const kvTuple: [string, any][] = []
     Object.entries(data).forEach(([key, value]) => {
-      if (key === "_id") {
+      // Check if it's a reserved field that should be kept as is
+      if (EIDOS_RESERVED_FIELDS.includes(key)) {
         kvTuple.push([key, value])
       } else {
         const rawColumnName = options?.useFieldId
