@@ -229,14 +229,21 @@ export const FieldEditorDropdown = (props: IFieldEditorDropdownProps) => {
                 {t("table.sortDescending")}
               </CommonMenuItem>
 
-              <CommonMenuItem className="pl-4" onClick={handleAddFieldLeft}>
-                <ChevronLeftIcon className="mr-2 h-4 w-4" />
-                {t("table.insertLeft")}
-              </CommonMenuItem>
-              <CommonMenuItem className="pl-4" onClick={handleAddFieldRight}>
-                <ChevronRightIcon className="mr-2 h-4 w-4" />
-                {t("table.insertRight")}
-              </CommonMenuItem>
+              {!isView && (
+                <>
+                  <CommonMenuItem className="pl-4" onClick={handleAddFieldLeft}>
+                    <ChevronLeftIcon className="mr-2 h-4 w-4" />
+                    {t("table.insertLeft")}
+                  </CommonMenuItem>
+                  <CommonMenuItem
+                    className="pl-4"
+                    onClick={handleAddFieldRight}
+                  >
+                    <ChevronRightIcon className="mr-2 h-4 w-4" />
+                    {t("table.insertRight")}
+                  </CommonMenuItem>
+                </>
+              )}
 
               <CommonMenuItem className="pl-4" onClick={handleFreezeColumn}>
                 {showResetFreezeColumn ? (
