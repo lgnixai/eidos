@@ -21,7 +21,7 @@ interface ExtensionListProps {
     currentSlug: string
   } | null
   onRename: (id: string, slug: string) => void
-  onConfirmRename: (newSlug: string) => void
+  onConfirmRename: (newSlug?: string) => void
   onCancelRename: () => void
   onDelete: (id: string) => void
 }

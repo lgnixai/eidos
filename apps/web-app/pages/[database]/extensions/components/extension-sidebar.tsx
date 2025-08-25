@@ -64,11 +64,12 @@ export const ExtensionSidebar = ({ className }: ExtensionSidebarProps) => {
     setNewSlug(currentSlug)
   }
 
-  const handleConfirmRename = async () => {
-    if (!renamingExtension || !newSlug.trim() || isRenaming) return
+  const handleConfirmRename = async (updatedSlug?: string) => {
+    const slugToUse = updatedSlug || newSlug
+    if (!renamingExtension || !slugToUse.trim() || isRenaming) return
 
     setIsRenaming(true)
-    const result = await renameExtension(renamingExtension.id, newSlug.trim())
+    const result = await renameExtension(renamingExtension.id, slugToUse.trim())
 
     if (result.success) {
       // Silent success - no toast notification for routine operations
