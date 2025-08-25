@@ -174,11 +174,15 @@ ipcMain.handle(MsgType.Pages, async (event, args) => {
 })
 
 
-ipcMain.handle(MsgType.CreateSpace, (event, args) => {
+ipcMain.handle(MsgType.CreateSpace, async (event, args) => {
     const { spaceName, enableSync, volumeId } = args
     const data = { spaceName }
-    getOrSetDataSpace(spaceName, enableSync, volumeId)
-    return { data }
+    const dataSpace = await getOrSetDataSpace(spaceName, enableSync, volumeId)
+    if (dataSpace) {
+        return { data, success: true }
+    } else {
+        return { data, success: false }
+    }
 })
 
 ipcMain.handle('select-folder', async () => {

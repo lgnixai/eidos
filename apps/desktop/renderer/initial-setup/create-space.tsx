@@ -14,6 +14,7 @@ import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 import * as z from "zod"
 
+import { MsgType } from "@/lib/const"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -67,12 +68,23 @@ export function CreateSpaceGuide() {
         ? data.spaceName
         : kebabCase(data.spaceName)
 
-      await window.eidos.invoke("CreateSpace", {
+      const res = await window.eidos.invoke(MsgType.CreateSpace, {
         spaceName,
         enableSync: false,
       })
 
-      navigate(`/${spaceName}`)
+      if (res.success) {
+        navigate(`/${spaceName}`)
+      } else {
+        toast({
+          title: t("common.error", "Error"),
+          description: t(
+            "space.select.spaceAlreadyExists",
+            "Failed to create space"
+          ),
+          variant: "destructive",
+        })
+      }
     } catch (error) {
       console.error("Failed to create space:", error)
       toast({

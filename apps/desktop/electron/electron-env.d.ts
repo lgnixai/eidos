@@ -1,3 +1,5 @@
+// oxlint-disable import-type-annotations
+// oxlint-disable consistent-type-imports
 /// <reference types="vite-plugin-electron/electron-env" />
 
 declare namespace NodeJS {
@@ -38,6 +40,7 @@ interface Window {
         openFolder: (folder: string) => Promise<void>
         isDataFolderSet: boolean
         isNeverCreatedSpace: boolean
+        isSpaceExist: (space: string) => Promise<boolean>
         checkIsDataFolderSet: () => Promise<boolean>
         checkIsNeverCreatedSpace: () => Promise<boolean>
         reloadApp: () => Promise<void>

@@ -10,10 +10,22 @@ import type { ApiAgentStatus } from './server/api-agent';
 
 type IpcListener = (event: Electron.IpcRendererEvent, ...args: any[]) => void;
 
+
+let spaceFileSystem: SpaceFileSystem | null = null;
+
+async function getSpaceFileSystem() {
+  const userDataPath = (await ipcRenderer.invoke('get-app-data-folder'));
+  const dirHandle = await getOriginPrivateDirectory(nodeAdapter, userDataPath)
+  return new SpaceFileSystem(dirHandle as any)
+}
+
+
 async function main() {
   const userDataPath = (await ipcRenderer.invoke('get-app-data-folder'));
   const openTabs = await ipcRenderer.invoke('get-open-tabs') as string[]
   const dirHandle = await getOriginPrivateDirectory(nodeAdapter, userDataPath)
+
+  spaceFileSystem = await getSpaceFileSystem()
 
   const listenerMap = new Map<string, Map<string, IpcListener>>();
   let listenerIdCounter = 0;
@@ -25,6 +37,13 @@ async function main() {
     const dirHandle = await getOriginPrivateDirectory(nodeAdapter, userDataPath)
     const spaceFileSystem = new SpaceFileSystem(dirHandle as any)
     return (await spaceFileSystem.list()).length === 0
+  }
+
+  const isSpaceExist = async (space: string) => {
+    const userDataPath = (await ipcRenderer.invoke('get-app-data-folder'));
+    const dirHandle = await getOriginPrivateDirectory(nodeAdapter, userDataPath)
+    const spaceFileSystem = new SpaceFileSystem(dirHandle as any)
+    return spaceFileSystem.list().then(spaces => spaces.includes(space))
   }
 
   const checkIsDataFolderSet = async () => {
@@ -126,11 +145,12 @@ async function main() {
     node: process.versions.node,
 
     efsManager: new EidosFileSystemManager(dirHandle as any),
-    spaceFileSystem: new SpaceFileSystem(dirHandle as any),
+    spaceFileSystem: spaceFileSystem,
     config: {
       get: (key: keyof AppConfig) => ipcRenderer.invoke('get-config', key),
       set: (key: keyof AppConfig, value: any) => ipcRenderer.invoke('set-config', key, value),
     },
+    isSpaceExist: isSpaceExist,
     isDataFolderSet: await checkIsDataFolderSet(),
     isNeverCreatedSpace: await checkIsNeverCreatedSpace(),
     checkIsDataFolderSet: checkIsDataFolderSet,

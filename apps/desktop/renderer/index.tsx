@@ -172,8 +172,10 @@ const router = createBrowserRouter([
           if (!(await window.eidos.checkIsDataFolderSet())) {
             return redirect("/initial-setup")
           }
-          const spaceNames = await window.eidos.spaceFileSystem.list()
-          if (params.database && !spaceNames.includes(params.database)) {
+          if (
+            params.database &&
+            !(await window.eidos.isSpaceExist(params.database))
+          ) {
             return redirect("/404")
           }
           return null
