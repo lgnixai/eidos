@@ -31,18 +31,13 @@ interface Window {
         invoke: import('electron').IpcRenderer['invoke']
         on: (channel: string, listener: IpcListener) => string | undefined
         off: (channel: string, listenerId: string) => void
-        efsManager: import('@/lib/storage/eidos-file-system').EidosFileSystemManager
-        spaceList: string[]
-        spaceFileSystem: import('@/lib/storage/space').SpaceFileSystem
-        openTabs: string[]
+        getEfsManager: () => Promise<import('@/lib/storage/eidos-file-system').EidosFileSystemManager>
+        getSpaceFileSystem: () => Promise<import('@/lib/storage/space').SpaceFileSystem>
         config: import('./config/index').ConfigManager
         selectFolder: () => Promise<string | undefined>
         openFolder: (folder: string) => Promise<void>
-        isDataFolderSet: boolean
-        isNeverCreatedSpace: boolean
         isSpaceExist: (space: string) => Promise<boolean>
         checkIsDataFolderSet: () => Promise<boolean>
-        checkIsNeverCreatedSpace: () => Promise<boolean>
         reloadApp: () => Promise<void>
         minimizeWindow: () => void
         maximizeWindow: () => void
@@ -56,4 +51,5 @@ interface Window {
         fetch: (url: string, options: RequestInit) => Promise<{ ok: boolean, status: number, statusText: string, headers: Record<string, string>, data: any, error?: string }>
         openUrl: (url: string) => Promise<void>
     }
+
 }

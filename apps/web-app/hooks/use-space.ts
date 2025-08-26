@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react"
+import { create } from "zustand"
 
 import { useLastOpened } from "@/apps/web-app/pages/[database]/hook"
 import { MsgType } from "@/lib/const"
@@ -9,11 +10,74 @@ import { uuidv7 } from "@/lib/utils"
 import { isDesktopMode } from "@/lib/env"
 import { useSqlite, useSqliteStore } from "./use-sqlite"
 
+// Space File System Store
+interface SpaceFileSystemState {
+  spaceFileSystem: SpaceFileSystem | null
+  isLoading: boolean
+  error: string | null
+}
+
+interface SpaceFileSystemActions {
+  setSpaceFileSystem: (system: SpaceFileSystem | null) => void
+  initializeSpaceFileSystem: () => Promise<void>
+  setLoading: (loading: boolean) => void
+  setError: (error: string | null) => void
+  reset: () => void
+}
+
+type SpaceFileSystemStore = SpaceFileSystemState & SpaceFileSystemActions
+
+const initialSpaceState: SpaceFileSystemState = {
+  spaceFileSystem: null,
+  isLoading: false,
+  error: null
+}
+
+export const useSpaceFileSystemStore = create<SpaceFileSystemStore>((set) => ({
+  ...initialSpaceState,
+
+  setSpaceFileSystem: (system) => set({ spaceFileSystem: system }),
+
+  initializeSpaceFileSystem: async () => {
+    set({ isLoading: true, error: null })
+
+    try {
+      let system: SpaceFileSystem | null = null
+
+      if (isDesktopMode) {
+        if (typeof window !== 'undefined' && window.eidos) {
+          system = await window.eidos.getSpaceFileSystem()
+        }
+      } else {
+        system = new SpaceFileSystem()
+      }
+
+      set({ spaceFileSystem: system, isLoading: false })
+    } catch (error) {
+      set({
+        error: error instanceof Error ? error.message : 'Failed to initialize space file system',
+        isLoading: false
+      })
+    }
+  },
+
+  setLoading: (loading) => set({ isLoading: loading }),
+
+  setError: (error) => set({ error: error }),
+
+  reset: () => set(initialSpaceState)
+}))
+
 export const useSpaceFileSystem = () => {
-  const spaceFileSystem = isDesktopMode
-    ? window.eidos.spaceFileSystem
-    : new SpaceFileSystem()
-  return { spaceFileSystem }
+  const { spaceFileSystem, initializeSpaceFileSystem, isLoading, error } = useSpaceFileSystemStore()
+
+  useEffect(() => {
+    if (!spaceFileSystem && !isLoading && !error) {
+      initializeSpaceFileSystem()
+    }
+  }, [spaceFileSystem, isLoading, error, initializeSpaceFileSystem])
+
+  return { spaceFileSystem, isLoading, error, initializeSpaceFileSystem }
 }
 
 export type SpaceInfo = {
@@ -24,14 +88,17 @@ export type SpaceInfo = {
 export const useSpaceInfo = (spaceName: string) => {
   const { spaceFileSystem } = useSpaceFileSystem()
   const [spaceInfo, setSpaceInfo] = useState<SpaceInfo | null>(null)
+
   const getSpaceInfo = useCallback(async (spaceName: string) => {
     if (!spaceName) {
       setSpaceInfo(null)
       return
     }
-    const info = await spaceFileSystem.getSpaceInfo(spaceName)
-    setSpaceInfo(info)
-  }, [spaceName])
+    if (spaceFileSystem) {
+      const info = await spaceFileSystem.getSpaceInfo(spaceName)
+      setSpaceInfo(info)
+    }
+  }, [spaceName, spaceFileSystem])
 
   useEffect(() => {
     getSpaceInfo(spaceName)
@@ -45,22 +112,28 @@ export const useSpace = () => {
   const { sqlite } = useSqlite()
   const { setLastOpenedDatabase } = useLastOpened()
   const { spaceFileSystem } = useSpaceFileSystem()
+
   const updateSpaceList = useCallback(async () => {
-    const spaceNames = await spaceFileSystem.list()
-    setSpaceList(spaceNames)
-  }, [setSpaceList])
+    if (spaceFileSystem) {
+      const spaceNames = await spaceFileSystem.list()
+      setSpaceList(spaceNames)
+    }
+  }, [setSpaceList, spaceFileSystem])
 
   useEffect(() => {
     updateSpaceList()
-  }, [setSpaceList, updateSpaceList])
+  }, [updateSpaceList])
 
   const exportSpace = useCallback(async (spaceName: string) => {
-    await spaceFileSystem.export(spaceName)
-  }, [])
-
+    if (spaceFileSystem) {
+      await spaceFileSystem.export(spaceName)
+    }
+  }, [spaceFileSystem])
 
   const deleteSpace = useCallback(
     async (spaceName: string) => {
+      if (!spaceFileSystem) return
+
       try {
         await spaceFileSystem.remove(spaceName)
         setLastOpenedDatabase("")
@@ -77,17 +150,19 @@ export const useSpace = () => {
         throw error
       }
     },
-    [setLastOpenedDatabase, spaceFileSystem]
+    [setLastOpenedDatabase, spaceFileSystem, setSpaceList]
   )
 
   const rebuildIndex = useCallback(async () => {
     await sqlite?.doc.rebuildIndex({
       recreateFtsTable: true
     })
-  }, [])
+  }, [sqlite])
 
   const createSpace = useCallback(async (spaceName: string, enableSync: boolean = false, volumeId?: string) => {
-    await spaceFileSystem.create(spaceName)
+    if (spaceFileSystem) {
+      await spaceFileSystem.create(spaceName)
+    }
 
     if (isDesktopMode) {
       const res = await window.eidos.invoke(MsgType.CreateSpace, { spaceName, enableSync, volumeId })
@@ -117,7 +192,7 @@ export const useSpace = () => {
         }
       })
     }
-  }, [])
+  }, [spaceFileSystem])
 
   return {
     spaceList,
@@ -128,3 +203,6 @@ export const useSpace = () => {
     rebuildIndex,
   }
 }
+
+export const useSpaceFileSystemLoading = () => useSpaceFileSystemStore((state) => state.isLoading)
+export const useSpaceFileSystemError = () => useSpaceFileSystemStore((state) => state.error)

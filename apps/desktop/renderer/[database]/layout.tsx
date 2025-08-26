@@ -108,7 +108,7 @@ export function DesktopSpaceLayout() {
         {currentPreviewFile && (
           <iframe
             className="hidden h-full w-full md:block"
-            src={efsManager.getFileUrlByPath(currentPreviewFile.path)}
+            src={efsManager?.getFileUrlByPath(currentPreviewFile.path)}
           ></iframe>
         )}
 

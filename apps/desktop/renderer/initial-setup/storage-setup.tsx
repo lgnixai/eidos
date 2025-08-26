@@ -42,12 +42,6 @@ export function InitialStorageSetup() {
   const [dataFolder, setDataFolder] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
 
-  // Function to check if spaces exist dynamically
-  const checkNeverCreatedSpace = async () => {
-    const neverCreated = await window.eidos.checkIsNeverCreatedSpace()
-    return neverCreated
-  }
-
   const form = useForm<StorageFormValues>({
     resolver: zodResolver(storageFormSchema),
     defaultValues: {

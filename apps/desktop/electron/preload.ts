@@ -11,7 +11,6 @@ import type { ApiAgentStatus } from './server/api-agent';
 type IpcListener = (event: Electron.IpcRendererEvent, ...args: any[]) => void;
 
 
-let spaceFileSystem: SpaceFileSystem | null = null;
 
 async function getSpaceFileSystem() {
   const userDataPath = (await ipcRenderer.invoke('get-app-data-folder'));
@@ -19,38 +18,31 @@ async function getSpaceFileSystem() {
   return new SpaceFileSystem(dirHandle as any)
 }
 
-
-async function main() {
+async function getEfsManager() {
   const userDataPath = (await ipcRenderer.invoke('get-app-data-folder'));
-  const openTabs = await ipcRenderer.invoke('get-open-tabs') as string[]
   const dirHandle = await getOriginPrivateDirectory(nodeAdapter, userDataPath)
+  return new EidosFileSystemManager(dirHandle as any)
+}
 
-  spaceFileSystem = await getSpaceFileSystem()
+
+const isSpaceExist = async (space: string) => {
+  const userDataPath = (await ipcRenderer.invoke('get-app-data-folder'));
+  const dirHandle = await getOriginPrivateDirectory(nodeAdapter, userDataPath)
+  const spaceFileSystem = new SpaceFileSystem(dirHandle as any)
+  return spaceFileSystem.list().then(spaces => spaces.includes(space))
+}
+
+const checkIsDataFolderSet = async () => {
+  const dataFolder = await ipcRenderer.invoke('get-config', 'dataFolder')
+  return !!dataFolder
+}
+
+
+// this function must be a sync function, because it will be called in the main process, otherwise window.eidos will be undefined
+function main() {
 
   const listenerMap = new Map<string, Map<string, IpcListener>>();
   let listenerIdCounter = 0;
-
-
-
-  const checkIsNeverCreatedSpace = async () => {
-    const userDataPath = (await ipcRenderer.invoke('get-app-data-folder'));
-    const dirHandle = await getOriginPrivateDirectory(nodeAdapter, userDataPath)
-    const spaceFileSystem = new SpaceFileSystem(dirHandle as any)
-    return (await spaceFileSystem.list()).length === 0
-  }
-
-  const isSpaceExist = async (space: string) => {
-    const userDataPath = (await ipcRenderer.invoke('get-app-data-folder'));
-    const dirHandle = await getOriginPrivateDirectory(nodeAdapter, userDataPath)
-    const spaceFileSystem = new SpaceFileSystem(dirHandle as any)
-    return spaceFileSystem.list().then(spaces => spaces.includes(space))
-  }
-
-  const checkIsDataFolderSet = async () => {
-    const dataFolder = await ipcRenderer.invoke('get-config', 'dataFolder')
-    return !!dataFolder
-  }
-
 
 
   // we expose a readonly version of eidos, which only contains a invoke method
@@ -139,22 +131,17 @@ async function main() {
       const [channel, ...omit] = args
       return ipcRenderer.postMessage(channel, ...omit)
     },
-    openTabs: openTabs,
     // versions
     chrome: process.versions.chrome,
     node: process.versions.node,
-
-    efsManager: new EidosFileSystemManager(dirHandle as any),
-    spaceFileSystem: spaceFileSystem,
+    getEfsManager: getEfsManager,
+    getSpaceFileSystem: getSpaceFileSystem,
     config: {
       get: (key: keyof AppConfig) => ipcRenderer.invoke('get-config', key),
       set: (key: keyof AppConfig, value: any) => ipcRenderer.invoke('set-config', key, value),
     },
     isSpaceExist: isSpaceExist,
-    isDataFolderSet: await checkIsDataFolderSet(),
-    isNeverCreatedSpace: await checkIsNeverCreatedSpace(),
     checkIsDataFolderSet: checkIsDataFolderSet,
-    checkIsNeverCreatedSpace: checkIsNeverCreatedSpace,
     selectFolder: () => ipcRenderer.invoke('select-folder'),
     openFolder: (folder: string) => ipcRenderer.invoke('open-folder', folder),
     openUrl: (url: string) => ipcRenderer.invoke('open-url', url),
@@ -191,7 +178,7 @@ async function main() {
     getApiAgentStatus: () => ipcRenderer.invoke('get-api-agent-status'),
 
     // AI helper functions
-    fetchAvailableModels: (apiKey: string, providerType: string, baseUrl?: string) => 
+    fetchAvailableModels: (apiKey: string, providerType: string, baseUrl?: string) =>
       ipcRenderer.invoke('fetch-available-models', apiKey, providerType, baseUrl),
 
     fetch(url: string, options: RequestInit = {}): Promise<Response> {
@@ -226,6 +213,10 @@ async function main() {
     }
   })
 
+
+
 }
+
+
 
 main()
