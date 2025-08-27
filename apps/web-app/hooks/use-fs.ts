@@ -23,7 +23,7 @@ interface FileSystemState {
 }
 
 interface FileSystemActions {
-    setEfsManager: (manager: EidosFileSystemManager | null) => void
+    setEfsManager: (manager: EidosFileSystemManager) => void
 
     initializeFileSystem: () => Promise<void>
 
@@ -64,7 +64,7 @@ export const useFileSystemStore = create<FileSystemStore>((set, get) => ({
         set({ isLoading: true, error: null })
 
         try {
-            let manager: EidosFileSystemManager | null = null
+            let manager: EidosFileSystemManager = new EidosFileSystemManager()
 
             if (isDesktopMode) {
                 if (typeof window !== 'undefined' && window.eidos) {
@@ -109,17 +109,23 @@ export const useFileSystemStore = create<FileSystemStore>((set, get) => ({
     reset: () => set(initialState)
 }))
 
-export const useEidosFileSystemManager = () => {
-    const { efsManager, initializeFileSystem, isLoading, error } = useFileSystemStore()
 
+export const useEidosFileSystemInitialized = () => {
+    const { efsManager, initializeFileSystem, isLoading, error } = useFileSystemStore()
     useEffect(() => {
-        if (!efsManager && !isLoading && !error) {
+        if (!isLoading && !error && !efsManager) {
             initializeFileSystem()
         }
     }, [efsManager, isLoading, error, initializeFileSystem])
 
+}
+
+export const useEidosFileSystemManager = () => {
+    const { efsManager, initializeFileSystem, isLoading, error } = useFileSystemStore()
+
+    // useEidosFileSystemInitialized will call at layout.tsx, so we can use efsManager here
     return {
-        efsManager,
+        efsManager: efsManager as EidosFileSystemManager,
         isLoading,
         error,
         initializeFileSystem
