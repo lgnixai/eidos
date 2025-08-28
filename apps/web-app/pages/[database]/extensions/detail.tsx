@@ -1,3 +1,4 @@
+import { Suspense, lazy, useCallback, useEffect, useRef, useState } from "react"
 import type { IExtension } from "@/packages/core/meta-table/extension"
 import { extractConstant } from "@/packages/v3/code-tools/code-extractor"
 import { compileCode } from "@/packages/v3/compiler"
@@ -5,18 +6,17 @@ import { getCompileMethod } from "@/packages/v3/script-compiler"
 import { useLocalStorageState, useMount, useSize } from "ahooks"
 import { CodeIcon, EyeIcon, PanelLeftIcon, SettingsIcon } from "lucide-react"
 import { useTheme } from "next-themes"
-import { Suspense, lazy, useCallback, useEffect, useRef, useState } from "react"
 import {
   useLoaderData,
   useRevalidator,
   useSearchParams,
 } from "react-router-dom"
 
-import { useExtension } from "@/apps/web-app/hooks/use-extension"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/components/ui/use-toast"
+import { useExtension } from "@/apps/web-app/hooks/use-extension"
 
 import { ExtensionPreview } from "./components/extension-preview"
 import { ExtensionToolbar } from "./components/extension-toolbar"

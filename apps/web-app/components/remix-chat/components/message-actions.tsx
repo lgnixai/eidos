@@ -2,6 +2,7 @@ import { useMemo, useState } from "react"
 import { applyCode } from "@/packages/ai/generate"
 import type { Message } from "ai"
 import { Loader2, PlayIcon, RefreshCwIcon } from "lucide-react"
+import { useSearchParams } from "react-router-dom"
 import { useSWRConfig } from "swr"
 import { useCopyToClipboard } from "usehooks-ts"
 
@@ -38,6 +39,7 @@ export function MessageActions({
   const { mutate } = useSWRConfig()
   const [_, copyToClipboard] = useCopyToClipboard()
   const { setScriptCodeMap, setLayoutMode } = useEditorStore()
+  const [searchParams, setSearchParams] = useSearchParams()
   const [isPreviewEnabled, setIsPreviewEnabled] = useState(false)
   const [isApplying, setIsApplying] = useState(false)
   const currentExtension = useCurrentExtension()
@@ -87,7 +89,8 @@ export function MessageActions({
           model,
         })
         setScriptCodeMap(projectId, newCode)
-        setLayoutMode("code")
+        // setLayoutMode("code")
+        setSearchParams({ tab: "code" })
       } catch (error) {
         console.error("Failed to apply code:", error)
         toast({
