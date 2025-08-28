@@ -456,7 +456,7 @@ export const EditorArea = ({
         error
       )
     }
-  }, [currentFile, isEditorReady]) // 添加 isEditorReady 依赖
+  }, [currentFile, isEditorReady])
 
   // Language configuration cleanup is no longer needed as it's handled globally
 
@@ -619,6 +619,28 @@ export const EditorArea = ({
 
     // Setup keyboard shortcuts
     setupKeyboardShortcuts(editor, monacoInstance)
+
+    if (currentFile && currentFile.content) {
+      const uri = monaco.Uri.parse(`file:///${currentFile.path}`)
+      let model = monaco.editor.getModel(uri)
+
+      if (!model) {
+        console.log(`📝 Creating model for editor mount: ${currentFile.path}`)
+        model = createModelSafely(currentFile.content, "typescript", uri)
+      } else if (model.getValue() !== currentFile.content) {
+        console.log(
+          `📝 Updating model content on editor mount: ${currentFile.path}`
+        )
+        isProgrammaticUpdateRef.current = true
+        model.setValue(currentFile.content)
+        setTimeout(() => {
+          isProgrammaticUpdateRef.current = false
+        }, 10)
+      }
+
+      editor.setModel(model)
+      currentModelRef.current = model
+    }
 
     setIsEditorReady(true)
   }
