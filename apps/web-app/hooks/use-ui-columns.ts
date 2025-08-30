@@ -1,4 +1,4 @@
-import { useCallback, useContext, useMemo } from "react"
+import { useCallback, useContext, useEffect, useMemo } from "react"
 
 import { getTableIdByRawTableName } from "@/lib/utils"
 
@@ -22,7 +22,6 @@ export const useUiColumns = (
   const { sqlite } = useSqlite(databaseName)
   const { setFields: setUiColumns, dataStore } = useSqliteStore()
   const { fields: uiColumns } = useTableFields(tableName)
-  // console.log("uiColumns", { tableName, uiColumns, dataStore })
 
   const updateUiColumns = useCallback(
     async (_tableName = tableName) => {
@@ -38,6 +37,29 @@ export const useUiColumns = (
     },
     [setUiColumns, sqlite, tableName]
   )
+
+  const fieldMap = useMemo(() => {
+    return dataStore.tableMap[getTableIdByRawTableName(tableName || "")]?.fieldMap
+  }, [dataStore.tableMap, tableName])
+
+  const checkAndFetchTable = useCallback(
+    async (_tableName = tableName) => {
+      if (!sqlite || !_tableName) return
+
+      const tableId = getTableIdByRawTableName(_tableName)
+      const tableExists = dataStore.tableMap[tableId]
+
+      if (!tableExists || !tableExists.fieldMap || Object.keys(tableExists.fieldMap).length === 0) {
+        console.log(`Table ${_tableName} not found in dataStore, fetching...`)
+        await updateUiColumns(_tableName)
+      }
+    },
+    [sqlite, tableName, fieldMap, updateUiColumns]
+  )
+
+  useEffect(() => {
+    checkAndFetchTable()
+  }, [checkAndFetchTable])
 
   const uiColumnMap = useMemo(() => {
     const map = new Map<string, IField>()
