@@ -151,6 +151,8 @@ jobs:
             ./artifacts/macos-arm-artifacts/*.zip
             ./artifacts/linux-artifacts/*.AppImage
             ./artifacts/linux-artifacts/*.zip
-            ./artifacts/*/*.yml
+            ./artifacts/latest-mac.yml
+            ./artifacts/windows-artifacts/latest.yml
+            ./artifacts/linux-artifacts/latest-linux.yml
         env:
           GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
