@@ -136,16 +136,8 @@ jobs:
         with:
           path: ./artifacts/
 
-      - name: Setup Node.js for merging
-        uses: actions/setup-node@v3
-        with:
-          node-version: "20.18.0"
-
-      - name: Install yaml package
-        run: npm install yaml
-
       - name: Merge macOS update files
-        run: node scripts/merge-macos-updates.cjs ./artifacts
+        run: chmod +x scripts/merge-macos-updates.sh && ./scripts/merge-macos-updates.sh ./artifacts
 
       - name: Update Release
         uses: softprops/action-gh-release@v2
