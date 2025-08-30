@@ -1,6 +1,4 @@
 import { useEffect, useMemo, useRef, useState } from "react"
-import type {
-  LucideIcon} from "lucide-react";
 import {
   BotIcon,
   MoreHorizontalIcon,
@@ -8,13 +6,12 @@ import {
   PlusIcon,
   ToyBrickIcon,
   Trash2,
+  type LucideIcon,
 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 
 import { cn, getBlockIdFromUrl } from "@/lib/utils"
-import { useAllMblocks } from "@/apps/web-app/hooks/use-all-mblocks"
-import { useCurrentPathInfo } from "@/apps/web-app/hooks/use-current-pathinfo"
 import { Button } from "@/components/ui/button"
 import {
   ContextMenu,
@@ -28,18 +25,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
 import { AIChatHeader } from "@/components/ai-chat/ai-chat-header"
-
+import { useAllMblocks } from "@/apps/web-app/hooks/use-all-mblocks"
+import { useCurrentPathInfo } from "@/apps/web-app/hooks/use-current-pathinfo"
 import {
   useAppsStore,
   useSpaceAppStore,
 } from "@/apps/web-app/pages/[database]/store"
+
 import { BlockContextMenu } from "./block-context-menu"
 
 const DefaultAppInfoMap: Record<
@@ -169,85 +162,64 @@ export const RightPanelNav = () => {
           const isCurrentApp = app === currentApp
           const isBlock = app.startsWith("block://")
           return (
-            <TooltipProvider key={app}>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div className="relative">
-                    {isBlock ? (
-                      <ContextMenu>
-                        <ContextMenuTrigger asChild>
-                          <Button
-                            size="xs"
-                            variant="ghost"
-                            onClick={() => handleAppChange(app)}
-                            className={cn("rounded-b-none relative", {
-                              "after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-primary":
-                                isCurrentApp,
-                              "opacity-50": !appInfo?.available,
-                            })}
-                          >
-                            {typeof IconOrUri === "string" ? (
-                              <img
-                                src={IconOrUri}
-                                alt={title}
-                                className="h-4 w-4"
-                              />
-                            ) : (
-                              IconOrUri && <IconOrUri className="h-4 w-4" />
-                            )}
-                          </Button>
-                        </ContextMenuTrigger>
-                        <ContextMenuContent>
-                          <ContextMenuItem
-                            onClick={() => {
-                              deleteApp(app)
-                              setCurrentApp("chat")
-                            }}
-                          >
-                            <Trash2 className="h-4 w-4 mr-2" />
-                            Delete
-                          </ContextMenuItem>
-                          <BlockContextMenu
-                            url={app}
-                            setUrl={(newUrl) => updateApp(app, newUrl)}
-                          />
-                        </ContextMenuContent>
-                      </ContextMenu>
-                    ) : (
-                      <Button
-                        size="xs"
-                        variant="ghost"
-                        onClick={() => handleAppChange(app)}
-                        className={cn("rounded-b-none relative", {
-                          "after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-primary":
-                            isCurrentApp,
-                        })}
-                      >
-                        {typeof IconOrUri === "string" ? (
-                          <img
-                            src={IconOrUri}
-                            alt={title}
-                            className="h-4 w-4"
-                          />
-                        ) : (
-                          IconOrUri && <IconOrUri className="h-4 w-4" />
-                        )}
-                      </Button>
-                    )}
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>
-                    {title} <br />
-                    <span
-                      className={"ml-auto text-xs tracking-widest opacity-60"}
+            <div key={app} className="relative">
+              {isBlock ? (
+                <ContextMenu>
+                  <ContextMenuTrigger asChild>
+                    <Button
+                      size="xs"
+                      variant="ghost"
+                      onClick={() => handleAppChange(app)}
+                      className={cn("rounded-b-none relative", {
+                        "after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-primary":
+                          isCurrentApp,
+                        "opacity-50": !appInfo?.available,
+                      })}
                     >
-                      {shortcut}
-                    </span>
-                  </p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+                      {typeof IconOrUri === "string" ? (
+                        <img src={IconOrUri} alt={title} className="h-4 w-4" />
+                      ) : (
+                        IconOrUri && <IconOrUri className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </ContextMenuTrigger>
+                  <ContextMenuContent>
+                    <div className="px-2 py-1.5 text-sm font-medium border-b">
+                      {title}
+                    </div>
+                    <ContextMenuItem
+                      onClick={() => {
+                        deleteApp(app)
+                        setCurrentApp("chat")
+                      }}
+                    >
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Delete
+                    </ContextMenuItem>
+                    <BlockContextMenu
+                      url={app}
+                      setUrl={(newUrl) => updateApp(app, newUrl)}
+                    />
+                  </ContextMenuContent>
+                </ContextMenu>
+              ) : (
+                <Button
+                  size="xs"
+                  variant="ghost"
+                  onClick={() => handleAppChange(app)}
+                  className={cn("rounded-b-none relative", {
+                    "after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-primary":
+                      isCurrentApp,
+                  })}
+                >
+                  {typeof IconOrUri === "string" ? (
+                    <img src={IconOrUri} alt={title} className="h-4 w-4" />
+                  ) : (
+                    IconOrUri && <IconOrUri className="h-4 w-4" />
+                  )}
+                </Button>
+              )}
+            </div>
           )
         })}
 

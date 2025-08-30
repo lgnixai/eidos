@@ -1,10 +1,10 @@
-import { useSqlite } from "@/apps/web-app/hooks/use-sqlite"
+import { useSqlite } from "@/apps/web-app/hooks/use-sqlite";
 import type { EidosDataEventChannelMsg } from "@/lib/const";
-import { DataUpdateSignalType, EidosDataEventChannelMsgType, EidosDataEventChannelName } from "@/lib/const"
-import { ScriptTableName } from "@/packages/core/sqlite/const"
-import type { IExtension } from "@/packages/core/meta-table/extension"
-import { useCallback, useEffect } from "react"
-import { create } from "zustand"
+import { DataUpdateSignalType, EidosDataEventChannelMsgType, EidosDataEventChannelName } from "@/lib/const";
+import type { IExtension } from "@/packages/core/meta-table/extension";
+import { ExtensionTableName } from "@/packages/core/sqlite/const";
+import { useCallback, useEffect } from "react";
+import { create } from "zustand";
 
 
 
@@ -69,7 +69,7 @@ export const useSyncMblocks = () => {
             const { type, payload } = ev.data
             if (type === EidosDataEventChannelMsgType.MetaTableUpdateSignalType) {
                 const { table, _new, _old, type: updateType } = payload
-                if (table !== ScriptTableName || (_old?.type !== "block" || _new?.type !== "block")) return
+                if (table !== ExtensionTableName || (_old?.type !== "block" || _new?.type !== "block")) return
 
                 // when data is updated, we need to reload the data from the database. it's simple but not efficient.
                 // we should use a more efficient way to update the data.
