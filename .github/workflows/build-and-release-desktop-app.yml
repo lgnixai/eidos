@@ -136,13 +136,29 @@ jobs:
         with:
           path: ./artifacts/
 
+      - name: Setup Node.js for merging
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20.18.0"
+
+      - name: Install yaml package
+        run: npm install yaml
+
+      - name: Merge macOS update files
+        run: node scripts/merge-macos-updates.cjs ./artifacts
+
       - name: Update Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            ./artifacts/windows-artifacts/*
-            ./artifacts/macos-intel-artifacts/*
-            ./artifacts/macos-arm-artifacts/*
-            ./artifacts/linux-artifacts/*
+            ./artifacts/windows-artifacts/*.exe
+            ./artifacts/windows-artifacts/*.zip
+            ./artifacts/macos-intel-artifacts/*.dmg
+            ./artifacts/macos-intel-artifacts/*.zip
+            ./artifacts/macos-arm-artifacts/*.dmg
+            ./artifacts/macos-arm-artifacts/*.zip
+            ./artifacts/linux-artifacts/*.AppImage
+            ./artifacts/linux-artifacts/*.zip
+            ./artifacts/*/*.yml
         env:
           GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
