@@ -3,12 +3,13 @@ import React, { useCallback } from "react"
 import { Markdown } from "@/components/remix-chat/components/markdown"
 import { useToast } from "@/components/ui/use-toast"
 import { useSqlite } from "@/apps/web-app/hooks/use-sqlite"
-import { EidosMessageChannelName, MsgType } from "@/lib/const"
+import { EidosMessageChannelName, MsgType, WORKER_INIT_MESSAGES, WORKER_MESSAGE_TYPES } from "@/lib/const"
 import { getEmbeddingWorker } from "@/lib/embedding/worker"
 import { isDesktopMode, isInkServiceMode } from "@/lib/env"
 import { getWorker } from "@/packages/core/sqlite/worker"
 import { useAppRuntimeStore } from "@/apps/web-app/store/runtime-store"
 
+import { useSqliteStore } from "./use-sqlite"
 import { useThemeStore } from "@/apps/web-app/store/theme-store"
 import {
   _convertEmail2State,
@@ -16,7 +17,6 @@ import {
   _convertMarkdown2State,
   _getDocMarkdown,
 } from "./use-doc-editor"
-import { useSqliteStore } from "./use-sqlite"
 import { useCurrentUser } from "./user-current-user"
 
 export const useWorker = () => {
@@ -38,12 +38,16 @@ export const useWorker = () => {
       return () => { }
     }
     const handle = async (event: MessageEvent) => {
-      if (event.data === "init") {
-        console.log("sqlite is loaded")
+      if (event.data === WORKER_INIT_MESSAGES.INIT) {
+        setInitialized(true)
+      } else if (event.data === WORKER_INIT_MESSAGES.INIT_FAILED) {
+        console.error("Worker initialization failed")
+        setInitialized(true)
+      } else if (event.data === WORKER_INIT_MESSAGES.INIT_TIMEOUT) {
+        console.error("Worker initialization timeout")
         setInitialized(true)
       }
       const { type, data } = event.data
-      console.log("handle", type, data)
       let res = null
       switch (type) {
         case MsgType.WebSocketConnected:
@@ -99,7 +103,6 @@ export const useWorker = () => {
         default:
           break
       }
-      console.log("res", res)
       event?.ports[0]?.postMessage(res)
       return res
     }
@@ -124,6 +127,9 @@ export const useWorker = () => {
     } else {
       const worker = getWorker()
       worker.addEventListener("message", handle)
+      worker.postMessage({
+        type: WORKER_MESSAGE_TYPES.IS_WORKER_INITIALIZED,
+      })
     }
     return () => {
       if (isDesktopMode) {

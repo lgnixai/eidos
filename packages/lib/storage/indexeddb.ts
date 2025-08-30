@@ -20,8 +20,11 @@ export const indexedDBStorage: StateStorage = {
 
 export const getConfig = async <T = Record<string, any>>(
   name: string
-): Promise<T> => {
+): Promise<T | undefined> => {
   const r = await get(name)
+  if (!r) {
+    return undefined
+  }
   const store = JSON.parse(r)
   return store.state
 }

@@ -104,3 +104,20 @@ export const EIDOS_SPACE_BASE_URL = process.env.NODE_ENV === "production" ? "htt
 export const EIDOS_CHAT_PROJECT_ID = "EIDOS_CHAT"
 
 export const EIDOS_PROXY_URL = isDesktopMode ? "http://proxy.eidos.localhost:13127/?url=" : "https://proxy.eidos.space/?url="
+
+// Worker initialization constants
+export const WORKER_INIT_MESSAGES = {
+  INIT: 'init',
+  INIT_FAILED: 'init_failed',
+  INIT_TIMEOUT: 'init_timeout'
+} as const
+
+export const WORKER_INIT_CONFIG = {
+  RETRY_INTERVAL: 50, // ms
+  MAX_RETRIES: 200,   // 10 seconds total (200 * 50ms)
+  WEBSOCKET_DELAY: 1000 // ms
+} as const
+
+export const WORKER_MESSAGE_TYPES = {
+  IS_WORKER_INITIALIZED: 'isWorkerInitialized'
+} as const

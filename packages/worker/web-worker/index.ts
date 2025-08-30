@@ -1,6 +1,11 @@
 import { MsgType } from "@/lib/const"
 import { EIDOS_VERSION, logger } from "@/lib/env"
 import { getConfig } from "@/lib/storage/indexeddb"
+import {
+  WORKER_INIT_MESSAGES,
+  WORKER_INIT_CONFIG,
+  WORKER_MESSAGE_TYPES
+} from "@/lib/const"
 
 import type { DataSpace } from "../../core/DataSpace"
 import { initWs } from "./api-agent/ws"
@@ -93,28 +98,58 @@ async function loadDatabase(dbName: string) {
   return db
 }
 
+let isInitialized = false
 async function main() {
-  await sqlite.init()
-  const data = await getConfig<{ apiAgentConfig: APIAgentFormValues }>(
-    "config-api"
-  )
-  const { url, enabled } = data.apiAgentConfig
-  if (!enabled) {
-    ws?.close()
-  } else {
-    setTimeout(() => {
-      initWs(handleFunctionCall, url, (_ws) => {
-        ws = _ws
-      })
-    }, 1000)
-  }
+  try {
+    await sqlite.init()
+    const data = await getConfig<{ apiAgentConfig: APIAgentFormValues }>(
+      "config-api"
+    )
 
-  postMessage("init")
+    const { url, enabled } = data?.apiAgentConfig || {}
+    if (!enabled) {
+      ws?.close()
+    } else if (url) {
+      setTimeout(() => {
+        initWs(handleFunctionCall, url, (_ws) => {
+          ws = _ws
+        })
+      }, WORKER_INIT_CONFIG.WEBSOCKET_DELAY)
+    }
+
+    isInitialized = true
+    console.log("worker init success")
+    postMessage(WORKER_INIT_MESSAGES.INIT)
+  } catch (error) {
+    console.error("Worker initialization failed:", error)
+    isInitialized = true
+    postMessage(WORKER_INIT_MESSAGES.INIT_FAILED)
+  }
 }
 
 onmessage = async (e) => {
   const { type, data, id } = e.data
   switch (type) {
+    case WORKER_MESSAGE_TYPES.IS_WORKER_INITIALIZED:
+      if (isInitialized) {
+        postMessage(WORKER_INIT_MESSAGES.INIT)
+      } else {
+        let retryCount = 0
+
+        const waitForInit = () => {
+          if (isInitialized) {
+            postMessage(WORKER_INIT_MESSAGES.INIT)
+          } else if (retryCount < WORKER_INIT_CONFIG.MAX_RETRIES) {
+            retryCount++
+            setTimeout(waitForInit, WORKER_INIT_CONFIG.RETRY_INTERVAL)
+          } else {
+            console.error(`Worker initialization timeout after ${WORKER_INIT_CONFIG.MAX_RETRIES * WORKER_INIT_CONFIG.RETRY_INTERVAL / 1000} seconds`)
+            postMessage(WORKER_INIT_MESSAGES.INIT_TIMEOUT)
+          }
+        }
+        waitForInit()
+      }
+      break
     case MsgType.CallFunction:
       await handleFunctionCall(data, id, e.ports[0])
       break
