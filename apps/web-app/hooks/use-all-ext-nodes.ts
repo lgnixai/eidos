@@ -47,8 +47,10 @@ export const useSyncExtNodes = () => {
                 if (table !== ExtensionTableName) return
 
                 // Check if it's a block extension with extNode meta
-                const isExtNodeExtension = (_old?.type === "block" && _old?.meta?.type === "extNode") ||
-                    (_new?.type === "block" && _new?.meta?.type === "extNode")
+                const _oldMeta = _old?.meta ? JSON.parse(_old.meta) : null
+                const _newMeta = _new?.meta ? JSON.parse(_new.meta) : null
+                const isExtNodeExtension = (_old?.type === "block" && _oldMeta?.type === "extNode") ||
+                    (_new?.type === "block" && _newMeta?.type === "extNode")
                 if (!isExtNodeExtension) return
 
                 switch (updateType) {
